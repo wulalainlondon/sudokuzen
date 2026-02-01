@@ -88,50 +88,74 @@
             overflow: hidden;
         }
 
+        /* 頂部 Header：標題在左，Quit 在右 */
         header {
             width: 100%;
-            /* 確保 Header 佔滿寬度 */
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-            /* 修改點：增加底部間距比例，推開下方的網格 */
+            align-items: center;
             margin-bottom: 2vh;
+            /* 與下方內容保持距離 */
         }
 
-        h1 {
+        /* 去掉原本 header 內的舊佈局，讓它變簡單 */
+        header h1 {
             font-size: 1.1rem;
             font-weight: 300;
             letter-spacing: 2px;
             margin: 0;
         }
 
-        .life-container {
-            color: var(--error-color);
-            font-size: 1.2rem;
-            letter-spacing: 5px;
-        }
-
-        .life-container span.lost {
-            color: var(--cell-border);
-        }
-
+        /* Quit 按鈕移動到最右上角，風格更輕盈 */
         .quit-btn {
-            margin-top: 8px;
-            padding: 4px 12px;
-            font-size: 0.7rem;
+            padding: 6px 14px;
+            font-size: 0.75rem;
             border: 1px solid var(--cell-border);
-            background: none;
+            background: var(--btn-bg);
             color: var(--text-light);
-            border-radius: 12px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.2s;
             letter-spacing: 1px;
             text-transform: uppercase;
+            margin-top: 0;
+            /* 移除原本的 margin */
         }
 
         .quit-btn:active {
             transform: scale(0.95);
             background: var(--accent-soft);
+        }
+
+        /* 關鍵修正：資訊列與數獨格同寬，並左右對齊 */
+        .grid-info-bar {
+            /* 必須與 .sudoku-grid 的寬度計算法完全一致 */
+            width: min(100%, calc(100vw - 30px), 42vh);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 8px;
+            /* 緊貼在格子上方 */
+        }
+
+        /* 計時器與關卡名 (左上) */
+        .grid-info-bar .stats {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-weight: 400;
+            margin: 0;
+        }
+
+        /* 生命值 ✖ ✖ ✖ (右上) */
+        .grid-info-bar .life-container {
+            font-size: 1rem;
+            letter-spacing: 3px;
+            /* 稍微縮小間隔，看起來更優雅 */
+            line-height: 1;
+            color: var(--error-color);
+        }
+
+        .life-container span.lost {
+            color: var(--cell-border);
         }
 
         /* 網格與格子 */
@@ -471,17 +495,19 @@
             <button class="back-btn" onclick="showLevelScreen()">返回選關</button>
         </div>
 
+        <!-- 1. 頂部標題與 Quit 按鈕 -->
         <header>
-            <div>
-                <h1>SUDOKU</h1>
-                <div class="stats" id="timer">MEDIUM / 00:00</div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                <div class="life-container" id="lives">✖ ✖ ✖</div>
-                <button class="quit-btn" onclick="showLevelScreen()">Quit</button>
-            </div>
+            <h1>SUDOKU</h1>
+            <button class="quit-btn" onclick="showLevelScreen()">Quit</button>
         </header>
 
+        <!-- 2. 數獨格上方資訊列 (對齊格子的左右兩端) -->
+        <div class="grid-info-bar">
+            <div class="stats" id="timer">ZEN / 00:00</div>
+            <div class="life-container" id="lives"></div>
+        </div>
+
+        <!-- 3. 數獨主網格 -->
         <div class="sudoku-grid" id="grid"></div>
 
         <div class="numpad" id="numpad"></div>
