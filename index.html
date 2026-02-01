@@ -79,20 +79,23 @@
             /* 將 max-width 稍微放寬，讓 min() 函數去決定實際大小 */
             max-width: 500px;
             height: 100dvh;
-            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
+            /* 修改點：增加頂部動態間距 (2vh + 安全區域)，讓 Header 不要貼頂 */
+            padding: calc(2vh + env(safe-area-inset-top)) 15px env(safe-area-inset-bottom);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            /* 確保所有東西水平居中 */
             overflow: hidden;
         }
 
         header {
+            width: 100%;
+            /* 確保 Header 佔滿寬度 */
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-bottom: 5px;
+            /* 修改點：增加底部間距比例，推開下方的網格 */
+            margin-bottom: 2vh;
         }
 
         h1 {
