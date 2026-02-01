@@ -585,6 +585,9 @@
             }));
             renderGrid();
             startTimer();
+            // Switch view
+            document.getElementById('level-screen').style.display = 'none';
+            document.querySelector('.game-container').style.display = 'flex';
         }
 
         function renderGrid() {
