@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=0">
+    <title>Minimal Sudoku Pro - Elegant Zen Puzzle</title>
+    <meta name="description"
+        content="A clean, minimalist Sudoku game featuring a premium life system, dark mode, and zen design. Play Sudoku online with a professional interface.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Sudoku Zen">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
+    <style>
+        :root[data-theme="light"] {
+            --bg-color: #F8F9FA;
+            --grid-bg: #FFFFFF;
+            --cell-border: #E9ECEF;
+            --block-border: #DEE2E6;
+            --text-main: #2D3436;
+            --text-light: #636E72;
+            --accent-soft: #E3F2FD;
+            --accent-strong: #0984E3;
+            --note-color: #A29BFE;
+            --error-color: #D63031;
+            --btn-bg: #FFFFFF;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-color: #121212;
+            --grid-bg: #1E1E1E;
+            --cell-border: #2C2C2C;
+            --block-border: #3D3D3D;
+            --text-main: #E0E0E0;
+            --text-light: #B0B0B0;
+            --accent-soft: rgba(9, 132, 227, 0.2);
+            --accent-strong: #4FACFE;
+            --note-color: #B388FF;
+            --error-color: #FF7675;
+            --btn-bg: #2C2C2C;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            height: 100dvh;
+            background-color: var(--bg-color);
+            font-family: 'Outfit', 'Inter', sans-serif;
+            color: var(--text-main);
+            overflow: hidden;
+            /* 防止整體滾動 */
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        .game-container {
+            width: 100%;
+            /* 將 max-width 稍微放寬，讓 min() 函數去決定實際大小 */
+            max-width: 500px;
+            height: 100dvh;
+            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            /* 確保所有東西水平居中 */
+            overflow: hidden;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .life-container {
+            color: var(--error-color);
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+        }
+
+        .life-container span.lost {
+            color: var(--cell-border);
+        }
+
+        .quit-btn {
+            margin-top: 8px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            border: 1px solid var(--cell-border);
+            background: none;
+            color: var(--text-light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .quit-btn:active {
+            transform: scale(0.95);
+            background: var(--accent-soft);
+        }
+
+        /* 網格與格子 */
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            background-color: var(--grid-bg);
+            border: 2px solid var(--block-border);
+            border-radius: 12px;
+            overflow: hidden;
+
+            /* 修正點：動態計算大小 */
+            /* 寬度是以下三者的最小值：
+               1. 100% (父容器寬)
+               2. calc(100vw - 30px) (螢幕寬度減去左右 Padding)
+               3. 42vh (螢幕高度的 42%，預留空間給 Header 和鍵盤) 
+            */
+            width: min(100%, calc(100vw - 30px), 42vh);
+            aspect-ratio: 1 / 1;
+
+            margin: 0 auto;
+            /* 居中 */
+            flex-shrink: 0;
+            /* 防止被 flex 壓縮 */
+        }
+
+        .cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 使用 vw (視窗寬度單位) 讓字體隨螢幕寬度縮放 */
+            font-size: min(5.5vw, 24px);
+            font-weight: 300;
+            border: 0.5px solid var(--cell-border);
+            cursor: pointer;
+            position: relative;
+            background: var(--grid-bg);
+            /* 確保文字不換行 */
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .cell:nth-child(3n) {
+            border-right: 2px solid var(--block-border);
+        }
+
+        .cell:nth-child(9n) {
+            border-right: none;
+        }
+
+        .cell:nth-child(n+19):nth-child(-n+27),
+        .cell:nth-child(n+46):nth-child(-n+54) {
+            border-bottom: 2px solid var(--block-border);
+        }
+
+        .cell.related {
+            background-color: var(--accent-soft);
+        }
+
+        .cell.selected {
+            background-color: var(--accent-soft);
+            outline: 2px inset var(--accent-strong);
+            z-index: 1;
+        }
+
+        .cell.fixed {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .cell.user-val {
+            color: var(--accent-strong);
+        }
+
+        .cell.error {
+            color: var(--error-color) !important;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* 遊戲結束遮罩 */
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        #overlay h2 {
+            font-weight: 300;
+            letter-spacing: 4px;
+        }
+
+        .retry-btn,
+        .back-btn {
+            margin-top: 15px;
+            padding: 10px 30px;
+            border: 1px solid var(--text-main);
+            background: none;
+            color: var(--text-main);
+            cursor: pointer;
+            border-radius: 20px;
+            width: 180px;
+        }
+
+        /* Level Selector Redesign */
+        #level-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
+            transition: opacity 0.4s;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 30px;
+            background: var(--grid-bg);
+            padding: 5px;
+            border-radius: 25px;
+            border: 1px solid var(--cell-border);
+            width: 100%;
+            max-width: 400px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 65px;
+            padding: 10px 5px;
+            border: none;
+            background: none;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-strong);
+            color: white;
+            box-shadow: 0 4px 12px rgba(9, 132, 227, 0.3);
+        }
+
+        #level-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            overflow-y: auto;
+            padding-bottom: 40px;
+            scroll-behavior: smooth;
+        }
+
+        .level-item {
+            aspect-ratio: 1/1;
+            background: var(--grid-bg);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--cell-border);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .level-item:active {
+            transform: scale(0.92);
+        }
+
+        .level-item.completed {
+            border-color: var(--accent-strong);
+            background: var(--accent-soft);
+        }
+
+        .level-num {
+            font-size: 0.72rem;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.2;
+            padding: 0 4px;
+        }
+
+        .level-stats {
+            font-size: 0.55rem;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* Scrollbar styling */
+        #level-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #level-list::-webkit-scrollbar-thumb {
+            background: var(--block-border);
+            border-radius: 10px;
+        }
+
+        /* 控制區 (同前次) */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            /* 使用屏寬百分比作為間距 */
+            gap: 1vw;
+            width: 100%;
+            max-width: min(100%, 400px);
+            margin-top: 10px;
+        }
+
+        .num-btn {
+            aspect-ratio: 1/1;
+            border: none;
+            background: var(--btn-bg);
+            /* 讓數字按鈕字體也隨寬度變化 */
+            font-size: min(4.5vw, 1.2rem);
+            font-weight: 300;
+            color: var(--text-main);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            margin-top: 0;
+            padding-bottom: 0;
+        }
+
+        .ctrl-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ctrl-btn.active {
+            color: var(--accent-strong);
+        }
+
+        .ctrl-btn svg {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 6px;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: 100%;
+            height: 100%;
+            padding: 2px;
+            pointer-events: none;
+        }
+
+        .note-num {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.6rem;
+            color: var(--note-color);
+            opacity: 0;
+        }
+
+        .note-num.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="level-screen">
+        <h1 style="margin-bottom: 25px; font-weight: 300; letter-spacing: 5px; font-family: 'Outfit';">SUDOKU ZEN</h1>
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab(1)">禪 ZEN</button>
+            <button class="tab-btn" onclick="switchTab(2)">虛空 VOID</button>
+            <button class="tab-btn" onclick="switchTab(3)">無我 S.</button>
+            <button class="tab-btn" onclick="switchTab(4)">本源 O.</button>
+            <button class="tab-btn" onclick="switchTab(5)">寂滅 E.</button>
+        </div>
+        <div id="level-list"></div>
+    </div>
+
+    <div class="game-container">
+        <div id="overlay">
+            <h2>GAME OVER</h2>
+            <p>你犯了 3 次錯誤</p>
+            <button class="retry-btn" onclick="resetGame()">重新開始</button>
+            <button class="back-btn" onclick="showLevelScreen()">返回選關</button>
+        </div>
+
+        <header>
+            <div>
+                <h1>SUDOKU</h1>
+                <div class="stats" id="timer">MEDIUM / 00:00</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                <div class="life-container" id="lives">✖ ✖ ✖</div>
+                <button class="quit-btn" onclick="showLevelScreen()">Quit</button>
+            </div>
+        </header>
+
+        <div class="sudoku-grid" id="grid"></div>
+
+        <div class="numpad" id="numpad"></div>
+
+        <div class="controls">
+            <button class="ctrl-btn" onclick="toggleTheme()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5" />
+                    <path
+                        d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                </svg>
+                Theme
+            </button>
+            <button class="ctrl-btn" id="note-toggle" onclick="toggleNoteMode()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+                Notes
+            </button>
+            <button class="ctrl-btn" onclick="erase()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                Erase
+            </button>
+        </div>
+    </div>
+
+    <script src="levels.js"></script>
+    <script>
+        const gridEl = document.getElementById('grid');
+        const livesEl = document.getElementById('lives');
+        const overlay = document.getElementById('overlay');
+        const timerEl = document.getElementById('timer');
+
+        let selectedIdx = null;
+        let isNotesMode = false;
+        let errors = 0;
+        const maxErrors = 3;
+        let seconds = 0;
+        let timerInterval = null;
+        let currentLevel = null;
+
+        let cellsData = [];
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            seconds = 0;
+            updateTimerUI();
+            timerInterval = setInterval(() => {
+                seconds++;
+                updateTimerUI();
+            }, 1000);
+        }
+
+        function updateTimerUI() {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            timerEl.textContent = `${currentLevel.displayName} / ${mins}:${secs}`;
+        }
+
+        function initGame(levelId = 1) {
+            currentLevel = levels.find(l => l.id === levelId) || levels[0];
+            errors = 0;
+            updateLivesUI();
+            overlay.style.display = 'none';
+            cellsData = currentLevel.puzzle.map((val, idx) => ({
+                value: val,
+                fixed: val !== 0,
+                notes: [],
+                isError: false
+            }));
+            renderGrid();
+            startTimer();
+        }
+
+        function renderGrid() {
+            gridEl.innerHTML = '';
+            cellsData.forEach((data, i) => {
+                const cell = document.createElement('div');
+                cell.className = `cell ${data.fixed ? 'fixed' : ''} ${data.isError ? 'error' : ''}`;
+                updateCellDisplay(cell, data);
+                cell.onclick = () => selectCell(i);
+                gridEl.appendChild(cell);
+            });
+        }
+
+        function updateCellDisplay(cell, data) {
+            cell.innerHTML = '';
+            if (data.value !== 0) {
+                cell.textContent = data.value;
+                if (!data.fixed) cell.classList.add('user-val');
+                else cell.classList.remove('user-val');
+            } else {
+                const ng = document.createElement('div');
+                ng.className = 'notes-grid';
+                for (let n = 1; n <= 9; n++) {
+                    const nd = document.createElement('div');
+                    nd.className = `note-num ${data.notes.includes(n) ? 'active' : ''}`;
+                    nd.textContent = n;
+                    ng.appendChild(nd);
+                }
+                cell.appendChild(ng);
+            }
+        }
+
+        function handleInput(num) {
+            if (selectedIdx === null || cellsData[selectedIdx].fixed || errors >= maxErrors) return;
+
+            let data = cellsData[selectedIdx];
+            const cellEl = gridEl.children[selectedIdx];
+
+            if (isNotesMode) {
+                if (data.value !== 0) return;
+                const ni = data.notes.indexOf(num);
+                if (ni > -1) data.notes.splice(ni, 1);
+                else data.notes.push(num);
+            } else {
+                if (num !== currentLevel.solution[selectedIdx]) {
+                    errors++;
+                    updateLivesUI();
+                    data.isError = true;
+                    cellEl.classList.add('error');
+                    setTimeout(() => {
+                        data.isError = false;
+                        cellEl.classList.remove('error');
+                    }, 400);
+                    if (errors >= maxErrors) showGameOver();
+                    return;
+                }
+                data.value = num;
+                data.notes = [];
+                data.isError = false;
+                checkWin();
+            }
+            updateCellDisplay(cellEl, data);
+        }
+
+        function checkWin() {
+            const isComplete = cellsData.every((data, i) => data.value === currentLevel.solution[i]);
+            if (isComplete) {
+                clearInterval(timerInterval);
+                saveProgress();
+                alert(`恭喜完成！用時：${Math.floor(seconds / 60)}分${seconds % 60}秒`);
+                showLevelScreen();
+            }
+        }
+
+        function saveProgress() {
+            const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+            const best = records[currentLevel.id];
+            if (!best || seconds < best) {
+                records[currentLevel.id] = seconds;
+                localStorage.setItem('sudoku_records', JSON.stringify(records));
+            }
+        }
+
+        function updateLivesUI() {
+            let html = '';
+            for (let i = 0; i < maxErrors; i++) {
+                html += `<span class="${i < errors ? 'lost' : ''}">✖</span> `;
+            }
+            livesEl.innerHTML = html;
+        }
+
+        function showGameOver() {
+            clearInterval(timerInterval);
+            overlay.style.display = 'flex';
+        }
+
+        function resetGame() {
+            initGame(currentLevel.id);
+        }
+
+        let currentTab = 1;
+
+        function showLevelScreen() {
+            clearInterval(timerInterval);
+            overlay.style.display = 'none';
+            document.getElementById('level-screen').style.display = 'flex';
+            renderLevelGrid();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach((b, i) => b.classList.toggle('active', i + 1 === tab));
+            renderLevelGrid();
+        }
+
+        function renderLevelGrid() {
+            const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+            const list = document.getElementById('level-list');
+            list.innerHTML = '';
+
+            const filtered = levels.filter(l => l.stars === currentTab);
+            filtered.forEach((l, index) => {
+                const best = records[l.id];
+                const item = document.createElement('div');
+                item.className = `level-item ${best ? 'completed' : ''}`;
+                item.onclick = () => {
+                    document.getElementById('level-screen').style.display = 'none';
+                    initGame(l.id);
+                };
+
+                const timeStr = best ? `${Math.floor(best / 60)}:${(best % 60).toString().padStart(2, '0')}` : '';
+                item.innerHTML = `
+                    <div class="level-num">${l.displayName}</div>
+                    <div class="level-stats">${timeStr}</div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function selectCell(idx) {
+            selectedIdx = idx;
+            const row = Math.floor(idx / 9), col = idx % 9;
+            const box = Math.floor(row / 3) * 3 + Math.floor(col / 3);
+            Array.from(gridEl.children).forEach((c, i) => {
+                c.classList.remove('selected', 'related');
+                const r = Math.floor(i / 9), l = i % 9, b = Math.floor(r / 3) * 3 + Math.floor(l / 3);
+                if (i === idx) c.classList.add('selected');
+                else if (r === row || l === col || b === box) c.classList.add('related');
+            });
+        }
+
+        function toggleNoteMode() {
+            isNotesMode = !isNotesMode;
+            document.getElementById('note-toggle').classList.toggle('active', isNotesMode);
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+        }
+
+        function erase() {
+            if (selectedIdx !== null && !cellsData[selectedIdx].fixed) {
+                cellsData[selectedIdx].value = 0;
+                cellsData[selectedIdx].notes = [];
+                updateCellDisplay(gridEl.children[selectedIdx], cellsData[selectedIdx]);
+            }
+        }
+
+        const np = document.getElementById('numpad');
+        for (let i = 1; i <= 9; i++) {
+            const b = document.createElement('button');
+            b.className = 'num-btn'; b.textContent = i;
+            b.onclick = () => handleInput(i);
+            np.appendChild(b);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key >= 1 && e.key <= 9) handleInput(parseInt(e.key));
+            if (e.key === 'Backspace') erase();
+        });
+
+        // Initialize
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+        showLevelScreen();
+    </script>
+</body>
+
+</html>
