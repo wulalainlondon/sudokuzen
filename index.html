@@ -478,7 +478,8 @@
     <div id="level-screen">
         <h1 style="margin-bottom: 25px; font-weight: 300; letter-spacing: 5px; font-family: 'Outfit';">SUDOKU ZEN</h1>
         <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab(1)">禪 ZEN</button>
+            <button class="tab-btn" onclick="switchTab(0)">初心 BEGINNER</button>
+            <button class="tab-btn" onclick="switchTab(1)">禪 ZEN</button>
             <button class="tab-btn" onclick="switchTab(2)">虛空 VOID</button>
             <button class="tab-btn" onclick="switchTab(3)">無我 S.</button>
             <button class="tab-btn" onclick="switchTab(4)">本源 O.</button>
@@ -684,19 +685,20 @@
             initGame(currentLevel.id);
         }
 
-        let currentTab = 1;
+        let currentTab = 0;
 
         function showLevelScreen() {
+            document.querySelector('.game-container').style.display = 'none';
             clearInterval(timerInterval);
             overlay.style.display = 'none';
             document.getElementById('level-screen').style.display = 'flex';
-            renderLevelGrid();
+            switchTab(currentTab);
         }
 
         function switchTab(tab) {
             currentTab = tab;
             const btns = document.querySelectorAll('.tab-btn');
-            btns.forEach((b, i) => b.classList.toggle('active', i + 1 === tab));
+            btns.forEach((b, i) => b.classList.toggle('active', i === tab));
             renderLevelGrid();
         }
 
