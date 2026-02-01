@@ -742,8 +742,23 @@
         });
 
         // Initialize
+        // Initialize with Auto-Update Notification
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                // 當發現有新的 Service Worker 時觸發
+                reg.onupdatefound = () => {
+                    const installingWorker = reg.installing;
+                    installingWorker.onstatechange = () => {
+                        // 當新 Service Worker 安裝完成，且頁面目前已有 Controller (代表不是第一次造訪)
+                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // 使用系統原生對話框或自定義 UI 通知使用者
+                            if (confirm('發現新的版本與關卡！是否立即更新以體驗最新內容？')) {
+                                window.location.reload();
+                            }
+                        }
+                    };
+                };
+            }).catch(err => console.error('SW init fail:', err));
         }
         showLevelScreen();
     </script>
