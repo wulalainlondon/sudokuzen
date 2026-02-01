@@ -107,6 +107,23 @@
         }
 
         /* Quit 按鈕移動到最右上角，風格更輕盈 */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .quit-btn {
             padding: 6px 14px;
             font-size: 0.75rem;
@@ -499,7 +516,14 @@
         <!-- 1. 頂部標題與 Quit 按鈕 -->
         <header>
             <h1>SUDOKU</h1>
-            <button class="quit-btn" onclick="showLevelScreen()">Quit</button>
+            <div class="header-controls">
+                <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle Theme">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <button class="quit-btn" onclick="showLevelScreen()">Quit</button>
+            </div>
         </header>
 
         <!-- 2. 數獨格上方資訊列 (對齊格子的左右兩端) -->
@@ -748,7 +772,9 @@
 
         function toggleTheme() {
             const html = document.documentElement;
-            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+            const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('sudoku_theme', next);
         }
 
         function erase() {
@@ -772,7 +798,10 @@
             if (e.key === 'Backspace') erase();
         });
 
-        // Initialize
+        // Init Theme
+        const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
         // Initialize with Auto-Update Notification
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').then(reg => {
