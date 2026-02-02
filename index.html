@@ -414,27 +414,33 @@
         .numpad {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
-            /* 使用屏寬百分比作為間距 */
-            gap: 1vw;
+            gap: 2px;
+            /* 改用更小的固定間距，確保空間足夠 */
             width: 100%;
-            max-width: min(100%, 400px);
-            margin-top: 10px;
+            /* 移除 max-width 限制，讓它跟隨父容器 */
+            margin-top: auto;
+            /* 推到底部 */
+            padding-bottom: 5px;
         }
 
         .num-btn {
             aspect-ratio: 1/1;
             border: none;
             background: var(--btn-bg);
-            /* 讓數字按鈕字體也隨寬度變化 */
-            font-size: min(4.5vw, 1.2rem);
+            /* 字體大小稍微縮小一點以防萬一 */
+            font-size: min(4vw, 1.2rem);
             font-weight: 300;
             color: var(--text-main);
             cursor: pointer;
             border-radius: 50%;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            /* 稍微增強陰影讓邊界更明顯 */
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0;
+            /* 確保沒有內距撐大按鈕 */
+            margin: 0;
         }
 
         .controls {
