@@ -179,24 +179,20 @@
         .sudoku-grid {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
             background-color: var(--grid-bg);
             border: 2px solid var(--block-border);
             border-radius: 12px;
             overflow: hidden;
 
-            /* 修正點：動態計算大小 */
-            /* 寬度是以下三者的最小值：
-               1. 100% (父容器寬)
-               2. calc(100vw - 30px) (螢幕寬度減去左右 Padding)
-               3. 42vh (螢幕高度的 42%，預留空間給 Header 和鍵盤) 
-            */
-            width: min(100%, calc(100vw - 30px), 42vh);
+            /* 寬度限制：max 55dvh，防止垂直擠壓 */
+            width: min(100%, 55vh);
+            width: min(100%, 55dvh);
             aspect-ratio: 1 / 1;
 
             margin: 0 auto;
-            /* 居中 */
             flex-shrink: 0;
-            /* 防止被 flex 壓縮 */
+            user-select: none;
         }
 
         .cell {
