@@ -657,22 +657,56 @@
             timerEl.textContent = `${currentLevel.displayName} / ${mins}:${secs}`;
         }
 
-        function initGame(levelId = 1) {
+        function initGame(levelId = 1, forceReset = false) {
             currentLevel = levels.find(l => l.id === levelId) || levels[0];
-            errors = 0;
+
+            // 嘗試載入存檔
+            const saved = forceReset ? null : loadGameStatus(currentLevel.id);
+
+            if (saved) {
+                cellsData = saved.cellsData;
+                seconds = saved.seconds;
+                errors = saved.errors;
+            } else {
+                errors = 0;
+                seconds = 0;
+                cellsData = currentLevel.puzzle.map((val, idx) => ({
+                    value: val,
+                    fixed: val !== 0,
+                    notes: [],
+                    isError: false
+                }));
+            }
+
             updateLivesUI();
             overlay.style.display = 'none';
-            cellsData = currentLevel.puzzle.map((val, idx) => ({
-                value: val,
-                fixed: val !== 0,
-                notes: [],
-                isError: false
-            }));
+            document.getElementById('pause-screen').style.display = 'none';
             renderGrid();
-            startTimer();
+            startTimer(false); // 不重置，使用當前 seconds
+
             // Switch view
             document.getElementById('level-screen').style.display = 'none';
             document.querySelector('.game-container').style.display = 'flex';
+        }
+
+        function saveGameStatus() {
+            if (!currentLevel) return;
+            const data = {
+                levelId: currentLevel.id,
+                cellsData: cellsData,
+                seconds: seconds,
+                errors: errors
+            };
+            localStorage.setItem(`sudoku_save_${currentLevel.id}`, JSON.stringify(data));
+        }
+
+        function loadGameStatus(levelId) {
+            const saved = localStorage.getItem(`sudoku_save_${levelId}`);
+            return saved ? JSON.parse(saved) : null;
+        }
+
+        function clearGameStatus(levelId) {
+            localStorage.removeItem(`sudoku_save_${levelId}`);
         }
 
         function renderGrid() {
@@ -735,12 +769,14 @@
                 checkWin();
             }
             updateCellDisplay(cellEl, data);
+            saveGameStatus();
         }
 
         function checkWin() {
             const isComplete = cellsData.every((data, i) => data.value === currentLevel.solution[i]);
             if (isComplete) {
                 clearInterval(timerInterval);
+                clearGameStatus(currentLevel.id);
                 saveProgress();
                 alert(`恭喜完成！用時：${Math.floor(seconds / 60)}分${seconds % 60}秒`);
                 showLevelScreen();
@@ -770,7 +806,10 @@
         }
 
         function resetGame() {
-            initGame(currentLevel.id);
+            if (confirm('確定要重新開始本關嗎？當前進度將遺失。')) {
+                clearGameStatus(currentLevel.id);
+                initGame(currentLevel.id, true);
+            }
         }
 
         let currentTab = 0;
@@ -856,6 +895,7 @@
                 cellsData[selectedIdx].value = 0;
                 cellsData[selectedIdx].notes = [];
                 updateCellDisplay(gridEl.children[selectedIdx], cellsData[selectedIdx]);
+                saveGameStatus();
             }
         }
 
