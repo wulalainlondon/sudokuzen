@@ -117,7 +117,7 @@
             gap: 10px;
         }
 
-        .theme-btn {
+        .header-btn {
             background: none;
             border: none;
             cursor: pointer;
@@ -126,6 +126,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .header-btn:active {
+            transform: scale(0.9);
         }
 
         .quit-btn {
@@ -139,7 +144,6 @@
             letter-spacing: 1px;
             text-transform: uppercase;
             margin-top: 0;
-            /* 移除原本的 margin */
         }
 
         .quit-btn:active {
@@ -275,8 +279,9 @@
             }
         }
 
-        /* 遊戲結束遮罩 */
-        #overlay {
+        /* 遊戲、暫停結束遮罩 */
+        #overlay,
+        #pause-screen {
             position: absolute;
             top: 0;
             left: 0;
@@ -292,13 +297,22 @@
             text-align: center;
         }
 
-        #overlay h2 {
+        #overlay h2,
+        #pause-screen h2 {
             font-weight: 300;
             letter-spacing: 4px;
+            margin-bottom: 5px;
+        }
+
+        #pause-screen p {
+            font-size: 1.2rem;
+            color: var(--accent-strong);
+            margin-bottom: 30px;
         }
 
         .retry-btn,
-        .back-btn {
+        .back-btn,
+        .resume-btn {
             margin-top: 15px;
             padding: 10px 30px;
             border: 1px solid var(--text-main);
@@ -307,6 +321,15 @@
             cursor: pointer;
             border-radius: 20px;
             width: 180px;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .resume-btn {
+            background: var(--accent-strong);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(9, 132, 227, 0.3);
         }
 
         /* Level Selector Redesign */
@@ -526,13 +549,22 @@
             <button class="back-btn" onclick="showLevelScreen()">返回選關</button>
         </div>
 
+        <div id="pause-screen">
+            <h2 id="pause-level-name">LEVEL NAME</h2>
+            <p id="pause-timer">00:00</p>
+            <button class="resume-btn" onclick="resumeGame()">繼續遊戲</button>
+            <button class="back-btn" style="border: none; font-size: 0.8rem; color: var(--text-light);"
+                onclick="showLevelScreen()">放棄關卡</button>
+        </div>
+
         <!-- 1. 頂部標題與 Quit 按鈕 -->
         <header>
             <h1>SUDOKU</h1>
             <div class="header-controls">
-                <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle Theme">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                <button class="header-btn" onclick="pauseGame()" aria-label="Pause Game">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
                     </svg>
                 </button>
                 <button class="quit-btn" onclick="showLevelScreen()">Quit</button>
@@ -593,14 +625,30 @@
 
         let cellsData = [];
 
-        function startTimer() {
+        function startTimer(reset = true) {
             clearInterval(timerInterval);
-            seconds = 0;
+            if (reset) seconds = 0;
             updateTimerUI();
             timerInterval = setInterval(() => {
                 seconds++;
                 updateTimerUI();
             }, 1000);
+        }
+
+        function pauseGame() {
+            clearInterval(timerInterval);
+            const pauseScreen = document.getElementById('pause-screen');
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+
+            document.getElementById('pause-level-name').textContent = currentLevel.displayName;
+            document.getElementById('pause-timer').textContent = `${mins}:${secs}`;
+            pauseScreen.style.display = 'flex';
+        }
+
+        function resumeGame() {
+            document.getElementById('pause-screen').style.display = 'none';
+            startTimer(false);
         }
 
         function updateTimerUI() {
@@ -728,6 +776,7 @@
         let currentTab = 0;
 
         function showLevelScreen() {
+            document.getElementById('pause-screen').style.display = 'none';
             document.querySelector('.game-container').style.display = 'none';
             clearInterval(timerInterval);
             overlay.style.display = 'none';
