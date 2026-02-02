@@ -232,6 +232,13 @@
             background-color: var(--accent-soft);
         }
 
+        .cell.match {
+            background-color: rgba(9, 132, 227, 0.25);
+            /* 較深的高亮色以區分關聯格 */
+            font-weight: 600;
+            /* 讓數字更亮眼 */
+        }
+
         .cell.selected {
             background-color: var(--accent-soft);
             outline: 2px inset var(--accent-strong);
@@ -761,13 +768,25 @@
 
         function selectCell(idx) {
             selectedIdx = idx;
+            const selectedVal = cellsData[idx].value;
             const row = Math.floor(idx / 9), col = idx % 9;
             const box = Math.floor(row / 3) * 3 + Math.floor(col / 3);
+
             Array.from(gridEl.children).forEach((c, i) => {
-                c.classList.remove('selected', 'related');
+                c.classList.remove('selected', 'related', 'match');
                 const r = Math.floor(i / 9), l = i % 9, b = Math.floor(r / 3) * 3 + Math.floor(l / 3);
-                if (i === idx) c.classList.add('selected');
-                else if (r === row || l === col || b === box) c.classList.add('related');
+                const val = cellsData[i].value;
+
+                if (i === idx) {
+                    c.classList.add('selected');
+                } else {
+                    if (r === row || l === col || b === box) {
+                        c.classList.add('related');
+                    }
+                    if (selectedVal !== 0 && val === selectedVal) {
+                        c.classList.add('match');
+                    }
+                }
             });
         }
 
