@@ -420,114 +420,121 @@
             font-size: 0.72rem;
             font-weight: 500;
             text-align: center;
-            line-height: 1.2;
-            padding: 0 4px;
-        }
 
-        .level-stats {
-            font-size: 0.55rem;
-            color: var(--text-light);
-            margin-top: 2px;
-        }
+            .level-stats {
+                font-size: 0.7rem;
+                color: var(--text-light);
+            }
 
-        /* Scrollbar styling */
-        #level-list::-webkit-scrollbar {
-            width: 4px;
-        }
+            .level-stars {
+                font-size: 0.75rem;
+                color: #F1C40F;
+                /* 金色星星 */
+                margin-top: 2px;
+            }
 
-        #level-list::-webkit-scrollbar-thumb {
-            background: var(--block-border);
-            border-radius: 10px;
-        }
+            .level-stars .empty-star {
+                color: var(--cell-border);
+            }
 
-        /* 控制區 (同前次) */
-        .numpad {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            gap: 2px;
-            /* 改用更小的固定間距，確保空間足夠 */
-            width: 100%;
-            /* 移除 max-width 限制，讓它跟隨父容器 */
-            margin-top: auto;
-            /* 推到底部 */
-            padding-bottom: 5px;
-        }
+            /* Scrollbar styling */
+            #level-list::-webkit-scrollbar {
+                width: 4px;
+            }
 
-        .num-btn {
-            aspect-ratio: 1/1;
-            border: none;
-            background: var(--btn-bg);
-            /* 字體大小稍微縮小一點以防萬一 */
-            font-size: min(4vw, 1.2rem);
-            font-weight: 300;
-            color: var(--text-main);
-            cursor: pointer;
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            /* 稍微增強陰影讓邊界更明顯 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            /* 確保沒有內距撐大按鈕 */
-            margin: 0;
-        }
+            #level-list::-webkit-scrollbar-thumb {
+                background: var(--block-border);
+                border-radius: 10px;
+            }
 
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 35px;
-            margin-top: 0;
-            padding-bottom: 0;
-        }
+            /* 控制區 (同前次) */
+            .numpad {
+                display: grid;
+                grid-template-columns: repeat(9, 1fr);
+                gap: 2px;
+                /* 改用更小的固定間距，確保空間足夠 */
+                width: 100%;
+                /* 移除 max-width 限制，讓它跟隨父容器 */
+                margin-top: auto;
+                /* 推到底部 */
+                padding-bottom: 5px;
+            }
 
-        .ctrl-btn {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            font-size: 0.75rem;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+            .num-btn {
+                aspect-ratio: 1/1;
+                border: none;
+                background: var(--btn-bg);
+                /* 字體大小稍微縮小一點以防萬一 */
+                font-size: min(4vw, 1.2rem);
+                font-weight: 300;
+                color: var(--text-main);
+                cursor: pointer;
+                border-radius: 50%;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                /* 稍微增強陰影讓邊界更明顯 */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                /* 確保沒有內距撐大按鈕 */
+                margin: 0;
+            }
 
-        .ctrl-btn.active {
-            color: var(--accent-strong);
-        }
+            .controls {
+                display: flex;
+                justify-content: center;
+                gap: 35px;
+                margin-top: 0;
+                padding-bottom: 0;
+            }
 
-        .ctrl-btn svg {
-            width: 22px;
-            height: 22px;
-            margin-bottom: 6px;
-        }
+            .ctrl-btn {
+                background: none;
+                border: none;
+                color: var(--text-light);
+                font-size: 0.75rem;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
 
-        .notes-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            /* 強制三行平分高度 */
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            /* 移除內距，確保格子完整利用 */
-            pointer-events: none;
-        }
+            .ctrl-btn.active {
+                color: var(--accent-strong);
+            }
 
-        .note-num {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.55rem;
-            /* 稍微縮小以確保不溢出 */
-            line-height: 1;
-            color: var(--note-color);
-            opacity: 0;
-        }
+            .ctrl-btn svg {
+                width: 22px;
+                height: 22px;
+                margin-bottom: 6px;
+            }
 
-        .note-num.active {
-            opacity: 1;
-        }
+            .notes-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                /* 強制三行平分高度 */
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                /* 移除內距，確保格子完整利用 */
+                pointer-events: none;
+            }
+
+            .note-num {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 0.55rem;
+                /* 稍微縮小以確保不溢出 */
+                line-height: 1;
+                color: var(--note-color);
+                opacity: 0;
+            }
+
+            .note-num.active {
+                opacity: 1;
+            }
     </style>
 </head>
 
@@ -790,9 +797,21 @@
 
         function saveProgress() {
             const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
-            const best = records[currentLevel.id];
-            if (!best || seconds < best) {
-                records[currentLevel.id] = seconds;
+            const existing = records[currentLevel.id];
+
+            // 計算星數 (0錯=3星, 1錯=2星, 2錯=1星)
+            const earnedStars = Math.max(1, 3 - errors);
+
+            // 檢查是否更新紀錄（以星數優先，其次是時間）
+            const shouldUpdate = !existing ||
+                earnedStars > (existing.stars || 1) ||
+                (earnedStars === (existing.stars || 1) && seconds < (existing.time || Infinity));
+
+            if (shouldUpdate) {
+                records[currentLevel.id] = {
+                    time: seconds,
+                    stars: earnedStars
+                };
                 localStorage.setItem('sudoku_records', JSON.stringify(records));
             }
         }
@@ -842,17 +861,35 @@
 
             const filtered = levels.filter(l => l.stars === currentTab);
             filtered.forEach((l, index) => {
-                const best = records[l.id];
+                const record = records[l.id];
+                // 向下相容：處理舊的數字格式
+                let bestTime = null;
+                let bestStars = 0;
+                if (record) {
+                    if (typeof record === 'number') {
+                        // 舊格式：僅紀錄時間
+                        bestTime = record;
+                        bestStars = 1;
+                    } else {
+                        bestTime = record.time;
+                        bestStars = record.stars || 1;
+                    }
+                }
+
                 const item = document.createElement('div');
-                item.className = `level-item ${best ? 'completed' : ''}`;
+                item.className = `level-item ${bestTime !== null ? 'completed' : ''}`;
                 item.onclick = () => {
                     document.getElementById('level-screen').style.display = 'none';
                     initGame(l.id);
                 };
 
-                const timeStr = best ? `${Math.floor(best / 60)}:${(best % 60).toString().padStart(2, '0')}` : '';
+                const timeStr = bestTime !== null ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}` : '';
+                const starsHtml = bestStars > 0 ?
+                    '<div class="level-stars">' + '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span></div>' : '';
+
                 item.innerHTML = `
                     <div class="level-num">${l.displayName}</div>
+                    ${starsHtml}
                     <div class="level-stats">${timeStr}</div>
                 `;
                 list.appendChild(item);
