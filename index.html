@@ -25,11 +25,14 @@
         :root[data-theme="light"] {
             --bg-color: #F8F9FA;
             --grid-bg: #FFFFFF;
-            --cell-border: #E9ECEF;
-            --block-border: #DEE2E6;
+            --cell-border: #D1D5DB;
+            /* 加深格線顏色專注對比 */
+            --block-border: #9CA3AF;
+            /* 加深區域線顏色 */
             --text-main: #2D3436;
             --text-light: #636E72;
-            --accent-soft: #E3F2FD;
+            --accent-soft: rgba(9, 132, 227, 0.08);
+            /* 改為半透明確保格線透出 */
             --accent-strong: #0984E3;
             --note-color: #A29BFE;
             --error-color: #D63031;
@@ -39,11 +42,12 @@
         :root[data-theme="dark"] {
             --bg-color: #121212;
             --grid-bg: #1E1E1E;
-            --cell-border: #2C2C2C;
-            --block-border: #3D3D3D;
+            --cell-border: #374151;
+            --block-border: #4B5563;
             --text-main: #E0E0E0;
             --text-light: #B0B0B0;
-            --accent-soft: rgba(9, 132, 227, 0.2);
+            --accent-soft: rgba(9, 132, 227, 0.15);
+            /* 暗色模式高亮透明度調整 */
             --accent-strong: #4FACFE;
             --note-color: #B388FF;
             --error-color: #FF7675;
