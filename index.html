@@ -420,121 +420,113 @@
             font-size: 0.72rem;
             font-weight: 500;
             text-align: center;
+        }
 
-            .level-stats {
-                font-size: 0.7rem;
-                color: var(--text-light);
-            }
+        .level-stats {
+            font-size: 0.7rem;
+            color: var(--text-light);
+        }
 
-            .level-stars {
-                font-size: 0.75rem;
-                color: #F1C40F;
-                /* 金色星星 */
-                margin-top: 2px;
-            }
+        .level-stars {
+            font-size: 0.75rem;
+            color: #F1C40F;
+            /* 金色星星 */
+            margin-top: 2px;
+        }
 
-            .level-stars .empty-star {
-                color: var(--cell-border);
-            }
+        .level-stars .empty-star {
+            color: var(--cell-border);
+        }
 
-            /* Scrollbar styling */
-            #level-list::-webkit-scrollbar {
-                width: 4px;
-            }
+        /* Scrollbar styling */
+        #level-list::-webkit-scrollbar {
+            width: 4px;
+        }
 
-            #level-list::-webkit-scrollbar-thumb {
-                background: var(--block-border);
-                border-radius: 10px;
-            }
+        #level-list::-webkit-scrollbar-thumb {
+            background: var(--block-border);
+            border-radius: 10px;
+        }
 
-            /* 控制區 (同前次) */
-            .numpad {
-                display: grid;
-                grid-template-columns: repeat(9, 1fr);
-                gap: 2px;
-                /* 改用更小的固定間距，確保空間足夠 */
-                width: 100%;
-                /* 移除 max-width 限制，讓它跟隨父容器 */
-                margin-top: auto;
-                /* 推到底部 */
-                padding-bottom: 5px;
-            }
+        /* 控制區 */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 2px;
+            width: 100%;
+            margin-top: auto;
+            padding-bottom: 5px;
+        }
 
-            .num-btn {
-                aspect-ratio: 1/1;
-                border: none;
-                background: var(--btn-bg);
-                /* 字體大小稍微縮小一點以防萬一 */
-                font-size: min(4vw, 1.2rem);
-                font-weight: 300;
-                color: var(--text-main);
-                cursor: pointer;
-                border-radius: 50%;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-                /* 稍微增強陰影讓邊界更明顯 */
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0;
-                /* 確保沒有內距撐大按鈕 */
-                margin: 0;
-            }
+        .num-btn {
+            aspect-ratio: 1/1;
+            border: none;
+            background: var(--btn-bg);
+            font-size: min(4vw, 1.2rem);
+            font-weight: 300;
+            color: var(--text-main);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
 
-            .controls {
-                display: flex;
-                justify-content: center;
-                gap: 35px;
-                margin-top: 0;
-                padding-bottom: 0;
-            }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            margin-top: 0;
+            padding-bottom: 0;
+        }
 
-            .ctrl-btn {
-                background: none;
-                border: none;
-                color: var(--text-light);
-                font-size: 0.75rem;
-                cursor: pointer;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
+        .ctrl-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-            .ctrl-btn.active {
-                color: var(--accent-strong);
-            }
+        .ctrl-btn.active {
+            color: var(--accent-strong);
+        }
 
-            .ctrl-btn svg {
-                width: 22px;
-                height: 22px;
-                margin-bottom: 6px;
-            }
+        .ctrl-btn svg {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 6px;
+        }
 
-            .notes-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                grid-template-rows: repeat(3, 1fr);
-                /* 強制三行平分高度 */
-                width: 100%;
-                height: 100%;
-                padding: 0;
-                /* 移除內距，確保格子完整利用 */
-                pointer-events: none;
-            }
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            pointer-events: none;
+        }
 
-            .note-num {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 0.55rem;
-                /* 稍微縮小以確保不溢出 */
-                line-height: 1;
-                color: var(--note-color);
-                opacity: 0;
-            }
+        .note-num {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.55rem;
+            line-height: 1;
+            color: var(--note-color);
+            opacity: 0;
+        }
 
-            .note-num.active {
-                opacity: 1;
-            }
+        .note-num.active {
+            opacity: 1;
+        }
     </style>
 </head>
 
