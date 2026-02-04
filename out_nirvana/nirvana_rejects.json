@@ -1,0 +1,1387 @@
+[
+  {
+    "id": 1,
+    "displayName": "法外之理",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 2,
+    "displayName": "萬里無雲",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 3,
+    "displayName": "阿賴耶識",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 4,
+    "displayName": "自在乾坤",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 5,
+    "displayName": "一葉知秋",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 6,
+    "displayName": "智慧彼岸",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 7,
+    "displayName": "圓覺之境",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 8,
+    "displayName": "靈山法會",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9,
+    "displayName": "大象無形",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 10,
+    "displayName": "大慈悲",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 11,
+    "displayName": "妙法蓮華",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 12,
+    "displayName": "究竟圓滿",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 13,
+    "displayName": "物我兩忘",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 14,
+    "displayName": "大智慧",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 15,
+    "displayName": "金剛不滅",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 16,
+    "displayName": "拈花一笑",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 17,
+    "displayName": "大寂滅",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 18,
+    "displayName": "大圓滿法",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 19,
+    "displayName": "涅槃重生",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 20,
+    "displayName": "當下即是",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 21,
+    "displayName": "大光明",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 22,
+    "displayName": "虛空藏法",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 23,
+    "displayName": "般若波羅",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 24,
+    "displayName": "無為而治",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 25,
+    "displayName": "如來藏識",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 26,
+    "displayName": "明鏡非台",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 27,
+    "displayName": "生死一如",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 28,
+    "displayName": "法性虛空",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 29,
+    "displayName": "大禪定",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 30,
+    "displayName": "無生法忍",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 31,
+    "displayName": "入木三分",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 32,
+    "displayName": "菩提本無",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 33,
+    "displayName": "禪心映月",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 34,
+    "displayName": "不可思議",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 35,
+    "displayName": "真空不空",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 36,
+    "displayName": "華嚴世界",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 37,
+    "displayName": "空靈之音",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 38,
+    "displayName": "三摩地",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 39,
+    "displayName": "大道至簡",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 40,
+    "displayName": "一塵不染",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 41,
+    "displayName": "星雲坍縮",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 42,
+    "displayName": "奇點投影",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 43,
+    "displayName": "普朗克尺度",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 44,
+    "displayName": "暴脹期",
+    "clues": 30,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 45,
+    "displayName": "星環",
+    "clues": 30,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 46,
+    "displayName": "熵寂之末",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 47,
+    "displayName": "虛無漂泊",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 48,
+    "displayName": "大擠壓",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 49,
+    "displayName": "絕對零度",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 50,
+    "displayName": "弦理論",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 51,
+    "displayName": "暗能量",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 52,
+    "displayName": "全息原理",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 53,
+    "displayName": "因果律",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 54,
+    "displayName": "多維卷縮",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 55,
+    "displayName": "數據塵埃",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 56,
+    "displayName": "能量耗盡",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 57,
+    "displayName": "費米悖論",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 58,
+    "displayName": "夢境解析",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 59,
+    "displayName": "宇宙微波",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 60,
+    "displayName": "熱寂",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 61,
+    "displayName": "维度崩塌",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 62,
+    "displayName": "數字迷宮",
+    "clues": 24,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 63,
+    "displayName": "暗物質",
+    "clues": 30,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 64,
+    "displayName": "源代碼",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 65,
+    "displayName": "對稱性破損",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 66,
+    "displayName": "極限偏差",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 67,
+    "displayName": "虛空深處",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 68,
+    "displayName": "邏輯斷裂",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 69,
+    "displayName": "系統遺蹟",
+    "clues": 30,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 70,
+    "displayName": "重整化",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 71,
+    "displayName": "戴森球",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 72,
+    "displayName": "膜宇宙",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 73,
+    "displayName": "空間扭曲",
+    "clues": 30,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 74,
+    "displayName": "永恆沈默",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 75,
+    "displayName": "量子泡沫",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 76,
+    "displayName": "時間停滯",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 77,
+    "displayName": "無盡寂寥",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 78,
+    "displayName": "代碼源泉",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 79,
+    "displayName": "意識孤島",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 80,
+    "displayName": "黑洞視界",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 81,
+    "displayName": "奈何橋邊",
+    "clues": 31,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 82,
+    "displayName": "真我追尋",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 83,
+    "displayName": "靈魂剥離",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 84,
+    "displayName": "混沌之眼",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 85,
+    "displayName": "感官寂滅",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 86,
+    "displayName": "生命之樹",
+    "clues": 30,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 87,
+    "displayName": "涅槃之路",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 88,
+    "displayName": "麒麟之足",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 89,
+    "displayName": "三生石畔",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 90,
+    "displayName": "意識流轉",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 91,
+    "displayName": "忘川之水",
+    "clues": 27,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 92,
+    "displayName": "矛盾之源",
+    "clues": 29,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 93,
+    "displayName": "本能覺察",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 94,
+    "displayName": "覺醒時刻",
+    "clues": 25,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 95,
+    "displayName": "白虎之爪",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 96,
+    "displayName": "幽冥之火",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 97,
+    "displayName": "玄武之背",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 98,
+    "displayName": "記憶重組",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 99,
+    "displayName": "禁忌之門",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 100,
+    "displayName": "空幻之美",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 101,
+    "displayName": "無我之境",
+    "clues": 27,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 102,
+    "displayName": "鏡花水月",
+    "clues": 25,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 103,
+    "displayName": "冥府之光",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 104,
+    "displayName": "認知重構",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 105,
+    "displayName": "朱雀之羽",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 106,
+    "displayName": "終局之戰",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 107,
+    "displayName": "秩序之光",
+    "clues": 29,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 108,
+    "displayName": "彼岸之花",
+    "clues": 24,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 109,
+    "displayName": "智慧之果",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 110,
+    "displayName": "命運之繩",
+    "clues": 25,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 111,
+    "displayName": "海市蜃樓",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 112,
+    "displayName": "輪迴守護",
+    "clues": 30,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 113,
+    "displayName": "救贖之路",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 114,
+    "displayName": "歲月之痕",
+    "clues": 27,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 115,
+    "displayName": "思維跳躍",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 116,
+    "displayName": "龍之逆鱗",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 117,
+    "displayName": "靈魂擺渡",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 118,
+    "displayName": "鳳凰之心",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 119,
+    "displayName": "真實之刺",
+    "clues": 26,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 120,
+    "displayName": "平衡之點",
+    "clues": 28,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 121,
+    "displayName": "光之洗禮",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 122,
+    "displayName": "泉之靈動",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 123,
+    "displayName": "火之考驗",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 124,
+    "displayName": "人之靈氣",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 125,
+    "displayName": "現實投影",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 126,
+    "displayName": "宇宙之心",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 127,
+    "displayName": "志之堅定",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 128,
+    "displayName": "冰之堅韌",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 129,
+    "displayName": "霜之冷傲",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 130,
+    "displayName": "進化階梯",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 131,
+    "displayName": "雷之威嚴",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 132,
+    "displayName": "空之博大",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 133,
+    "displayName": "水之柔情",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 134,
+    "displayName": "生命密碼",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 135,
+    "displayName": "雪之純潔",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 136,
+    "displayName": "地之母體",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 137,
+    "displayName": "神經網路",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 138,
+    "displayName": "基因矩陣",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 139,
+    "displayName": "物之本性",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 140,
+    "displayName": "意之流向",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 141,
+    "displayName": "星之璀璨",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 142,
+    "displayName": "造物法則",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 143,
+    "displayName": "湖之平靜",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 144,
+    "displayName": "金之銳利",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 145,
+    "displayName": "風之自由",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 146,
+    "displayName": "月之溫柔",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 147,
+    "displayName": "霧之迷離",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 148,
+    "displayName": "土之厚重",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 149,
+    "displayName": "虛擬框架",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 150,
+    "displayName": "海之深邃",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 151,
+    "displayName": "雲之縹緲",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 152,
+    "displayName": "日之輝煌",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 153,
+    "displayName": "河之奔流",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 154,
+    "displayName": "木之生機",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 155,
+    "displayName": "靈魂模版",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 156,
+    "displayName": "萬物本源",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 157,
+    "displayName": "意識架構",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 158,
+    "displayName": "情之真切",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 159,
+    "displayName": "山之沉穩",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 160,
+    "displayName": "雨之哀傷",
+    "clues": 22,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 161,
+    "displayName": "不可阻擋",
+    "clues": 17,
+    "solution_count": 1,
+    "is_logic_solvable": true,
+    "difficulty_score": 64,
+    "max_technique": "naked_single",
+    "single_ratio": 1.0,
+    "reject_reason": "too_many_singles"
+  },
+  {
+    "id": 162,
+    "displayName": "最後法則",
+    "clues": 37,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 163,
+    "displayName": "無苦集滅",
+    "clues": 47,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 164,
+    "displayName": "不生不滅",
+    "clues": 40,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 165,
+    "displayName": "圓滿之寂",
+    "clues": 30,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 166,
+    "displayName": "色即是空",
+    "clues": 54,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 167,
+    "displayName": "意識消亡",
+    "clues": 39,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 168,
+    "displayName": "不可回頭",
+    "clues": 42,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 169,
+    "displayName": "不可更改",
+    "clues": 36,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 170,
+    "displayName": "終極一戰",
+    "clues": 34,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 171,
+    "displayName": "舍利子",
+    "clues": 48,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 172,
+    "displayName": "不可置疑",
+    "clues": 38,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 173,
+    "displayName": "大一統",
+    "clues": 36,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 174,
+    "displayName": "不可逾越",
+    "clues": 42,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 175,
+    "displayName": "宇宙終局",
+    "clues": 42,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 176,
+    "displayName": "不可觸摸",
+    "clues": 36,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 177,
+    "displayName": "不垢不淨",
+    "clues": 46,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 178,
+    "displayName": "不可言說",
+    "clues": 31,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 179,
+    "displayName": "不可一世",
+    "clues": 47,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 180,
+    "displayName": "不增不減",
+    "clues": 36,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 181,
+    "displayName": "時間盡頭",
+    "clues": 41,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 182,
+    "displayName": "絕對真理",
+    "clues": 38,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 183,
+    "displayName": "萬物理論",
+    "clues": 58,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 184,
+    "displayName": "現實歸於零",
+    "clues": 49,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 185,
+    "displayName": "虛擬終焉",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 186,
+    "displayName": "奇點復歸",
+    "clues": 40,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 187,
+    "displayName": "受想行識",
+    "clues": 48,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 188,
+    "displayName": "空間極限",
+    "clues": 40,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 189,
+    "displayName": "能量回歸",
+    "clues": 49,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 190,
+    "displayName": "不可忘卻",
+    "clues": 42,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 191,
+    "displayName": "物質解體",
+    "clues": 36,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 192,
+    "displayName": "諸法空相",
+    "clues": 55,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 193,
+    "displayName": "亦復如是",
+    "clues": 39,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 194,
+    "displayName": "主腦核心",
+    "clues": 40,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 195,
+    "displayName": "寂滅之終",
+    "clues": 43,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 196,
+    "displayName": "無智亦得",
+    "clues": 40,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 197,
+    "displayName": "空即是色",
+    "clues": 39,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 198,
+    "displayName": "無盡之始",
+    "clues": 35,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 199,
+    "displayName": "無眼耳鼻",
+    "clues": 33,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 200,
+    "displayName": "矩陣中心",
+    "clues": 35,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9001,
+    "displayName": "初心-01",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9002,
+    "displayName": "初心-02",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9003,
+    "displayName": "初心-03",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9004,
+    "displayName": "初心-04",
+    "clues": 42,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9005,
+    "displayName": "初心-05",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9006,
+    "displayName": "初心-06",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9007,
+    "displayName": "初心-07",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9008,
+    "displayName": "初心-08",
+    "clues": 38,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9009,
+    "displayName": "初心-09",
+    "clues": 38,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9010,
+    "displayName": "初心-10",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9011,
+    "displayName": "初心-11",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9012,
+    "displayName": "初心-12",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9013,
+    "displayName": "初心-13",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9014,
+    "displayName": "初心-14",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9015,
+    "displayName": "初心-15",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9016,
+    "displayName": "初心-16",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9017,
+    "displayName": "初心-17",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9018,
+    "displayName": "初心-18",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9019,
+    "displayName": "初心-19",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9020,
+    "displayName": "初心-20",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9021,
+    "displayName": "初心-21",
+    "clues": 41,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9022,
+    "displayName": "初心-22",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9023,
+    "displayName": "初心-23",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9024,
+    "displayName": "初心-24",
+    "clues": 39,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9025,
+    "displayName": "初心-25",
+    "clues": 39,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9026,
+    "displayName": "初心-26",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9027,
+    "displayName": "初心-27",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9028,
+    "displayName": "初心-28",
+    "clues": 43,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9029,
+    "displayName": "初心-29",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  },
+  {
+    "id": 9030,
+    "displayName": "初心-30",
+    "clues": 45,
+    "reject_reason": "clues_out_of_range"
+  }
+]

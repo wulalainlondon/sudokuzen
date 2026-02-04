@@ -263,6 +263,103 @@
             animation: shake 0.4s ease;
         }
 
+        .cell.error-strong {
+            background: rgba(214, 48, 49, 0.18) !important;
+            outline: 2px solid var(--error-color);
+            z-index: 2;
+            animation: wrongPulse 0.6s ease;
+        }
+
+        .cell.error-peer {
+            background: rgba(214, 48, 49, 0.1) !important;
+        }
+
+        .cell.wrong-preview {
+            color: var(--error-color) !important;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .cell.unit-complete {
+            animation: unitCompletePop 0.55s ease;
+            box-shadow: inset 0 0 0 1px rgba(9, 132, 227, 0.35);
+        }
+
+        @keyframes unitCompletePop {
+            0% {
+                transform: scale(1);
+                background-color: rgba(9, 132, 227, 0.05);
+            }
+
+            35% {
+                transform: scale(1.08);
+                background-color: rgba(9, 132, 227, 0.22);
+            }
+
+            100% {
+                transform: scale(1);
+                background-color: inherit;
+            }
+        }
+
+        @keyframes wrongPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            35% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes lifeHit {
+            0% {
+                transform: translateX(0) scale(1);
+            }
+
+            25% {
+                transform: translateX(-3px) scale(1.08);
+            }
+
+            50% {
+                transform: translateX(3px) scale(1.08);
+            }
+
+            100% {
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .life-container.hit {
+            animation: lifeHit 0.45s ease;
+        }
+
+        #feedback-toast {
+            position: fixed;
+            left: 50%;
+            bottom: calc(20px + env(safe-area-inset-bottom));
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(214, 48, 49, 0.95);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 300;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        #feedback-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
         @keyframes shake {
 
             0%,
@@ -281,7 +378,8 @@
 
         /* 遊戲、暫停結束遮罩 */
         #overlay,
-        #pause-screen {
+        #pause-screen,
+        #win-celebration {
             position: absolute;
             top: 0;
             left: 0;
@@ -298,7 +396,8 @@
         }
 
         #overlay h2,
-        #pause-screen h2 {
+        #pause-screen h2,
+        #win-celebration h2 {
             font-weight: 300;
             letter-spacing: 4px;
             margin-bottom: 5px;
@@ -308,6 +407,57 @@
             font-size: 1.2rem;
             color: var(--accent-strong);
             margin-bottom: 30px;
+        }
+
+        #win-celebration {
+            z-index: 30;
+            background: radial-gradient(circle at top, rgba(9, 132, 227, 0.16), var(--bg-color) 60%);
+            overflow: hidden;
+        }
+
+        #win-celebration p {
+            margin: 8px 0;
+            color: var(--text-light);
+        }
+
+        #win-celebration .win-time {
+            font-size: 1.2rem;
+            color: var(--accent-strong);
+            font-weight: 600;
+        }
+
+        #win-celebration .win-stars {
+            font-size: 1.4rem;
+            letter-spacing: 4px;
+            color: #F1C40F;
+            margin-bottom: 16px;
+        }
+
+        .confetti-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 12px;
+            opacity: 0.85;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-20px) rotate(0deg);
+                opacity: 0.95;
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(680deg);
+                opacity: 0.1;
+            }
         }
 
         .retry-btn,
@@ -561,6 +711,17 @@
                 onclick="showLevelScreen()">放棄關卡</button>
         </div>
 
+        <div id="win-celebration">
+            <div class="confetti-layer" id="confetti-layer"></div>
+            <h2>PERFECT FLOW</h2>
+            <p id="win-level-name">LEVEL NAME</p>
+            <div class="win-stars" id="win-stars">★★★</div>
+            <p class="win-time" id="win-time">00:00</p>
+            <button class="resume-btn" onclick="showLevelScreen()">下一關</button>
+            <button class="back-btn" style="border: none; font-size: 0.8rem; color: var(--text-light);"
+                onclick="showLevelScreen()">返回選關</button>
+        </div>
+
         <!-- 1. 頂部標題與 Quit 按鈕 -->
         <header>
             <h1>SUDOKU</h1>
@@ -618,6 +779,13 @@
         const livesEl = document.getElementById('lives');
         const overlay = document.getElementById('overlay');
         const timerEl = document.getElementById('timer');
+        const winCelebrationEl = document.getElementById('win-celebration');
+        const confettiLayerEl = document.getElementById('confetti-layer');
+        let feedbackTimer = null;
+
+        const feedbackToast = document.createElement('div');
+        feedbackToast.id = 'feedback-toast';
+        document.body.appendChild(feedbackToast);
 
         let selectedIdx = null;
         let isNotesMode = false;
@@ -685,6 +853,7 @@
             updateLivesUI();
             overlay.style.display = 'none';
             document.getElementById('pause-screen').style.display = 'none';
+            winCelebrationEl.style.display = 'none';
             renderGrid();
             startTimer(false); // 不重置，使用當前 seconds
 
@@ -743,6 +912,108 @@
             }
         }
 
+        function showFeedback(msg) {
+            clearTimeout(feedbackTimer);
+            feedbackToast.textContent = msg;
+            feedbackToast.classList.add('show');
+            feedbackTimer = setTimeout(() => {
+                feedbackToast.classList.remove('show');
+            }, 900);
+        }
+
+        function playErrorFeedback() {
+            if (navigator.vibrate) navigator.vibrate(120);
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = 180;
+                gain.gain.value = 0.03;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.08);
+                setTimeout(() => ctx.close(), 150);
+            } catch (_) {
+                // Ignore audio errors silently.
+            }
+        }
+
+        function markErrorArea(idx) {
+            const row = Math.floor(idx / 9), col = idx % 9;
+            const box = Math.floor(row / 3) * 3 + Math.floor(col / 3);
+            Array.from(gridEl.children).forEach((c, i) => {
+                const r = Math.floor(i / 9), cc = i % 9, b = Math.floor(r / 3) * 3 + Math.floor(cc / 3);
+                if (i === idx) {
+                    c.classList.add('error-strong');
+                    return;
+                }
+                if (r === row || cc === col || b === box) {
+                    c.classList.add('error-peer');
+                }
+            });
+            livesEl.classList.remove('hit');
+            void livesEl.offsetWidth;
+            livesEl.classList.add('hit');
+            setTimeout(() => {
+                Array.from(gridEl.children).forEach(c => c.classList.remove('error-strong', 'error-peer'));
+                livesEl.classList.remove('hit');
+            }, 650);
+        }
+
+        function getUnitIndices(idx) {
+            const row = Math.floor(idx / 9);
+            const col = idx % 9;
+            const boxRow = Math.floor(row / 3) * 3;
+            const boxCol = Math.floor(col / 3) * 3;
+
+            const rowIndices = Array.from({ length: 9 }, (_, i) => row * 9 + i);
+            const colIndices = Array.from({ length: 9 }, (_, i) => i * 9 + col);
+            const boxIndices = [];
+            for (let r = boxRow; r < boxRow + 3; r++) {
+                for (let c = boxCol; c < boxCol + 3; c++) {
+                    boxIndices.push(r * 9 + c);
+                }
+            }
+            return { rowIndices, colIndices, boxIndices };
+        }
+
+        function isUnitComplete(indices) {
+            return indices.every(i => cellsData[i].value !== 0);
+        }
+
+        function celebrateCompletedUnits(idx, beforeState) {
+            const { rowIndices, colIndices, boxIndices } = getUnitIndices(idx);
+            const afterRow = isUnitComplete(rowIndices);
+            const afterCol = isUnitComplete(colIndices);
+            const afterBox = isUnitComplete(boxIndices);
+
+            const justCompletedRow = !beforeState.row && afterRow;
+            const justCompletedCol = !beforeState.col && afterCol;
+            const justCompletedBox = !beforeState.box && afterBox;
+
+            if (!justCompletedRow && !justCompletedCol && !justCompletedBox) return;
+
+            const flashSet = new Set();
+            if (justCompletedRow) rowIndices.forEach(i => flashSet.add(i));
+            if (justCompletedCol) colIndices.forEach(i => flashSet.add(i));
+            if (justCompletedBox) boxIndices.forEach(i => flashSet.add(i));
+
+            flashSet.forEach(i => gridEl.children[i].classList.add('unit-complete'));
+            setTimeout(() => {
+                flashSet.forEach(i => gridEl.children[i].classList.remove('unit-complete'));
+            }, 560);
+
+            const parts = [];
+            if (justCompletedRow) parts.push('一列');
+            if (justCompletedCol) parts.push('一欄');
+            if (justCompletedBox) parts.push('一宮');
+            showFeedback(`完成 ${parts.join(' + ')}！`);
+        }
+
         function handleInput(num) {
             if (selectedIdx === null || cellsData[selectedIdx].fixed || errors >= maxErrors) return;
 
@@ -760,16 +1031,37 @@
                     updateLivesUI();
                     data.isError = true;
                     cellEl.classList.add('error');
+                    const originalValue = data.value;
+                    const originalNotes = data.notes.slice();
+                    data.value = num;
+                    data.notes = [];
+                    cellEl.classList.add('wrong-preview');
+                    updateCellDisplay(cellEl, data);
+                    markErrorArea(selectedIdx);
+                    showFeedback(`錯誤！${3 - errors} 次機會剩餘`);
+                    playErrorFeedback();
                     setTimeout(() => {
                         data.isError = false;
                         cellEl.classList.remove('error');
+                        cellEl.classList.remove('wrong-preview');
+                        data.value = originalValue;
+                        data.notes = originalNotes;
+                        updateCellDisplay(cellEl, data);
                     }, 400);
+                    saveGameStatus();
                     if (errors >= maxErrors) showGameOver();
                     return;
                 }
+                const { rowIndices, colIndices, boxIndices } = getUnitIndices(selectedIdx);
+                const beforeState = {
+                    row: isUnitComplete(rowIndices),
+                    col: isUnitComplete(colIndices),
+                    box: isUnitComplete(boxIndices),
+                };
                 data.value = num;
                 data.notes = [];
                 data.isError = false;
+                celebrateCompletedUnits(selectedIdx, beforeState);
                 checkWin();
             }
             updateCellDisplay(cellEl, data);
@@ -781,10 +1073,36 @@
             if (isComplete) {
                 clearInterval(timerInterval);
                 clearGameStatus(currentLevel.id);
-                saveProgress();
-                alert(`恭喜完成！用時：${Math.floor(seconds / 60)}分${seconds % 60}秒`);
-                showLevelScreen();
+                const earnedStars = saveProgress();
+                showWinCelebration(earnedStars);
             }
+        }
+
+        function createConfettiBurst(count = 50) {
+            confettiLayerEl.innerHTML = '';
+            const colors = ['#0984E3', '#74B9FF', '#F1C40F', '#00B894', '#6C5CE7'];
+            for (let i = 0; i < count; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti';
+                piece.style.left = `${Math.random() * 100}%`;
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDuration = `${2.1 + Math.random() * 1.3}s`;
+                piece.style.animationDelay = `${Math.random() * 0.4}s`;
+                piece.style.transform = `translateY(-20px) rotate(${Math.random() * 180}deg)`;
+                confettiLayerEl.appendChild(piece);
+            }
+        }
+
+        function showWinCelebration(earnedStars) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('win-level-name').textContent = currentLevel.displayName;
+            document.getElementById('win-time').textContent = `${mins}:${secs}`;
+            document.getElementById('win-stars').textContent = '★'.repeat(earnedStars) + '☆'.repeat(3 - earnedStars);
+            createConfettiBurst(56);
+            winCelebrationEl.style.display = 'flex';
+            showFeedback('完成！太棒了！');
+            if (navigator.vibrate) navigator.vibrate([90, 40, 90]);
         }
 
         function saveProgress() {
@@ -806,6 +1124,7 @@
                 };
                 localStorage.setItem('sudoku_records', JSON.stringify(records));
             }
+            return earnedStars;
         }
 
         function updateLivesUI() {
