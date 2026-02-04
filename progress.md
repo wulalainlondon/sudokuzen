@@ -30,3 +30,17 @@ TODO / handoff:
 - 新增 `import_17clue_dataset.py`，可將 txt 匯出成 `external_data/puzzles2_17_clue_levels.json`（目前已產生 49,158 筆，全部 17 clues）。
 - 已將 `levels.js` 中最高難度 `NIRVANA 寂滅` 的 40 題（id 161~200）替換為匯入資料集中 40 題 17-clue 題目，並補上對應解答。
 - 檢查結果：NIRVANA 40 題提示數分佈為 `{17: 40}`，且 40 題唯一解檢查全數通過。
+- 已新增三個寂滅以上分頁與關卡：`空鏡`(stars=6)、`星潮`(stars=7)、`玄鏈`(stars=8)，各 40 關，總關卡擴充至 350。
+- 新增腳本 `generate_transcendent_levels.py` 產生上述 120 關，並在關卡資料附上 `advancedTag`（XY-Wing/Swordfish/AIC proxy）。
+- `index.html` 已新增三個分頁按鈕（switchTab 6/7/8）。
+- 全量唯一解驗證：350/350 皆唯一解（0 無解、0 多解）。
+- 分頁文案已改為純中文：`初心者/禪/虛空/無我/本源/寂滅/空鏡/星潮/玄鏈`。
+- `nirvana_filter.py` 已新增 `XY-Wing` 真實技巧判定（`apply_xy_wing`）。
+- 已把 `空鏡` 40 關改成「XY-Wing verified」真分類關卡（trace 含 `xy_wing`），且 `空鏡` 40/40 唯一解。
+- `nirvana_filter.py` 已新增 `Swordfish` 真實技巧判定（`apply_swordfish`）。
+- 已把 `星潮` 40 關改成「Swordfish verified」真分類關卡（以 swordfish-priority 技巧序驗證 trace 含 `swordfish`），且 `星潮` 40/40 唯一解。
+- `nirvana_filter.py` 已新增 `AIC` 真實技巧判定（`apply_aic`，forcing-chain 形式）。
+- 已把 `玄鏈` 40 關改成「AIC verified」真分類關卡（AIC-priority 技巧序驗證 trace 含 `aic`），且 `玄鏈` 40/40 唯一解。
+- 新增 Firebase 首通榜功能（`index.html`）：每關顯示 TOP 3 首通時間與星數（暫停畫面 + 通關畫面）。
+- 新增 `firebase-config.js`（預設 `null`，待填專案 config）與 `FIREBASE_SETUP.md`（設定步驟 + Firestore 規則建議）。
+- `sw.js` 快取列表已加入 `firebase-config.js`。

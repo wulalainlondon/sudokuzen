@@ -288,6 +288,52 @@ def apply_hidden_pair(board: List[int], cands: List[Set[int]], trace: List[Step]
     return True, False
 
 
+def apply_xy_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for pivot in range(81):
+        if board[pivot] != 0 or len(cands[pivot]) != 2:
+            continue
+        a, b = sorted(cands[pivot])
+        peer_cells = [p for p in PEERS[pivot] if board[p] == 0 and len(cands[p]) == 2]
+
+        wing_a = []
+        wing_b = []
+        for w in peer_cells:
+            s = cands[w]
+            if a in s and b not in s:
+                wing_a.append(w)
+            elif b in s and a not in s:
+                wing_b.append(w)
+
+        for w1 in wing_a:
+            z1 = next(iter(cands[w1] - {a}))
+            for w2 in wing_b:
+                z2 = next(iter(cands[w2] - {b}))
+                if z1 != z2:
+                    continue
+                z = z1
+                targets = PEERS[w1] & PEERS[w2]
+                changed = 0
+                for t in targets:
+                    if t in (pivot, w1, w2) or board[t] != 0 or z not in cands[t]:
+                        continue
+                    if not remove_candidate(board, cands, t, z):
+                        return False, False
+                    changed += 1
+                if changed:
+                    rp, cp = cell_to_rc(pivot)
+                    r1, c1 = cell_to_rc(w1)
+                    r2, c2 = cell_to_rc(w2)
+                    trace.append(
+                        Step(
+                            "xy_wing",
+                            "eliminate",
+                            f"pivot r{rp+1}c{cp+1}, wings r{r1+1}c{c1+1}/r{r2+1}c{c2+1}, z={z}, removed {changed}",
+                        )
+                    )
+                    return True, True
+    return True, False
+
+
 def apply_x_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
     # Row-based X-Wing
     for d in range(1, 10):
@@ -343,13 +389,139 @@ def apply_x_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) -> 
     return True, False
 
 
+def apply_swordfish(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    # Row-based Swordfish
+    for d in range(1, 10):
+        row_to_cols: Dict[int, Set[int]] = {}
+        for r in range(9):
+            cols = {c for c in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]}
+            if 2 <= len(cols) <= 3:
+                row_to_cols[r] = cols
+
+        rows = sorted(row_to_cols.keys())
+        for r1, r2, r3 in combinations(rows, 3):
+            union_cols = row_to_cols[r1] | row_to_cols[r2] | row_to_cols[r3]
+            if len(union_cols) != 3:
+                continue
+            changed = 0
+            for r in range(9):
+                if r in (r1, r2, r3):
+                    continue
+                for c in union_cols:
+                    idx = rc_to_cell(r, c)
+                    if board[idx] == 0 and d in cands[idx]:
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                        changed += 1
+            if changed:
+                cols_txt = ",".join(str(c + 1) for c in sorted(union_cols))
+                trace.append(
+                    Step(
+                        "swordfish",
+                        "eliminate",
+                        f"d{d} rows {r1+1},{r2+1},{r3+1} cols {cols_txt} removed {changed}",
+                    )
+                )
+                return True, True
+
+    # Col-based Swordfish
+    for d in range(1, 10):
+        col_to_rows: Dict[int, Set[int]] = {}
+        for c in range(9):
+            rows = {r for r in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]}
+            if 2 <= len(rows) <= 3:
+                col_to_rows[c] = rows
+
+        cols = sorted(col_to_rows.keys())
+        for c1, c2, c3 in combinations(cols, 3):
+            union_rows = col_to_rows[c1] | col_to_rows[c2] | col_to_rows[c3]
+            if len(union_rows) != 3:
+                continue
+            changed = 0
+            for c in range(9):
+                if c in (c1, c2, c3):
+                    continue
+                for r in union_rows:
+                    idx = rc_to_cell(r, c)
+                    if board[idx] == 0 and d in cands[idx]:
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                        changed += 1
+            if changed:
+                rows_txt = ",".join(str(r + 1) for r in sorted(union_rows))
+                trace.append(
+                    Step(
+                        "swordfish",
+                        "eliminate",
+                        f"d{d} cols {c1+1},{c2+1},{c3+1} rows {rows_txt} removed {changed}",
+                    )
+                )
+                return True, True
+    return True, False
+
+
+def clone_state(board: List[int], cands: List[Set[int]]) -> Tuple[List[int], List[Set[int]]]:
+    return board[:], [s.copy() for s in cands]
+
+
+def apply_basic_propagation(board: List[int], cands: List[Set[int]], max_loops: int = 200) -> bool:
+    """
+    Lightweight deterministic propagation used by forcing-chain checks.
+    Returns False on contradiction.
+    """
+    loops = 0
+    while loops < max_loops:
+        loops += 1
+        progressed = False
+        for fn in (apply_naked_single, apply_hidden_single, apply_locked_candidates):
+            ok, changed = fn(board, cands, [])
+            if not ok:
+                return False
+            if changed:
+                progressed = True
+                break
+        if not progressed:
+            break
+    return True
+
+
+def forcing_contradiction(board: List[int], cands: List[Set[int]], idx: int, d: int) -> bool:
+    tb, tc = clone_state(board, cands)
+    if not assign(tb, tc, idx, d):
+        return True
+    return not apply_basic_propagation(tb, tc)
+
+
+def apply_aic(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    """
+    AIC/forcing-chain style elimination:
+    if assuming a candidate leads to contradiction, eliminate it.
+    """
+    for idx in range(81):
+        if board[idx] != 0:
+            continue
+        if len(cands[idx]) <= 1:
+            continue
+        for d in sorted(cands[idx]):
+            if forcing_contradiction(board, cands, idx, d):
+                if not remove_candidate(board, cands, idx, d):
+                    return False, False
+                r, c = cell_to_rc(idx)
+                trace.append(Step("aic", "eliminate", f"forcing contradiction at r{r+1}c{c+1}, removed {d}"))
+                return True, True
+    return True, False
+
+
 TECHNIQUE_FUNCS = {
     "naked_single": apply_naked_single,
     "hidden_single": apply_hidden_single,
     "locked_candidates": apply_locked_candidates,
     "naked_pair": apply_naked_pair,
     "hidden_pair": apply_hidden_pair,
+    "xy_wing": apply_xy_wing,
     "x_wing": apply_x_wing,
+    "swordfish": apply_swordfish,
+    "aic": apply_aic,
 }
 
 DEFAULT_TECHNIQUES = [
@@ -358,7 +530,10 @@ DEFAULT_TECHNIQUES = [
     "locked_candidates",
     "naked_pair",
     "hidden_pair",
+    "xy_wing",
     "x_wing",
+    "swordfish",
+    "aic",
 ]
 
 DEFAULT_WEIGHTS = {
@@ -367,7 +542,10 @@ DEFAULT_WEIGHTS = {
     "locked_candidates": 2,
     "naked_pair": 3,
     "hidden_pair": 4,
+    "xy_wing": 7,
     "x_wing": 6,
+    "swordfish": 8,
+    "aic": 9,
 }
 
 

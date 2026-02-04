@@ -409,6 +409,29 @@
             margin-bottom: 30px;
         }
 
+        .leaderboard-card {
+            width: min(88%, 320px);
+            margin-top: 6px;
+            margin-bottom: 10px;
+            border: 1px solid var(--cell-border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            background: var(--grid-bg);
+            text-align: left;
+        }
+
+        .leaderboard-title {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-bottom: 6px;
+            letter-spacing: 0.6px;
+        }
+
+        .leaderboard-list {
+            font-size: 0.78rem;
+            line-height: 1.5;
+        }
+
         #win-celebration {
             z-index: 30;
             background: radial-gradient(circle at top, rgba(9, 132, 227, 0.16), var(--bg-color) 60%);
@@ -529,6 +552,43 @@
             background: var(--accent-strong);
             color: white;
             box-shadow: 0 4px 12px rgba(9, 132, 227, 0.3);
+        }
+
+        .alias-config {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: -10px;
+            margin-bottom: 16px;
+        }
+
+        .alias-input {
+            flex: 1;
+            border: 1px solid var(--cell-border);
+            border-radius: 10px;
+            background: var(--grid-bg);
+            color: var(--text-main);
+            padding: 8px 10px;
+            font-size: 0.82rem;
+            outline: none;
+        }
+
+        .alias-input:focus {
+            border-color: var(--accent-strong);
+            box-shadow: 0 0 0 2px var(--accent-soft);
+        }
+
+        .alias-save-btn {
+            border: 1px solid var(--cell-border);
+            border-radius: 10px;
+            background: var(--btn-bg);
+            color: var(--text-main);
+            padding: 8px 12px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            white-space: nowrap;
         }
 
         #level-list {
@@ -684,13 +744,20 @@
 
     <div id="level-screen">
         <h1 style="margin-bottom: 25px; font-weight: 300; letter-spacing: 5px; font-family: 'Outfit';">SUDOKU ZEN</h1>
+        <div class="alias-config">
+            <input id="alias-input" class="alias-input" type="text" maxlength="24" placeholder="輸入你的暱稱（1~24字）" />
+            <button class="alias-save-btn" onclick="saveAlias()">儲存暱稱</button>
+        </div>
         <div class="tabs-container">
-            <button class="tab-btn" onclick="switchTab(0)">初心 BEGINNER</button>
-            <button class="tab-btn" onclick="switchTab(1)">禪 ZEN</button>
-            <button class="tab-btn" onclick="switchTab(2)">虛空 VOID</button>
-            <button class="tab-btn" onclick="switchTab(3)">無我 S.</button>
-            <button class="tab-btn" onclick="switchTab(4)">本源 O.</button>
-            <button class="tab-btn" onclick="switchTab(5)">寂滅 E.</button>
+            <button class="tab-btn" onclick="switchTab(0)">初心者</button>
+            <button class="tab-btn" onclick="switchTab(1)">禪</button>
+            <button class="tab-btn" onclick="switchTab(2)">虛空</button>
+            <button class="tab-btn" onclick="switchTab(3)">無我</button>
+            <button class="tab-btn" onclick="switchTab(4)">本源</button>
+            <button class="tab-btn" onclick="switchTab(5)">寂滅</button>
+            <button class="tab-btn" onclick="switchTab(6)">空鏡</button>
+            <button class="tab-btn" onclick="switchTab(7)">星潮</button>
+            <button class="tab-btn" onclick="switchTab(8)">玄鏈</button>
         </div>
         <div id="level-list"></div>
     </div>
@@ -706,6 +773,10 @@
         <div id="pause-screen">
             <h2 id="pause-level-name">LEVEL NAME</h2>
             <p id="pause-timer">00:00</p>
+            <div class="leaderboard-card">
+                <div class="leaderboard-title">首通榜 TOP 3</div>
+                <div class="leaderboard-list" id="leaderboard-list">載入中...</div>
+            </div>
             <button class="resume-btn" onclick="resumeGame()">繼續遊戲</button>
             <button class="back-btn" style="border: none; font-size: 0.8rem; color: var(--text-light);"
                 onclick="showLevelScreen()">放棄關卡</button>
@@ -717,6 +788,10 @@
             <p id="win-level-name">LEVEL NAME</p>
             <div class="win-stars" id="win-stars">★★★</div>
             <p class="win-time" id="win-time">00:00</p>
+            <div class="leaderboard-card">
+                <div class="leaderboard-title">首通榜 TOP 3</div>
+                <div class="leaderboard-list" id="win-leaderboard-list">載入中...</div>
+            </div>
             <button class="resume-btn" onclick="showLevelScreen()">下一關</button>
             <button class="back-btn" style="border: none; font-size: 0.8rem; color: var(--text-light);"
                 onclick="showLevelScreen()">返回選關</button>
@@ -773,6 +848,9 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="levels.js"></script>
     <script>
         const gridEl = document.getElementById('grid');
@@ -781,7 +859,14 @@
         const timerEl = document.getElementById('timer');
         const winCelebrationEl = document.getElementById('win-celebration');
         const confettiLayerEl = document.getElementById('confetti-layer');
+        const leaderboardListEl = document.getElementById('leaderboard-list');
+        const winLeaderboardListEl = document.getElementById('win-leaderboard-list');
+        const aliasInputEl = document.getElementById('alias-input');
         let feedbackTimer = null;
+        let db = null;
+        let firebaseReady = false;
+        const ALIAS_MIN_LEN = 1;
+        const ALIAS_MAX_LEN = 24;
 
         const feedbackToast = document.createElement('div');
         feedbackToast.id = 'feedback-toast';
@@ -796,6 +881,124 @@
         let currentLevel = null;
 
         let cellsData = [];
+
+        function normalizeAlias(raw) {
+            if (typeof raw !== 'string') return '';
+            return raw.trim().slice(0, ALIAS_MAX_LEN);
+        }
+
+        function loadAliasToInput() {
+            if (!aliasInputEl) return;
+            const saved = localStorage.getItem('sudoku_player_alias') || '';
+            aliasInputEl.value = saved;
+        }
+
+        function saveAlias() {
+            const alias = normalizeAlias(aliasInputEl ? aliasInputEl.value : '');
+            if (alias.length < ALIAS_MIN_LEN) {
+                showFeedback('暱稱至少 1 個字');
+                return;
+            }
+            localStorage.setItem('sudoku_player_alias', alias);
+            if (aliasInputEl) aliasInputEl.value = alias;
+            showFeedback(`暱稱已更新：${alias}`);
+        }
+
+        function getPlayerIdentity() {
+            let playerId = localStorage.getItem('sudoku_player_id');
+            if (!playerId) {
+                playerId = `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+                localStorage.setItem('sudoku_player_id', playerId);
+            }
+            let alias = localStorage.getItem('sudoku_player_alias');
+            if (!alias) {
+                alias = `玩家${Math.floor(Math.random() * 9000) + 1000}`;
+                localStorage.setItem('sudoku_player_alias', alias);
+            }
+            alias = normalizeAlias(alias);
+            if (alias.length < ALIAS_MIN_LEN) alias = `玩家${Math.floor(Math.random() * 9000) + 1000}`;
+            localStorage.setItem('sudoku_player_alias', alias);
+            return { playerId, alias };
+        }
+
+        function initFirebase() {
+            try {
+                if (!window.firebase || !window.SUDOKU_FIREBASE_CONFIG) return;
+                if (!firebase.apps.length) firebase.initializeApp(window.SUDOKU_FIREBASE_CONFIG);
+                db = firebase.firestore();
+                firebaseReady = true;
+            } catch (e) {
+                console.warn('Firebase init failed:', e);
+            }
+        }
+
+        function formatSeconds(sec) {
+            const mins = Math.floor(sec / 60).toString().padStart(2, '0');
+            const secs = (sec % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        function renderLeaderboard(el, rows) {
+            if (!el) return;
+            if (!firebaseReady) {
+                el.textContent = '尚未啟用 Firebase 排行。';
+                return;
+            }
+            if (!rows.length) {
+                el.textContent = '尚無玩家首通紀錄';
+                return;
+            }
+            el.innerHTML = rows.map((r, i) =>
+                `${i + 1}. ${r.alias}  ${formatSeconds(r.firstTimeSec)}  ${'★'.repeat(r.firstStars)}`
+            ).join('<br>');
+        }
+
+        async function loadLevelLeaderboard(levelId) {
+            if (!firebaseReady) {
+                renderLeaderboard(leaderboardListEl, []);
+                renderLeaderboard(winLeaderboardListEl, []);
+                return;
+            }
+            try {
+                const snap = await db.collection('level_first_clears')
+                    .doc(String(levelId))
+                    .collection('players')
+                    .orderBy('firstTimeSec', 'asc')
+                    .limit(3)
+                    .get();
+                const rows = snap.docs.map(d => d.data());
+                renderLeaderboard(leaderboardListEl, rows);
+                renderLeaderboard(winLeaderboardListEl, rows);
+            } catch (e) {
+                console.warn('load leaderboard failed:', e);
+                renderLeaderboard(leaderboardListEl, []);
+                renderLeaderboard(winLeaderboardListEl, []);
+            }
+        }
+
+        async function submitFirstClear(levelId, clearSec, clearStars) {
+            if (!firebaseReady) return;
+            const { playerId, alias } = getPlayerIdentity();
+            const docRef = db.collection('level_first_clears')
+                .doc(String(levelId))
+                .collection('players')
+                .doc(playerId);
+            try {
+                await db.runTransaction(async (tx) => {
+                    const doc = await tx.get(docRef);
+                    if (doc.exists) return;
+                    tx.set(docRef, {
+                        playerId,
+                        alias,
+                        firstTimeSec: clearSec,
+                        firstStars: clearStars,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    });
+                });
+            } catch (e) {
+                console.warn('submit first clear failed:', e);
+            }
+        }
 
         function startTimer(reset = true) {
             clearInterval(timerInterval);
@@ -815,6 +1018,7 @@
 
             document.getElementById('pause-level-name').textContent = currentLevel.displayName;
             document.getElementById('pause-timer').textContent = `${mins}:${secs}`;
+            loadLevelLeaderboard(currentLevel.id);
             pauseScreen.style.display = 'flex';
         }
 
@@ -856,6 +1060,7 @@
             winCelebrationEl.style.display = 'none';
             renderGrid();
             startTimer(false); // 不重置，使用當前 seconds
+            loadLevelLeaderboard(currentLevel.id);
 
             // Switch view
             document.getElementById('level-screen').style.display = 'none';
@@ -1075,6 +1280,9 @@
                 clearGameStatus(currentLevel.id);
                 const earnedStars = saveProgress();
                 showWinCelebration(earnedStars);
+                submitFirstClear(currentLevel.id, seconds, earnedStars).then(() => {
+                    loadLevelLeaderboard(currentLevel.id);
+                });
             }
         }
 
@@ -1286,6 +1494,13 @@
                     };
                 };
             }).catch(err => console.error('SW init fail:', err));
+        }
+        initFirebase();
+        loadAliasToInput();
+        if (aliasInputEl) {
+            aliasInputEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') saveAlias();
+            });
         }
         showLevelScreen();
     </script>
