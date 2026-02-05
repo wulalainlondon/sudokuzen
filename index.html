@@ -432,6 +432,89 @@
             line-height: 1.5;
         }
 
+        #replay-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 400;
+            padding: 20px;
+        }
+
+        .replay-panel {
+            width: min(92vw, 420px);
+            max-height: min(80vh, 680px);
+            background: var(--grid-bg);
+            border: 1px solid var(--cell-border);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .replay-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+        }
+
+        .replay-summary {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        .replay-list {
+            border: 1px solid var(--cell-border);
+            border-radius: 10px;
+            padding: 8px 10px;
+            overflow: auto;
+            height: min(55vh, 420px);
+            font-size: 0.82rem;
+            line-height: 1.5;
+            background: var(--btn-bg);
+        }
+
+        .replay-item {
+            border-bottom: 1px dashed var(--cell-border);
+            padding: 5px 0;
+        }
+
+        .replay-item:last-child {
+            border-bottom: none;
+        }
+
+        .replay-time {
+            color: var(--accent-strong);
+            margin-right: 6px;
+            font-weight: 600;
+        }
+
+        .replay-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .replay-filter-btn {
+            border: 1px solid var(--cell-border);
+            background: var(--btn-bg);
+            color: var(--text-light);
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 0.74rem;
+            cursor: pointer;
+        }
+
+        .replay-filter-btn.active {
+            color: #fff;
+            background: var(--accent-strong);
+            border-color: var(--accent-strong);
+        }
+
         #win-celebration {
             z-index: 30;
             background: radial-gradient(circle at top, rgba(9, 132, 227, 0.16), var(--bg-color) 60%);
@@ -661,28 +744,91 @@
         /* 控制區 */
         .numpad {
             display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            gap: 2px;
-            width: 100%;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: min(88vw, 320px);
             margin-top: auto;
             padding-bottom: 5px;
         }
 
         .num-btn {
             aspect-ratio: 1/1;
-            border: none;
-            background: var(--btn-bg);
-            font-size: min(4vw, 1.2rem);
-            font-weight: 300;
+            border: 1px solid color-mix(in srgb, var(--cell-border) 82%, transparent);
+            background:
+                radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.48), transparent 45%),
+                linear-gradient(180deg, color-mix(in srgb, var(--btn-bg) 98%, #ffffff 2%), color-mix(in srgb, var(--btn-bg) 92%, var(--bg-color)));
+            font-size: min(6.2vw, 1.35rem);
+            font-weight: 500;
             color: var(--text-main);
             cursor: pointer;
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            box-shadow:
+                0 4px 10px rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.58);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 0;
             margin: 0;
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+            transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .num-btn::after {
+            content: "";
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            bottom: 6px;
+            height: 4px;
+            background: var(--accent-strong);
+            transform: scaleX(0);
+            transform-origin: left;
+            opacity: 0.95;
+            border-radius: 999px;
+        }
+
+        .num-btn.long-pressing::after {
+            animation: holdFill 320ms linear forwards;
+        }
+
+        .num-btn:active {
+            transform: translateY(1px) scale(0.97);
+            box-shadow:
+                0 4px 8px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .num-btn:hover {
+                transform: translateY(-1px);
+                border-color: color-mix(in srgb, var(--accent-strong) 45%, var(--cell-border));
+                box-shadow:
+                    0 9px 16px rgba(0, 0, 0, 0.09),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+            }
+        }
+
+        .num-btn.completed {
+            opacity: 0.42;
+            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cell-border) 60%, transparent);
+            border-color: color-mix(in srgb, var(--cell-border) 75%, transparent);
+        }
+
+        .num-btn.completed::after {
+            display: none;
+        }
+
+        @keyframes holdFill {
+            from {
+                transform: scaleX(0);
+            }
+
+            to {
+                transform: scaleX(1);
+            }
         }
 
         .controls {
@@ -792,6 +938,7 @@
                 <div class="leaderboard-title">首通榜 TOP 3</div>
                 <div class="leaderboard-list" id="win-leaderboard-list">載入中...</div>
             </div>
+            <button class="back-btn" style="border-color: var(--accent-strong);" onclick="openReplayModal()">查看回放</button>
             <button class="resume-btn" onclick="showLevelScreen()">下一關</button>
             <button class="back-btn" style="border: none; font-size: 0.8rem; color: var(--text-light);"
                 onclick="showLevelScreen()">返回選關</button>
@@ -848,6 +995,20 @@
         </div>
     </div>
 
+    <div id="replay-modal">
+        <div class="replay-panel">
+            <h3 class="replay-title">本局步驟回放</h3>
+            <div class="replay-summary" id="replay-summary">-</div>
+            <div class="replay-filters">
+                <button id="replay-filter-all" class="replay-filter-btn active" onclick="setReplayFilter('all')">全部</button>
+                <button id="replay-filter-mistake" class="replay-filter-btn" onclick="setReplayFilter('mistake')">只看錯誤</button>
+                <button id="replay-filter-key" class="replay-filter-btn" onclick="setReplayFilter('key')">只看關鍵步</button>
+            </div>
+            <div class="replay-list" id="replay-list"></div>
+            <button class="resume-btn" onclick="closeReplayModal()">關閉</button>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
@@ -862,6 +1023,12 @@
         const leaderboardListEl = document.getElementById('leaderboard-list');
         const winLeaderboardListEl = document.getElementById('win-leaderboard-list');
         const aliasInputEl = document.getElementById('alias-input');
+        const replayModalEl = document.getElementById('replay-modal');
+        const replaySummaryEl = document.getElementById('replay-summary');
+        const replayListEl = document.getElementById('replay-list');
+        const replayFilterAllBtn = document.getElementById('replay-filter-all');
+        const replayFilterMistakeBtn = document.getElementById('replay-filter-mistake');
+        const replayFilterKeyBtn = document.getElementById('replay-filter-key');
         let feedbackTimer = null;
         let db = null;
         let firebaseReady = false;
@@ -881,6 +1048,9 @@
         let currentLevel = null;
 
         let cellsData = [];
+        let actionHistory = [];
+        let replayFilter = 'all';
+        let numButtons = [];
 
         function normalizeAlias(raw) {
             if (typeof raw !== 'string') return '';
@@ -936,6 +1106,74 @@
             const mins = Math.floor(sec / 60).toString().padStart(2, '0');
             const secs = (sec % 60).toString().padStart(2, '0');
             return `${mins}:${secs}`;
+        }
+
+        function cellLabel(idx) {
+            const r = Math.floor(idx / 9) + 1;
+            const c = (idx % 9) + 1;
+            return `R${r}C${c}`;
+        }
+
+        function recordAction(type, detail) {
+            actionHistory.push({
+                t: seconds,
+                type,
+                detail
+            });
+            if (actionHistory.length > 1200) actionHistory.shift();
+        }
+
+        function isKeyReplayAction(a) {
+            return ['fill', 'mistake', 'quick_note'].includes(a.type);
+        }
+
+        function getFilteredReplayActions() {
+            if (replayFilter === 'mistake') return actionHistory.filter(a => a.type === 'mistake');
+            if (replayFilter === 'key') return actionHistory.filter(isKeyReplayAction);
+            return actionHistory;
+        }
+
+        function syncReplayFilterButtons() {
+            if (!replayFilterAllBtn) return;
+            replayFilterAllBtn.classList.toggle('active', replayFilter === 'all');
+            replayFilterMistakeBtn.classList.toggle('active', replayFilter === 'mistake');
+            replayFilterKeyBtn.classList.toggle('active', replayFilter === 'key');
+        }
+
+        function setReplayFilter(filterKey) {
+            replayFilter = filterKey;
+            syncReplayFilterButtons();
+            renderReplayList();
+        }
+
+        function renderReplayList() {
+            const filtered = getFilteredReplayActions();
+            const filterLabel =
+                replayFilter === 'mistake' ? '錯誤步驟' :
+                    replayFilter === 'key' ? '關鍵步驟' : '全部步驟';
+            replaySummaryEl.textContent =
+                `${currentLevel.displayName} / 用時 ${formatSeconds(seconds)} / ${filterLabel} ${filtered.length}/${actionHistory.length}`;
+
+            if (!filtered.length) {
+                replayListEl.innerHTML = '<div class="replay-item">此篩選下暫無步驟</div>';
+                return;
+            }
+            replayListEl.innerHTML = filtered.map((a, i) => (
+                `<div class="replay-item"><span class="replay-time">${formatSeconds(a.t)}</span>#${i + 1} ${a.detail}</div>`
+            )).join('');
+        }
+
+        function openReplayModal() {
+            if (!replayModalEl) return;
+            replayFilter = 'all';
+            syncReplayFilterButtons();
+            renderReplayList();
+            replayModalEl.style.display = 'flex';
+        }
+
+        function closeReplayModal() {
+            if (!replayModalEl) return;
+            replayModalEl.style.display = 'none';
         }
 
         function renderLeaderboard(el, rows) {
@@ -1035,6 +1273,7 @@
 
         function initGame(levelId = 1, forceReset = false) {
             currentLevel = levels.find(l => l.id === levelId) || levels[0];
+            closeReplayModal();
 
             // 嘗試載入存檔
             const saved = forceReset ? null : loadGameStatus(currentLevel.id);
@@ -1043,9 +1282,11 @@
                 cellsData = saved.cellsData;
                 seconds = saved.seconds;
                 errors = saved.errors;
+                actionHistory = Array.isArray(saved.actionHistory) ? saved.actionHistory : [];
             } else {
                 errors = 0;
                 seconds = 0;
+                actionHistory = [];
                 cellsData = currentLevel.puzzle.map((val, idx) => ({
                     value: val,
                     fixed: val !== 0,
@@ -1073,7 +1314,8 @@
                 levelId: currentLevel.id,
                 cellsData: cellsData,
                 seconds: seconds,
-                errors: errors
+                errors: errors,
+                actionHistory: actionHistory
             };
             localStorage.setItem(`sudoku_save_${currentLevel.id}`, JSON.stringify(data));
         }
@@ -1096,6 +1338,7 @@
                 cell.onclick = () => selectCell(i);
                 gridEl.appendChild(cell);
             });
+            updateNumpadState();
         }
 
         function updateCellDisplay(cell, data) {
@@ -1230,6 +1473,7 @@
                 const ni = data.notes.indexOf(num);
                 if (ni > -1) data.notes.splice(ni, 1);
                 else data.notes.push(num);
+                recordAction('note', `${cellLabel(selectedIdx)} 候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`);
             } else {
                 if (num !== currentLevel.solution[selectedIdx]) {
                     errors++;
@@ -1245,6 +1489,7 @@
                     markErrorArea(selectedIdx);
                     showFeedback(`錯誤！${3 - errors} 次機會剩餘`);
                     playErrorFeedback();
+                    recordAction('mistake', `${cellLabel(selectedIdx)} 輸入 ${num}（錯誤）`);
                     setTimeout(() => {
                         data.isError = false;
                         cellEl.classList.remove('error');
@@ -1266,11 +1511,13 @@
                 data.value = num;
                 data.notes = [];
                 data.isError = false;
+                recordAction('fill', `${cellLabel(selectedIdx)} 填入 ${num}`);
                 celebrateCompletedUnits(selectedIdx, beforeState);
                 checkWin();
             }
             updateCellDisplay(cellEl, data);
             saveGameStatus();
+            updateNumpadState();
         }
 
         function checkWin() {
@@ -1362,6 +1609,7 @@
             document.querySelector('.game-container').style.display = 'none';
             clearInterval(timerInterval);
             overlay.style.display = 'none';
+            closeReplayModal();
             document.getElementById('level-screen').style.display = 'flex';
             switchTab(currentTab);
         }
@@ -1453,18 +1701,98 @@
 
         function erase() {
             if (selectedIdx !== null && !cellsData[selectedIdx].fixed) {
+                const oldVal = cellsData[selectedIdx].value;
+                const oldNotes = cellsData[selectedIdx].notes.slice();
                 cellsData[selectedIdx].value = 0;
                 cellsData[selectedIdx].notes = [];
                 updateCellDisplay(gridEl.children[selectedIdx], cellsData[selectedIdx]);
+                if (oldVal !== 0 || oldNotes.length) {
+                    recordAction('erase', `${cellLabel(selectedIdx)} 清除`);
+                }
                 saveGameStatus();
+                updateNumpadState();
             }
+        }
+
+        function applyQuickNote(num) {
+            if (selectedIdx === null || cellsData[selectedIdx].fixed || errors >= maxErrors) return;
+            const data = cellsData[selectedIdx];
+            if (data.value !== 0) {
+                showFeedback('此格已有數字，無法填註');
+                return;
+            }
+            const ni = data.notes.indexOf(num);
+            if (ni > -1) data.notes.splice(ni, 1);
+            else data.notes.push(num);
+            updateCellDisplay(gridEl.children[selectedIdx], data);
+            recordAction('quick_note', `${cellLabel(selectedIdx)} 長按候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`);
+            showFeedback(`候選 ${num}${ni > -1 ? ' 已取消' : ' 已加入'}`);
+            saveGameStatus();
+        }
+
+        function updateNumpadState() {
+            if (!numButtons.length || !cellsData.length) return;
+            const counts = new Array(10).fill(0);
+            for (const c of cellsData) {
+                if (c.value >= 1 && c.value <= 9) counts[c.value] += 1;
+            }
+            const beginnerOnlyCompleted = !!currentLevel && currentLevel.stars === 0;
+            numButtons.forEach((btn, i) => {
+                const n = i + 1;
+                btn.classList.toggle('completed', beginnerOnlyCompleted && counts[n] >= 9);
+            });
+        }
+
+        function bindNumButtonEvents(btn, num) {
+            let pressTimer = null;
+            let longPressed = false;
+            const LONG_MS = 320;
+
+            const startPress = (ev) => {
+                if (ev && ev.button !== undefined && ev.button !== 0) return;
+                longPressed = false;
+                clearTimeout(pressTimer);
+                btn.classList.add('long-pressing');
+                pressTimer = setTimeout(() => {
+                    longPressed = true;
+                    btn.classList.remove('long-pressing');
+                    applyQuickNote(num);
+                }, LONG_MS);
+            };
+
+            const endPress = () => {
+                if (pressTimer) {
+                    clearTimeout(pressTimer);
+                    pressTimer = null;
+                }
+                btn.classList.remove('long-pressing');
+                if (!longPressed) handleInput(num);
+                longPressed = false;
+            };
+
+            const cancelPress = () => {
+                if (pressTimer) {
+                    clearTimeout(pressTimer);
+                    pressTimer = null;
+                }
+                btn.classList.remove('long-pressing');
+                longPressed = false;
+            };
+
+            btn.addEventListener('pointerdown', startPress);
+            btn.addEventListener('pointerup', endPress);
+            btn.addEventListener('pointercancel', cancelPress);
+            btn.addEventListener('pointerleave', cancelPress);
+            btn.addEventListener('contextmenu', (e) => e.preventDefault());
         }
 
         const np = document.getElementById('numpad');
         for (let i = 1; i <= 9; i++) {
             const b = document.createElement('button');
-            b.className = 'num-btn'; b.textContent = i;
-            b.onclick = () => handleInput(i);
+            b.className = 'num-btn';
+            b.textContent = i;
+            bindNumButtonEvents(b, i);
+            numButtons.push(b);
             np.appendChild(b);
         }
 
@@ -1500,6 +1828,11 @@
         if (aliasInputEl) {
             aliasInputEl.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') saveAlias();
+            });
+        }
+        if (replayModalEl) {
+            replayModalEl.addEventListener('click', (e) => {
+                if (e.target === replayModalEl) closeReplayModal();
             });
         }
         showLevelScreen();

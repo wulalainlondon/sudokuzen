@@ -44,3 +44,7 @@ TODO / handoff:
 - 新增 Firebase 首通榜功能（`index.html`）：每關顯示 TOP 3 首通時間與星數（暫停畫面 + 通關畫面）。
 - 新增 `firebase-config.js`（預設 `null`，待填專案 config）與 `FIREBASE_SETUP.md`（設定步驟 + Firestore 規則建議）。
 - `sw.js` 快取列表已加入 `firebase-config.js`。
+
+- 已移除數字鍵盤右上角剩餘數量提示（num-remain），保留完成淡化僅 Beginner 生效。
+- Numpad 回復為純數字顯示（無角標）。
+- 嘗試啟動本機 http.server + Playwright client 測試，但未產生任何截圖/輸出（需要再確認 client 參數或輸出路徑）。
