@@ -1805,6 +1805,28 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
+        const APP_VERSION = '2026.02.06.1';
+        function enforceAppVersion() {
+            const key = 'sudoku_app_version';
+            const stored = localStorage.getItem(key);
+            if (stored === APP_VERSION) return false;
+            localStorage.setItem(key, APP_VERSION);
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations()
+                    .then((regs) => Promise.all(regs.map((r) => r.unregister())))
+                    .catch(() => {});
+            }
+            if ('caches' in window) {
+                caches.keys()
+                    .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+                    .finally(() => window.location.reload());
+            } else {
+                window.location.reload();
+            }
+            return true;
+        }
+        enforceAppVersion();
+
         // Initialize with Auto-Update Notification
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').then(reg => {

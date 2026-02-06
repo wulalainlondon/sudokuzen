@@ -1,4 +1,5 @@
-const CACHE_NAME = 'sudoku-zen-v1.1'; // 更新版本號
+const CACHE_VERSION = '2026.02.06.1';
+const CACHE_NAME = `sudoku-zen-${CACHE_VERSION}`; // 更新版本號
 const ASSETS = [
     './',
     'index.html',

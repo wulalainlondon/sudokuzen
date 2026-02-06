@@ -48,3 +48,7 @@ TODO / handoff:
 - 已移除數字鍵盤右上角剩餘數量提示（num-remain），保留完成淡化僅 Beginner 生效。
 - Numpad 回復為純數字顯示（無角標）。
 - 嘗試啟動本機 http.server + Playwright client 測試，但未產生任何截圖/輸出（需要再確認 client 參數或輸出路徑）。
+
+- 新增強制版本號檢查：index.html 內建 APP_VERSION，若偵測版本不同就清除 SW/Cache 並 reload。
+- sw.js 更新為版本化 CACHE_NAME（2026.02.06.1）。
+- 嘗試安裝 playwright 以跑 web_game_playwright_client.js，但因 network ENOTFOUND 無法下載套件；因此未能產生測試截圖。
