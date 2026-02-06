@@ -1,0 +1,4216 @@
+{
+  "repetition": [
+    {
+      "stars": 0,
+      "level_ids": [
+        9001,
+        9002,
+        9003,
+        9005
+      ],
+      "names": [
+        "初心-01",
+        "初心-02",
+        "初心-03",
+        "初心-05"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9002,
+        9003,
+        9005,
+        9006
+      ],
+      "names": [
+        "初心-02",
+        "初心-03",
+        "初心-05",
+        "初心-06"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9003,
+        9005,
+        9006,
+        9007
+      ],
+      "names": [
+        "初心-03",
+        "初心-05",
+        "初心-06",
+        "初心-07"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9005,
+        9006,
+        9007,
+        9010
+      ],
+      "names": [
+        "初心-05",
+        "初心-06",
+        "初心-07",
+        "初心-10"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9006,
+        9007,
+        9010,
+        9011
+      ],
+      "names": [
+        "初心-06",
+        "初心-07",
+        "初心-10",
+        "初心-11"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9007,
+        9010,
+        9011,
+        9012
+      ],
+      "names": [
+        "初心-07",
+        "初心-10",
+        "初心-11",
+        "初心-12"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9010,
+        9011,
+        9012,
+        9013
+      ],
+      "names": [
+        "初心-10",
+        "初心-11",
+        "初心-12",
+        "初心-13"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9011,
+        9012,
+        9013,
+        9014
+      ],
+      "names": [
+        "初心-11",
+        "初心-12",
+        "初心-13",
+        "初心-14"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9012,
+        9013,
+        9014,
+        9015
+      ],
+      "names": [
+        "初心-12",
+        "初心-13",
+        "初心-14",
+        "初心-15"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9013,
+        9014,
+        9015,
+        9016
+      ],
+      "names": [
+        "初心-13",
+        "初心-14",
+        "初心-15",
+        "初心-16"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9014,
+        9015,
+        9016,
+        9017
+      ],
+      "names": [
+        "初心-14",
+        "初心-15",
+        "初心-16",
+        "初心-17"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9015,
+        9016,
+        9017,
+        9018
+      ],
+      "names": [
+        "初心-15",
+        "初心-16",
+        "初心-17",
+        "初心-18"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9019,
+        9020,
+        9022,
+        9023
+      ],
+      "names": [
+        "初心-19",
+        "初心-20",
+        "初心-22",
+        "初心-23"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9020,
+        9022,
+        9023,
+        9026
+      ],
+      "names": [
+        "初心-20",
+        "初心-22",
+        "初心-23",
+        "初心-26"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9022,
+        9023,
+        9026,
+        9027
+      ],
+      "names": [
+        "初心-22",
+        "初心-23",
+        "初心-26",
+        "初心-27"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9023,
+        9026,
+        9027,
+        9029
+      ],
+      "names": [
+        "初心-23",
+        "初心-26",
+        "初心-27",
+        "初心-29"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9026,
+        9027,
+        9029,
+        9030
+      ],
+      "names": [
+        "初心-26",
+        "初心-27",
+        "初心-29",
+        "初心-30"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9027,
+        9029,
+        9030,
+        9028
+      ],
+      "names": [
+        "初心-27",
+        "初心-29",
+        "初心-30",
+        "初心-28"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9029,
+        9030,
+        9028,
+        9004
+      ],
+      "names": [
+        "初心-29",
+        "初心-30",
+        "初心-28",
+        "初心-04"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9030,
+        9028,
+        9004,
+        9021
+      ],
+      "names": [
+        "初心-30",
+        "初心-28",
+        "初心-04",
+        "初心-21"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9028,
+        9004,
+        9021,
+        9024
+      ],
+      "names": [
+        "初心-28",
+        "初心-04",
+        "初心-21",
+        "初心-24"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9004,
+        9021,
+        9024,
+        9025
+      ],
+      "names": [
+        "初心-04",
+        "初心-21",
+        "初心-24",
+        "初心-25"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "names": [
+        "法外之理",
+        "萬里無雲",
+        "阿賴耶識",
+        "自在乾坤"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "names": [
+        "萬里無雲",
+        "阿賴耶識",
+        "自在乾坤",
+        "一葉知秋"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "names": [
+        "阿賴耶識",
+        "自在乾坤",
+        "一葉知秋",
+        "智慧彼岸"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "names": [
+        "自在乾坤",
+        "一葉知秋",
+        "智慧彼岸",
+        "圓覺之境"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "names": [
+        "一葉知秋",
+        "智慧彼岸",
+        "圓覺之境",
+        "靈山法會"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "names": [
+        "智慧彼岸",
+        "圓覺之境",
+        "靈山法會",
+        "大象無形"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "names": [
+        "圓覺之境",
+        "靈山法會",
+        "大象無形",
+        "大慈悲"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "names": [
+        "靈山法會",
+        "大象無形",
+        "大慈悲",
+        "妙法蓮華"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        9,
+        10,
+        11,
+        12
+      ],
+      "names": [
+        "大象無形",
+        "大慈悲",
+        "妙法蓮華",
+        "究竟圓滿"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "names": [
+        "大慈悲",
+        "妙法蓮華",
+        "究竟圓滿",
+        "物我兩忘"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "names": [
+        "妙法蓮華",
+        "究竟圓滿",
+        "物我兩忘",
+        "大智慧"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "names": [
+        "究竟圓滿",
+        "物我兩忘",
+        "大智慧",
+        "金剛不滅"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        13,
+        14,
+        15,
+        16
+      ],
+      "names": [
+        "物我兩忘",
+        "大智慧",
+        "金剛不滅",
+        "拈花一笑"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "names": [
+        "大智慧",
+        "金剛不滅",
+        "拈花一笑",
+        "大寂滅"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "names": [
+        "金剛不滅",
+        "拈花一笑",
+        "大寂滅",
+        "大圓滿法"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "names": [
+        "拈花一笑",
+        "大寂滅",
+        "大圓滿法",
+        "涅槃重生"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        17,
+        18,
+        19,
+        20
+      ],
+      "names": [
+        "大寂滅",
+        "大圓滿法",
+        "涅槃重生",
+        "當下即是"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        18,
+        19,
+        20,
+        21
+      ],
+      "names": [
+        "大圓滿法",
+        "涅槃重生",
+        "當下即是",
+        "大光明"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "names": [
+        "涅槃重生",
+        "當下即是",
+        "大光明",
+        "虛空藏法"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "names": [
+        "當下即是",
+        "大光明",
+        "虛空藏法",
+        "般若波羅"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        21,
+        22,
+        23,
+        24
+      ],
+      "names": [
+        "大光明",
+        "虛空藏法",
+        "般若波羅",
+        "無為而治"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        22,
+        23,
+        24,
+        25
+      ],
+      "names": [
+        "虛空藏法",
+        "般若波羅",
+        "無為而治",
+        "如來藏識"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        23,
+        24,
+        25,
+        26
+      ],
+      "names": [
+        "般若波羅",
+        "無為而治",
+        "如來藏識",
+        "明鏡非台"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "names": [
+        "無為而治",
+        "如來藏識",
+        "明鏡非台",
+        "生死一如"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        25,
+        26,
+        27,
+        28
+      ],
+      "names": [
+        "如來藏識",
+        "明鏡非台",
+        "生死一如",
+        "法性虛空"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        26,
+        27,
+        28,
+        29
+      ],
+      "names": [
+        "明鏡非台",
+        "生死一如",
+        "法性虛空",
+        "大禪定"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        27,
+        28,
+        29,
+        30
+      ],
+      "names": [
+        "生死一如",
+        "法性虛空",
+        "大禪定",
+        "無生法忍"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "names": [
+        "法性虛空",
+        "大禪定",
+        "無生法忍",
+        "入木三分"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        29,
+        30,
+        31,
+        32
+      ],
+      "names": [
+        "大禪定",
+        "無生法忍",
+        "入木三分",
+        "菩提本無"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        30,
+        31,
+        32,
+        33
+      ],
+      "names": [
+        "無生法忍",
+        "入木三分",
+        "菩提本無",
+        "禪心映月"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        31,
+        32,
+        33,
+        34
+      ],
+      "names": [
+        "入木三分",
+        "菩提本無",
+        "禪心映月",
+        "不可思議"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        32,
+        33,
+        34,
+        35
+      ],
+      "names": [
+        "菩提本無",
+        "禪心映月",
+        "不可思議",
+        "真空不空"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        33,
+        34,
+        35,
+        36
+      ],
+      "names": [
+        "禪心映月",
+        "不可思議",
+        "真空不空",
+        "華嚴世界"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        34,
+        35,
+        36,
+        37
+      ],
+      "names": [
+        "不可思議",
+        "真空不空",
+        "華嚴世界",
+        "空靈之音"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        35,
+        36,
+        37,
+        38
+      ],
+      "names": [
+        "真空不空",
+        "華嚴世界",
+        "空靈之音",
+        "三摩地"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        36,
+        37,
+        38,
+        39
+      ],
+      "names": [
+        "華嚴世界",
+        "空靈之音",
+        "三摩地",
+        "大道至簡"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        45,
+        63,
+        73,
+        46
+      ],
+      "names": [
+        "星環",
+        "暗物質",
+        "空間扭曲",
+        "熵寂之末"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        63,
+        73,
+        46,
+        54
+      ],
+      "names": [
+        "暗物質",
+        "空間扭曲",
+        "熵寂之末",
+        "多維卷縮"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        73,
+        46,
+        54,
+        57
+      ],
+      "names": [
+        "空間扭曲",
+        "熵寂之末",
+        "多維卷縮",
+        "費米悖論"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        46,
+        54,
+        57,
+        60
+      ],
+      "names": [
+        "熵寂之末",
+        "多維卷縮",
+        "費米悖論",
+        "熱寂"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        54,
+        57,
+        60,
+        64
+      ],
+      "names": [
+        "多維卷縮",
+        "費米悖論",
+        "熱寂",
+        "源代碼"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        57,
+        60,
+        64,
+        66
+      ],
+      "names": [
+        "費米悖論",
+        "熱寂",
+        "源代碼",
+        "極限偏差"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        60,
+        64,
+        66,
+        72
+      ],
+      "names": [
+        "熱寂",
+        "源代碼",
+        "極限偏差",
+        "膜宇宙"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        64,
+        66,
+        72,
+        78
+      ],
+      "names": [
+        "源代碼",
+        "極限偏差",
+        "膜宇宙",
+        "代碼源泉"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        66,
+        72,
+        78,
+        42
+      ],
+      "names": [
+        "極限偏差",
+        "膜宇宙",
+        "代碼源泉",
+        "奇點投影"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        72,
+        78,
+        42,
+        44
+      ],
+      "names": [
+        "膜宇宙",
+        "代碼源泉",
+        "奇點投影",
+        "暴脹期"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        49,
+        56,
+        58,
+        61
+      ],
+      "names": [
+        "絕對零度",
+        "能量耗盡",
+        "夢境解析",
+        "维度崩塌"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        56,
+        58,
+        61,
+        68
+      ],
+      "names": [
+        "能量耗盡",
+        "夢境解析",
+        "维度崩塌",
+        "邏輯斷裂"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        58,
+        61,
+        68,
+        69
+      ],
+      "names": [
+        "夢境解析",
+        "维度崩塌",
+        "邏輯斷裂",
+        "系統遺蹟"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        70,
+        71,
+        77,
+        50
+      ],
+      "names": [
+        "重整化",
+        "戴森球",
+        "無盡寂寥",
+        "弦理論"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        71,
+        77,
+        50,
+        53
+      ],
+      "names": [
+        "戴森球",
+        "無盡寂寥",
+        "弦理論",
+        "因果律"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        77,
+        50,
+        53,
+        55
+      ],
+      "names": [
+        "無盡寂寥",
+        "弦理論",
+        "因果律",
+        "數據塵埃"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        74,
+        75,
+        79,
+        47
+      ],
+      "names": [
+        "永恆沈默",
+        "量子泡沫",
+        "意識孤島",
+        "虛無漂泊"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        75,
+        79,
+        47,
+        51
+      ],
+      "names": [
+        "量子泡沫",
+        "意識孤島",
+        "虛無漂泊",
+        "暗能量"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        79,
+        47,
+        51,
+        52
+      ],
+      "names": [
+        "意識孤島",
+        "虛無漂泊",
+        "暗能量",
+        "全息原理"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        47,
+        51,
+        52,
+        59
+      ],
+      "names": [
+        "虛無漂泊",
+        "暗能量",
+        "全息原理",
+        "宇宙微波"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        51,
+        52,
+        59,
+        65
+      ],
+      "names": [
+        "暗能量",
+        "全息原理",
+        "宇宙微波",
+        "對稱性破損"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        52,
+        59,
+        65,
+        67
+      ],
+      "names": [
+        "全息原理",
+        "宇宙微波",
+        "對稱性破損",
+        "虛空深處"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        59,
+        65,
+        67,
+        76
+      ],
+      "names": [
+        "宇宙微波",
+        "對稱性破損",
+        "虛空深處",
+        "時間停滯"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        65,
+        67,
+        76,
+        43
+      ],
+      "names": [
+        "對稱性破損",
+        "虛空深處",
+        "時間停滯",
+        "普朗克尺度"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        67,
+        76,
+        43,
+        48
+      ],
+      "names": [
+        "虛空深處",
+        "時間停滯",
+        "普朗克尺度",
+        "大擠壓"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        76,
+        43,
+        48,
+        80
+      ],
+      "names": [
+        "時間停滯",
+        "普朗克尺度",
+        "大擠壓",
+        "黑洞視界"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 3,
+      "level_ids": [
+        95,
+        103,
+        114,
+        84
+      ],
+      "names": [
+        "白虎之爪",
+        "冥府之光",
+        "歲月之痕",
+        "混沌之眼"
+      ],
+      "reason": "same maxTechnique=naked_pair, low score/clue variance"
+    },
+    {
+      "stars": 3,
+      "level_ids": [
+        103,
+        114,
+        84,
+        88
+      ],
+      "names": [
+        "冥府之光",
+        "歲月之痕",
+        "混沌之眼",
+        "麒麟之足"
+      ],
+      "reason": "same maxTechnique=naked_pair, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        121,
+        122,
+        123,
+        124
+      ],
+      "names": [
+        "光之洗禮",
+        "泉之靈動",
+        "火之考驗",
+        "人之靈氣"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        122,
+        123,
+        124,
+        125
+      ],
+      "names": [
+        "泉之靈動",
+        "火之考驗",
+        "人之靈氣",
+        "現實投影"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        123,
+        124,
+        125,
+        126
+      ],
+      "names": [
+        "火之考驗",
+        "人之靈氣",
+        "現實投影",
+        "宇宙之心"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        124,
+        125,
+        126,
+        127
+      ],
+      "names": [
+        "人之靈氣",
+        "現實投影",
+        "宇宙之心",
+        "志之堅定"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        125,
+        126,
+        127,
+        128
+      ],
+      "names": [
+        "現實投影",
+        "宇宙之心",
+        "志之堅定",
+        "冰之堅韌"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        126,
+        127,
+        128,
+        129
+      ],
+      "names": [
+        "宇宙之心",
+        "志之堅定",
+        "冰之堅韌",
+        "霜之冷傲"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        127,
+        128,
+        129,
+        130
+      ],
+      "names": [
+        "志之堅定",
+        "冰之堅韌",
+        "霜之冷傲",
+        "進化階梯"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        128,
+        129,
+        130,
+        131
+      ],
+      "names": [
+        "冰之堅韌",
+        "霜之冷傲",
+        "進化階梯",
+        "雷之威嚴"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        129,
+        130,
+        131,
+        132
+      ],
+      "names": [
+        "霜之冷傲",
+        "進化階梯",
+        "雷之威嚴",
+        "空之博大"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        130,
+        131,
+        132,
+        133
+      ],
+      "names": [
+        "進化階梯",
+        "雷之威嚴",
+        "空之博大",
+        "水之柔情"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        131,
+        132,
+        133,
+        134
+      ],
+      "names": [
+        "雷之威嚴",
+        "空之博大",
+        "水之柔情",
+        "生命密碼"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        132,
+        133,
+        134,
+        135
+      ],
+      "names": [
+        "空之博大",
+        "水之柔情",
+        "生命密碼",
+        "雪之純潔"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        133,
+        134,
+        135,
+        136
+      ],
+      "names": [
+        "水之柔情",
+        "生命密碼",
+        "雪之純潔",
+        "地之母體"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        134,
+        135,
+        136,
+        137
+      ],
+      "names": [
+        "生命密碼",
+        "雪之純潔",
+        "地之母體",
+        "神經網路"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        135,
+        136,
+        137,
+        138
+      ],
+      "names": [
+        "雪之純潔",
+        "地之母體",
+        "神經網路",
+        "基因矩陣"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        136,
+        137,
+        138,
+        139
+      ],
+      "names": [
+        "地之母體",
+        "神經網路",
+        "基因矩陣",
+        "物之本性"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        137,
+        138,
+        139,
+        140
+      ],
+      "names": [
+        "神經網路",
+        "基因矩陣",
+        "物之本性",
+        "意之流向"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        138,
+        139,
+        140,
+        141
+      ],
+      "names": [
+        "基因矩陣",
+        "物之本性",
+        "意之流向",
+        "星之璀璨"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        139,
+        140,
+        141,
+        142
+      ],
+      "names": [
+        "物之本性",
+        "意之流向",
+        "星之璀璨",
+        "造物法則"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        140,
+        141,
+        142,
+        143
+      ],
+      "names": [
+        "意之流向",
+        "星之璀璨",
+        "造物法則",
+        "湖之平靜"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        141,
+        142,
+        143,
+        144
+      ],
+      "names": [
+        "星之璀璨",
+        "造物法則",
+        "湖之平靜",
+        "金之銳利"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        142,
+        143,
+        144,
+        145
+      ],
+      "names": [
+        "造物法則",
+        "湖之平靜",
+        "金之銳利",
+        "風之自由"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        143,
+        144,
+        145,
+        146
+      ],
+      "names": [
+        "湖之平靜",
+        "金之銳利",
+        "風之自由",
+        "月之溫柔"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        144,
+        145,
+        146,
+        147
+      ],
+      "names": [
+        "金之銳利",
+        "風之自由",
+        "月之溫柔",
+        "霧之迷離"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        145,
+        146,
+        147,
+        148
+      ],
+      "names": [
+        "風之自由",
+        "月之溫柔",
+        "霧之迷離",
+        "土之厚重"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        146,
+        147,
+        148,
+        149
+      ],
+      "names": [
+        "月之溫柔",
+        "霧之迷離",
+        "土之厚重",
+        "虛擬框架"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        147,
+        148,
+        149,
+        150
+      ],
+      "names": [
+        "霧之迷離",
+        "土之厚重",
+        "虛擬框架",
+        "海之深邃"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        148,
+        149,
+        150,
+        151
+      ],
+      "names": [
+        "土之厚重",
+        "虛擬框架",
+        "海之深邃",
+        "雲之縹緲"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        149,
+        150,
+        151,
+        152
+      ],
+      "names": [
+        "虛擬框架",
+        "海之深邃",
+        "雲之縹緲",
+        "日之輝煌"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        150,
+        151,
+        152,
+        153
+      ],
+      "names": [
+        "海之深邃",
+        "雲之縹緲",
+        "日之輝煌",
+        "河之奔流"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        151,
+        152,
+        153,
+        154
+      ],
+      "names": [
+        "雲之縹緲",
+        "日之輝煌",
+        "河之奔流",
+        "木之生機"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        152,
+        153,
+        154,
+        155
+      ],
+      "names": [
+        "日之輝煌",
+        "河之奔流",
+        "木之生機",
+        "靈魂模版"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        153,
+        154,
+        155,
+        156
+      ],
+      "names": [
+        "河之奔流",
+        "木之生機",
+        "靈魂模版",
+        "萬物本源"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        154,
+        155,
+        156,
+        157
+      ],
+      "names": [
+        "木之生機",
+        "靈魂模版",
+        "萬物本源",
+        "意識架構"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        155,
+        156,
+        157,
+        158
+      ],
+      "names": [
+        "靈魂模版",
+        "萬物本源",
+        "意識架構",
+        "情之真切"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        156,
+        157,
+        158,
+        159
+      ],
+      "names": [
+        "萬物本源",
+        "意識架構",
+        "情之真切",
+        "山之沉穩"
+      ],
+      "reason": "same maxTechnique=naked_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        174,
+        183,
+        185,
+        186
+      ],
+      "names": [
+        "不可逾越",
+        "萬物理論",
+        "虛擬終焉",
+        "奇點復歸"
+      ],
+      "reason": "same maxTechnique=hidden_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        183,
+        185,
+        186,
+        187
+      ],
+      "names": [
+        "萬物理論",
+        "虛擬終焉",
+        "奇點復歸",
+        "受想行識"
+      ],
+      "reason": "same maxTechnique=hidden_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        185,
+        186,
+        187,
+        188
+      ],
+      "names": [
+        "虛擬終焉",
+        "奇點復歸",
+        "受想行識",
+        "空間極限"
+      ],
+      "reason": "same maxTechnique=hidden_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        186,
+        187,
+        188,
+        189
+      ],
+      "names": [
+        "奇點復歸",
+        "受想行識",
+        "空間極限",
+        "能量回歸"
+      ],
+      "reason": "same maxTechnique=hidden_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        187,
+        188,
+        189,
+        190
+      ],
+      "names": [
+        "受想行識",
+        "空間極限",
+        "能量回歸",
+        "不可忘卻"
+      ],
+      "reason": "same maxTechnique=hidden_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        188,
+        189,
+        190,
+        191
+      ],
+      "names": [
+        "空間極限",
+        "能量回歸",
+        "不可忘卻",
+        "物質解體"
+      ],
+      "reason": "same maxTechnique=hidden_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        189,
+        190,
+        191,
+        192
+      ],
+      "names": [
+        "能量回歸",
+        "不可忘卻",
+        "物質解體",
+        "諸法空相"
+      ],
+      "reason": "same maxTechnique=hidden_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        190,
+        191,
+        192,
+        194
+      ],
+      "names": [
+        "不可忘卻",
+        "物質解體",
+        "諸法空相",
+        "主腦核心"
+      ],
+      "reason": "same maxTechnique=hidden_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        191,
+        192,
+        194,
+        198
+      ],
+      "names": [
+        "物質解體",
+        "諸法空相",
+        "主腦核心",
+        "無盡之始"
+      ],
+      "reason": "same maxTechnique=hidden_single, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        176,
+        182,
+        197,
+        170
+      ],
+      "names": [
+        "不可觸摸",
+        "絕對真理",
+        "空即是色",
+        "終極一戰"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        180,
+        199,
+        200,
+        184
+      ],
+      "names": [
+        "不增不減",
+        "無眼耳鼻",
+        "矩陣中心",
+        "現實歸於零"
+      ],
+      "reason": "same maxTechnique=locked_candidates, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9038,
+        9039,
+        9040,
+        9041
+      ],
+      "names": [
+        "空鏡-08",
+        "空鏡-09",
+        "空鏡-10",
+        "空鏡-11"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9042,
+        9043,
+        9044,
+        9045
+      ],
+      "names": [
+        "空鏡-12",
+        "空鏡-13",
+        "空鏡-14",
+        "空鏡-15"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9043,
+        9044,
+        9045,
+        9046
+      ],
+      "names": [
+        "空鏡-13",
+        "空鏡-14",
+        "空鏡-15",
+        "空鏡-16"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9044,
+        9045,
+        9046,
+        9047
+      ],
+      "names": [
+        "空鏡-14",
+        "空鏡-15",
+        "空鏡-16",
+        "空鏡-17"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9045,
+        9046,
+        9047,
+        9048
+      ],
+      "names": [
+        "空鏡-15",
+        "空鏡-16",
+        "空鏡-17",
+        "空鏡-18"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9050,
+        9051,
+        9052,
+        9053
+      ],
+      "names": [
+        "空鏡-20",
+        "空鏡-21",
+        "空鏡-22",
+        "空鏡-23"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9051,
+        9052,
+        9053,
+        9054
+      ],
+      "names": [
+        "空鏡-21",
+        "空鏡-22",
+        "空鏡-23",
+        "空鏡-24"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9052,
+        9053,
+        9054,
+        9055
+      ],
+      "names": [
+        "空鏡-22",
+        "空鏡-23",
+        "空鏡-24",
+        "空鏡-25"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9060,
+        9061,
+        9062,
+        9063
+      ],
+      "names": [
+        "空鏡-30",
+        "空鏡-31",
+        "空鏡-32",
+        "空鏡-33"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9061,
+        9062,
+        9063,
+        9064
+      ],
+      "names": [
+        "空鏡-31",
+        "空鏡-32",
+        "空鏡-33",
+        "空鏡-34"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9062,
+        9063,
+        9064,
+        9065
+      ],
+      "names": [
+        "空鏡-32",
+        "空鏡-33",
+        "空鏡-34",
+        "空鏡-35"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9063,
+        9064,
+        9065,
+        9066
+      ],
+      "names": [
+        "空鏡-33",
+        "空鏡-34",
+        "空鏡-35",
+        "空鏡-36"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9064,
+        9065,
+        9066,
+        9067
+      ],
+      "names": [
+        "空鏡-34",
+        "空鏡-35",
+        "空鏡-36",
+        "空鏡-37"
+      ],
+      "reason": "same maxTechnique=xy_wing, low score/clue variance"
+    },
+    {
+      "stars": 7,
+      "level_ids": [
+        9071,
+        9072,
+        9073,
+        9074
+      ],
+      "names": [
+        "星潮-01",
+        "星潮-02",
+        "星潮-03",
+        "星潮-04"
+      ],
+      "reason": "same maxTechnique=swordfish, low score/clue variance"
+    },
+    {
+      "stars": 7,
+      "level_ids": [
+        9085,
+        9086,
+        9087,
+        9088
+      ],
+      "names": [
+        "星潮-15",
+        "星潮-16",
+        "星潮-17",
+        "星潮-18"
+      ],
+      "reason": "same maxTechnique=swordfish, low score/clue variance"
+    },
+    {
+      "stars": 7,
+      "level_ids": [
+        9086,
+        9087,
+        9088,
+        9089
+      ],
+      "names": [
+        "星潮-16",
+        "星潮-17",
+        "星潮-18",
+        "星潮-19"
+      ],
+      "reason": "same maxTechnique=swordfish, low score/clue variance"
+    },
+    {
+      "stars": 7,
+      "level_ids": [
+        9087,
+        9088,
+        9089,
+        9090
+      ],
+      "names": [
+        "星潮-17",
+        "星潮-18",
+        "星潮-19",
+        "星潮-20"
+      ],
+      "reason": "same maxTechnique=swordfish, low score/clue variance"
+    },
+    {
+      "stars": 7,
+      "level_ids": [
+        9088,
+        9089,
+        9090,
+        9091
+      ],
+      "names": [
+        "星潮-18",
+        "星潮-19",
+        "星潮-20",
+        "星潮-21"
+      ],
+      "reason": "same maxTechnique=swordfish, low score/clue variance"
+    }
+  ],
+  "curve_spikes": [
+    {
+      "stars": 1,
+      "from_id": 39,
+      "to_id": 40,
+      "from_name": "大道至簡",
+      "to_name": "一塵不染",
+      "from_score": 48,
+      "to_score": 70,
+      "delta": 22
+    },
+    {
+      "stars": 5,
+      "from_id": 162,
+      "to_id": 168,
+      "from_name": "最後法則",
+      "to_name": "不可回頭",
+      "from_score": 89,
+      "to_score": 999,
+      "delta": 910
+    },
+    {
+      "stars": 5,
+      "from_id": 181,
+      "to_id": 193,
+      "from_name": "時間盡頭",
+      "to_name": "亦復如是",
+      "from_score": 999,
+      "to_score": 105,
+      "delta": -894
+    },
+    {
+      "stars": 6,
+      "from_id": 9033,
+      "to_id": 9034,
+      "from_name": "空鏡-03",
+      "to_name": "空鏡-04",
+      "from_score": 78,
+      "to_score": 99,
+      "delta": 21
+    },
+    {
+      "stars": 6,
+      "from_id": 9036,
+      "to_id": 9037,
+      "from_name": "空鏡-06",
+      "to_name": "空鏡-07",
+      "from_score": 78,
+      "to_score": 99,
+      "delta": 21
+    },
+    {
+      "stars": 6,
+      "from_id": 9057,
+      "to_id": 9058,
+      "from_name": "空鏡-27",
+      "to_name": "空鏡-28",
+      "from_score": 100,
+      "to_score": 74,
+      "delta": -26
+    },
+    {
+      "stars": 7,
+      "from_id": 9078,
+      "to_id": 9079,
+      "from_name": "星潮-08",
+      "to_name": "星潮-09",
+      "from_score": 84,
+      "to_score": 111,
+      "delta": 27
+    },
+    {
+      "stars": 7,
+      "from_id": 9079,
+      "to_id": 9080,
+      "from_name": "星潮-09",
+      "to_name": "星潮-10",
+      "from_score": 111,
+      "to_score": 91,
+      "delta": -20
+    },
+    {
+      "stars": 7,
+      "from_id": 9081,
+      "to_id": 9082,
+      "from_name": "星潮-11",
+      "to_name": "星潮-12",
+      "from_score": 100,
+      "to_score": 78,
+      "delta": -22
+    },
+    {
+      "stars": 7,
+      "from_id": 9091,
+      "to_id": 9092,
+      "from_name": "星潮-21",
+      "to_name": "星潮-22",
+      "from_score": 82,
+      "to_score": 105,
+      "delta": 23
+    },
+    {
+      "stars": 7,
+      "from_id": 9097,
+      "to_id": 9098,
+      "from_name": "星潮-27",
+      "to_name": "星潮-28",
+      "from_score": 87,
+      "to_score": 111,
+      "delta": 24
+    },
+    {
+      "stars": 7,
+      "from_id": 9098,
+      "to_id": 9099,
+      "from_name": "星潮-28",
+      "to_name": "星潮-29",
+      "from_score": 111,
+      "to_score": 84,
+      "delta": -27
+    },
+    {
+      "stars": 7,
+      "from_id": 9100,
+      "to_id": 9101,
+      "from_name": "星潮-30",
+      "to_name": "星潮-31",
+      "from_score": 85,
+      "to_score": 133,
+      "delta": 48
+    },
+    {
+      "stars": 7,
+      "from_id": 9101,
+      "to_id": 9102,
+      "from_name": "星潮-31",
+      "to_name": "星潮-32",
+      "from_score": 133,
+      "to_score": 72,
+      "delta": -61
+    },
+    {
+      "stars": 7,
+      "from_id": 9102,
+      "to_id": 9103,
+      "from_name": "星潮-32",
+      "to_name": "星潮-33",
+      "from_score": 72,
+      "to_score": 111,
+      "delta": 39
+    },
+    {
+      "stars": 7,
+      "from_id": 9103,
+      "to_id": 9104,
+      "from_name": "星潮-33",
+      "to_name": "星潮-34",
+      "from_score": 111,
+      "to_score": 81,
+      "delta": -30
+    },
+    {
+      "stars": 8,
+      "from_id": 9111,
+      "to_id": 9112,
+      "from_name": "玄鏈-01",
+      "to_name": "玄鏈-02",
+      "from_score": 111,
+      "to_score": 135,
+      "delta": 24
+    },
+    {
+      "stars": 8,
+      "from_id": 9113,
+      "to_id": 9114,
+      "from_name": "玄鏈-03",
+      "to_name": "玄鏈-04",
+      "from_score": 139,
+      "to_score": 116,
+      "delta": -23
+    },
+    {
+      "stars": 8,
+      "from_id": 9115,
+      "to_id": 9116,
+      "from_name": "玄鏈-05",
+      "to_name": "玄鏈-06",
+      "from_score": 128,
+      "to_score": 183,
+      "delta": 55
+    },
+    {
+      "stars": 8,
+      "from_id": 9117,
+      "to_id": 9118,
+      "from_name": "玄鏈-07",
+      "to_name": "玄鏈-08",
+      "from_score": 172,
+      "to_score": 100,
+      "delta": -72
+    },
+    {
+      "stars": 8,
+      "from_id": 9126,
+      "to_id": 9127,
+      "from_name": "玄鏈-16",
+      "to_name": "玄鏈-17",
+      "from_score": 109,
+      "to_score": 133,
+      "delta": 24
+    },
+    {
+      "stars": 8,
+      "from_id": 9128,
+      "to_id": 9129,
+      "from_name": "玄鏈-18",
+      "to_name": "玄鏈-19",
+      "from_score": 119,
+      "to_score": 142,
+      "delta": 23
+    },
+    {
+      "stars": 8,
+      "from_id": 9131,
+      "to_id": 9132,
+      "from_name": "玄鏈-21",
+      "to_name": "玄鏈-22",
+      "from_score": 127,
+      "to_score": 177,
+      "delta": 50
+    },
+    {
+      "stars": 8,
+      "from_id": 9132,
+      "to_id": 9133,
+      "from_name": "玄鏈-22",
+      "to_name": "玄鏈-23",
+      "from_score": 177,
+      "to_score": 199,
+      "delta": 22
+    },
+    {
+      "stars": 8,
+      "from_id": 9133,
+      "to_id": 9134,
+      "from_name": "玄鏈-23",
+      "to_name": "玄鏈-24",
+      "from_score": 199,
+      "to_score": 111,
+      "delta": -88
+    },
+    {
+      "stars": 8,
+      "from_id": 9134,
+      "to_id": 9135,
+      "from_name": "玄鏈-24",
+      "to_name": "玄鏈-25",
+      "from_score": 111,
+      "to_score": 176,
+      "delta": 65
+    },
+    {
+      "stars": 8,
+      "from_id": 9137,
+      "to_id": 9138,
+      "from_name": "玄鏈-27",
+      "to_name": "玄鏈-28",
+      "from_score": 174,
+      "to_score": 119,
+      "delta": -55
+    },
+    {
+      "stars": 8,
+      "from_id": 9138,
+      "to_id": 9139,
+      "from_name": "玄鏈-28",
+      "to_name": "玄鏈-29",
+      "from_score": 119,
+      "to_score": 139,
+      "delta": 20
+    },
+    {
+      "stars": 8,
+      "from_id": 9141,
+      "to_id": 9142,
+      "from_name": "玄鏈-31",
+      "to_name": "玄鏈-32",
+      "from_score": 150,
+      "to_score": 127,
+      "delta": -23
+    },
+    {
+      "stars": 8,
+      "from_id": 9143,
+      "to_id": 9144,
+      "from_name": "玄鏈-33",
+      "to_name": "玄鏈-34",
+      "from_score": 118,
+      "to_score": 305,
+      "delta": 187
+    },
+    {
+      "stars": 8,
+      "from_id": 9144,
+      "to_id": 9145,
+      "from_name": "玄鏈-34",
+      "to_name": "玄鏈-35",
+      "from_score": 305,
+      "to_score": 181,
+      "delta": -124
+    },
+    {
+      "stars": 8,
+      "from_id": 9146,
+      "to_id": 9147,
+      "from_name": "玄鏈-36",
+      "to_name": "玄鏈-37",
+      "from_score": 189,
+      "to_score": 123,
+      "delta": -66
+    },
+    {
+      "stars": 8,
+      "from_id": 9147,
+      "to_id": 9148,
+      "from_name": "玄鏈-37",
+      "to_name": "玄鏈-38",
+      "from_score": 123,
+      "to_score": 102,
+      "delta": -21
+    },
+    {
+      "stars": 8,
+      "from_id": 9149,
+      "to_id": 9150,
+      "from_name": "玄鏈-39",
+      "to_name": "玄鏈-40",
+      "from_score": 102,
+      "to_score": 139,
+      "delta": 37
+    }
+  ],
+  "fake_hard": [
+    {
+      "id": 93,
+      "stars": 3,
+      "name": "本能覺察",
+      "difficultyName": "SELFLESS 無我",
+      "score": 75,
+      "maxTechnique": "locked_candidates",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 178,
+      "stars": 5,
+      "name": "不可言說",
+      "difficultyName": "NIRVANA 寂滅",
+      "score": 75,
+      "maxTechnique": "naked_pair",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 196,
+      "stars": 5,
+      "name": "無智亦得",
+      "difficultyName": "NIRVANA 寂滅",
+      "score": 78,
+      "maxTechnique": "locked_candidates",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 164,
+      "stars": 5,
+      "name": "不生不滅",
+      "difficultyName": "NIRVANA 寂滅",
+      "score": 84,
+      "maxTechnique": "hidden_pair",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 162,
+      "stars": 5,
+      "name": "最後法則",
+      "difficultyName": "NIRVANA 寂滅",
+      "score": 89,
+      "maxTechnique": "hidden_pair",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 168,
+      "stars": 5,
+      "name": "不可回頭",
+      "difficultyName": "NIRVANA 寂滅",
+      "score": 999,
+      "maxTechnique": "unknown",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 177,
+      "stars": 5,
+      "name": "不垢不淨",
+      "difficultyName": "NIRVANA 寂滅",
+      "score": 999,
+      "maxTechnique": "unknown",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 181,
+      "stars": 5,
+      "name": "時間盡頭",
+      "difficultyName": "NIRVANA 寂滅",
+      "score": 999,
+      "maxTechnique": "unknown",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 193,
+      "stars": 5,
+      "name": "亦復如是",
+      "difficultyName": "NIRVANA 寂滅",
+      "score": 105,
+      "maxTechnique": "hidden_pair",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9031,
+      "stars": 6,
+      "name": "空鏡-01",
+      "difficultyName": "空鏡",
+      "score": 80,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9032,
+      "stars": 6,
+      "name": "空鏡-02",
+      "difficultyName": "空鏡",
+      "score": 89,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9033,
+      "stars": 6,
+      "name": "空鏡-03",
+      "difficultyName": "空鏡",
+      "score": 78,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9034,
+      "stars": 6,
+      "name": "空鏡-04",
+      "difficultyName": "空鏡",
+      "score": 99,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9035,
+      "stars": 6,
+      "name": "空鏡-05",
+      "difficultyName": "空鏡",
+      "score": 83,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9036,
+      "stars": 6,
+      "name": "空鏡-06",
+      "difficultyName": "空鏡",
+      "score": 78,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9037,
+      "stars": 6,
+      "name": "空鏡-07",
+      "difficultyName": "空鏡",
+      "score": 99,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9038,
+      "stars": 6,
+      "name": "空鏡-08",
+      "difficultyName": "空鏡",
+      "score": 81,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9039,
+      "stars": 6,
+      "name": "空鏡-09",
+      "difficultyName": "空鏡",
+      "score": 83,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9040,
+      "stars": 6,
+      "name": "空鏡-10",
+      "difficultyName": "空鏡",
+      "score": 85,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9041,
+      "stars": 6,
+      "name": "空鏡-11",
+      "difficultyName": "空鏡",
+      "score": 82,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9044,
+      "stars": 6,
+      "name": "空鏡-14",
+      "difficultyName": "空鏡",
+      "score": 76,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9045,
+      "stars": 6,
+      "name": "空鏡-15",
+      "difficultyName": "空鏡",
+      "score": 76,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9046,
+      "stars": 6,
+      "name": "空鏡-16",
+      "difficultyName": "空鏡",
+      "score": 76,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9047,
+      "stars": 6,
+      "name": "空鏡-17",
+      "difficultyName": "空鏡",
+      "score": 78,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9048,
+      "stars": 6,
+      "name": "空鏡-18",
+      "difficultyName": "空鏡",
+      "score": 75,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9049,
+      "stars": 6,
+      "name": "空鏡-19",
+      "difficultyName": "空鏡",
+      "score": 90,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9050,
+      "stars": 6,
+      "name": "空鏡-20",
+      "difficultyName": "空鏡",
+      "score": 82,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9051,
+      "stars": 6,
+      "name": "空鏡-21",
+      "difficultyName": "空鏡",
+      "score": 78,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9052,
+      "stars": 6,
+      "name": "空鏡-22",
+      "difficultyName": "空鏡",
+      "score": 78,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9053,
+      "stars": 6,
+      "name": "空鏡-23",
+      "difficultyName": "空鏡",
+      "score": 78,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9056,
+      "stars": 6,
+      "name": "空鏡-26",
+      "difficultyName": "空鏡",
+      "score": 85,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9057,
+      "stars": 6,
+      "name": "空鏡-27",
+      "difficultyName": "空鏡",
+      "score": 100,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9059,
+      "stars": 6,
+      "name": "空鏡-29",
+      "difficultyName": "空鏡",
+      "score": 75,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9060,
+      "stars": 6,
+      "name": "空鏡-30",
+      "difficultyName": "空鏡",
+      "score": 80,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9061,
+      "stars": 6,
+      "name": "空鏡-31",
+      "difficultyName": "空鏡",
+      "score": 87,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9062,
+      "stars": 6,
+      "name": "空鏡-32",
+      "difficultyName": "空鏡",
+      "score": 79,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9063,
+      "stars": 6,
+      "name": "空鏡-33",
+      "difficultyName": "空鏡",
+      "score": 80,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9064,
+      "stars": 6,
+      "name": "空鏡-34",
+      "difficultyName": "空鏡",
+      "score": 86,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9065,
+      "stars": 6,
+      "name": "空鏡-35",
+      "difficultyName": "空鏡",
+      "score": 79,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9066,
+      "stars": 6,
+      "name": "空鏡-36",
+      "difficultyName": "空鏡",
+      "score": 79,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9067,
+      "stars": 6,
+      "name": "空鏡-37",
+      "difficultyName": "空鏡",
+      "score": 76,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9068,
+      "stars": 6,
+      "name": "空鏡-38",
+      "difficultyName": "空鏡",
+      "score": 87,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9070,
+      "stars": 6,
+      "name": "空鏡-40",
+      "difficultyName": "空鏡",
+      "score": 85,
+      "maxTechnique": "xy_wing",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9071,
+      "stars": 7,
+      "name": "星潮-01",
+      "difficultyName": "星潮",
+      "score": 84,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9072,
+      "stars": 7,
+      "name": "星潮-02",
+      "difficultyName": "星潮",
+      "score": 90,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9073,
+      "stars": 7,
+      "name": "星潮-03",
+      "difficultyName": "星潮",
+      "score": 90,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9074,
+      "stars": 7,
+      "name": "星潮-04",
+      "difficultyName": "星潮",
+      "score": 87,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9075,
+      "stars": 7,
+      "name": "星潮-05",
+      "difficultyName": "星潮",
+      "score": 104,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9076,
+      "stars": 7,
+      "name": "星潮-06",
+      "difficultyName": "星潮",
+      "score": 104,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9077,
+      "stars": 7,
+      "name": "星潮-07",
+      "difficultyName": "星潮",
+      "score": 100,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9078,
+      "stars": 7,
+      "name": "星潮-08",
+      "difficultyName": "星潮",
+      "score": 84,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9079,
+      "stars": 7,
+      "name": "星潮-09",
+      "difficultyName": "星潮",
+      "score": 111,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9080,
+      "stars": 7,
+      "name": "星潮-10",
+      "difficultyName": "星潮",
+      "score": 91,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9081,
+      "stars": 7,
+      "name": "星潮-11",
+      "difficultyName": "星潮",
+      "score": 100,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9082,
+      "stars": 7,
+      "name": "星潮-12",
+      "difficultyName": "星潮",
+      "score": 78,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9083,
+      "stars": 7,
+      "name": "星潮-13",
+      "difficultyName": "星潮",
+      "score": 88,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9084,
+      "stars": 7,
+      "name": "星潮-14",
+      "difficultyName": "星潮",
+      "score": 104,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9085,
+      "stars": 7,
+      "name": "星潮-15",
+      "difficultyName": "星潮",
+      "score": 91,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9086,
+      "stars": 7,
+      "name": "星潮-16",
+      "difficultyName": "星潮",
+      "score": 82,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9087,
+      "stars": 7,
+      "name": "星潮-17",
+      "difficultyName": "星潮",
+      "score": 82,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9088,
+      "stars": 7,
+      "name": "星潮-18",
+      "difficultyName": "星潮",
+      "score": 82,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9089,
+      "stars": 7,
+      "name": "星潮-19",
+      "difficultyName": "星潮",
+      "score": 82,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9090,
+      "stars": 7,
+      "name": "星潮-20",
+      "difficultyName": "星潮",
+      "score": 82,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9091,
+      "stars": 7,
+      "name": "星潮-21",
+      "difficultyName": "星潮",
+      "score": 82,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9092,
+      "stars": 7,
+      "name": "星潮-22",
+      "difficultyName": "星潮",
+      "score": 105,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9093,
+      "stars": 7,
+      "name": "星潮-23",
+      "difficultyName": "星潮",
+      "score": 95,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9094,
+      "stars": 7,
+      "name": "星潮-24",
+      "difficultyName": "星潮",
+      "score": 93,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9095,
+      "stars": 7,
+      "name": "星潮-25",
+      "difficultyName": "星潮",
+      "score": 79,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9096,
+      "stars": 7,
+      "name": "星潮-26",
+      "difficultyName": "星潮",
+      "score": 83,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9097,
+      "stars": 7,
+      "name": "星潮-27",
+      "difficultyName": "星潮",
+      "score": 87,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9098,
+      "stars": 7,
+      "name": "星潮-28",
+      "difficultyName": "星潮",
+      "score": 111,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9099,
+      "stars": 7,
+      "name": "星潮-29",
+      "difficultyName": "星潮",
+      "score": 84,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9100,
+      "stars": 7,
+      "name": "星潮-30",
+      "difficultyName": "星潮",
+      "score": 85,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9101,
+      "stars": 7,
+      "name": "星潮-31",
+      "difficultyName": "星潮",
+      "score": 133,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9103,
+      "stars": 7,
+      "name": "星潮-33",
+      "difficultyName": "星潮",
+      "score": 111,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9104,
+      "stars": 7,
+      "name": "星潮-34",
+      "difficultyName": "星潮",
+      "score": 81,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9105,
+      "stars": 7,
+      "name": "星潮-35",
+      "difficultyName": "星潮",
+      "score": 83,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9106,
+      "stars": 7,
+      "name": "星潮-36",
+      "difficultyName": "星潮",
+      "score": 78,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9107,
+      "stars": 7,
+      "name": "星潮-37",
+      "difficultyName": "星潮",
+      "score": 89,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9108,
+      "stars": 7,
+      "name": "星潮-38",
+      "difficultyName": "星潮",
+      "score": 86,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9110,
+      "stars": 7,
+      "name": "星潮-40",
+      "difficultyName": "星潮",
+      "score": 76,
+      "maxTechnique": "swordfish",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9111,
+      "stars": 8,
+      "name": "玄鏈-01",
+      "difficultyName": "玄鏈",
+      "score": 111,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9112,
+      "stars": 8,
+      "name": "玄鏈-02",
+      "difficultyName": "玄鏈",
+      "score": 135,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9113,
+      "stars": 8,
+      "name": "玄鏈-03",
+      "difficultyName": "玄鏈",
+      "score": 139,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9114,
+      "stars": 8,
+      "name": "玄鏈-04",
+      "difficultyName": "玄鏈",
+      "score": 116,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9115,
+      "stars": 8,
+      "name": "玄鏈-05",
+      "difficultyName": "玄鏈",
+      "score": 128,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9116,
+      "stars": 8,
+      "name": "玄鏈-06",
+      "difficultyName": "玄鏈",
+      "score": 183,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9117,
+      "stars": 8,
+      "name": "玄鏈-07",
+      "difficultyName": "玄鏈",
+      "score": 172,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9118,
+      "stars": 8,
+      "name": "玄鏈-08",
+      "difficultyName": "玄鏈",
+      "score": 100,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9119,
+      "stars": 8,
+      "name": "玄鏈-09",
+      "difficultyName": "玄鏈",
+      "score": 115,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9120,
+      "stars": 8,
+      "name": "玄鏈-10",
+      "difficultyName": "玄鏈",
+      "score": 107,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9121,
+      "stars": 8,
+      "name": "玄鏈-11",
+      "difficultyName": "玄鏈",
+      "score": 124,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9122,
+      "stars": 8,
+      "name": "玄鏈-12",
+      "difficultyName": "玄鏈",
+      "score": 105,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9123,
+      "stars": 8,
+      "name": "玄鏈-13",
+      "difficultyName": "玄鏈",
+      "score": 105,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9124,
+      "stars": 8,
+      "name": "玄鏈-14",
+      "difficultyName": "玄鏈",
+      "score": 117,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9125,
+      "stars": 8,
+      "name": "玄鏈-15",
+      "difficultyName": "玄鏈",
+      "score": 109,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9126,
+      "stars": 8,
+      "name": "玄鏈-16",
+      "difficultyName": "玄鏈",
+      "score": 109,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9127,
+      "stars": 8,
+      "name": "玄鏈-17",
+      "difficultyName": "玄鏈",
+      "score": 133,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9128,
+      "stars": 8,
+      "name": "玄鏈-18",
+      "difficultyName": "玄鏈",
+      "score": 119,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9129,
+      "stars": 8,
+      "name": "玄鏈-19",
+      "difficultyName": "玄鏈",
+      "score": 142,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9130,
+      "stars": 8,
+      "name": "玄鏈-20",
+      "difficultyName": "玄鏈",
+      "score": 133,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9131,
+      "stars": 8,
+      "name": "玄鏈-21",
+      "difficultyName": "玄鏈",
+      "score": 127,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9132,
+      "stars": 8,
+      "name": "玄鏈-22",
+      "difficultyName": "玄鏈",
+      "score": 177,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9133,
+      "stars": 8,
+      "name": "玄鏈-23",
+      "difficultyName": "玄鏈",
+      "score": 199,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9134,
+      "stars": 8,
+      "name": "玄鏈-24",
+      "difficultyName": "玄鏈",
+      "score": 111,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9135,
+      "stars": 8,
+      "name": "玄鏈-25",
+      "difficultyName": "玄鏈",
+      "score": 176,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9136,
+      "stars": 8,
+      "name": "玄鏈-26",
+      "difficultyName": "玄鏈",
+      "score": 176,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9137,
+      "stars": 8,
+      "name": "玄鏈-27",
+      "difficultyName": "玄鏈",
+      "score": 174,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9138,
+      "stars": 8,
+      "name": "玄鏈-28",
+      "difficultyName": "玄鏈",
+      "score": 119,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9139,
+      "stars": 8,
+      "name": "玄鏈-29",
+      "difficultyName": "玄鏈",
+      "score": 139,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9140,
+      "stars": 8,
+      "name": "玄鏈-30",
+      "difficultyName": "玄鏈",
+      "score": 146,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9141,
+      "stars": 8,
+      "name": "玄鏈-31",
+      "difficultyName": "玄鏈",
+      "score": 150,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9142,
+      "stars": 8,
+      "name": "玄鏈-32",
+      "difficultyName": "玄鏈",
+      "score": 127,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9143,
+      "stars": 8,
+      "name": "玄鏈-33",
+      "difficultyName": "玄鏈",
+      "score": 118,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9144,
+      "stars": 8,
+      "name": "玄鏈-34",
+      "difficultyName": "玄鏈",
+      "score": 305,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9145,
+      "stars": 8,
+      "name": "玄鏈-35",
+      "difficultyName": "玄鏈",
+      "score": 181,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9146,
+      "stars": 8,
+      "name": "玄鏈-36",
+      "difficultyName": "玄鏈",
+      "score": 189,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9147,
+      "stars": 8,
+      "name": "玄鏈-37",
+      "difficultyName": "玄鏈",
+      "score": 123,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9148,
+      "stars": 8,
+      "name": "玄鏈-38",
+      "difficultyName": "玄鏈",
+      "score": 102,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9149,
+      "stars": 8,
+      "name": "玄鏈-39",
+      "difficultyName": "玄鏈",
+      "score": 102,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    },
+    {
+      "id": 9150,
+      "stars": 8,
+      "name": "玄鏈-40",
+      "difficultyName": "玄鏈",
+      "score": 139,
+      "maxTechnique": "aic",
+      "singleRatio": 1.0,
+      "reasons": [
+        "high score but single-ratio very high"
+      ]
+    }
+  ]
+}

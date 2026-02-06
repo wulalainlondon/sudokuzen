@@ -1,0 +1,687 @@
+{
+  "repetition": [
+    {
+      "stars": 0,
+      "level_ids": [
+        9001,
+        9002,
+        9003,
+        9005,
+        9006,
+        9007,
+        9010,
+        9011,
+        9012,
+        9013,
+        9014,
+        9015,
+        9016,
+        9017,
+        9018
+      ],
+      "names": [
+        "初心-01",
+        "初心-02",
+        "初心-03",
+        "初心-05",
+        "初心-06",
+        "初心-07",
+        "初心-10",
+        "初心-11",
+        "初心-12",
+        "初心-13",
+        "初心-14",
+        "初心-15",
+        "初心-16",
+        "初心-17",
+        "初心-18"
+      ],
+      "reason": "contiguous run len=15, maxTechnique=naked_single, small score/clue step changes"
+    },
+    {
+      "stars": 0,
+      "level_ids": [
+        9019,
+        9020,
+        9022,
+        9023,
+        9026,
+        9027,
+        9029,
+        9030,
+        9028,
+        9004,
+        9021,
+        9024
+      ],
+      "names": [
+        "初心-19",
+        "初心-20",
+        "初心-22",
+        "初心-23",
+        "初心-26",
+        "初心-27",
+        "初心-29",
+        "初心-30",
+        "初心-28",
+        "初心-04",
+        "初心-21",
+        "初心-24"
+      ],
+      "reason": "contiguous run len=12, maxTechnique=naked_single, small score/clue step changes"
+    },
+    {
+      "stars": 1,
+      "level_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "names": [
+        "法外之理",
+        "萬里無雲",
+        "阿賴耶識",
+        "自在乾坤",
+        "一葉知秋",
+        "智慧彼岸",
+        "圓覺之境",
+        "靈山法會",
+        "大象無形",
+        "大慈悲",
+        "妙法蓮華",
+        "究竟圓滿",
+        "物我兩忘",
+        "大智慧",
+        "金剛不滅",
+        "拈花一笑",
+        "大寂滅",
+        "大圓滿法",
+        "涅槃重生",
+        "當下即是",
+        "大光明",
+        "虛空藏法",
+        "般若波羅",
+        "無為而治",
+        "如來藏識",
+        "明鏡非台",
+        "生死一如",
+        "法性虛空",
+        "大禪定",
+        "無生法忍",
+        "入木三分",
+        "菩提本無",
+        "禪心映月",
+        "不可思議",
+        "真空不空",
+        "華嚴世界",
+        "空靈之音",
+        "三摩地",
+        "大道至簡"
+      ],
+      "reason": "contiguous run len=39, maxTechnique=naked_single, small score/clue step changes"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        46,
+        54,
+        57,
+        60,
+        64,
+        66,
+        72,
+        78,
+        42
+      ],
+      "names": [
+        "熵寂之末",
+        "多維卷縮",
+        "費米悖論",
+        "熱寂",
+        "源代碼",
+        "極限偏差",
+        "膜宇宙",
+        "代碼源泉",
+        "奇點投影"
+      ],
+      "reason": "contiguous run len=9, maxTechnique=locked_candidates, small score/clue step changes"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        56,
+        58,
+        61,
+        68
+      ],
+      "names": [
+        "能量耗盡",
+        "夢境解析",
+        "维度崩塌",
+        "邏輯斷裂"
+      ],
+      "reason": "contiguous run len=4, maxTechnique=locked_candidates, small score/clue step changes"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        75,
+        79,
+        47,
+        51,
+        52,
+        59,
+        65
+      ],
+      "names": [
+        "量子泡沫",
+        "意識孤島",
+        "虛無漂泊",
+        "暗能量",
+        "全息原理",
+        "宇宙微波",
+        "對稱性破損"
+      ],
+      "reason": "contiguous run len=7, maxTechnique=locked_candidates, small score/clue step changes"
+    },
+    {
+      "stars": 2,
+      "level_ids": [
+        67,
+        76,
+        43,
+        48
+      ],
+      "names": [
+        "虛空深處",
+        "時間停滯",
+        "普朗克尺度",
+        "大擠壓"
+      ],
+      "reason": "contiguous run len=4, maxTechnique=locked_candidates, small score/clue step changes"
+    },
+    {
+      "stars": 3,
+      "level_ids": [
+        95,
+        103,
+        114,
+        84
+      ],
+      "names": [
+        "白虎之爪",
+        "冥府之光",
+        "歲月之痕",
+        "混沌之眼"
+      ],
+      "reason": "contiguous run len=4, maxTechnique=naked_pair, small score/clue step changes"
+    },
+    {
+      "stars": 4,
+      "level_ids": [
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159
+      ],
+      "names": [
+        "光之洗禮",
+        "泉之靈動",
+        "火之考驗",
+        "人之靈氣",
+        "現實投影",
+        "宇宙之心",
+        "志之堅定",
+        "冰之堅韌",
+        "霜之冷傲",
+        "進化階梯",
+        "雷之威嚴",
+        "空之博大",
+        "水之柔情",
+        "生命密碼",
+        "雪之純潔",
+        "地之母體",
+        "神經網路",
+        "基因矩陣",
+        "物之本性",
+        "意之流向",
+        "星之璀璨",
+        "造物法則",
+        "湖之平靜",
+        "金之銳利",
+        "風之自由",
+        "月之溫柔",
+        "霧之迷離",
+        "土之厚重",
+        "虛擬框架",
+        "海之深邃",
+        "雲之縹緲",
+        "日之輝煌",
+        "河之奔流",
+        "木之生機",
+        "靈魂模版",
+        "萬物本源",
+        "意識架構",
+        "情之真切",
+        "山之沉穩"
+      ],
+      "reason": "contiguous run len=39, maxTechnique=naked_single, small score/clue step changes"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        174,
+        183,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        194,
+        198
+      ],
+      "names": [
+        "不可逾越",
+        "萬物理論",
+        "虛擬終焉",
+        "奇點復歸",
+        "受想行識",
+        "空間極限",
+        "能量回歸",
+        "不可忘卻",
+        "物質解體",
+        "諸法空相",
+        "主腦核心",
+        "無盡之始"
+      ],
+      "reason": "contiguous run len=12, maxTechnique=hidden_single, small score/clue step changes"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        176,
+        182,
+        197,
+        170
+      ],
+      "names": [
+        "不可觸摸",
+        "絕對真理",
+        "空即是色",
+        "終極一戰"
+      ],
+      "reason": "contiguous run len=4, maxTechnique=locked_candidates, small score/clue step changes"
+    },
+    {
+      "stars": 5,
+      "level_ids": [
+        180,
+        199,
+        200,
+        184
+      ],
+      "names": [
+        "不增不減",
+        "無眼耳鼻",
+        "矩陣中心",
+        "現實歸於零"
+      ],
+      "reason": "contiguous run len=4, maxTechnique=locked_candidates, small score/clue step changes"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9038,
+        9039,
+        9040,
+        9041
+      ],
+      "names": [
+        "空鏡-08",
+        "空鏡-09",
+        "空鏡-10",
+        "空鏡-11"
+      ],
+      "reason": "contiguous run len=4, maxTechnique=xy_wing, small score/clue step changes"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9044,
+        9045,
+        9046,
+        9047,
+        9048
+      ],
+      "names": [
+        "空鏡-14",
+        "空鏡-15",
+        "空鏡-16",
+        "空鏡-17",
+        "空鏡-18"
+      ],
+      "reason": "contiguous run len=5, maxTechnique=xy_wing, small score/clue step changes"
+    },
+    {
+      "stars": 6,
+      "level_ids": [
+        9050,
+        9051,
+        9052,
+        9053
+      ],
+      "names": [
+        "空鏡-20",
+        "空鏡-21",
+        "空鏡-22",
+        "空鏡-23"
+      ],
+      "reason": "contiguous run len=4, maxTechnique=xy_wing, small score/clue step changes"
+    },
+    {
+      "stars": 7,
+      "level_ids": [
+        9086,
+        9087,
+        9088,
+        9089,
+        9090,
+        9091
+      ],
+      "names": [
+        "星潮-16",
+        "星潮-17",
+        "星潮-18",
+        "星潮-19",
+        "星潮-20",
+        "星潮-21"
+      ],
+      "reason": "contiguous run len=6, maxTechnique=swordfish, small score/clue step changes"
+    },
+    {
+      "stars": 8,
+      "level_ids": [
+        9118,
+        9148,
+        9149,
+        9122,
+        9123,
+        9120,
+        9125,
+        9126,
+        9111,
+        9134,
+        9119,
+        9114,
+        9124,
+        9143,
+        9128,
+        9138,
+        9147,
+        9121,
+        9131,
+        9142,
+        9115
+      ],
+      "names": [
+        "玄鏈-08",
+        "玄鏈-38",
+        "玄鏈-39",
+        "玄鏈-12",
+        "玄鏈-13",
+        "玄鏈-10",
+        "玄鏈-15",
+        "玄鏈-16",
+        "玄鏈-01",
+        "玄鏈-24",
+        "玄鏈-09",
+        "玄鏈-04",
+        "玄鏈-14",
+        "玄鏈-33",
+        "玄鏈-18",
+        "玄鏈-28",
+        "玄鏈-37",
+        "玄鏈-11",
+        "玄鏈-21",
+        "玄鏈-32",
+        "玄鏈-05"
+      ],
+      "reason": "contiguous run len=21, maxTechnique=aic, small score/clue step changes"
+    },
+    {
+      "stars": 8,
+      "level_ids": [
+        9127,
+        9130,
+        9112,
+        9113,
+        9139,
+        9150,
+        9129,
+        9140,
+        9141
+      ],
+      "names": [
+        "玄鏈-17",
+        "玄鏈-20",
+        "玄鏈-02",
+        "玄鏈-03",
+        "玄鏈-29",
+        "玄鏈-40",
+        "玄鏈-19",
+        "玄鏈-30",
+        "玄鏈-31"
+      ],
+      "reason": "contiguous run len=9, maxTechnique=aic, small score/clue step changes"
+    },
+    {
+      "stars": 8,
+      "level_ids": [
+        9117,
+        9137,
+        9135,
+        9136,
+        9132,
+        9145,
+        9116
+      ],
+      "names": [
+        "玄鏈-07",
+        "玄鏈-27",
+        "玄鏈-25",
+        "玄鏈-26",
+        "玄鏈-22",
+        "玄鏈-35",
+        "玄鏈-06"
+      ],
+      "reason": "contiguous run len=7, maxTechnique=aic, small score/clue step changes"
+    }
+  ],
+  "curve_spikes": [
+    {
+      "stars": 6,
+      "from_id": 9057,
+      "to_id": 9058,
+      "from_name": "空鏡-27",
+      "to_name": "空鏡-28",
+      "from_score": 100,
+      "to_score": 74,
+      "delta": -26,
+      "baseline": 6.0,
+      "threshold_used": 24
+    },
+    {
+      "stars": 7,
+      "from_id": 9078,
+      "to_id": 9079,
+      "from_name": "星潮-08",
+      "to_name": "星潮-09",
+      "from_score": 84,
+      "to_score": 111,
+      "delta": 27,
+      "baseline": 9.0,
+      "threshold_used": 27
+    },
+    {
+      "stars": 7,
+      "from_id": 9098,
+      "to_id": 9099,
+      "from_name": "星潮-28",
+      "to_name": "星潮-29",
+      "from_score": 111,
+      "to_score": 84,
+      "delta": -27,
+      "baseline": 9.0,
+      "threshold_used": 27
+    },
+    {
+      "stars": 7,
+      "from_id": 9100,
+      "to_id": 9101,
+      "from_name": "星潮-30",
+      "to_name": "星潮-31",
+      "from_score": 85,
+      "to_score": 133,
+      "delta": 48,
+      "baseline": 9.0,
+      "threshold_used": 27
+    },
+    {
+      "stars": 7,
+      "from_id": 9101,
+      "to_id": 9102,
+      "from_name": "星潮-31",
+      "to_name": "星潮-32",
+      "from_score": 133,
+      "to_score": 72,
+      "delta": -61,
+      "baseline": 9.0,
+      "threshold_used": 27
+    },
+    {
+      "stars": 7,
+      "from_id": 9102,
+      "to_id": 9103,
+      "from_name": "星潮-32",
+      "to_name": "星潮-33",
+      "from_score": 72,
+      "to_score": 111,
+      "delta": 39,
+      "baseline": 9.0,
+      "threshold_used": 27
+    },
+    {
+      "stars": 7,
+      "from_id": 9103,
+      "to_id": 9104,
+      "from_name": "星潮-33",
+      "to_name": "星潮-34",
+      "from_score": 111,
+      "to_score": 81,
+      "delta": -30,
+      "baseline": 9.0,
+      "threshold_used": 27
+    },
+    {
+      "stars": 8,
+      "from_id": 9133,
+      "to_id": 9144,
+      "from_name": "玄鏈-23",
+      "to_name": "玄鏈-34",
+      "from_score": 199,
+      "to_score": 305,
+      "delta": 106,
+      "baseline": 2.0,
+      "threshold_used": 24
+    }
+  ],
+  "fake_hard": [
+    {
+      "id": 193,
+      "stars": 5,
+      "name": "亦復如是",
+      "difficultyName": "NIRVANA 寂滅",
+      "score": 105,
+      "maxTechnique": "hidden_pair",
+      "singleRatio": 1.0,
+      "clues": 17,
+      "reasons": [
+        "top-tier label but technique ceiling looks lower than expected"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,206 @@
+# Level Quality Audit
+
+- total levels: **350**
+- high repetition clusters: **151**
+- curve spikes: **34**
+- fake-hard candidates: **121**
+
+## High Repetition Clusters
+- stars 0 ids=[9001, 9002, 9003, 9005] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9002, 9003, 9005, 9006] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9003, 9005, 9006, 9007] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9005, 9006, 9007, 9010] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9006, 9007, 9010, 9011] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9007, 9010, 9011, 9012] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9010, 9011, 9012, 9013] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9011, 9012, 9013, 9014] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9012, 9013, 9014, 9015] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9013, 9014, 9015, 9016] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9014, 9015, 9016, 9017] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9015, 9016, 9017, 9018] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9019, 9020, 9022, 9023] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9020, 9022, 9023, 9026] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9022, 9023, 9026, 9027] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9023, 9026, 9027, 9029] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9026, 9027, 9029, 9030] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9027, 9029, 9030, 9028] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9029, 9030, 9028, 9004] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9030, 9028, 9004, 9021] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9028, 9004, 9021, 9024] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 0 ids=[9004, 9021, 9024, 9025] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[1, 2, 3, 4] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[2, 3, 4, 5] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[3, 4, 5, 6] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[4, 5, 6, 7] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[5, 6, 7, 8] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[6, 7, 8, 9] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[7, 8, 9, 10] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[8, 9, 10, 11] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[9, 10, 11, 12] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[10, 11, 12, 13] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[11, 12, 13, 14] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[12, 13, 14, 15] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[13, 14, 15, 16] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[14, 15, 16, 17] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[15, 16, 17, 18] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[16, 17, 18, 19] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[17, 18, 19, 20] reason=same maxTechnique=naked_single, low score/clue variance
+- stars 1 ids=[18, 19, 20, 21] reason=same maxTechnique=naked_single, low score/clue variance
+
+## Curve Spikes
+- stars 1 39(48) -> 40(70) delta=22
+- stars 5 162(89) -> 168(999) delta=910
+- stars 5 181(999) -> 193(105) delta=-894
+- stars 6 9033(78) -> 9034(99) delta=21
+- stars 6 9036(78) -> 9037(99) delta=21
+- stars 6 9057(100) -> 9058(74) delta=-26
+- stars 7 9078(84) -> 9079(111) delta=27
+- stars 7 9079(111) -> 9080(91) delta=-20
+- stars 7 9081(100) -> 9082(78) delta=-22
+- stars 7 9091(82) -> 9092(105) delta=23
+- stars 7 9097(87) -> 9098(111) delta=24
+- stars 7 9098(111) -> 9099(84) delta=-27
+- stars 7 9100(85) -> 9101(133) delta=48
+- stars 7 9101(133) -> 9102(72) delta=-61
+- stars 7 9102(72) -> 9103(111) delta=39
+- stars 7 9103(111) -> 9104(81) delta=-30
+- stars 8 9111(111) -> 9112(135) delta=24
+- stars 8 9113(139) -> 9114(116) delta=-23
+- stars 8 9115(128) -> 9116(183) delta=55
+- stars 8 9117(172) -> 9118(100) delta=-72
+- stars 8 9126(109) -> 9127(133) delta=24
+- stars 8 9128(119) -> 9129(142) delta=23
+- stars 8 9131(127) -> 9132(177) delta=50
+- stars 8 9132(177) -> 9133(199) delta=22
+- stars 8 9133(199) -> 9134(111) delta=-88
+- stars 8 9134(111) -> 9135(176) delta=65
+- stars 8 9137(174) -> 9138(119) delta=-55
+- stars 8 9138(119) -> 9139(139) delta=20
+- stars 8 9141(150) -> 9142(127) delta=-23
+- stars 8 9143(118) -> 9144(305) delta=187
+- stars 8 9144(305) -> 9145(181) delta=-124
+- stars 8 9146(189) -> 9147(123) delta=-66
+- stars 8 9147(123) -> 9148(102) delta=-21
+- stars 8 9149(102) -> 9150(139) delta=37
+
+## Fake-Hard Candidates
+- id=93 stars=3 score=75 max=locked_candidates singleRatio=1.00 reasons=high score but single-ratio very high
+- id=178 stars=5 score=75 max=naked_pair singleRatio=1.00 reasons=high score but single-ratio very high
+- id=196 stars=5 score=78 max=locked_candidates singleRatio=1.00 reasons=high score but single-ratio very high
+- id=164 stars=5 score=84 max=hidden_pair singleRatio=1.00 reasons=high score but single-ratio very high
+- id=162 stars=5 score=89 max=hidden_pair singleRatio=1.00 reasons=high score but single-ratio very high
+- id=168 stars=5 score=999 max=unknown singleRatio=1.00 reasons=high score but single-ratio very high
+- id=177 stars=5 score=999 max=unknown singleRatio=1.00 reasons=high score but single-ratio very high
+- id=181 stars=5 score=999 max=unknown singleRatio=1.00 reasons=high score but single-ratio very high
+- id=193 stars=5 score=105 max=hidden_pair singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9031 stars=6 score=80 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9032 stars=6 score=89 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9033 stars=6 score=78 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9034 stars=6 score=99 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9035 stars=6 score=83 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9036 stars=6 score=78 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9037 stars=6 score=99 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9038 stars=6 score=81 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9039 stars=6 score=83 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9040 stars=6 score=85 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9041 stars=6 score=82 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9044 stars=6 score=76 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9045 stars=6 score=76 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9046 stars=6 score=76 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9047 stars=6 score=78 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9048 stars=6 score=75 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9049 stars=6 score=90 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9050 stars=6 score=82 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9051 stars=6 score=78 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9052 stars=6 score=78 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9053 stars=6 score=78 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9056 stars=6 score=85 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9057 stars=6 score=100 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9059 stars=6 score=75 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9060 stars=6 score=80 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9061 stars=6 score=87 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9062 stars=6 score=79 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9063 stars=6 score=80 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9064 stars=6 score=86 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9065 stars=6 score=79 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9066 stars=6 score=79 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9067 stars=6 score=76 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9068 stars=6 score=87 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9070 stars=6 score=85 max=xy_wing singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9071 stars=7 score=84 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9072 stars=7 score=90 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9073 stars=7 score=90 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9074 stars=7 score=87 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9075 stars=7 score=104 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9076 stars=7 score=104 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9077 stars=7 score=100 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9078 stars=7 score=84 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9079 stars=7 score=111 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9080 stars=7 score=91 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9081 stars=7 score=100 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9082 stars=7 score=78 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9083 stars=7 score=88 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9084 stars=7 score=104 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9085 stars=7 score=91 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9086 stars=7 score=82 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9087 stars=7 score=82 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9088 stars=7 score=82 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9089 stars=7 score=82 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9090 stars=7 score=82 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9091 stars=7 score=82 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9092 stars=7 score=105 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9093 stars=7 score=95 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9094 stars=7 score=93 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9095 stars=7 score=79 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9096 stars=7 score=83 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9097 stars=7 score=87 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9098 stars=7 score=111 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9099 stars=7 score=84 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9100 stars=7 score=85 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9101 stars=7 score=133 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9103 stars=7 score=111 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9104 stars=7 score=81 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9105 stars=7 score=83 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9106 stars=7 score=78 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9107 stars=7 score=89 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9108 stars=7 score=86 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9110 stars=7 score=76 max=swordfish singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9111 stars=8 score=111 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9112 stars=8 score=135 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9113 stars=8 score=139 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9114 stars=8 score=116 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9115 stars=8 score=128 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9116 stars=8 score=183 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9117 stars=8 score=172 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9118 stars=8 score=100 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9119 stars=8 score=115 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9120 stars=8 score=107 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9121 stars=8 score=124 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9122 stars=8 score=105 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9123 stars=8 score=105 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9124 stars=8 score=117 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9125 stars=8 score=109 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9126 stars=8 score=109 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9127 stars=8 score=133 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9128 stars=8 score=119 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9129 stars=8 score=142 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9130 stars=8 score=133 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9131 stars=8 score=127 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9132 stars=8 score=177 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9133 stars=8 score=199 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9134 stars=8 score=111 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9135 stars=8 score=176 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9136 stars=8 score=176 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9137 stars=8 score=174 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9138 stars=8 score=119 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9139 stars=8 score=139 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9140 stars=8 score=146 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9141 stars=8 score=150 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9142 stars=8 score=127 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9143 stars=8 score=118 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9144 stars=8 score=305 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9145 stars=8 score=181 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9146 stars=8 score=189 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9147 stars=8 score=123 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9148 stars=8 score=102 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
+- id=9149 stars=8 score=102 max=aic singleRatio=1.00 reasons=high score but single-ratio very high
