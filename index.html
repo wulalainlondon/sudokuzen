@@ -821,9 +821,7 @@
             color: var(--text-main);
             cursor: pointer;
             border-radius: 16px;
-            box-shadow:
-                0 4px 10px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.58);
+            box-shadow: none;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -855,18 +853,14 @@
 
         .num-btn:active {
             transform: translateY(1px) scale(0.97);
-            box-shadow:
-                0 4px 8px rgba(0, 0, 0, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            box-shadow: none;
         }
 
         @media (hover: hover) and (pointer: fine) {
             .num-btn:hover {
                 transform: translateY(-1px);
                 border-color: color-mix(in srgb, var(--accent-strong) 45%, var(--cell-border));
-                box-shadow:
-                    0 9px 16px rgba(0, 0, 0, 0.09),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+                box-shadow: none;
             }
         }
 
