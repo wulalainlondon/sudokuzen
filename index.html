@@ -177,7 +177,7 @@
         .mini-btn {
             width: 32px;
             height: 32px;
-            border-radius: 10px;
+            border-radius: 999px;
             border: 1px solid var(--cell-border);
             background: var(--btn-bg);
             color: var(--text-light);
@@ -186,6 +186,11 @@
             justify-content: center;
             cursor: pointer;
             padding: 0;
+        }
+
+        .mini-btn.alt {
+            background: transparent;
+            border-color: color-mix(in srgb, var(--cell-border) 70%, transparent);
         }
 
         .mini-btn svg {
@@ -1026,16 +1031,23 @@
         </header>
 
         <!-- 2. 數獨格上方資訊列 (對齊格子的左右兩端) -->
-    <div class="grid-info-bar">
-        <div class="stats" id="timer">ZEN / 00:00</div>
-        <div class="grid-right">
-            <div class="grid-actions">
-                <button class="mini-btn" id="note-toggle" onclick="toggleNoteMode()" aria-label="Toggle Notes">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                        <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                    </svg>
-                </button>
+        <div class="grid-info-bar">
+            <div class="stats" id="timer">ZEN / 00:00</div>
+            <div class="grid-right">
+                <div class="grid-actions">
+                    <button class="mini-btn alt" onclick="toggleTheme()" aria-label="Toggle Theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5" />
+                            <path
+                                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                        </svg>
+                    </button>
+                    <button class="mini-btn" id="note-toggle" onclick="toggleNoteMode()" aria-label="Toggle Notes">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                    </button>
                 <button class="mini-btn" onclick="erase()" aria-label="Erase">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 6h18" />
@@ -1053,14 +1065,6 @@
         <div class="numpad" id="numpad"></div>
 
     <div class="controls">
-        <button class="ctrl-btn" onclick="toggleTheme()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="5" />
-                <path
-                    d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-            </svg>
-            Theme
-        </button>
     </div>
     </div>
 

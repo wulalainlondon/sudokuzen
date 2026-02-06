@@ -59,3 +59,6 @@ TODO / handoff:
 
 - 將 Notes/Erase 迷你按鈕移到計時器右側，並移除底部 controls 中的 Notes/Erase。
 - 調整 numpad 底部 padding（含 safe-area），避免底部被切。
+
+- Theme 按鈕移到計時器右側（與 Notes/Erase 同列），底部 controls 僅保留容器。
+- Notes/Erase/Theme 改為圓形 mini buttons。
