@@ -54,3 +54,5 @@ TODO / handoff:
 - 嘗試安裝 playwright 以跑 web_game_playwright_client.js，但因 network ENOTFOUND 無法下載套件；因此未能產生測試截圖。
 
 - 新增右下角版本號顯示（version-badge），並將 APP_VERSION 升級為 2026.02.06.2；sw.js CACHE_VERSION 同步。
+
+- 版本號徽章移到選關畫面（level-screen）內，遊戲中不顯示。
