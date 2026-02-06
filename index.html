@@ -674,6 +674,21 @@
             white-space: nowrap;
         }
 
+        .version-badge {
+            position: fixed;
+            right: 10px;
+            bottom: 10px;
+            font-size: 0.68rem;
+            letter-spacing: 0.6px;
+            color: var(--text-light);
+            background: color-mix(in srgb, var(--btn-bg) 70%, transparent);
+            border: 1px solid color-mix(in srgb, var(--cell-border) 70%, transparent);
+            border-radius: 999px;
+            padding: 4px 8px;
+            z-index: 50;
+            pointer-events: none;
+        }
+
         #level-list {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -943,6 +958,8 @@
             <button class="back-btn" style="border: none; font-size: 0.8rem; color: var(--text-light);"
                 onclick="showLevelScreen()">返回選關</button>
         </div>
+
+        <div class="version-badge" id="version-badge">v--</div>
 
         <!-- 1. 頂部標題與 Quit 按鈕 -->
         <header>
@@ -1805,7 +1822,8 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.02.06.1';
+        const APP_VERSION = '2026.02.06.2';
+        document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
         function enforceAppVersion() {
             const key = 'sudoku_app_version';
             const stored = localStorage.getItem(key);

@@ -52,3 +52,5 @@ TODO / handoff:
 - 新增強制版本號檢查：index.html 內建 APP_VERSION，若偵測版本不同就清除 SW/Cache 並 reload。
 - sw.js 更新為版本化 CACHE_NAME（2026.02.06.1）。
 - 嘗試安裝 playwright 以跑 web_game_playwright_client.js，但因 network ENOTFOUND 無法下載套件；因此未能產生測試截圖。
+
+- 新增右下角版本號顯示（version-badge），並將 APP_VERSION 升級為 2026.02.06.2；sw.js CACHE_VERSION 同步。
