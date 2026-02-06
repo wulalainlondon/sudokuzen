@@ -56,3 +56,6 @@ TODO / handoff:
 - 新增右下角版本號顯示（version-badge），並將 APP_VERSION 升級為 2026.02.06.2；sw.js CACHE_VERSION 同步。
 
 - 版本號徽章移到選關畫面（level-screen）內，遊戲中不顯示。
+
+- 將 Notes/Erase 迷你按鈕移到計時器右側，並移除底部 controls 中的 Notes/Erase。
+- 調整 numpad 底部 padding（含 safe-area），避免底部被切。
