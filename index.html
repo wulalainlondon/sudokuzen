@@ -1870,7 +1870,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.02.06.2';
+        const APP_VERSION = '2026.02.07.1';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
         function enforceAppVersion() {
             const key = 'sudoku_app_version';
@@ -1900,15 +1900,15 @@
                 reg.onupdatefound = () => {
                     const installingWorker = reg.installing;
                     installingWorker.onstatechange = () => {
-                        // 當新 Service Worker 安裝完成，且頁面目前已有 Controller (代表不是第一次造訪)
                         if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // 使用系統原生對話框或自定義 UI 通知使用者
                             if (confirm('發現新的版本與關卡！是否立即更新以體驗最新內容？')) {
                                 window.location.reload();
                             }
                         }
                     };
                 };
+                // 主動觸發一次更新檢查
+                reg.update();
             }).catch(err => console.error('SW init fail:', err));
         }
         initFirebase();
