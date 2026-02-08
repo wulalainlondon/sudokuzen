@@ -475,6 +475,69 @@
             line-height: 1.5;
         }
 
+        #pre-level-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .pre-level-panel {
+            width: min(92vw, 360px);
+            background: var(--grid-bg);
+            border: 1px solid var(--cell-border);
+            border-radius: 16px;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .pre-level-panel h2 {
+            font-weight: 300;
+            letter-spacing: 4px;
+            margin: 0 0 8px 0;
+        }
+
+        .pre-level-record {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin: 0 0 12px 0;
+        }
+
+        .pre-level-record.has-record {
+            color: var(--accent-strong);
+            font-weight: 500;
+        }
+
+        /* Dark mode specific refinements */
+        [data-theme="dark"] #pre-level-modal {
+            background: rgba(0, 0, 0, 0.65);
+        }
+
+        [data-theme="dark"] .pre-level-panel {
+            background: rgba(34, 37, 42, 0.9);
+            /* var(--grid-bg) with opacity */
+            border-color: rgba(90, 169, 255, 0.25);
+            /* var(--accent-strong) with low opacity */
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4),
+                0 0 15px rgba(90, 169, 255, 0.05);
+            /* Subtle glow */
+        }
+
+        [data-theme="dark"] .pre-level-record.has-record {
+            color: #5AA9FF;
+            text-shadow: 0 0 10px rgba(90, 169, 255, 0.3);
+        }
+
         #replay-modal {
             position: fixed;
             inset: 0;
@@ -970,6 +1033,20 @@
         </div>
         <div id="level-list"></div>
         <div class="version-badge" id="version-badge">v--</div>
+    </div>
+
+    <div id="pre-level-modal">
+        <div class="pre-level-panel">
+            <h2 id="pre-level-name">LEVEL NAME</h2>
+            <p id="pre-level-best-record" class="pre-level-record">尚無通關紀錄</p>
+            <div class="leaderboard-card">
+                <div class="leaderboard-title">首通榜 TOP 3</div>
+                <div class="leaderboard-list" id="pre-level-leaderboard">載入中...</div>
+            </div>
+            <button class="resume-btn" id="pre-level-start-btn">開始挑戰</button>
+            <button class="back-btn" style="border: none; font-size: 0.8rem; color: var(--text-light);"
+                id="pre-level-back-btn">選擇其他關卡</button>
+        </div>
     </div>
 
     <div class="game-container">
@@ -1671,6 +1748,97 @@
         }
 
         let currentTab = 0;
+        let pendingLevelId = null;
+
+        const preLevelModalEl = document.getElementById('pre-level-modal');
+        const preLevelNameEl = document.getElementById('pre-level-name');
+        const preLevelBestRecordEl = document.getElementById('pre-level-best-record');
+        const preLevelLeaderboardEl = document.getElementById('pre-level-leaderboard');
+        const preLevelStartBtn = document.getElementById('pre-level-start-btn');
+        const preLevelBackBtn = document.getElementById('pre-level-back-btn');
+
+        function showPreLevelModal(levelId) {
+            pendingLevelId = levelId;
+            const level = levels.find(l => l.id === levelId);
+            if (!level) return;
+
+            // Set level name
+            preLevelNameEl.textContent = level.displayName;
+
+            // Show personal best record
+            const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+            const record = records[levelId];
+            if (record) {
+                let bestTime, bestStars;
+                if (typeof record === 'number') {
+                    bestTime = record;
+                    bestStars = 1;
+                } else {
+                    bestTime = record.time;
+                    bestStars = record.stars || 1;
+                }
+                const timeStr = `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}`;
+                preLevelBestRecordEl.textContent = `最佳紀錄：${timeStr} ${'★'.repeat(bestStars)}${'☆'.repeat(3 - bestStars)}`;
+                preLevelBestRecordEl.classList.add('has-record');
+            } else {
+                preLevelBestRecordEl.textContent = '尚無通關紀錄';
+                preLevelBestRecordEl.classList.remove('has-record');
+            }
+
+            // Load leaderboard
+            preLevelLeaderboardEl.textContent = '載入中...';
+            loadPreLevelLeaderboard(levelId);
+
+            // Show modal
+            preLevelModalEl.style.display = 'flex';
+        }
+
+        function hidePreLevelModal() {
+            preLevelModalEl.style.display = 'none';
+            pendingLevelId = null;
+        }
+
+        function startLevelFromModal() {
+            if (pendingLevelId === null) return;
+            hidePreLevelModal();
+            document.getElementById('level-screen').style.display = 'none';
+            initGame(pendingLevelId);
+        }
+
+        async function loadPreLevelLeaderboard(levelId) {
+            if (!firebaseReady) {
+                preLevelLeaderboardEl.textContent = '尚未啟用 Firebase 排行。';
+                return;
+            }
+            try {
+                const snap = await db.collection('level_first_clears')
+                    .doc(String(levelId))
+                    .collection('players')
+                    .orderBy('firstTimeSec', 'asc')
+                    .limit(3)
+                    .get();
+                const rows = snap.docs.map(d => d.data());
+                if (!rows.length) {
+                    preLevelLeaderboardEl.textContent = '尚無玩家首通紀錄';
+                } else {
+                    preLevelLeaderboardEl.innerHTML = rows.map((r, i) =>
+                        `${i + 1}. ${r.alias}  ${formatSeconds(r.firstTimeSec)}  ${'★'.repeat(r.firstStars)}`
+                    ).join('<br>');
+                }
+            } catch (e) {
+                console.warn('load pre-level leaderboard failed:', e);
+                preLevelLeaderboardEl.textContent = '載入失敗';
+            }
+        }
+
+        // Bind modal button events
+        if (preLevelStartBtn) preLevelStartBtn.onclick = startLevelFromModal;
+        if (preLevelBackBtn) preLevelBackBtn.onclick = hidePreLevelModal;
+        if (preLevelModalEl) {
+            preLevelModalEl.addEventListener('click', (e) => {
+                if (e.target === preLevelModalEl) hidePreLevelModal();
+            });
+        }
 
         function showLevelScreen() {
             document.getElementById('pause-screen').style.display = 'none';
@@ -1678,6 +1846,7 @@
             clearInterval(timerInterval);
             overlay.style.display = 'none';
             closeReplayModal();
+            hidePreLevelModal();
             document.getElementById('level-screen').style.display = 'flex';
             switchTab(currentTab);
         }
@@ -1713,10 +1882,7 @@
 
                 const item = document.createElement('div');
                 item.className = `level-item ${bestTime !== null ? 'completed' : ''}`;
-                item.onclick = () => {
-                    document.getElementById('level-screen').style.display = 'none';
-                    initGame(l.id);
-                };
+                item.onclick = () => showPreLevelModal(l.id);
 
                 const timeStr = bestTime !== null ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}` : '';
                 const starsHtml = bestStars > 0 ?
