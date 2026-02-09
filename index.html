@@ -821,6 +821,13 @@
             transition: transform 0.2s, border-color 0.2s;
         }
 
+        .level-order {
+            font-size: 0.62rem;
+            color: var(--text-light);
+            margin-top: 2px;
+            letter-spacing: 1px;
+        }
+
         .level-item:active {
             transform: scale(0.92);
         }
@@ -1892,8 +1899,10 @@
                 const starsHtml = bestStars > 0 ?
                     '<div class="level-stars">' + '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span></div>' : '';
 
+                const orderLabel = String(index + 1).padStart(2, '0');
                 item.innerHTML = `
                     <div class="level-num">${l.displayName}</div>
+                    <div class="level-order">${orderLabel}</div>
                     ${starsHtml}
                     <div class="level-stats">${timeStr}</div>
                 `;
