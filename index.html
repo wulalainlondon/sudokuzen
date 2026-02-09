@@ -1420,6 +1420,7 @@
         function initGame(levelId = 1, forceReset = false) {
             currentLevel = levels.find(l => l.id === levelId) || levels[0];
             closeReplayModal();
+            localStorage.setItem('sudoku_last_level', String(currentLevel.id));
 
             // 嘗試載入存檔
             const saved = forceReset ? null : loadGameStatus(currentLevel.id);
@@ -1942,9 +1943,7 @@
             if (!Number.isFinite(lastId)) return;
             const saved = loadGameStatus(lastId);
             if (!saved) return;
-            if (confirm('偵測到未完成關卡，是否繼續？')) {
-                initGame(lastId);
-            }
+            initGame(lastId);
         }
 
         function erase() {
