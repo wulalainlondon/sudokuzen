@@ -386,7 +386,7 @@
             left: 50%;
             bottom: calc(20px + env(safe-area-inset-bottom));
             transform: translateX(-50%) translateY(10px);
-            background: rgba(214, 48, 49, 0.95);
+            background: rgba(52, 73, 94, 0.95);
             color: #fff;
             padding: 10px 14px;
             border-radius: 14px;
@@ -396,6 +396,14 @@
             pointer-events: none;
             z-index: 300;
             transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        #feedback-toast.success {
+            background: rgba(46, 204, 113, 0.92);
+        }
+
+        #feedback-toast.error {
+            background: rgba(214, 48, 49, 0.95);
         }
 
         #feedback-toast.show {
@@ -1515,9 +1523,12 @@
             }
         }
 
-        function showFeedback(msg) {
+        function showFeedback(msg, tone = 'neutral') {
             clearTimeout(feedbackTimer);
             feedbackToast.textContent = msg;
+            feedbackToast.classList.remove('success', 'error');
+            if (tone === 'success') feedbackToast.classList.add('success');
+            if (tone === 'error') feedbackToast.classList.add('error');
             feedbackToast.classList.add('show');
             feedbackTimer = setTimeout(() => {
                 feedbackToast.classList.remove('show');
@@ -1614,7 +1625,7 @@
             if (justCompletedRow) parts.push('一列');
             if (justCompletedCol) parts.push('一欄');
             if (justCompletedBox) parts.push('一宮');
-            showFeedback(`完成 ${parts.join(' + ')}！`);
+            showFeedback(`完成 ${parts.join(' + ')}！`, 'success');
         }
 
         function handleInput(num) {
@@ -1642,7 +1653,7 @@
                     cellEl.classList.add('wrong-preview');
                     updateCellDisplay(cellEl, data);
                     markErrorArea(selectedIdx);
-                    showFeedback(`錯誤！${3 - errors} 次機會剩餘`);
+                    showFeedback(`錯誤！${3 - errors} 次機會剩餘`, 'error');
                     playErrorFeedback();
                     recordAction('mistake', `${cellLabel(selectedIdx)} 輸入 ${num}（錯誤）`);
                     setTimeout(() => {
@@ -1711,7 +1722,7 @@
             document.getElementById('win-stars').textContent = '★'.repeat(earnedStars) + '☆'.repeat(3 - earnedStars);
             createConfettiBurst(56);
             winCelebrationEl.style.display = 'flex';
-            showFeedback('完成！太棒了！');
+            showFeedback('完成！太棒了！', 'success');
             if (navigator.vibrate) navigator.vibrate([90, 40, 90]);
         }
 
