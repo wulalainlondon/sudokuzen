@@ -62,3 +62,5 @@ TODO / handoff:
 
 - Theme 按鈕移到計時器右側（與 Notes/Erase 同列），底部 controls 僅保留容器。
 - Notes/Erase/Theme 改為圓形 mini buttons。
+
+- 解析星潮關卡 id=9100（星雲躍遷）之邏輯解題：logic_solve trace 共 65 步，包含 1 次 XY-Wing（pivot r2c1, wings r2c4/r3c2，消去 r3c6 的 8），其餘為隱性/顯性單數。
