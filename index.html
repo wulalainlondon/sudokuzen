@@ -1401,6 +1401,7 @@
 
             document.getElementById('pause-level-name').textContent = currentLevel.displayName;
             document.getElementById('pause-timer').textContent = `${mins}:${secs}`;
+            saveGameStatus();
             loadLevelLeaderboard(currentLevel.id);
             pauseScreen.style.display = 'flex';
         }
@@ -1463,6 +1464,7 @@
                 actionHistory: actionHistory
             };
             localStorage.setItem(`sudoku_save_${currentLevel.id}`, JSON.stringify(data));
+            localStorage.setItem('sudoku_last_level', String(currentLevel.id));
         }
 
         function loadGameStatus(levelId) {
@@ -1933,6 +1935,18 @@
             localStorage.setItem('sudoku_theme', next);
         }
 
+        function maybeResumeLastGame() {
+            const lastIdRaw = localStorage.getItem('sudoku_last_level');
+            if (!lastIdRaw) return;
+            const lastId = parseInt(lastIdRaw, 10);
+            if (!Number.isFinite(lastId)) return;
+            const saved = loadGameStatus(lastId);
+            if (!saved) return;
+            if (confirm('偵測到未完成關卡，是否繼續？')) {
+                initGame(lastId);
+            }
+        }
+
         function erase() {
             if (selectedIdx !== null && !cellsData[selectedIdx].fixed) {
                 const oldVal = cellsData[selectedIdx].value;
@@ -2091,7 +2105,18 @@
                 if (e.target === replayModalEl) closeReplayModal();
             });
         }
+        window.addEventListener('beforeunload', () => {
+            if (document.querySelector('.game-container').style.display === 'flex') {
+                saveGameStatus();
+            }
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && document.querySelector('.game-container').style.display === 'flex') {
+                saveGameStatus();
+            }
+        });
         showLevelScreen();
+        maybeResumeLastGame();
     </script>
 </body>
 
