@@ -1803,9 +1803,10 @@
 
         function startLevelFromModal() {
             if (pendingLevelId === null) return;
+            const levelId = pendingLevelId;
             hidePreLevelModal();
             document.getElementById('level-screen').style.display = 'none';
-            initGame(pendingLevelId);
+            initGame(levelId);
         }
 
         async function loadPreLevelLeaderboard(levelId) {
