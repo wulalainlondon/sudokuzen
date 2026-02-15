@@ -1,3 +1,8 @@
-// Do not commit real Firebase keys to git.
-// Fill this object locally when you need leaderboard integration.
-window.SUDOKU_FIREBASE_CONFIG = null;
+window.SUDOKU_FIREBASE_CONFIG = {
+  apiKey: "REVOKED_FIREBASE_API_KEY",
+  authDomain: "sudokuzen-f2aa3.firebaseapp.com",
+  projectId: "sudokuzen-f2aa3",
+  storageBucket: "sudokuzen-f2aa3.firebasestorage.app",
+  messagingSenderId: "123072021375",
+  appId: "1:123072021375:web:a7cee11c8bd7f6dffd904a"
+};
