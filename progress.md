@@ -66,3 +66,8 @@ TODO / handoff:
 - 解析星潮關卡 id=9100（星雲躍遷）之邏輯解題：logic_solve trace 共 65 步，包含 1 次 XY-Wing（pivot r2c1, wings r2c4/r3c2，消去 r3c6 的 8），其餘為隱性/顯性單數。
 
 - UI 修正：將 `.sudoku-grid` 與 `.grid-info-bar` 改為固定上限寬度 `min(100%, 420px)`，並移除 `max-height` 斷點中的 `vh/dvh` 棋盤覆寫，避免通關星星動畫後棋盤尺寸跳動/變形。
+- 關卡卡片尺寸統一修正：`#level-list` 改為固定 `grid-auto-rows`（依 5 欄計算），`level-item` 使用 `width/height:100%` + `overflow:hidden`，避免有星星/時間時撐高。
+- 關卡卡片內容高度統一：未通關卡片也渲染星星/時間佔位（`is-empty` + `visibility:hidden`），確保各分頁與通關狀態視覺尺寸一致。
+- 已嘗試用 Playwright 本地截圖驗證（output/level-size-check/shot-0.png）；在沙箱需提權才能啟動瀏覽器。
+- 二次修正（卡片尺寸）：改用 `syncLevelCardSize()` 以每張卡片實際寬度回寫高度（`height = width`），並在 `renderLevelGrid()` 後與 `resize` 時同步，避免 CSS row 百分比在不同容器高度下失準。
+- Playwright 實測（414x896, 混合已通關資料）結果：禪/虛空分頁 `level-item` 皆為 `w==h`（約 65.19/65.20px，差異為子像素四捨五入）。

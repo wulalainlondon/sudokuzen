@@ -831,7 +831,7 @@
 
         #level-list {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 12px;
             width: 100%;
             max-width: 400px;
@@ -842,17 +842,19 @@
         }
 
         .level-item {
-            aspect-ratio: 1/1;
             background: var(--grid-bg);
             border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            width: 100%;
             border: 1px solid var(--cell-border);
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
             transition: transform 0.2s, border-color 0.2s;
+            overflow: hidden;
+            min-height: 0;
         }
 
         .level-order {
@@ -875,11 +877,18 @@
             font-size: 0.72rem;
             font-weight: 500;
             text-align: center;
+            line-height: 1.15;
+            min-height: 2.2em;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0 3px;
         }
 
         .level-stats {
             font-size: 0.7rem;
             color: var(--text-light);
+            min-height: 1em;
         }
 
         .level-stars {
@@ -887,10 +896,16 @@
             color: #F1C40F;
             /* 金色星星 */
             margin-top: 2px;
+            min-height: 1em;
         }
 
         .level-stars .empty-star {
             color: var(--cell-border);
+        }
+
+        .level-stars.is-empty,
+        .level-stats.is-empty {
+            visibility: hidden;
         }
 
         /* Scrollbar styling */
@@ -1932,6 +1947,14 @@
             return levels.filter(l => l.stars === currentTab);
         }
 
+        function syncLevelCardSize() {
+            const items = document.querySelectorAll('#level-list .level-item');
+            items.forEach((item) => {
+                const w = item.getBoundingClientRect().width;
+                if (w > 0) item.style.height = `${w}px`;
+            });
+        }
+
         function renderLevelGrid() {
             const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
             const list = document.getElementById('level-list');
@@ -1958,19 +1981,26 @@
                 item.className = `level-item ${bestTime !== null ? 'completed' : ''}`;
                 item.onclick = () => showPreLevelModal(l.id);
 
-                const timeStr = bestTime !== null ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}` : '';
-                const starsHtml = bestStars > 0 ?
-                    '<div class="level-stars">' + '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span></div>' : '';
+                const hasRecord = bestTime !== null;
+                const timeStr = hasRecord
+                    ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}`
+                    : '--:--';
+                const starsClass = bestStars > 0 ? 'level-stars' : 'level-stars is-empty';
+                const starsText = bestStars > 0
+                    ? '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span>'
+                    : '☆☆☆';
+                const statsClass = hasRecord ? 'level-stats' : 'level-stats is-empty';
 
                 const orderLabel = String(index + 1).padStart(2, '0');
                 item.innerHTML = `
                     <div class="level-num">${l.displayName}</div>
                     <div class="level-order">${orderLabel}</div>
-                    ${starsHtml}
-                    <div class="level-stats">${timeStr}</div>
+                    <div class="${starsClass}">${starsText}</div>
+                    <div class="${statsClass}">${timeStr}</div>
                 `;
                 list.appendChild(item);
             });
+            requestAnimationFrame(syncLevelCardSize);
         }
 
         function hashStringToSeed(str) {
@@ -2227,6 +2257,11 @@
         window.addEventListener('beforeunload', () => {
             if (document.querySelector('.game-container').style.display === 'flex') {
                 saveGameStatus();
+            }
+        });
+        window.addEventListener('resize', () => {
+            if (document.getElementById('level-screen').style.display === 'flex') {
+                requestAnimationFrame(syncLevelCardSize);
             }
         });
         document.addEventListener('visibilitychange', () => {
