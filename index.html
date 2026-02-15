@@ -2045,8 +2045,11 @@
         }
 
         function startPoolRandom() {
-            const pool = midPoolLevels.length ? midPoolLevels : buildMidMasterPool();
-            if (!pool.length) return;
+            if (!midPoolLevels.length) {
+                showFeedback('今日隨機題庫載入失敗，請稍後重試', 'error');
+                return;
+            }
+            const pool = midPoolLevels;
             const idx = Math.floor(Math.random() * pool.length);
             showPreLevelModal(pool[idx].id);
         }
@@ -2202,7 +2205,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.02.15.4';
+        const APP_VERSION = '2026.02.15.5';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
         function enforceAppVersion() {
             const key = 'sudoku_app_version';
