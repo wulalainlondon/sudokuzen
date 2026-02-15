@@ -153,8 +153,8 @@
 
         /* 關鍵修正：資訊列與數獨格同寬，並左右對齊 */
         .grid-info-bar {
-            /* 必須與 .sudoku-grid 的寬度計算法完全一致 */
-            width: min(100%, calc(100vw - 30px), 42vh);
+            /* 與 .sudoku-grid 使用同一固定寬度，避免視窗高度波動造成變形 */
+            width: min(100%, 420px);
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
@@ -236,9 +236,8 @@
             border-radius: 12px;
             overflow: hidden;
 
-            /* 寬度限制：max 55dvh，防止垂直擠壓 */
-            width: min(100%, 55vh);
-            width: min(100%, 55dvh);
+            /* 固定棋盤尺寸上限，避免通關動畫或高度變化導致尺寸跳動 */
+            width: min(100%, 420px);
             aspect-ratio: 1 / 1;
 
             margin: 0 auto;
@@ -251,7 +250,7 @@
             justify-content: center;
             align-items: center;
             /* 使用 vw (視窗寬度單位) 讓字體隨螢幕寬度縮放 */
-            font-size: min(5.5vw, 24px);
+            font-size: min(5.0vw, 22px);
             font-weight: 300;
             border: 0.5px solid var(--cell-border);
             cursor: pointer;
@@ -751,6 +750,33 @@
             box-shadow: 0 4px 12px rgba(9, 132, 227, 0.3);
         }
 
+        .random-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 6px 0 14px;
+            flex-wrap: wrap;
+        }
+
+        .random-btn {
+            border: 1px solid color-mix(in srgb, var(--cell-border) 78%, transparent);
+            background: color-mix(in srgb, var(--btn-bg) 96%, #ffffff 4%);
+            color: var(--text-main);
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .random-btn.ghost {
+            background: transparent;
+        }
+
+        .random-btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
         .alias-config {
             width: 100%;
             max-width: 400px;
@@ -881,11 +907,11 @@
         .numpad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            width: min(88vw, 320px);
+            gap: 6px;
+            width: min(84vw, 300px);
             margin-top: auto;
-            margin-bottom: 6px;
-            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            margin-bottom: 0;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom));
         }
 
         .num-btn {
@@ -952,16 +978,25 @@
 
         @media (max-height: 780px) {
             .numpad {
-                gap: 6px;
-                width: min(86vw, 300px);
+                gap: 5px;
+                width: min(82vw, 280px);
             }
 
             .num-btn {
-                font-size: min(5.8vw, 1.2rem);
+                font-size: min(5.2vw, 1.1rem);
                 border-radius: 14px;
             }
         }
+        @media (max-height: 850px) {
+            .numpad {
+                width: min(83vw, 290px);
+                gap: 6px;
+            }
 
+            .num-btn {
+                font-size: min(5.4vw, 1.15rem);
+            }
+        }
         @keyframes holdFill {
             from {
                 transform: scaleX(0);
@@ -1045,6 +1080,9 @@
             <button class="tab-btn" onclick="switchTab(6)">空鏡</button>
             <button class="tab-btn" onclick="switchTab(7)">星潮</button>
             <button class="tab-btn" onclick="switchTab(8)">玄鏈</button>
+        </div>
+        <div class="random-bar">
+            <button class="random-btn" onclick="startPoolRandom()">今日隨機</button>
         </div>
         <div id="level-list"></div>
         <div class="version-badge" id="version-badge">v--</div>
@@ -1172,6 +1210,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="mid_pool.js"></script>
     <script src="levels.js"></script>
     <script>
         const gridEl = document.getElementById('grid');
@@ -1189,6 +1228,15 @@
         const replayFilterAllBtn = document.getElementById('replay-filter-all');
         const replayFilterMistakeBtn = document.getElementById('replay-filter-mistake');
         const replayFilterKeyBtn = document.getElementById('replay-filter-key');
+        const midPoolLevels = (typeof midPool !== 'undefined' && Array.isArray(midPool))
+            ? midPool.map(l => ({ ...l, hidden: true }))
+            : [];
+        if (midPoolLevels.length) {
+            const existingIds = new Set(levels.map(l => l.id));
+            midPoolLevels.forEach(l => {
+                if (!existingIds.has(l.id)) levels.push(l);
+            });
+        }
         let feedbackTimer = null;
         let db = null;
         let firebaseReady = false;
@@ -1880,12 +1928,16 @@
             renderLevelGrid();
         }
 
+        function getFilteredLevels() {
+            return levels.filter(l => l.stars === currentTab);
+        }
+
         function renderLevelGrid() {
             const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
             const list = document.getElementById('level-list');
             list.innerHTML = '';
 
-            const filtered = levels.filter(l => l.stars === currentTab);
+            const filtered = getFilteredLevels().filter(l => !l.hidden);
             filtered.forEach((l, index) => {
                 const record = records[l.id];
                 // 向下相容：處理舊的數字格式
@@ -1919,6 +1971,53 @@
                 `;
                 list.appendChild(item);
             });
+        }
+
+        function hashStringToSeed(str) {
+            let h = 2166136261;
+            for (let i = 0; i < str.length; i++) {
+                h ^= str.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            return h >>> 0;
+        }
+
+        function startRandomLevel() {
+            const pool = getFilteredLevels();
+            if (!pool.length) return;
+            const idx = Math.floor(Math.random() * pool.length);
+            showPreLevelModal(pool[idx].id);
+        }
+
+        function startDailyRandom() {
+            const pool = getFilteredLevels();
+            if (!pool.length) return;
+            const now = new Date();
+            const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-tab${currentTab}`;
+            const seed = hashStringToSeed(key);
+            const idx = seed % pool.length;
+            showPreLevelModal(pool[idx].id);
+        }
+
+        function buildMidMasterPool() {
+            // 進階(無我) ~ 大師(空鏡) 之間：無我(3)、本源(4)、寂滅(5)
+            const eligibleStars = new Set([3, 4, 5]);
+            const eligible = levels.filter(l => eligibleStars.has(l.stars));
+            if (!eligible.length) return [];
+            const seed = hashStringToSeed('mid_master_pool_v1');
+            const scored = eligible.map(l => ({
+                level: l,
+                score: hashStringToSeed(`${seed}-${l.id}`)
+            }));
+            scored.sort((a, b) => a.score - b.score);
+            return scored.slice(0, 100).map(s => s.level);
+        }
+
+        function startPoolRandom() {
+            const pool = midPoolLevels.length ? midPoolLevels : buildMidMasterPool();
+            if (!pool.length) return;
+            const idx = Math.floor(Math.random() * pool.length);
+            showPreLevelModal(pool[idx].id);
         }
 
         function selectCell(idx) {

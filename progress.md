@@ -64,3 +64,5 @@ TODO / handoff:
 - Notes/Erase/Theme 改為圓形 mini buttons。
 
 - 解析星潮關卡 id=9100（星雲躍遷）之邏輯解題：logic_solve trace 共 65 步，包含 1 次 XY-Wing（pivot r2c1, wings r2c4/r3c2，消去 r3c6 的 8），其餘為隱性/顯性單數。
+
+- UI 修正：將 `.sudoku-grid` 與 `.grid-info-bar` 改為固定上限寬度 `min(100%, 420px)`，並移除 `max-height` 斷點中的 `vh/dvh` 棋盤覆寫，避免通關星星動畫後棋盤尺寸跳動/變形。
