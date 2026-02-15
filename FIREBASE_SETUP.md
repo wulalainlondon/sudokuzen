@@ -12,7 +12,21 @@ This game now supports a public "first clear" leaderboard per level (`TOP 3`):
 3. Add a Web app.
 4. Copy the web config object.
 
-## 2) Fill config
+## 2) Fill config safely (recommended)
+
+Keep `firebase-config.js` in repo as `null` and use a local override file.
+
+1. Copy:
+
+```bash
+cp firebase-config.local.example.js firebase-config.local.js
+```
+
+2. Edit `firebase-config.local.js` and fill your real key.
+
+`firebase-config.local.js` is git-ignored and will not be pushed.
+
+## 3) Legacy method (not recommended)
 
 Edit `firebase-config.js` and replace `null` with your config:
 
@@ -25,11 +39,11 @@ window.SUDOKU_FIREBASE_CONFIG = {
 };
 ```
 
-## 3) Enable Firestore
+## 4) Enable Firestore
 
 Create Firestore Database in production mode (or test mode for local testing).
 
-## 4) Firestore data shape
+## 5) Firestore data shape
 
 Collection path used by the game:
 
@@ -42,7 +56,7 @@ Fields:
 - `firstStars` (number)
 - `createdAt` (timestamp)
 
-## 5) Suggested Firestore Rules
+## 6) Suggested Firestore Rules
 
 These rules allow public read and first-write-only per player doc id.
 
@@ -62,4 +76,3 @@ service cloud.firestore {
 ```
 
 Adjust as needed for stronger anti-abuse (App Check / auth / Cloud Functions).
-
