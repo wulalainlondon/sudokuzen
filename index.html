@@ -525,6 +525,17 @@
             font-weight: 500;
         }
 
+        .pre-level-tech {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin: 0 0 16px 0;
+            padding: 8px 12px;
+            background: rgba(9, 132, 227, 0.08);
+            border-radius: 8px;
+            border: 1px dashed rgba(9, 132, 227, 0.2);
+            line-height: 1.4;
+        }
+
         /* Dark mode specific refinements */
         [data-theme="dark"] #pre-level-modal {
             background: rgba(0, 0, 0, 0.65);
@@ -1208,6 +1219,7 @@
         <div class="pre-level-panel">
             <h2 id="pre-level-name">LEVEL NAME</h2>
             <p id="pre-level-best-record" class="pre-level-record">尚無通關紀錄</p>
+            <p id="pre-level-tech" class="pre-level-tech">💡 核心技巧: -</p>
             <div class="leaderboard-card">
                 <div class="leaderboard-title">首通榜 TOP 3</div>
                 <div class="leaderboard-list" id="pre-level-leaderboard">載入中...</div>
@@ -2207,9 +2219,22 @@
         const preLevelModalEl = document.getElementById('pre-level-modal');
         const preLevelNameEl = document.getElementById('pre-level-name');
         const preLevelBestRecordEl = document.getElementById('pre-level-best-record');
+        const preLevelTechEl = document.getElementById('pre-level-tech');
         const preLevelLeaderboardEl = document.getElementById('pre-level-leaderboard');
         const preLevelStartBtn = document.getElementById('pre-level-start-btn');
         const preLevelBackBtn = document.getElementById('pre-level-back-btn');
+
+        const TECH_MAP = {
+            'naked_single': '顯性單數',
+            'hidden_single': '隱藏單數',
+            'locked_candidates': '鎖定候選數',
+            'naked_pair': '顯性數對',
+            'hidden_pair': '隱藏數對',
+            'xy_wing': 'XY-Wing',
+            'swordfish': '劍魚跡 (Swordfish)',
+            'aic': 'AIC 強弱鏈',
+            'unknown': '綜合技巧'
+        };
 
         function showPreLevelModal(levelId) {
             pendingLevelId = levelId;
@@ -2218,6 +2243,11 @@
 
             // Set level name
             preLevelNameEl.textContent = level.displayName;
+
+            // Set technique info
+            const techName = TECH_MAP[level.maxTechnique] || level.maxTechnique || '-';
+            const techTier = level.techTier || '';
+            preLevelTechEl.textContent = `💡 核心技巧: ${techName} ${techTier ? `(${techTier})` : ''}`;
 
             // Show personal best record
             const recKey = isSpeedrunMode ? 'sudoku_speed_records' : 'sudoku_records';
