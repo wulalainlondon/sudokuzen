@@ -23,11 +23,9 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames.map((cache) => {
-                    if (cache !== CACHE_NAME) {
-                        return caches.delete(cache);
-                    }
-                })
+                cacheNames
+                    .filter((cache) => cache.startsWith('sudoku-zen-') && cache !== CACHE_NAME)
+                    .map((cache) => caches.delete(cache))
             );
         }).then(() => self.clients.claim())
     );
@@ -61,5 +59,12 @@ self.addEventListener('fetch', (event) => {
                 });
             })
         );
+    }
+});
+
+// 處理來自 index.html 的強制跳過等待指令
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
     }
 });

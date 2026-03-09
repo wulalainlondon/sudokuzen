@@ -857,13 +857,6 @@
             min-height: 0;
         }
 
-        .level-order {
-            font-size: 0.62rem;
-            color: var(--text-light);
-            margin-top: 2px;
-            letter-spacing: 1px;
-        }
-
         .level-item:active {
             transform: scale(0.92);
         }
@@ -1002,6 +995,7 @@
                 border-radius: 14px;
             }
         }
+
         @media (max-height: 850px) {
             .numpad {
                 width: min(83vw, 290px);
@@ -1012,6 +1006,7 @@
                 font-size: min(5.4vw, 1.15rem);
             }
         }
+
         @keyframes holdFill {
             from {
                 transform: scaleX(0);
@@ -1992,10 +1987,8 @@
                     : '☆☆☆';
                 const statsClass = hasRecord ? 'level-stats' : 'level-stats is-empty';
 
-                const orderLabel = String(index + 1).padStart(2, '0');
                 item.innerHTML = `
                     <div class="level-num">${l.displayName}</div>
-                    <div class="level-order">${orderLabel}</div>
                     <div class="${starsClass}">${starsText}</div>
                     <div class="${statsClass}">${timeStr}</div>
                 `;
@@ -2207,45 +2200,77 @@
 
         const APP_VERSION = '2026.02.15.5';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
+
         function enforceAppVersion() {
             const key = 'sudoku_app_version';
             const stored = localStorage.getItem(key);
-            if (stored === APP_VERSION) return false;
+            if (stored === APP_VERSION) return Promise.resolve(false);
+
             localStorage.setItem(key, APP_VERSION);
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations()
+                return navigator.serviceWorker.getRegistrations()
                     .then((regs) => Promise.all(regs.map((r) => r.unregister())))
-                    .catch(() => { });
-            }
-            if ('caches' in window) {
-                caches.keys()
-                    .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
-                    .finally(() => window.location.reload());
+                    .then(() => {
+                        if ('caches' in window) {
+                            return caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
+                        }
+                    })
+                    .then(() => {
+                        window.location.reload();
+                        return true;
+                    })
+                    .catch(() => {
+                        window.location.reload();
+                        return true;
+                    });
             } else {
                 window.location.reload();
+                return Promise.resolve(true);
             }
-            return true;
         }
-        enforceAppVersion();
 
-        // Initialize with Auto-Update Notification
+        // Initialize Service Worker and Handle Updates
         if ('serviceWorker' in navigator) {
+            // 監聽 controllerchange，當新的 SW 接管時執行重新載入
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                window.location.reload();
+            });
+
             navigator.serviceWorker.register('sw.js').then(reg => {
-                // 當發現有新的 Service Worker 時觸發
+                // 如果頁面載入時已經有等待中的 SW
+                if (reg.waiting) {
+                    offerUpdate(reg.waiting);
+                }
+
                 reg.onupdatefound = () => {
                     const installingWorker = reg.installing;
                     installingWorker.onstatechange = () => {
                         if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            if (confirm('發現新的版本與關卡！是否立即更新以體驗最新內容？')) {
-                                window.location.reload();
-                            }
+                            offerUpdate(installingWorker);
                         }
                     };
                 };
-                // 主動觸發一次更新檢查
-                reg.update();
+
+                // 每小時自動檢查一次更新
+                setInterval(() => reg.update(), 1000 * 60 * 60);
+
             }).catch(err => console.error('SW init fail:', err));
+
+            function offerUpdate(worker) {
+                // 使用延遲確保 UI 穩定後再提示
+                setTimeout(() => {
+                    if (confirm('發現新的版本與關卡！是否立即更新以體驗最新內容？')) {
+                        worker.postMessage({ type: 'SKIP_WAITING' });
+                    }
+                }, 1000);
+            }
         }
+
+        // 執行版本檢查
+        enforceAppVersion();
         initFirebase();
         loadAliasToInput();
         if (aliasInputEl) {
