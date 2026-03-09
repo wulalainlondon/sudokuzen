@@ -1707,7 +1707,7 @@
                     cellEl.classList.add('error');
                     const originalValue = data.value;
                     const originalNotes = data.notes.slice();
-                    data.value = 'X'; // 顯示 X 而不是錯誤數字
+                    data.value = num;
                     data.notes = [];
                     cellEl.classList.add('wrong-preview');
                     updateCellDisplay(cellEl, data);
@@ -1809,8 +1809,9 @@
 
         function updateLivesUI() {
             let html = '';
-            for (let i = 0; i < maxErrors; i++) {
-                html += `<span class="${i < errors ? 'lost' : ''}">✖</span> `;
+            const remaining = maxErrors - errors;
+            for (let i = 0; i < remaining; i++) {
+                html += `<span>✖</span> `;
             }
             livesEl.innerHTML = html;
         }
