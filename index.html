@@ -628,6 +628,106 @@
             border-color: var(--accent-strong);
         }
 
+        /* ===== Visual Replay Board ===== */
+        .replay-visual-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-top: 1px solid var(--cell-border);
+        }
+
+        .replay-board {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            width: min(60vw, 240px);
+            height: min(60vw, 240px);
+            border: 2px solid var(--accent-strong);
+            border-radius: 6px;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .rb-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(0.5rem, 1.7vw, 0.7rem);
+            font-weight: 500;
+            border-right: 1px solid var(--cell-border);
+            border-bottom: 1px solid var(--cell-border);
+            color: var(--num-color);
+            background: var(--grid-bg);
+            transition: background 0.15s;
+        }
+
+        .rb-cell.rb-fixed {
+            color: var(--text-light);
+            font-weight: 700;
+        }
+
+        .rb-cell.rb-fill {
+            color: var(--accent-strong);
+        }
+
+        .rb-cell.rb-err {
+            color: var(--error-color);
+            background: rgba(214, 48, 49, 0.12);
+        }
+
+        .rb-cell.rb-active {
+            background: rgba(9, 132, 227, 0.18);
+        }
+
+        .rb-cell.rb-box-border-right {
+            border-right-width: 2px;
+            border-right-color: var(--accent-strong);
+        }
+
+        .rb-cell.rb-box-border-bottom {
+            border-bottom-width: 2px;
+            border-bottom-color: var(--accent-strong);
+        }
+
+        .replay-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .replay-ctrl-btn {
+            border: 1px solid var(--cell-border);
+            background: var(--btn-bg);
+            color: var(--text-color);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .replay-ctrl-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .replay-ctrl-btn.active {
+            background: var(--accent-strong);
+            color: #fff;
+            border-color: var(--accent-strong);
+        }
+
+        .replay-step-info {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            min-width: 70px;
+            text-align: center;
+        }
+
         #win-celebration {
             z-index: 30;
             background: radial-gradient(circle at top, rgba(9, 132, 227, 0.16), var(--bg-color) 60%);
@@ -1211,9 +1311,27 @@
         <div class="replay-panel">
             <h3 class="replay-title">本局步驟回放</h3>
             <div class="replay-summary" id="replay-summary">-</div>
+
+            <!-- Visual Replay Board -->
+            <div class="replay-visual-section">
+                <div class="replay-board" id="replay-board"></div>
+                <div class="replay-controls">
+                    <button class="replay-ctrl-btn" id="rb-reset-btn" onclick="replayReset()" title="重置">↺ 重置</button>
+                    <button class="replay-ctrl-btn" id="rb-prev-btn" onclick="replayStepBack()" title="上一步">◄
+                        上一步</button>
+                    <button class="replay-ctrl-btn" id="rb-play-btn" onclick="replayTogglePlay()" title="播放/暫停">▶
+                        播放</button>
+                    <button class="replay-ctrl-btn" id="rb-next-btn" onclick="replayStepForward()" title="下一步">下一步
+                        ►</button>
+                    <button class="replay-ctrl-btn" id="rb-speed-btn" onclick="replayToggleSpeed()">1x</button>
+                </div>
+                <div class="replay-step-info" id="replay-step-info">步驟 0 / 0</div>
+            </div>
+
+            <!-- Text Step Log -->
             <div class="replay-filters">
                 <button id="replay-filter-all" class="replay-filter-btn active"
-                    onclick="setReplayFilter('all')">全部</button>
+                    onclick="setReplayFilter('all')">&#x5168;部</button>
                 <button id="replay-filter-mistake" class="replay-filter-btn"
                     onclick="setReplayFilter('mistake')">只看錯誤</button>
                 <button id="replay-filter-key" class="replay-filter-btn" onclick="setReplayFilter('key')">只看關鍵步</button>
@@ -1341,11 +1459,14 @@
             return `R${r}C${c}`;
         }
 
-        function recordAction(type, detail) {
+        function recordAction(type, detail, idx = null, val = null, notes = null) {
             actionHistory.push({
                 t: seconds,
                 type,
-                detail
+                detail,
+                idx,
+                val,
+                notes: notes ? notes.slice() : null
             });
             if (actionHistory.length > 1200) actionHistory.shift();
         }
@@ -1395,13 +1516,170 @@
             replayFilter = 'all';
             syncReplayFilterButtons();
             renderReplayList();
+            replayOpen();
             replayModalEl.style.display = 'flex';
         }
 
         function closeReplayModal() {
             if (!replayModalEl) return;
+            replayPause();
             replayModalEl.style.display = 'none';
         }
+
+        // ===== Visual Replay Engine =====
+        let rbState = [];          // Current board state (array of 81 entries: {value, fixed, notes})
+        let rbStepIdx = 0;         // Current step (0 = initial puzzle)
+        let rbIsPlaying = false;
+        let rbTimer = null;
+        let rbSpeed = 1;           // 1, 2, or 4
+        const RB_BASE_INTERVAL = 700; // ms per step at 1x speed
+
+        function replayOpen() {
+            // Build initial state from current level puzzle
+            rbState = currentLevel.puzzle.map(v => ({ value: v, fixed: v !== 0, notes: [] }));
+            rbStepIdx = 0;
+            rbIsPlaying = false;
+            rbSpeed = 1;
+            document.getElementById('rb-speed-btn').textContent = '1x';
+            replayRenderBoard(-1);
+            replayUpdateStepInfo();
+            replayUpdateButtons();
+        }
+
+        function replayBuildStateAtStep(targetStep) {
+            // Rebuild from scratch up to targetStep
+            const state = currentLevel.puzzle.map(v => ({ value: v, fixed: v !== 0, notes: [] }));
+            for (let i = 0; i < targetStep && i < actionHistory.length; i++) {
+                replayApplyActionToState(state, actionHistory[i]);
+            }
+            return state;
+        }
+
+        function replayApplyActionToState(state, action) {
+            const { type, idx, val, notes } = action;
+            if (idx === null || idx === undefined) return;
+            if (type === 'fill') {
+                state[idx].value = val;
+                state[idx].notes = [];
+            } else if (type === 'erase') {
+                state[idx].value = 0;
+                state[idx].notes = [];
+            } else if (type === 'note' && notes !== null) {
+                state[idx].notes = notes.slice();
+            }
+            // 'mistake' → show value temporarily but don't permanently fill
+        }
+
+        function replayRenderBoard(highlightIdx) {
+            const boardEl = document.getElementById('replay-board');
+            if (!boardEl) return;
+            boardEl.innerHTML = '';
+            rbState.forEach((cell, i) => {
+                const div = document.createElement('div');
+                div.className = 'rb-cell';
+                const row = Math.floor(i / 9), col = i % 9;
+                const box = Math.floor(row / 3) * 3 + Math.floor(col / 3);
+                if (col === 2 || col === 5) div.classList.add('rb-box-border-right');
+                if (row === 2 || row === 5) div.classList.add('rb-box-border-bottom');
+                if (cell.fixed) {
+                    div.classList.add('rb-fixed');
+                    div.textContent = cell.value;
+                } else if (cell.value !== 0) {
+                    div.classList.add('rb-fill');
+                    div.textContent = cell.value;
+                } else if (cell.notes.length) {
+                    div.style.fontSize = 'clamp(0.28rem, 1vw, 0.4rem)';
+                    div.style.lineHeight = '1';
+                    div.style.flexWrap = 'wrap';
+                    div.style.padding = '1px';
+                    div.textContent = cell.notes.join(' ');
+                }
+                if (i === highlightIdx) div.classList.add('rb-active');
+                boardEl.appendChild(div);
+            });
+        }
+
+        function replayUpdateStepInfo() {
+            const el = document.getElementById('replay-step-info');
+            if (el) el.textContent = `步驟 ${rbStepIdx} / ${actionHistory.length}`;
+        }
+
+        function replayUpdateButtons() {
+            const prevBtn = document.getElementById('rb-prev-btn');
+            const nextBtn = document.getElementById('rb-next-btn');
+            const playBtn = document.getElementById('rb-play-btn');
+            if (prevBtn) prevBtn.disabled = rbStepIdx <= 0;
+            if (nextBtn) nextBtn.disabled = rbStepIdx >= actionHistory.length;
+            if (playBtn) {
+                playBtn.textContent = rbIsPlaying ? '⏸ 暫停' : '▶ 播放';
+                playBtn.classList.toggle('active', rbIsPlaying);
+            }
+        }
+
+        function replayStepForward() {
+            if (rbStepIdx >= actionHistory.length) { replayPause(); return; }
+            const action = actionHistory[rbStepIdx];
+            const prevState = rbState;
+            rbState = replayBuildStateAtStep(rbStepIdx + 1);
+            rbStepIdx++;
+            const highlightIdx = action.idx !== null && action.idx !== undefined ? action.idx : -1;
+            replayRenderBoard(highlightIdx);
+            replayUpdateStepInfo();
+            replayUpdateButtons();
+        }
+
+        function replayStepBack() {
+            if (rbStepIdx <= 0) return;
+            rbStepIdx--;
+            rbState = replayBuildStateAtStep(rbStepIdx);
+            const highlightIdx = rbStepIdx > 0 ? (actionHistory[rbStepIdx - 1].idx ?? -1) : -1;
+            replayRenderBoard(highlightIdx);
+            replayUpdateStepInfo();
+            replayUpdateButtons();
+        }
+
+        function replayPause() {
+            if (rbTimer) { clearInterval(rbTimer); rbTimer = null; }
+            rbIsPlaying = false;
+            replayUpdateButtons();
+        }
+
+        function replayPlay() {
+            if (rbStepIdx >= actionHistory.length) replayReset();
+            rbIsPlaying = true;
+            replayUpdateButtons();
+            rbTimer = setInterval(() => {
+                if (rbStepIdx >= actionHistory.length) {
+                    replayPause();
+                } else {
+                    replayStepForward();
+                }
+            }, Math.round(RB_BASE_INTERVAL / rbSpeed));
+        }
+
+        function replayTogglePlay() {
+            if (rbIsPlaying) replayPause(); else replayPlay();
+        }
+
+        function replayReset() {
+            replayPause();
+            rbStepIdx = 0;
+            rbState = currentLevel.puzzle.map(v => ({ value: v, fixed: v !== 0, notes: [] }));
+            replayRenderBoard(-1);
+            replayUpdateStepInfo();
+            replayUpdateButtons();
+        }
+
+        function replayToggleSpeed() {
+            const speeds = [1, 2, 4];
+            rbSpeed = speeds[(speeds.indexOf(rbSpeed) + 1) % speeds.length];
+            const speedBtn = document.getElementById('rb-speed-btn');
+            if (speedBtn) speedBtn.textContent = `${rbSpeed}x`;
+            // Restart timer at new speed if playing
+            if (rbIsPlaying) { replayPause(); replayPlay(); }
+        }
+
+
 
         function renderLeaderboard(el, rows) {
             if (!el) return;
@@ -1712,13 +1990,13 @@
                 const ni = data.notes.indexOf(num);
                 if (ni > -1) data.notes.splice(ni, 1);
                 else data.notes.push(num);
-                recordAction('note', `${cellLabel(selectedIdx)} 候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`);
+                recordAction('note', `${cellLabel(selectedIdx)} 候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`, selectedIdx, null, data.notes);
             } else {
                 if (isSpeedrunMode) {
                     data.value = num;
                     data.notes = [];
                     data.isError = false;
-                    recordAction('fill', `${cellLabel(selectedIdx)} (競速) 填入 ${num}`);
+                    recordAction('fill', `${cellLabel(selectedIdx)} (競速) 填入 ${num}`, selectedIdx, num);
                     updateCellDisplay(cellEl, data);
                     saveGameStatus();
                     updateNumpadState();
@@ -1740,7 +2018,7 @@
                     markErrorArea(selectedIdx);
                     showFeedback(`錯誤！${3 - errors} 次機會剩餘`, 'error');
                     playErrorFeedback();
-                    recordAction('mistake', `${cellLabel(selectedIdx)} 輸入 ${num}（錯誤）`);
+                    recordAction('mistake', `${cellLabel(selectedIdx)} 輸入 ${num}（錯誤）`, selectedIdx, num);
                     setTimeout(() => {
                         data.isError = false;
                         cellEl.classList.remove('error');
@@ -1762,7 +2040,7 @@
                 data.value = num;
                 data.notes = [];
                 data.isError = false;
-                recordAction('fill', `${cellLabel(selectedIdx)} 填入 ${num}`);
+                recordAction('fill', `${cellLabel(selectedIdx)} 填入 ${num}`, selectedIdx, num);
                 celebrateCompletedUnits(selectedIdx, beforeState);
                 checkWin();
             }
@@ -2242,7 +2520,7 @@
                 cellsData[selectedIdx].notes = [];
                 updateCellDisplay(gridEl.children[selectedIdx], cellsData[selectedIdx]);
                 if (oldVal !== 0 || oldNotes.length) {
-                    recordAction('erase', `${cellLabel(selectedIdx)} 清除`);
+                    recordAction('erase', `${cellLabel(selectedIdx)} 清除`, selectedIdx, 0);
                 }
                 saveGameStatus();
                 updateNumpadState();
