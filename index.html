@@ -2042,7 +2042,18 @@
                 showFeedback('今日隨機題庫載入失敗，請稍後重試', 'error');
                 return;
             }
-            const pool = midPoolLevels;
+
+            const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+            // 過濾出尚未通關的關卡
+            const unplayedPool = midPoolLevels.filter(l => !records[l.id]);
+
+            let pool = unplayedPool;
+            if (!unplayedPool.length) {
+                // 防呆：如果題庫全刷完了，就退回從全部裡面抽，並給予鼓勵
+                pool = midPoolLevels;
+                showFeedback('太厲害了！您已通關隨機題庫所有關卡，為您隨機抽取一題挑戰！', 'success');
+            }
+
             const idx = Math.floor(Math.random() * pool.length);
             showPreLevelModal(pool[idx].id);
         }
