@@ -2108,22 +2108,6 @@
             }
         }
 
-        function applyQuickNote(num) {
-            if (selectedIdx === null || cellsData[selectedIdx].fixed || errors >= maxErrors) return;
-            const data = cellsData[selectedIdx];
-            if (data.value !== 0) {
-                showFeedback('此格已有數字，無法填註');
-                return;
-            }
-            const ni = data.notes.indexOf(num);
-            if (ni > -1) data.notes.splice(ni, 1);
-            else data.notes.push(num);
-            updateCellDisplay(gridEl.children[selectedIdx], data);
-            recordAction('quick_note', `${cellLabel(selectedIdx)} 長按候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`);
-            showFeedback(`候選 ${num}${ni > -1 ? ' 已取消' : ' 已加入'}`);
-            saveGameStatus();
-        }
-
         function updateNumpadState() {
             if (!numButtons.length || !cellsData.length) return;
             const counts = new Array(10).fill(0);
@@ -2136,55 +2120,17 @@
             });
         }
 
-        function bindNumButtonEvents(btn, num) {
-            let pressTimer = null;
-            let longPressed = false;
-            const LONG_MS = 320;
-
-            const startPress = (ev) => {
-                if (ev && ev.button !== undefined && ev.button !== 0) return;
-                longPressed = false;
-                clearTimeout(pressTimer);
-                btn.classList.add('long-pressing');
-                pressTimer = setTimeout(() => {
-                    longPressed = true;
-                    btn.classList.remove('long-pressing');
-                    applyQuickNote(num);
-                }, LONG_MS);
-            };
-
-            const endPress = () => {
-                if (pressTimer) {
-                    clearTimeout(pressTimer);
-                    pressTimer = null;
-                }
-                btn.classList.remove('long-pressing');
-                if (!longPressed) handleInput(num);
-                longPressed = false;
-            };
-
-            const cancelPress = () => {
-                if (pressTimer) {
-                    clearTimeout(pressTimer);
-                    pressTimer = null;
-                }
-                btn.classList.remove('long-pressing');
-                longPressed = false;
-            };
-
-            btn.addEventListener('pointerdown', startPress);
-            btn.addEventListener('pointerup', endPress);
-            btn.addEventListener('pointercancel', cancelPress);
-            btn.addEventListener('pointerleave', cancelPress);
-            btn.addEventListener('contextmenu', (e) => e.preventDefault());
-        }
-
         const np = document.getElementById('numpad');
         for (let i = 1; i <= 9; i++) {
             const b = document.createElement('button');
             b.className = 'num-btn';
             b.textContent = i;
-            bindNumButtonEvents(b, i);
+            // 使用 mousedown / touchstart 讓觸發更及時，同時防止右鍵選單
+            b.addEventListener('pointerdown', (ev) => {
+                if (ev && ev.button !== undefined && ev.button !== 0) return;
+                handleInput(i);
+            });
+            b.addEventListener('contextmenu', (e) => e.preventDefault());
             numButtons.push(b);
             np.appendChild(b);
         }
