@@ -1075,7 +1075,13 @@
 <body>
 
     <div id="level-screen">
-        <h1 style="margin-bottom: 25px; font-weight: 300; letter-spacing: 5px; font-family: 'Outfit';">SUDOKU ZEN</h1>
+        <div
+            style="width: 100%; display: flex; justify-content: space-between; align-items: center; max-width: 400px; margin-bottom: 25px;">
+            <h1 style="margin: 0; font-weight: 300; letter-spacing: 5px; font-family: 'Outfit';">SUDOKU ZEN</h1>
+            <button id="speedrun-toggle-btn" onclick="toggleSpeedrunMode()" title="切換純粹競速模式 (Speedrun)"
+                aria-label="切換競速模式"
+                style="font-size: 1.5rem; filter: grayscale(1); opacity: 0.4; background: none; border: none; cursor: pointer; padding: 5px; transition: all 0.3s; color: #FFC107;">⚡</button>
+        </div>
         <div class="alias-config">
             <input id="alias-input" class="alias-input" type="text" maxlength="24" placeholder="輸入你的暱稱（1~24字）" />
             <button class="alias-save-btn" onclick="saveAlias()">儲存暱稱</button>
@@ -1260,6 +1266,8 @@
 
         let selectedIdx = null;
         let isNotesMode = false;
+        let isSpeedrunMode = localStorage.getItem('sudoku_speedrun') === 'true';
+        let submissionCount = 0;
         let errors = 0;
         const maxErrors = 3;
         let seconds = 0;
@@ -1503,10 +1511,12 @@
                 cellsData = saved.cellsData;
                 seconds = saved.seconds;
                 errors = saved.errors;
+                submissionCount = saved.submissionCount || 0;
                 actionHistory = Array.isArray(saved.actionHistory) ? saved.actionHistory : [];
             } else {
                 errors = 0;
                 seconds = 0;
+                submissionCount = 0;
                 actionHistory = [];
                 cellsData = currentLevel.puzzle.map((val, idx) => ({
                     value: val,
@@ -1536,19 +1546,23 @@
                 cellsData: cellsData,
                 seconds: seconds,
                 errors: errors,
+                submissionCount: submissionCount,
                 actionHistory: actionHistory
             };
-            localStorage.setItem(`sudoku_save_${currentLevel.id}`, JSON.stringify(data));
+            const prefix = isSpeedrunMode ? 'sudoku_speed_save_' : 'sudoku_save_';
+            localStorage.setItem(`${prefix}${currentLevel.id}`, JSON.stringify(data));
             localStorage.setItem('sudoku_last_level', String(currentLevel.id));
         }
 
         function loadGameStatus(levelId) {
-            const saved = localStorage.getItem(`sudoku_save_${levelId}`);
+            const prefix = isSpeedrunMode ? 'sudoku_speed_save_' : 'sudoku_save_';
+            const saved = localStorage.getItem(`${prefix}${levelId}`);
             return saved ? JSON.parse(saved) : null;
         }
 
         function clearGameStatus(levelId) {
-            localStorage.removeItem(`sudoku_save_${levelId}`);
+            const prefix = isSpeedrunMode ? 'sudoku_speed_save_' : 'sudoku_save_';
+            localStorage.removeItem(`${prefix}${levelId}`);
         }
 
         function renderGrid() {
@@ -1700,6 +1714,18 @@
                 else data.notes.push(num);
                 recordAction('note', `${cellLabel(selectedIdx)} 候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`);
             } else {
+                if (isSpeedrunMode) {
+                    data.value = num;
+                    data.notes = [];
+                    data.isError = false;
+                    recordAction('fill', `${cellLabel(selectedIdx)} (競速) 填入 ${num}`);
+                    updateCellDisplay(cellEl, data);
+                    saveGameStatus();
+                    updateNumpadState();
+                    checkSpeedrunComplete(selectedIdx);
+                    return;
+                }
+
                 if (num !== currentLevel.solution[selectedIdx]) {
                     errors++;
                     updateLivesUI();
@@ -1745,16 +1771,61 @@
             updateNumpadState();
         }
 
+        function checkSpeedrunComplete(lastIdx) {
+            const isFull = cellsData.every(c => c.value !== 0);
+            if (!isFull) return;
+
+            let isCorrect = true;
+            for (let i = 0; i < 81; i++) {
+                if (cellsData[i].value !== currentLevel.solution[i]) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            if (isCorrect) {
+                checkWin();
+            } else {
+                submissionCount++;
+                showFeedback(`盤面有誤！已重置最後一步 (第 ${submissionCount} 次提交)`, 'error');
+                playErrorFeedback();
+
+                Array.from(gridEl.children).forEach(c => c.classList.add('error-strong'));
+                setTimeout(() => {
+                    Array.from(gridEl.children).forEach(c => c.classList.remove('error-strong'));
+                }, 500);
+
+                if (lastIdx !== null) {
+                    cellsData[lastIdx].value = 0;
+                    cellsData[lastIdx].isError = true;
+                    const cellEl = gridEl.children[lastIdx];
+                    cellEl.classList.add('error');
+                    updateCellDisplay(cellEl, cellsData[lastIdx]);
+
+                    setTimeout(() => {
+                        cellsData[lastIdx].isError = false;
+                        cellEl.classList.remove('error');
+                        updateCellDisplay(cellEl, cellsData[lastIdx]);
+                    }, 400);
+
+                    saveGameStatus();
+                    updateNumpadState();
+                }
+            }
+        }
+
         function checkWin() {
             const isComplete = cellsData.every((data, i) => data.value === currentLevel.solution[i]);
             if (isComplete) {
                 clearInterval(timerInterval);
                 clearGameStatus(currentLevel.id);
-                const earnedStars = saveProgress();
-                showWinCelebration(earnedStars);
-                submitFirstClear(currentLevel.id, seconds, earnedStars).then(() => {
-                    loadLevelLeaderboard(currentLevel.id);
-                });
+                const earnedValue = saveProgress();
+                showWinCelebration(earnedValue);
+                if (!isSpeedrunMode) {
+                    submitFirstClear(currentLevel.id, seconds, earnedValue).then(() => {
+                        loadLevelLeaderboard(currentLevel.id);
+                    });
+                }
             }
         }
 
@@ -1773,12 +1844,16 @@
             }
         }
 
-        function showWinCelebration(earnedStars) {
+        function showWinCelebration(earnedValue) {
             const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
             const secs = (seconds % 60).toString().padStart(2, '0');
             document.getElementById('win-level-name').textContent = currentLevel.displayName;
             document.getElementById('win-time').textContent = `${mins}:${secs}`;
-            document.getElementById('win-stars').textContent = '★'.repeat(earnedStars) + '☆'.repeat(3 - earnedStars);
+            if (isSpeedrunMode) {
+                document.getElementById('win-stars').textContent = `⚡ 總提交: ${earnedValue}次`;
+            } else {
+                document.getElementById('win-stars').textContent = '★'.repeat(earnedValue) + '☆'.repeat(3 - earnedValue);
+            }
             createConfettiBurst(56);
             winCelebrationEl.style.display = 'flex';
             showFeedback('完成！太棒了！', 'success');
@@ -1786,28 +1861,48 @@
         }
 
         function saveProgress() {
-            const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
-            const existing = records[currentLevel.id];
+            if (isSpeedrunMode) {
+                const records = JSON.parse(localStorage.getItem('sudoku_speed_records') || '{}');
+                const existing = records[currentLevel.id];
+                const currentSubs = submissionCount + 1; // 包含本次成功的提交
 
-            // 計算星數 (0錯=3星, 1錯=2星, 2錯=1星)
-            const earnedStars = Math.max(1, 3 - errors);
+                const shouldUpdate = !existing ||
+                    currentSubs < (existing.submissions || Infinity) ||
+                    (currentSubs === (existing.submissions || Infinity) && seconds < (existing.time || Infinity));
 
-            // 檢查是否更新紀錄（以星數優先，其次是時間）
-            const shouldUpdate = !existing ||
-                earnedStars > (existing.stars || 1) ||
-                (earnedStars === (existing.stars || 1) && seconds < (existing.time || Infinity));
+                if (shouldUpdate) {
+                    records[currentLevel.id] = { time: seconds, submissions: currentSubs };
+                    localStorage.setItem('sudoku_speed_records', JSON.stringify(records));
+                }
+                return currentSubs;
+            } else {
+                const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+                const existing = records[currentLevel.id];
 
-            if (shouldUpdate) {
-                records[currentLevel.id] = {
-                    time: seconds,
-                    stars: earnedStars
-                };
-                localStorage.setItem('sudoku_records', JSON.stringify(records));
+                // 計算星數 (0錯=3星, 1錯=2星, 2錯=1星)
+                const earnedStars = Math.max(1, 3 - errors);
+
+                // 檢查是否更新紀錄（以星數優先，其次是時間）
+                const shouldUpdate = !existing ||
+                    earnedStars > (existing.stars || 1) ||
+                    (earnedStars === (existing.stars || 1) && seconds < (existing.time || Infinity));
+
+                if (shouldUpdate) {
+                    records[currentLevel.id] = {
+                        time: seconds,
+                        stars: earnedStars
+                    };
+                    localStorage.setItem('sudoku_records', JSON.stringify(records));
+                }
+                return earnedStars;
             }
-            return earnedStars;
         }
 
         function updateLivesUI() {
+            if (isSpeedrunMode) {
+                livesEl.innerHTML = `<span style="color: #FFC107; text-shadow: 0 0 5px rgba(255,193,7,0.5);">⚡</span>`;
+                return;
+            }
             let html = '';
             const remaining = maxErrors - errors;
             for (let i = 0; i < remaining; i++) {
@@ -1922,8 +2017,32 @@
             });
         }
 
+        function toggleSpeedrunMode() {
+            isSpeedrunMode = !isSpeedrunMode;
+            localStorage.setItem('sudoku_speedrun', isSpeedrunMode);
+            updateSpeedrunToggleUI();
+            renderLevelGrid();
+            if (isSpeedrunMode) showFeedback('已切換至純粹競速模式 ⚡', 'success');
+        }
+
+        function updateSpeedrunToggleUI() {
+            const btn = document.getElementById('speedrun-toggle-btn');
+            if (btn) {
+                if (isSpeedrunMode) {
+                    btn.style.filter = 'grayscale(0)';
+                    btn.style.opacity = '1';
+                    btn.style.textShadow = '0 0 10px rgba(255, 193, 7, 0.6)';
+                } else {
+                    btn.style.filter = 'grayscale(1)';
+                    btn.style.opacity = '0.4';
+                    btn.style.textShadow = 'none';
+                }
+            }
+        }
+
         function showLevelScreen() {
-            document.getElementById('pause-screen').style.display = 'none';
+            updateSpeedrunToggleUI();
+            document.getElementById('level-screen').style.display = 'flex';
             document.querySelector('.game-container').style.display = 'none';
             clearInterval(timerInterval);
             overlay.style.display = 'none';
@@ -1953,7 +2072,8 @@
         }
 
         function renderLevelGrid() {
-            const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+            const recordsKey = isSpeedrunMode ? 'sudoku_speed_records' : 'sudoku_records';
+            const records = JSON.parse(localStorage.getItem(recordsKey) || '{}');
             const list = document.getElementById('level-list');
             list.innerHTML = '';
 
@@ -1963,6 +2083,8 @@
                 // 向下相容：處理舊的數字格式
                 let bestTime = null;
                 let bestStars = 0;
+                let submissions = 0;
+
                 if (record) {
                     if (typeof record === 'number') {
                         // 舊格式：僅紀錄時間
@@ -1971,6 +2093,7 @@
                     } else {
                         bestTime = record.time;
                         bestStars = record.stars || 1;
+                        if (isSpeedrunMode) submissions = record.submissions || 1;
                     }
                 }
 
@@ -1982,11 +2105,18 @@
                 const timeStr = hasRecord
                     ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}`
                     : '--:--';
-                const starsClass = bestStars > 0 ? 'level-stars' : 'level-stars is-empty';
-                const starsText = bestStars > 0
-                    ? '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span>'
-                    : '☆☆☆';
                 const statsClass = hasRecord ? 'level-stats' : 'level-stats is-empty';
+
+                let starsClass, starsText;
+                if (isSpeedrunMode) {
+                    starsClass = hasRecord ? 'level-stars speedrun-stars' : 'level-stars is-empty';
+                    starsText = hasRecord ? `⚡ ${submissions}次提交` : '⚡ 未通關';
+                } else {
+                    starsClass = bestStars > 0 ? 'level-stars' : 'level-stars is-empty';
+                    starsText = bestStars > 0
+                        ? '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span>'
+                        : '☆☆☆';
+                }
 
                 item.innerHTML = `
                     <div class="level-num">${l.displayName}</div>
