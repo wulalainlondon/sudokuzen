@@ -1707,7 +1707,7 @@
                     cellEl.classList.add('error');
                     const originalValue = data.value;
                     const originalNotes = data.notes.slice();
-                    data.value = num;
+                    data.value = 'X'; // 顯示 X 而不是錯誤數字
                     data.notes = [];
                     cellEl.classList.add('wrong-preview');
                     updateCellDisplay(cellEl, data);
