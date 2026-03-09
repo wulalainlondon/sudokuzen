@@ -2220,22 +2220,29 @@
             preLevelNameEl.textContent = level.displayName;
 
             // Show personal best record
-            const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+            const recKey = isSpeedrunMode ? 'sudoku_speed_records' : 'sudoku_records';
+            const records = JSON.parse(localStorage.getItem(recKey) || '{}');
             const record = records[levelId];
             if (record) {
-                let bestTime, bestStars;
+                let bestTime, bestStars, bestSubs;
                 if (typeof record === 'number') {
                     bestTime = record;
                     bestStars = 1;
                 } else {
                     bestTime = record.time;
                     bestStars = record.stars || 1;
+                    bestSubs = record.submissions || 1;
                 }
                 const timeStr = `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}`;
-                preLevelBestRecordEl.textContent = `最佳紀錄：${timeStr} ${'★'.repeat(bestStars)}${'☆'.repeat(3 - bestStars)}`;
+
+                if (isSpeedrunMode) {
+                    preLevelBestRecordEl.textContent = `最佳紀錄：${timeStr} ⚡ ${bestSubs}次提交`;
+                } else {
+                    preLevelBestRecordEl.textContent = `最佳紀錄：${timeStr} ${'★'.repeat(bestStars)}${'☆'.repeat(3 - bestStars)}`;
+                }
                 preLevelBestRecordEl.classList.add('has-record');
             } else {
-                preLevelBestRecordEl.textContent = '尚無通關紀錄';
+                preLevelBestRecordEl.textContent = isSpeedrunMode ? '⚡ 尚無紀錄' : '尚無通關紀錄';
                 preLevelBestRecordEl.classList.remove('has-record');
             }
 
@@ -2276,9 +2283,13 @@
                 if (!rows.length) {
                     preLevelLeaderboardEl.textContent = '尚無玩家首通紀錄';
                 } else {
-                    preLevelLeaderboardEl.innerHTML = rows.map((r, i) =>
-                        `${i + 1}. ${r.alias}  ${formatSeconds(r.firstTimeSec)}  ${'★'.repeat(r.firstStars)}`
-                    ).join('<br>');
+                    preLevelLeaderboardEl.innerHTML = rows.map((r, i) => {
+                        const timeStr = formatSeconds(r.firstTimeSec);
+                        if (isSpeedrunMode) {
+                            return `${i + 1}. ${r.alias}  ${timeStr} (經典)`;
+                        }
+                        return `${i + 1}. ${r.alias}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
+                    }).join('<br>');
                 }
             } catch (e) {
                 console.warn('load pre-level leaderboard failed:', e);
