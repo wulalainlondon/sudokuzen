@@ -1225,6 +1225,9 @@
                 <div class="leaderboard-list" id="pre-level-leaderboard">載入中...</div>
             </div>
             <button class="resume-btn" id="pre-level-start-btn">開始挑戰</button>
+            <button class="resume-btn" id="pre-level-replay-btn"
+                style="display: none; background: transparent; border: 1px solid var(--accent-strong); color: var(--accent-strong); margin-bottom: 8px;">🎬
+                觀看最佳通關回放</button>
             <button class="back-btn" style="border: none; font-size: 0.8rem; color: var(--text-light);"
                 id="pre-level-back-btn">選擇其他關卡</button>
         </div>
@@ -1530,6 +1533,21 @@
             renderReplayList();
             replayOpen();
             replayModalEl.style.display = 'flex';
+        }
+
+        function openHistoricalReplay(levelId, savedHistory) {
+            currentLevel = levels.find(l => l.id === levelId) || levels[0];
+            actionHistory = savedHistory;
+            // Clean slate for cellsData so the UI can rebuild it cleanly
+            cellsData = currentLevel.puzzle.map((val, idx) => ({
+                value: val,
+                fixed: val !== 0,
+                notes: [],
+                isError: false
+            }));
+
+            document.getElementById('pre-level-modal').style.display = 'none';
+            openReplayModal();
         }
 
         function closeReplayModal() {
@@ -2161,7 +2179,7 @@
                     (currentSubs === (existing.submissions || Infinity) && seconds < (existing.time || Infinity));
 
                 if (shouldUpdate) {
-                    records[currentLevel.id] = { time: seconds, submissions: currentSubs };
+                    records[currentLevel.id] = { time: seconds, submissions: currentSubs, replayHistory: actionHistory };
                     localStorage.setItem('sudoku_speed_records', JSON.stringify(records));
                 }
                 return currentSubs;
@@ -2180,7 +2198,8 @@
                 if (shouldUpdate) {
                     records[currentLevel.id] = {
                         time: seconds,
-                        stars: earnedStars
+                        stars: earnedStars,
+                        replayHistory: actionHistory
                     };
                     localStorage.setItem('sudoku_records', JSON.stringify(records));
                 }
@@ -2222,6 +2241,7 @@
         const preLevelTechEl = document.getElementById('pre-level-tech');
         const preLevelLeaderboardEl = document.getElementById('pre-level-leaderboard');
         const preLevelStartBtn = document.getElementById('pre-level-start-btn');
+        const preLevelReplayBtn = document.getElementById('pre-level-replay-btn');
         const preLevelBackBtn = document.getElementById('pre-level-back-btn');
 
         const TECH_MAP = {
@@ -2253,27 +2273,28 @@
             const recKey = isSpeedrunMode ? 'sudoku_speed_records' : 'sudoku_records';
             const records = JSON.parse(localStorage.getItem(recKey) || '{}');
             const record = records[levelId];
-            if (record) {
-                let bestTime, bestStars, bestSubs;
-                if (typeof record === 'number') {
-                    bestTime = record;
-                    bestStars = 1;
-                } else {
-                    bestTime = record.time;
-                    bestStars = record.stars || 1;
-                    bestSubs = record.submissions || 1;
-                }
-                const timeStr = `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}`;
 
+            if (record) {
                 if (isSpeedrunMode) {
-                    preLevelBestRecordEl.textContent = `最佳紀錄：${timeStr} ⚡ ${bestSubs}次提交`;
+                    preLevelBestRecordEl.textContent = `最佳紀錄：${formatSeconds(record.time)} ⚡ ${record.submissions}次提交`;
                 } else {
-                    preLevelBestRecordEl.textContent = `最佳紀錄：${timeStr} ${'★'.repeat(bestStars)}${'☆'.repeat(3 - bestStars)}`;
+                    const stars = typeof record === 'number' ? 1 : (record.stars || 1);
+                    const time = typeof record === 'number' ? record : record.time;
+                    preLevelBestRecordEl.textContent = `最佳紀錄：${formatSeconds(time)} 星級：${'★'.repeat(stars)}`;
                 }
                 preLevelBestRecordEl.classList.add('has-record');
+
+                // Show historical replay button if available
+                if (record.replayHistory && record.replayHistory.length > 0) {
+                    preLevelReplayBtn.style.display = 'block';
+                    preLevelReplayBtn.onclick = () => openHistoricalReplay(levelId, record.replayHistory);
+                } else {
+                    preLevelReplayBtn.style.display = 'none';
+                }
             } else {
-                preLevelBestRecordEl.textContent = isSpeedrunMode ? '⚡ 尚無紀錄' : '尚無通關紀錄';
+                preLevelBestRecordEl.textContent = '尚無通關紀錄';
                 preLevelBestRecordEl.classList.remove('has-record');
+                preLevelReplayBtn.style.display = 'none';
             }
 
             // Load leaderboard
@@ -2604,7 +2625,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.10-V1';
+        const APP_VERSION = '2026.03.10-V2';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
