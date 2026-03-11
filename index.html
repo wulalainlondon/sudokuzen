@@ -279,21 +279,13 @@
         }
 
         .cell.match {
-            background-color: rgba(9, 132, 227, 0.25);
-            /* 較深的高亮色以區分關聯格 */
-            font-weight: 600;
-            /* 讓數字更亮眼 */
+            background-color: var(--accent-light);
         }
 
         .cell.selected {
             background-color: var(--accent-soft);
             outline: 2px inset var(--accent-strong);
             z-index: 1;
-        }
-
-        .cell.fixed {
-            color: var(--text-main);
-            font-weight: 600;
         }
 
         .cell.user-val {
@@ -1225,6 +1217,9 @@
                 <div class="leaderboard-list" id="pre-level-leaderboard">載入中...</div>
             </div>
             <button class="resume-btn" id="pre-level-start-btn">開始挑戰</button>
+            <button class="resume-btn" id="pre-level-ghost-btn"
+                style="display: none; background: rgba(155, 89, 182, 0.1); border: 1px solid rgba(155, 89, 182, 0.6); color: #9b59b6; margin-bottom: 8px;">👻
+                挑戰本局幽靈</button>
             <button class="resume-btn" id="pre-level-replay-btn"
                 style="display: none; background: transparent; border: 1px solid var(--accent-strong); color: var(--accent-strong); margin-bottom: 8px;">🎬
                 觀看最佳通關回放</button>
@@ -1287,6 +1282,10 @@
         <!-- 2. 數獨格上方資訊列 (對齊格子的左右兩端) -->
         <div class="grid-info-bar">
             <div class="stats" id="timer">ZEN / 00:00</div>
+            <div class="ghost-progress-container" id="ghost-progress-container"
+                style="display: none; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-light); margin-left: auto; margin-right: 15px;">
+                <span id="ghost-progress-text">👻 0 | 🧑 0</span>
+            </div>
             <div class="grid-right">
                 <div class="grid-actions">
                     <button class="mini-btn alt" onclick="toggleTheme()" aria-label="Toggle Theme">
@@ -1773,14 +1772,71 @@
             }
         }
 
+        let isGhostMode = false;
+        let ghostHistory = [];
+        let ghostIdx = 0;
+        let playerFilledCount = 0;
+        let ghostFilledCount = 0;
+
+        function updateGhostEngine(currentSecs) {
+            if (!isGhostMode || ghostIdx >= ghostHistory.length) return;
+
+            let changed = false;
+            while (ghostIdx < ghostHistory.length && ghostHistory[ghostIdx].t <= currentSecs) {
+                const action = ghostHistory[ghostIdx];
+                if (action.type === 'fill') {
+                    const cEl = gridEl.children[action.idx];
+                    if (!cEl.classList.contains('ghost-marked')) {
+                        cEl.classList.add('ghost-marked');
+                        ghostFilledCount++;
+                        changed = true;
+                    }
+                } else if (action.type === 'erase') {
+                    const cEl = gridEl.children[action.idx];
+                    if (cEl.classList.contains('ghost-marked')) {
+                        cEl.classList.remove('ghost-marked');
+                        ghostFilledCount--;
+                        changed = true;
+                    }
+                }
+                ghostIdx++;
+            }
+            if (changed) updateGhostProgressUI();
+        }
+
+        function updateGhostProgressUI() {
+            if (!isGhostMode) return;
+            document.getElementById('ghost-progress-text').textContent = `👻 ${ghostFilledCount}/81 | 🧑 ${playerFilledCount}/81`;
+        }
+
         function startTimer(reset = true) {
             clearInterval(timerInterval);
-            if (reset) seconds = 0;
+            if (reset) {
+                seconds = 0;
+                ghostIdx = 0;
+                ghostFilledCount = 0;
+                playerFilledCount = 0;
+            }
+
+            // Sync initial state if resumed or ghost mode active
+            if (isGhostMode) {
+                recalculatePlayerFilledCount();
+                updateGhostEngine(seconds);
+                updateGhostProgressUI();
+            }
+
             updateTimerUI();
             timerInterval = setInterval(() => {
                 seconds++;
                 updateTimerUI();
+                if (isGhostMode) {
+                    updateGhostEngine(seconds);
+                }
             }, 1000);
+        }
+
+        function recalculatePlayerFilledCount() {
+            playerFilledCount = cellsData.filter(c => c.value !== 0).length;
         }
 
         function pauseGame() {
@@ -1807,10 +1863,17 @@
             timerEl.textContent = `${currentLevel.displayName} / ${mins}:${secs}`;
         }
 
-        function initGame(levelId = 1, forceReset = false) {
+        function initGame(levelId = 1, forceReset = false, playWithGhost = false, ghostData = null) {
             currentLevel = levels.find(l => l.id === levelId) || levels[0];
             closeReplayModal();
             localStorage.setItem('sudoku_last_level', String(currentLevel.id));
+
+            // Ghost Setup
+            isGhostMode = playWithGhost;
+            ghostHistory = isGhostMode && ghostData ? ghostData : [];
+            document.getElementById('ghost-progress-container').style.display = isGhostMode ? 'flex' : 'none';
+            // Clean up any remaining ghost marks
+            Array.from(gridEl.children).forEach(c => c.classList.remove('ghost-marked'));
 
             // 嘗試載入存檔
             const saved = forceReset ? null : loadGameStatus(currentLevel.id);
@@ -1821,6 +1884,12 @@
                 errors = saved.errors;
                 submissionCount = saved.submissionCount || 0;
                 actionHistory = Array.isArray(saved.actionHistory) ? saved.actionHistory : [];
+                if (saved.isGhostMode === true && saved.ghostHistory) {
+                    // Resume ghost state
+                    isGhostMode = true;
+                    ghostHistory = saved.ghostHistory;
+                    document.getElementById('ghost-progress-container').style.display = 'flex';
+                }
             } else {
                 errors = 0;
                 seconds = 0;
@@ -1855,7 +1924,9 @@
                 seconds: seconds,
                 errors: errors,
                 submissionCount: submissionCount,
-                actionHistory: actionHistory
+                actionHistory: actionHistory,
+                isGhostMode: isGhostMode,
+                ghostHistory: isGhostMode ? ghostHistory : null
             };
             const prefix = isSpeedrunMode ? 'sudoku_speed_save_' : 'sudoku_save_';
             localStorage.setItem(`${prefix}${currentLevel.id}`, JSON.stringify(data));
@@ -2067,11 +2138,19 @@
                     col: isUnitComplete(colIndices),
                     box: isUnitComplete(boxIndices),
                 };
-                data.value = num;
-                data.notes = [];
-                data.isError = false;
+                cellsData[selectedIdx].value = num;
+                cellsData[selectedIdx].notes = [];
+                cellsData[selectedIdx].isError = false;
                 recordAction('fill', `${cellLabel(selectedIdx)} 填入 ${num}`, selectedIdx, num);
-                celebrateCompletedUnits(selectedIdx, beforeState);
+
+                if (isGhostMode) {
+                    recalculatePlayerFilledCount();
+                    updateGhostProgressUI();
+                }
+
+                if (!isSpeedrunMode) {
+                    celebrateCompletedUnits(selectedIdx, beforeState);
+                }
                 checkWin();
             }
             updateCellDisplay(cellEl, data);
@@ -2241,6 +2320,7 @@
         const preLevelTechEl = document.getElementById('pre-level-tech');
         const preLevelLeaderboardEl = document.getElementById('pre-level-leaderboard');
         const preLevelStartBtn = document.getElementById('pre-level-start-btn');
+        const preLevelGhostBtn = document.getElementById('pre-level-ghost-btn');
         const preLevelReplayBtn = document.getElementById('pre-level-replay-btn');
         const preLevelBackBtn = document.getElementById('pre-level-back-btn');
 
@@ -2288,13 +2368,18 @@
                 if (record.replayHistory && record.replayHistory.length > 0) {
                     preLevelReplayBtn.style.display = 'block';
                     preLevelReplayBtn.onclick = () => openHistoricalReplay(levelId, record.replayHistory);
+
+                    preLevelGhostBtn.style.display = 'block';
+                    preLevelGhostBtn.onclick = () => startLevelFromModal(true, true, record.replayHistory);
                 } else {
                     preLevelReplayBtn.style.display = 'none';
+                    preLevelGhostBtn.style.display = 'none';
                 }
             } else {
                 preLevelBestRecordEl.textContent = '尚無通關紀錄';
                 preLevelBestRecordEl.classList.remove('has-record');
                 preLevelReplayBtn.style.display = 'none';
+                preLevelGhostBtn.style.display = 'none';
             }
 
             // Load leaderboard
@@ -2310,12 +2395,12 @@
             pendingLevelId = null;
         }
 
-        function startLevelFromModal() {
+        function startLevelFromModal(forceReset = false, playWithGhost = false, ghostData = null) {
             if (pendingLevelId === null) return;
             const levelId = pendingLevelId;
             hidePreLevelModal();
             document.getElementById('level-screen').style.display = 'none';
-            initGame(levelId);
+            initGame(levelId, forceReset, playWithGhost, ghostData);
         }
 
         async function loadPreLevelLeaderboard(levelId) {
@@ -2349,8 +2434,8 @@
         }
 
         // Bind modal button events
-        if (preLevelStartBtn) preLevelStartBtn.onclick = startLevelFromModal;
-        if (preLevelBackBtn) preLevelBackBtn.onclick = hidePreLevelModal;
+        preLevelStartBtn.addEventListener('click', () => startLevelFromModal(true, false, null));
+        preLevelBackBtn.addEventListener('click', hidePreLevelModal);
         if (preLevelModalEl) {
             preLevelModalEl.addEventListener('click', (e) => {
                 if (e.target === preLevelModalEl) hidePreLevelModal();
@@ -2625,7 +2710,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.10-V2';
+        const APP_VERSION = '2026.03.11-V1';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
