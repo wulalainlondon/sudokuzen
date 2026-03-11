@@ -37,6 +37,7 @@
             --note-color: #A29BFE;
             --error-color: #D63031;
             --btn-bg: #FFFFFF;
+            --accent-light: rgba(9, 132, 227, 0.25);
         }
 
         :root[data-theme="dark"] {
@@ -52,6 +53,7 @@
             --note-color: #AFA8FF;
             --error-color: #FF8A80;
             --btn-bg: #2A2D33;
+            --accent-light: rgba(90, 169, 255, 0.25);
         }
 
         * {
@@ -280,6 +282,7 @@
 
         .cell.match {
             background-color: var(--accent-light);
+            font-weight: 600;
         }
 
         .cell.selected {
@@ -295,6 +298,13 @@
         .cell.error {
             color: var(--error-color) !important;
             animation: shake 0.4s ease;
+        }
+
+        .cell.fixed {
+            color: var(--text-main);
+            font-weight: 600;
+            z-index: 2;
+            /* Keep above ghost marker */
         }
 
         .cell.error-strong {
@@ -2156,6 +2166,9 @@
             updateCellDisplay(cellEl, data);
             saveGameStatus();
             updateNumpadState();
+
+            // 讓輸入後能立刻高亮盤面上其他相同的數字
+            selectCell(selectedIdx);
         }
 
         function checkSpeedrunComplete(lastIdx) {
@@ -2710,7 +2723,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.11-V1';
+        const APP_VERSION = '2026.03.11-V2';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
