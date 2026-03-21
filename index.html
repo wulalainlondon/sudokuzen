@@ -1182,6 +1182,547 @@
         .note-num.active {
             opacity: 1;
         }
+
+        /* ===== Stats & Achievements Modal ===== */
+        #stats-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        [data-theme="dark"] #stats-modal {
+            background: rgba(0, 0, 0, 0.65);
+        }
+
+        .stats-panel {
+            width: min(92vw, 400px);
+            max-height: min(85vh, 720px);
+            background: var(--grid-bg);
+            border: 1px solid var(--cell-border);
+            border-radius: 16px;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="dark"] .stats-panel {
+            background: rgba(34, 37, 42, 0.95);
+            border-color: rgba(90, 169, 255, 0.25);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4), 0 0 15px rgba(90, 169, 255, 0.05);
+        }
+
+        .stats-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .stats-panel::-webkit-scrollbar-thumb {
+            background: var(--block-border);
+            border-radius: 10px;
+        }
+
+        .stats-panel h2 {
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin: 0;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .stats-tabs {
+            display: flex;
+            gap: 0;
+            background: var(--bg-color);
+            border-radius: 10px;
+            padding: 3px;
+            border: 1px solid var(--cell-border);
+        }
+
+        .stats-tab-btn {
+            flex: 1;
+            padding: 8px 0;
+            border: none;
+            background: none;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .stats-tab-btn.active {
+            background: var(--accent-strong);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(9, 132, 227, 0.3);
+        }
+
+        .stats-section {
+            border: 1px solid var(--cell-border);
+            border-radius: 12px;
+            padding: 12px;
+            background: var(--btn-bg);
+        }
+
+        .stats-section-title {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            letter-spacing: 0.6px;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 8px;
+            background: var(--bg-color);
+        }
+
+        .stat-value {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--accent-strong);
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .tier-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 0.78rem;
+        }
+
+        .tier-name {
+            min-width: 42px;
+            color: var(--text-light);
+            font-size: 0.72rem;
+        }
+
+        .tier-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .tier-bar-fill {
+            height: 100%;
+            background: var(--accent-strong);
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        .tier-count {
+            min-width: 42px;
+            text-align: right;
+            color: var(--text-light);
+            font-size: 0.7rem;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .achievement-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 4px 8px;
+            border-radius: 10px;
+            background: var(--bg-color);
+            border: 1px solid var(--cell-border);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .achievement-card.locked {
+            opacity: 0.3;
+            filter: grayscale(1);
+        }
+
+        .achievement-card.unlocked {
+            border-color: var(--accent-strong);
+            background: var(--accent-soft);
+        }
+
+        .achievement-icon {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .achievement-name {
+            font-size: 0.68rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .achievement-desc {
+            font-size: 0.58rem;
+            color: var(--text-light);
+            line-height: 1.2;
+            margin-top: 2px;
+        }
+
+        .achievement-date {
+            font-size: 0.55rem;
+            color: var(--accent-strong);
+            margin-top: 3px;
+        }
+
+        .achievement-counter {
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .achievement-counter span {
+            color: var(--accent-strong);
+            font-weight: 600;
+        }
+
+        /* Achievement unlock toast */
+        .achievement-toast {
+            position: fixed;
+            top: calc(20px + env(safe-area-inset-top));
+            left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            background: var(--grid-bg);
+            border: 1px solid var(--accent-strong);
+            border-radius: 14px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 500;
+            box-shadow: 0 8px 24px rgba(9, 132, 227, 0.25);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .achievement-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .achievement-toast-icon {
+            font-size: 1.8rem;
+        }
+
+        .achievement-toast-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .achievement-toast-label {
+            font-size: 0.65rem;
+            color: var(--text-light);
+            letter-spacing: 1px;
+        }
+
+        .achievement-toast-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent-strong);
+        }
+
+        /* ===== Duo Room System ===== */
+        @keyframes duoPulse {
+            0%, 100% { box-shadow: 0 0 6px rgba(232, 67, 147, 0.25); border-color: rgba(232, 67, 147, 0.4); }
+            50% { box-shadow: 0 0 18px rgba(232, 67, 147, 0.5); border-color: rgba(232, 67, 147, 0.7); }
+        }
+        .level-item.duo-glow {
+            animation: duoPulse 1.8s ease-in-out infinite;
+            position: relative;
+        }
+        .level-item.duo-glow::after {
+            content: '💕';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.65rem;
+            line-height: 1;
+        }
+
+        .duo-ready-zone {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid rgba(232, 67, 147, 0.25);
+            border-radius: 12px;
+            background: rgba(232, 67, 147, 0.04);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        [data-theme="dark"] .duo-ready-zone {
+            background: rgba(232, 67, 147, 0.08);
+            border-color: rgba(232, 67, 147, 0.3);
+        }
+        .duo-zone-title {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        .duo-player-slots {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .duo-player-slot {
+            flex: 1;
+            max-width: 140px;
+            padding: 10px 8px;
+            border-radius: 10px;
+            border: 1.5px solid var(--cell-border);
+            background: var(--grid-bg);
+            transition: all 0.3s;
+        }
+        .duo-player-slot.ready {
+            border-color: #00b894;
+            background: rgba(0, 184, 148, 0.08);
+        }
+        .duo-player-slot.empty {
+            opacity: 0.4;
+            border-style: dashed;
+        }
+        .duo-slot-alias {
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .duo-slot-status {
+            font-size: 0.68rem;
+            color: var(--text-light);
+        }
+        .duo-slot-status.is-ready {
+            color: #00b894;
+            font-weight: 600;
+        }
+        .duo-countdown-display {
+            font-size: 3rem;
+            font-weight: 300;
+            color: var(--accent-strong);
+            letter-spacing: 4px;
+            margin: 10px 0;
+            opacity: 0;
+            transform: scale(1.5);
+            animation: countdownPop 0.8s ease forwards;
+        }
+        @keyframes countdownPop {
+            0% { opacity: 0; transform: scale(1.8); }
+            40% { opacity: 1; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .duo-ready-btn {
+            margin-top: 8px;
+            padding: 10px 30px;
+            background: rgba(232, 67, 147, 0.1);
+            border: 1px solid rgba(232, 67, 147, 0.5);
+            color: #e84393;
+            cursor: pointer;
+            border-radius: 20px;
+            width: 180px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .duo-ready-btn.is-ready {
+            background: #00b894;
+            border-color: #00b894;
+            color: #fff;
+        }
+        .duo-ready-btn:active { transform: scale(0.95); }
+
+        /* Duo progress during gameplay */
+        .duo-progress-container {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-left: auto;
+            margin-right: 10px;
+        }
+        .duo-progress-bar-wrap {
+            width: 60px;
+            height: 6px;
+            background: var(--bg-color);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid var(--cell-border);
+        }
+        .duo-progress-fill {
+            height: 100%;
+            background: #e84393;
+            border-radius: 3px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        /* Duo result overlay */
+        #duo-result-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 250;
+            padding: 20px;
+        }
+        .duo-result-panel {
+            width: min(92vw, 360px);
+            background: var(--grid-bg);
+            border: 1px solid var(--cell-border);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+        [data-theme="dark"] .duo-result-panel {
+            background: rgba(34, 37, 42, 0.95);
+            border-color: rgba(232, 67, 147, 0.25);
+        }
+        .duo-result-panel h2 {
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin: 0 0 16px;
+            font-size: 1.05rem;
+        }
+        .duo-result-cards {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .duo-result-card {
+            flex: 1;
+            max-width: 150px;
+            padding: 14px 8px;
+            border-radius: 12px;
+            border: 1.5px solid var(--cell-border);
+            background: var(--btn-bg);
+        }
+        .duo-result-card.winner {
+            border-color: #e84393;
+            background: rgba(232, 67, 147, 0.06);
+        }
+        .duo-result-crown {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        .duo-result-alias {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .duo-result-time {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-strong);
+        }
+        .duo-result-stars {
+            font-size: 0.85rem;
+            color: #F1C40F;
+            margin-top: 2px;
+        }
+        .duo-result-diff {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+        .duo-result-record {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-top: 8px;
+            padding-top: 10px;
+            border-top: 1px solid var(--cell-border);
+        }
+        .duo-result-record span {
+            font-weight: 600;
+            color: var(--accent-strong);
+        }
+        .duo-streak-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: rgba(232, 67, 147, 0.1);
+            border: 1px solid rgba(232, 67, 147, 0.3);
+            color: #e84393;
+            margin-bottom: 8px;
+        }
+
+        /* Emoji Reaction System */
+        .duo-emoji-bar {
+            display: none;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 4px;
+            padding-bottom: 2px;
+        }
+        .duo-emoji-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--cell-border);
+            background: var(--btn-bg);
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: transform 0.15s;
+        }
+        .duo-emoji-btn:active {
+            transform: scale(0.85);
+        }
+        @keyframes emojiFloat {
+            0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+            60% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-50%, -120px) scale(1.4); }
+        }
+        .duo-emoji-float {
+            position: fixed;
+            font-size: 2.2rem;
+            pointer-events: none;
+            z-index: 600;
+            animation: emojiFloat 1.4s ease-out forwards;
+        }
     </style>
 </head>
 
@@ -1191,9 +1732,16 @@
         <div
             style="width: 100%; display: flex; justify-content: space-between; align-items: center; max-width: 400px; margin-bottom: 25px;">
             <h1 style="margin: 0; font-weight: 300; letter-spacing: 5px; font-family: 'Outfit';">SUDOKU ZEN</h1>
-            <button id="speedrun-toggle-btn" onclick="toggleSpeedrunMode()" title="切換純粹競速模式 (Speedrun)"
-                aria-label="切換競速模式"
-                style="font-size: 1.5rem; filter: grayscale(1); opacity: 0.4; background: none; border: none; cursor: pointer; padding: 5px; transition: all 0.3s; color: #FFC107;">⚡</button>
+            <div style="display: flex; align-items: center; gap: 2px;">
+                <button id="stats-btn" onclick="openStatsModal()" title="個人統計與成就"
+                    aria-label="個人統計"
+                    style="font-size: 1.2rem; opacity: 0.45; background: none; border: none; cursor: pointer; padding: 5px; transition: all 0.3s;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                </button>
+                <button id="speedrun-toggle-btn" onclick="toggleSpeedrunMode()" title="切換純粹競速模式 (Speedrun)"
+                    aria-label="切換競速模式"
+                    style="font-size: 1.5rem; filter: grayscale(1); opacity: 0.4; background: none; border: none; cursor: pointer; padding: 5px; transition: all 0.3s; color: #FFC107;">⚡</button>
+            </div>
         </div>
         <div class="alias-config">
             <input id="alias-input" class="alias-input" type="text" maxlength="24" placeholder="輸入你的暱稱（1~24字）" />
@@ -1225,6 +1773,23 @@
             <div class="leaderboard-card">
                 <div class="leaderboard-title">首通榜 TOP 3</div>
                 <div class="leaderboard-list" id="pre-level-leaderboard">載入中...</div>
+            </div>
+            <!-- Duo Ready Zone (hidden by default) -->
+            <div class="duo-ready-zone" id="duo-ready-zone" style="display:none;">
+                <div class="duo-zone-title">💑 雙人對決</div>
+                <div class="duo-player-slots">
+                    <div class="duo-player-slot" id="duo-slot-host">
+                        <div class="duo-slot-alias" id="duo-host-alias">--</div>
+                        <div class="duo-slot-status" id="duo-host-status">等待中</div>
+                    </div>
+                    <div class="duo-player-slot empty" id="duo-slot-guest">
+                        <div class="duo-slot-alias" id="duo-guest-alias">等待加入...</div>
+                        <div class="duo-slot-status" id="duo-guest-status"></div>
+                    </div>
+                </div>
+                <div id="duo-pre-streak"></div>
+                <div id="duo-countdown-area" style="display:none;"></div>
+                <button class="duo-ready-btn" id="duo-ready-btn" onclick="toggleDuoReady()">準備完成</button>
             </div>
             <button class="resume-btn" id="pre-level-start-btn">開始挑戰</button>
             <button class="resume-btn" id="pre-level-ghost-btn"
@@ -1296,6 +1861,10 @@
                 style="display: none; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-light); margin-left: auto; margin-right: 15px;">
                 <span id="ghost-progress-text">👻 0 | 🧑 0</span>
             </div>
+            <div class="duo-progress-container" id="duo-progress-container">
+                <span id="duo-progress-text">💕 0/81</span>
+                <div class="duo-progress-bar-wrap"><div class="duo-progress-fill" id="duo-progress-fill"></div></div>
+            </div>
             <div class="grid-right">
                 <div class="grid-actions">
                     <button class="mini-btn alt" onclick="toggleTheme()" aria-label="Toggle Theme">
@@ -1326,7 +1895,13 @@
         <div class="sudoku-grid" id="grid"></div>
 
         <div class="numpad" id="numpad"></div>
-
+        <div class="duo-emoji-bar" id="duo-emoji-bar">
+            <button class="duo-emoji-btn" onclick="sendDuoEmoji('💪')">💪</button>
+            <button class="duo-emoji-btn" onclick="sendDuoEmoji('😱')">😱</button>
+            <button class="duo-emoji-btn" onclick="sendDuoEmoji('😂')">😂</button>
+            <button class="duo-emoji-btn" onclick="sendDuoEmoji('💕')">💕</button>
+            <button class="duo-emoji-btn" onclick="sendDuoEmoji('🔥')">🔥</button>
+        </div>
         <div class="controls">
         </div>
     </div>
@@ -1362,6 +1937,57 @@
             </div>
             <div class="replay-list" id="replay-list"></div>
             <button class="resume-btn" onclick="closeReplayModal()">關閉</button>
+        </div>
+    </div>
+
+    <!-- Stats & Achievements Modal -->
+    <div id="stats-modal">
+        <div class="stats-panel">
+            <h2>個人統計</h2>
+            <div class="stats-tabs">
+                <button class="stats-tab-btn active" id="stats-tab-overview" onclick="switchStatsTab('overview')">總覽</button>
+                <button class="stats-tab-btn" id="stats-tab-achievement" onclick="switchStatsTab('achievement')">成就</button>
+            </div>
+            <div id="stats-content-overview">
+                <div class="stats-section">
+                    <div class="stats-section-title">遊戲數據</div>
+                    <div class="stats-grid" id="stats-overview"></div>
+                </div>
+                <div class="stats-section" style="margin-top: 14px;">
+                    <div class="stats-section-title">各難度進度</div>
+                    <div id="stats-tier-progress"></div>
+                </div>
+            </div>
+            <div id="stats-content-achievement" style="display: none;">
+                <div class="stats-section">
+                    <div class="stats-section-title">成就徽章</div>
+                    <div class="achievement-counter" id="achievement-counter"></div>
+                    <div class="achievement-grid" id="achievement-grid"></div>
+                </div>
+            </div>
+            <button class="resume-btn" onclick="closeStatsModal()">關閉</button>
+        </div>
+    </div>
+
+    <!-- Achievement unlock toast -->
+    <div class="achievement-toast" id="achievement-toast">
+        <div class="achievement-toast-icon" id="achievement-toast-icon"></div>
+        <div class="achievement-toast-text">
+            <span class="achievement-toast-label">成就解鎖</span>
+            <span class="achievement-toast-name" id="achievement-toast-name"></span>
+        </div>
+    </div>
+
+    <!-- Duo Result Modal -->
+    <div id="duo-result-modal">
+        <div class="duo-result-panel">
+            <h2>💑 雙人對決結果</h2>
+            <div id="duo-result-streak"></div>
+            <div class="duo-result-cards" id="duo-result-cards"></div>
+            <div class="duo-result-diff" id="duo-result-diff"></div>
+            <div class="duo-result-record" id="duo-result-record"></div>
+            <button class="resume-btn" onclick="closeDuoResult()">再來一局</button>
+            <button class="back-btn" style="border:none; font-size:0.8rem; color:var(--text-light);" onclick="closeDuoResult()">返回選關</button>
         </div>
     </div>
 
@@ -1819,6 +2445,529 @@
             document.getElementById('ghost-progress-text').textContent = `👻 ${ghostFilledCount}/81 | 🧑 ${playerFilledCount}/81`;
         }
 
+        // ===== Duo Room System =====
+        let isDuoMode = false;
+        let duoUnsubscribe = null;
+        let duoGlowUnsubscribe = null;
+        let duoRole = null; // 'host' | 'guest'
+        let duoRoomData = null;
+        let duoCountdownTimer = null;
+        let duoProgressThrottle = 0;
+        let duoMyReady = false;
+        let duoTotalToFill = 0;
+
+        function duoRoomRef() {
+            return db.collection('duo_room').doc('current');
+        }
+
+        async function enterDuoRoom(levelId) {
+            if (!firebaseReady) return;
+            const { playerId, alias } = getPlayerIdentity();
+            try {
+                await db.runTransaction(async (tx) => {
+                    const doc = await tx.get(duoRoomRef());
+                    const d = doc.exists ? doc.data() : null;
+                    const now = firebase.firestore.FieldValue.serverTimestamp();
+
+                    // Check staleness (>2 min old waiting rooms can be overwritten)
+                    const isStale = d && d.updatedAt && d.updatedAt.toDate &&
+                        (Date.now() - d.updatedAt.toDate().getTime() > 120000);
+
+                    if (!d || d.status === 'idle' || d.status === 'finished' || isStale) {
+                        // Create new room as host
+                        tx.set(duoRoomRef(), {
+                            levelId, status: 'waiting',
+                            hostId: playerId, hostAlias: alias, hostReady: false,
+                            hostProgress: 0, hostFinishTime: null, hostStars: null,
+                            guestId: null, guestAlias: null, guestReady: false,
+                            guestProgress: 0, guestFinishTime: null, guestStars: null,
+                            startAt: null, updatedAt: now
+                        });
+                        duoRole = 'host';
+                    } else if (d.status === 'waiting' && d.hostId !== playerId) {
+                        // Join as guest
+                        tx.update(duoRoomRef(), {
+                            guestId: playerId, guestAlias: alias,
+                            guestReady: false, guestProgress: 0,
+                            guestFinishTime: null, guestStars: null,
+                            updatedAt: now
+                        });
+                        duoRole = 'guest';
+                    } else if (d.status === 'waiting' && d.hostId === playerId) {
+                        // Re-opening my own room, update timestamp
+                        tx.update(duoRoomRef(), { updatedAt: now, hostAlias: alias });
+                        duoRole = 'host';
+                    } else {
+                        duoRole = null;
+                    }
+                });
+                if (duoRole) subscribeDuoRoom();
+            } catch (e) {
+                console.warn('enterDuoRoom failed:', e);
+                duoRole = null;
+            }
+        }
+
+        function subscribeDuoRoom() {
+            if (duoUnsubscribe) duoUnsubscribe();
+            duoUnsubscribe = duoRoomRef().onSnapshot(snap => {
+                if (!snap.exists) { resetDuoState(); return; }
+                duoRoomData = snap.data();
+                handleDuoSnapshot(duoRoomData);
+            }, err => {
+                console.warn('duo snapshot error:', err);
+            });
+        }
+
+        function handleDuoSnapshot(d) {
+            if (!d || !duoRole) return;
+            const { playerId } = getPlayerIdentity();
+
+            if (d.status === 'waiting' || d.status === 'countdown') {
+                updateDuoPreLevelUI(d);
+            }
+
+            if (d.status === 'countdown' && d.startAt) {
+                startDuoCountdown(d.startAt);
+            }
+
+            if (d.status === 'playing') {
+                // Update opponent progress bar
+                const oppProgress = duoRole === 'host' ? d.guestProgress : d.hostProgress;
+                const oppAlias = duoRole === 'host' ? (d.guestAlias || '對手') : (d.hostAlias || '對手');
+                updateDuoProgressUI(oppAlias, oppProgress || 0);
+
+                // Handle emoji reactions
+                handleDuoEmoji(d);
+
+                // Check if opponent finished
+                const oppFinish = duoRole === 'host' ? d.guestFinishTime : d.hostFinishTime;
+                const oppStars = duoRole === 'host' ? d.guestStars : d.hostStars;
+                if (oppFinish !== null && oppFinish !== undefined) {
+                    showDuoOpponentFinished(oppAlias, oppFinish, oppStars);
+                }
+
+                // Check if both finished
+                if (d.hostFinishTime !== null && d.hostFinishTime !== undefined &&
+                    d.guestFinishTime !== null && d.guestFinishTime !== undefined) {
+                    showDuoResult(d);
+                }
+            }
+
+            if (d.status === 'finished') {
+                showDuoResult(d);
+            }
+        }
+
+        function updateDuoPreLevelUI(d) {
+            const zone = document.getElementById('duo-ready-zone');
+            const readyBtn = document.getElementById('duo-ready-btn');
+            const countdownArea = document.getElementById('duo-countdown-area');
+            if (!zone) return;
+
+            zone.style.display = 'block';
+
+            // Host slot
+            document.getElementById('duo-host-alias').textContent = d.hostAlias || '--';
+            const hostSlot = document.getElementById('duo-slot-host');
+            const hostStatus = document.getElementById('duo-host-status');
+            hostSlot.classList.toggle('ready', !!d.hostReady);
+            hostStatus.textContent = d.hostReady ? '已準備' : '等待中';
+            hostStatus.classList.toggle('is-ready', !!d.hostReady);
+
+            // Guest slot
+            const guestSlot = document.getElementById('duo-slot-guest');
+            const guestAlias = document.getElementById('duo-guest-alias');
+            const guestStatus = document.getElementById('duo-guest-status');
+            if (d.guestId) {
+                guestSlot.classList.remove('empty');
+                guestAlias.textContent = d.guestAlias || '--';
+                guestSlot.classList.toggle('ready', !!d.guestReady);
+                guestStatus.textContent = d.guestReady ? '已準備' : '等待中';
+                guestStatus.classList.toggle('is-ready', !!d.guestReady);
+            } else {
+                guestSlot.classList.add('empty');
+                guestAlias.textContent = '等待加入...';
+                guestStatus.textContent = '';
+                guestStatus.classList.remove('is-ready');
+            }
+
+            // Show streak if present
+            const preStreak = document.getElementById('duo-pre-streak');
+            if (preStreak && d.guestId) {
+                const rec = loadDuoRecords();
+                if (rec.streak >= 2 && rec.streakHolder) {
+                    preStreak.innerHTML = `<div class="duo-streak-badge">🔥 ${rec.streakHolder} 連勝 ${rec.streak} 場</div>`;
+                } else {
+                    const wins = rec.wins || {};
+                    const names = Object.keys(wins);
+                    if (names.length >= 2) {
+                        const sorted = names.sort((a, b) => wins[b] - wins[a]);
+                        preStreak.innerHTML = `<div style="font-size:0.72rem;color:var(--text-light);margin-bottom:6px;">${sorted[0]} ${wins[sorted[0]]} 勝 — ${sorted[1]} ${wins[sorted[1]]} 勝</div>`;
+                    } else {
+                        preStreak.innerHTML = '';
+                    }
+                }
+            } else if (preStreak) {
+                preStreak.innerHTML = '';
+            }
+
+            // Ready button state
+            const myReady = duoRole === 'host' ? d.hostReady : d.guestReady;
+            if (d.status === 'countdown') {
+                readyBtn.style.display = 'none';
+                countdownArea.style.display = 'block';
+            } else {
+                readyBtn.style.display = d.guestId ? 'inline-block' : 'none';
+                countdownArea.style.display = 'none';
+                readyBtn.textContent = myReady ? '✓ 已準備' : '準備完成';
+                readyBtn.classList.toggle('is-ready', myReady);
+            }
+        }
+
+        async function toggleDuoReady() {
+            if (!firebaseReady || !duoRole) return;
+            const { playerId } = getPlayerIdentity();
+            const field = duoRole === 'host' ? 'hostReady' : 'guestReady';
+            duoMyReady = !duoMyReady;
+
+            try {
+                await db.runTransaction(async (tx) => {
+                    const doc = await tx.get(duoRoomRef());
+                    if (!doc.exists) return;
+                    const d = doc.data();
+                    const update = { [field]: duoMyReady, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+
+                    // Check if both will be ready after this update
+                    const hostReady = duoRole === 'host' ? duoMyReady : d.hostReady;
+                    const guestReady = duoRole === 'guest' ? duoMyReady : d.guestReady;
+                    if (hostReady && guestReady && d.guestId) {
+                        // Both ready! Set countdown start
+                        update.status = 'countdown';
+                        // startAt = now + 4 seconds (3s visible countdown + 1s buffer)
+                        update.startAt = firebase.firestore.Timestamp.fromMillis(Date.now() + 4000);
+                    }
+                    tx.update(duoRoomRef(), update);
+                });
+            } catch (e) {
+                console.warn('toggleDuoReady failed:', e);
+                duoMyReady = !duoMyReady; // revert
+            }
+        }
+
+        function startDuoCountdown(startAtTs) {
+            if (duoCountdownTimer) return; // already counting
+            const area = document.getElementById('duo-countdown-area');
+            if (!area) return;
+
+            const targetMs = startAtTs.toMillis ? startAtTs.toMillis() : startAtTs.seconds * 1000;
+
+            duoCountdownTimer = setInterval(() => {
+                const remaining = Math.ceil((targetMs - Date.now()) / 1000);
+                if (remaining > 0) {
+                    area.innerHTML = `<div class="duo-countdown-display" key="${remaining}">${remaining}</div>`;
+                } else {
+                    clearInterval(duoCountdownTimer);
+                    duoCountdownTimer = null;
+                    area.innerHTML = `<div class="duo-countdown-display">GO!</div>`;
+                    setTimeout(() => launchDuoGame(), 300);
+                }
+            }, 100);
+        }
+
+        function launchDuoGame() {
+            if (!duoRoomData) return;
+            isDuoMode = true;
+
+            // Calculate total cells to fill
+            const level = levels.find(l => l.id === duoRoomData.levelId);
+            if (level) {
+                duoTotalToFill = level.puzzle.filter(v => v === 0).length;
+            }
+
+            // Hide pre-level modal, start game
+            hidePreLevelModal();
+            document.getElementById('level-screen').style.display = 'none';
+            initGame(duoRoomData.levelId, true, false, null);
+
+            // Show duo progress bar and emoji bar
+            document.getElementById('duo-progress-container').style.display = 'flex';
+            document.getElementById('duo-emoji-bar').style.display = 'flex';
+
+            // Update room status to playing
+            if (duoRole === 'host') {
+                duoRoomRef().update({
+                    status: 'playing',
+                    hostProgress: 0, guestProgress: 0,
+                    hostFinishTime: null, guestFinishTime: null,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(() => {});
+            }
+        }
+
+        function updateDuoProgress() {
+            if (!isDuoMode || !firebaseReady) return;
+            const now = Date.now();
+            if (now - duoProgressThrottle < 3000) return; // throttle to every 3s
+            duoProgressThrottle = now;
+            const filled = cellsData.filter(c => !c.fixed && c.value !== 0).length;
+            const field = duoRole === 'host' ? 'hostProgress' : 'guestProgress';
+            duoRoomRef().update({
+                [field]: filled,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(() => {});
+        }
+
+        function updateDuoProgressUI(oppAlias, oppProgress) {
+            const el = document.getElementById('duo-progress-text');
+            const fill = document.getElementById('duo-progress-fill');
+            if (!el || !fill) return;
+            const pct = duoTotalToFill > 0 ? Math.min(100, Math.round(oppProgress / duoTotalToFill * 100)) : 0;
+            el.textContent = `💕 ${oppAlias}: ${oppProgress}/${duoTotalToFill}`;
+            fill.style.width = `${pct}%`;
+        }
+
+        let duoOpponentNotified = false;
+        function showDuoOpponentFinished(alias, timeSec, stars) {
+            if (duoOpponentNotified) return;
+            duoOpponentNotified = true;
+            const starsStr = stars ? ' ' + '★'.repeat(stars) : '';
+            showFeedback(`${alias} 已完成！${formatSeconds(timeSec)}${starsStr}`, 'success');
+            if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+        }
+
+        async function submitDuoFinish(timeSec, stars) {
+            if (!isDuoMode || !firebaseReady) return;
+            const timeField = duoRole === 'host' ? 'hostFinishTime' : 'guestFinishTime';
+            const starsField = duoRole === 'host' ? 'hostStars' : 'guestStars';
+            const progressField = duoRole === 'host' ? 'hostProgress' : 'guestProgress';
+            try {
+                await duoRoomRef().update({
+                    [timeField]: timeSec,
+                    [starsField]: stars,
+                    [progressField]: duoTotalToFill,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (e) { console.warn('submitDuoFinish failed:', e); }
+        }
+
+        function showDuoResult(d) {
+            const modal = document.getElementById('duo-result-modal');
+            const cardsEl = document.getElementById('duo-result-cards');
+            const diffEl = document.getElementById('duo-result-diff');
+            const streakEl = document.getElementById('duo-result-streak');
+            const recordEl = document.getElementById('duo-result-record');
+            if (!modal || !cardsEl || modal.style.display === 'flex') return;
+
+            const hTime = d.hostFinishTime;
+            const gTime = d.guestFinishTime;
+            if (hTime === null || hTime === undefined || gTime === null || gTime === undefined) return;
+
+            const hWin = hTime < gTime;
+            const gWin = gTime < hTime;
+            const isDraw = hTime === gTime;
+            const diff = Math.abs(hTime - gTime);
+
+            // Record win/draw
+            let rec;
+            if (isDraw) {
+                rec = recordDuoDraw();
+            } else {
+                const winner = hWin ? d.hostAlias : d.guestAlias;
+                const loser = hWin ? d.guestAlias : d.hostAlias;
+                rec = recordDuoWin(winner, loser);
+            }
+
+            // Streak badge
+            if (rec.streak >= 2 && rec.streakHolder) {
+                streakEl.innerHTML = `<div class="duo-streak-badge">🔥 ${rec.streakHolder} 連勝 ${rec.streak} 場！</div>`;
+            } else {
+                streakEl.innerHTML = '';
+            }
+
+            function makeCard(alias, time, stars, isWinner) {
+                return `<div class="duo-result-card ${isWinner ? 'winner' : ''}">
+                    <div class="duo-result-crown">${isWinner ? '👑' : ''}</div>
+                    <div class="duo-result-alias">${alias || '--'}</div>
+                    <div class="duo-result-time">${formatSeconds(time)}</div>
+                    <div class="duo-result-stars">${stars ? '★'.repeat(stars) + '☆'.repeat(3 - stars) : ''}</div>
+                </div>`;
+            }
+
+            cardsEl.innerHTML =
+                makeCard(d.hostAlias, hTime, d.hostStars, hWin) +
+                makeCard(d.guestAlias, gTime, d.guestStars, gWin);
+
+            if (isDraw) {
+                diffEl.textContent = '平手！心有靈犀 💕';
+            } else {
+                const winnerAlias = hWin ? d.hostAlias : d.guestAlias;
+                diffEl.textContent = `${winnerAlias} 快了 ${formatSeconds(diff)}`;
+            }
+
+            // Lifetime record
+            const wins = rec.wins || {};
+            const names = Object.keys(wins);
+            if (names.length >= 2) {
+                const sorted = names.sort((a, b) => wins[b] - wins[a]);
+                recordEl.innerHTML = `歷史戰績：<span>${sorted[0]} ${wins[sorted[0]]}</span> 勝 — <span>${sorted[1]} ${wins[sorted[1]]}</span> 勝`;
+            } else if (names.length === 1) {
+                recordEl.innerHTML = `歷史戰績：<span>${names[0]} ${wins[names[0]]}</span> 勝`;
+            } else {
+                recordEl.innerHTML = '';
+            }
+
+            // Hide emoji bar
+            document.getElementById('duo-emoji-bar').style.display = 'none';
+
+            modal.style.display = 'flex';
+        }
+
+        // ===== Duo Records & Streaks =====
+        function loadDuoRecords() {
+            return JSON.parse(localStorage.getItem('sudoku_duo_records') || '{"wins":{},"streak":0,"streakHolder":""}');
+        }
+        function saveDuoRecords(data) {
+            localStorage.setItem('sudoku_duo_records', JSON.stringify(data));
+        }
+        function recordDuoWin(winnerAlias, loserAlias) {
+            const rec = loadDuoRecords();
+            if (!rec.wins) rec.wins = {};
+            rec.wins[winnerAlias] = (rec.wins[winnerAlias] || 0) + 1;
+            if (!rec.wins[loserAlias]) rec.wins[loserAlias] = 0;
+            // Update streak
+            if (rec.streakHolder === winnerAlias) {
+                rec.streak = (rec.streak || 0) + 1;
+            } else {
+                rec.streakHolder = winnerAlias;
+                rec.streak = 1;
+            }
+            saveDuoRecords(rec);
+            return rec;
+        }
+        function recordDuoDraw() {
+            const rec = loadDuoRecords();
+            rec.streak = 0;
+            rec.streakHolder = '';
+            saveDuoRecords(rec);
+            return rec;
+        }
+
+        // ===== Duo Emoji Reactions =====
+        let duoEmojiCooldown = 0;
+        let duoLastEmojiSeen = '';
+
+        function sendDuoEmoji(emoji) {
+            if (!isDuoMode || !firebaseReady) return;
+            const now = Date.now();
+            if (now - duoEmojiCooldown < 1500) return; // cooldown 1.5s
+            duoEmojiCooldown = now;
+            const field = duoRole === 'host' ? 'hostEmoji' : 'guestEmoji';
+            const tsField = duoRole === 'host' ? 'hostEmojiTs' : 'guestEmojiTs';
+            duoRoomRef().update({
+                [field]: emoji,
+                [tsField]: Date.now()
+            }).catch(() => {});
+            // Show own emoji as confirmation
+            spawnEmojiFloat(emoji, true);
+        }
+
+        function handleDuoEmoji(d) {
+            if (!isDuoMode) return;
+            const emojiField = duoRole === 'host' ? 'guestEmoji' : 'hostEmoji';
+            const tsField = duoRole === 'host' ? 'guestEmojiTs' : 'hostEmojiTs';
+            const emoji = d[emojiField];
+            const ts = d[tsField];
+            if (!emoji || !ts) return;
+            const key = `${emoji}_${ts}`;
+            if (key === duoLastEmojiSeen) return;
+            duoLastEmojiSeen = key;
+            spawnEmojiFloat(emoji, false);
+        }
+
+        function spawnEmojiFloat(emoji, isSelf) {
+            const el = document.createElement('div');
+            el.className = 'duo-emoji-float';
+            el.textContent = emoji;
+            // Self: rises from bottom-center, opponent: rises from top-center
+            const x = 50 + (Math.random() - 0.5) * 30;
+            if (isSelf) {
+                el.style.bottom = '120px';
+                el.style.left = `${x}%`;
+            } else {
+                el.style.top = '80px';
+                el.style.left = `${x}%`;
+                if (navigator.vibrate) navigator.vibrate(15);
+            }
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1500);
+        }
+
+        function closeDuoResult() {
+            document.getElementById('duo-result-modal').style.display = 'none';
+            // Mark room finished
+            if (firebaseReady) {
+                duoRoomRef().update({ status: 'finished' }).catch(() => {});
+            }
+            resetDuoState();
+            showLevelScreen();
+        }
+
+        async function leaveDuoRoom() {
+            if (!firebaseReady || !duoRole) { resetDuoState(); return; }
+            try {
+                if (duoRole === 'host') {
+                    await duoRoomRef().update({ status: 'idle' });
+                } else {
+                    await duoRoomRef().update({
+                        guestId: null, guestAlias: null, guestReady: false,
+                        guestProgress: 0, guestFinishTime: null, guestStars: null,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (_) {}
+            resetDuoState();
+        }
+
+        function resetDuoState() {
+            isDuoMode = false;
+            duoRole = null;
+            duoRoomData = null;
+            duoMyReady = false;
+            duoOpponentNotified = false;
+            duoProgressThrottle = 0;
+            if (duoCountdownTimer) { clearInterval(duoCountdownTimer); duoCountdownTimer = null; }
+            if (duoUnsubscribe) { duoUnsubscribe(); duoUnsubscribe = null; }
+            document.getElementById('duo-ready-zone').style.display = 'none';
+            document.getElementById('duo-progress-container').style.display = 'none';
+            document.getElementById('duo-emoji-bar').style.display = 'none';
+            duoLastEmojiSeen = '';
+        }
+
+        // Passive glow listener for level screen
+        function startDuoGlowListener() {
+            if (!firebaseReady) return;
+            if (duoGlowUnsubscribe) duoGlowUnsubscribe();
+            duoGlowUnsubscribe = duoRoomRef().onSnapshot(snap => {
+                // Remove old glow
+                document.querySelectorAll('.level-item.duo-glow').forEach(el => el.classList.remove('duo-glow'));
+                if (!snap.exists) return;
+                const d = snap.data();
+                if (d.status !== 'waiting' || !d.levelId) return;
+                const { playerId } = getPlayerIdentity();
+                if (d.hostId === playerId) return; // Don't glow my own room
+
+                // Find the matching level card and make it glow
+                const items = document.querySelectorAll('#level-list .level-item');
+                const filtered = getFilteredLevels().filter(l => !l.hidden);
+                filtered.forEach((l, i) => {
+                    if (l.id === d.levelId && items[i]) {
+                        items[i].classList.add('duo-glow');
+                    }
+                });
+            }, () => {});
+        }
+
         function startTimer(reset = true) {
             clearInterval(timerInterval);
             if (reset) {
@@ -2018,6 +3167,78 @@
             }
         }
 
+        // ===== Zen Audio Feedback =====
+        let _audioCtx = null;
+        function getAudioCtx() {
+            try {
+                if (!_audioCtx) {
+                    const AC = window.AudioContext || window.webkitAudioContext;
+                    if (!AC) return null;
+                    _audioCtx = new AC();
+                }
+                if (_audioCtx.state === 'suspended') _audioCtx.resume();
+                return _audioCtx;
+            } catch (_) { return null; }
+        }
+
+        function playFillSound() {
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+            try {
+                const t = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(698, t);       // F5
+                osc.frequency.exponentialRampToValueAtTime(784, t + 0.06); // → G5 微升
+                g.gain.setValueAtTime(0.025, t);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+                osc.connect(g); g.connect(ctx.destination);
+                osc.start(t); osc.stop(t + 0.1);
+            } catch (_) {}
+        }
+
+        function playUnitCompleteSound() {
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+            try {
+                const t = ctx.currentTime;
+                // 柔和雙音：D5 → A5（純五度），如風鈴
+                [[587, t + 0.04], [880, t + 0.14]].forEach(([freq, start]) => {
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    g.gain.setValueAtTime(0, start);
+                    g.gain.linearRampToValueAtTime(0.035, start + 0.03);
+                    g.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+                    osc.connect(g); g.connect(ctx.destination);
+                    osc.start(start); osc.stop(start + 0.35);
+                });
+            } catch (_) {}
+        }
+
+        function playWinSound() {
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+            try {
+                const t = ctx.currentTime;
+                // C大調琶音 C5→E5→G5→C6，溫潤綻放
+                [523, 659, 784, 1047].forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    const start = t + i * 0.13;
+                    g.gain.setValueAtTime(0, start);
+                    g.gain.linearRampToValueAtTime(0.03, start + 0.03);
+                    g.gain.exponentialRampToValueAtTime(0.001, start + 0.7);
+                    osc.connect(g); g.connect(ctx.destination);
+                    osc.start(start); osc.stop(start + 0.7);
+                });
+            } catch (_) {}
+        }
+
         function markErrorArea(idx) {
             const row = Math.floor(idx / 9), col = idx % 9;
             const box = Math.floor(row / 3) * 3 + Math.floor(col / 3);
@@ -2088,6 +3309,8 @@
             if (justCompletedCol) parts.push('一欄');
             if (justCompletedBox) parts.push('一宮');
             showFeedback(`完成 ${parts.join(' + ')}！`, 'success');
+            playUnitCompleteSound();
+            if (navigator.vibrate) navigator.vibrate([12, 30, 12]);
         }
 
         function handleInput(num) {
@@ -2108,9 +3331,11 @@
                     data.notes = [];
                     data.isError = false;
                     recordAction('fill', `${cellLabel(selectedIdx)} (競速) 填入 ${num}`, selectedIdx, num);
+                    playFillSound();
                     updateCellDisplay(cellEl, data);
                     saveGameStatus();
                     updateNumpadState();
+                    if (isDuoMode) updateDuoProgress();
                     checkSpeedrunComplete(selectedIdx);
                     return;
                 }
@@ -2152,6 +3377,8 @@
                 cellsData[selectedIdx].notes = [];
                 cellsData[selectedIdx].isError = false;
                 recordAction('fill', `${cellLabel(selectedIdx)} 填入 ${num}`, selectedIdx, num);
+                playFillSound();
+                if (navigator.vibrate) navigator.vibrate(8);
 
                 if (isGhostMode) {
                     recalculatePlayerFilledCount();
@@ -2161,6 +3388,7 @@
                 if (!isSpeedrunMode) {
                     celebrateCompletedUnits(selectedIdx, beforeState);
                 }
+                if (isDuoMode) updateDuoProgress();
                 checkWin();
             }
             updateCellDisplay(cellEl, data);
@@ -2214,6 +3442,218 @@
             }
         }
 
+        // ===== Stats & Achievements System =====
+        const ACHIEVEMENTS = [
+            { id: 'first_clear', name: '初試啼聲', desc: '完成第一關', icon: '🌱' },
+            { id: 'perfect_one', name: '完美無瑕', desc: '任一關取得三星', icon: '⭐' },
+            { id: 'perfect_10', name: '十全十美', desc: '累計 10 關三星', icon: '🌟' },
+            { id: 'perfect_50', name: '星光璀璨', desc: '累計 50 關三星', icon: '✨' },
+            { id: 'clear_10', name: '嶄露頭角', desc: '累計通關 10 關', icon: '🔥' },
+            { id: 'clear_50', name: '爐火純青', desc: '累計通關 50 關', icon: '💪' },
+            { id: 'clear_100', name: '百戰不殆', desc: '累計通關 100 關', icon: '🏆' },
+            { id: 'clear_all', name: '全制霸', desc: '通關全部關卡', icon: '👑' },
+            { id: 'speed_2min', name: '閃電手', desc: '2 分鐘內通關', icon: '⚡' },
+            { id: 'speed_1min', name: '光速通關', desc: '1 分鐘內通關', icon: '💨' },
+            { id: 'tier_beginner', name: '初心圓滿', desc: '全通初心者關卡', icon: '🧘' },
+            { id: 'tier_any', name: '悟道者', desc: '全通任一難度分類', icon: '🪷' },
+            { id: 'xy_master', name: 'XY 大師', desc: '完成空鏡關卡', icon: '🔀' },
+            { id: 'swordfish', name: '劍魚獵人', desc: '完成星潮關卡', icon: '🗡️' },
+            { id: 'aic_master', name: '鏈術宗師', desc: '完成玄鏈關卡', icon: '🔗' },
+            { id: 'speedrun_first', name: '競速初體驗', desc: '競速模式通關', icon: '🏎️' },
+            { id: 'ghost_win', name: '鬼影殺手', desc: '幽靈模式下通關', icon: '👻' },
+            { id: 'nirvana_clear', name: '寂滅突破', desc: '完成寂滅關卡', icon: '🕳️' },
+        ];
+
+        let achievementToastQueue = [];
+        let achievementToastActive = false;
+
+        function loadAchievements() {
+            return JSON.parse(localStorage.getItem('sudoku_achievements') || '{}');
+        }
+
+        function saveAchievementsData(data) {
+            localStorage.setItem('sudoku_achievements', JSON.stringify(data));
+        }
+
+        function unlockAchievement(id) {
+            const data = loadAchievements();
+            if (data[id]) return false;
+            data[id] = { date: new Date().toISOString().slice(0, 10) };
+            saveAchievementsData(data);
+            const a = ACHIEVEMENTS.find(x => x.id === id);
+            if (a) achievementToastQueue.push(a);
+            return true;
+        }
+
+        function processAchievementToasts() {
+            if (achievementToastActive || !achievementToastQueue.length) return;
+            achievementToastActive = true;
+            const a = achievementToastQueue.shift();
+            const toast = document.getElementById('achievement-toast');
+            if (!toast) { achievementToastActive = false; return; }
+            document.getElementById('achievement-toast-icon').textContent = a.icon;
+            document.getElementById('achievement-toast-name').textContent = a.name;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                achievementToastActive = false;
+                if (achievementToastQueue.length) setTimeout(processAchievementToasts, 400);
+            }, 3000);
+        }
+
+        function computeStats() {
+            const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+            const speedRecords = JSON.parse(localStorage.getItem('sudoku_speed_records') || '{}');
+            const mainLevels = levels.filter(l => !l.hidden);
+
+            let totalCleared = 0, totalTime = 0, totalStars = 0, threeStarCount = 0;
+            let fastestTime = Infinity, fastestLevel = null;
+
+            for (const [id, rec] of Object.entries(records)) {
+                const time = typeof rec === 'number' ? rec : rec.time;
+                const stars = typeof rec === 'number' ? 1 : (rec.stars || 1);
+                totalCleared++;
+                totalTime += time;
+                totalStars += stars;
+                if (stars === 3) threeStarCount++;
+                if (time < fastestTime) {
+                    fastestTime = time;
+                    fastestLevel = levels.find(l => l.id === Number(id));
+                }
+            }
+
+            const TIER_NAMES = ['初心者', '禪', '虛空', '無我', '本源', '寂滅', '空鏡', '星潮', '玄鏈'];
+            const tierStats = TIER_NAMES.map((name, i) => {
+                const tierLevels = mainLevels.filter(l => l.stars === i);
+                const tierCleared = tierLevels.filter(l => records[l.id]).length;
+                return { name, total: tierLevels.length, cleared: tierCleared };
+            });
+
+            return {
+                totalCleared, totalLevels: mainLevels.length,
+                threeStarCount, totalStars, maxStars: mainLevels.length * 3,
+                totalTime, avgTime: totalCleared > 0 ? Math.round(totalTime / totalCleared) : 0,
+                fastestTime: fastestTime === Infinity ? 0 : fastestTime, fastestLevel,
+                speedrunCleared: Object.keys(speedRecords).length,
+                tierStats, records, speedRecords
+            };
+        }
+
+        function checkAllAchievements() {
+            const stats = computeStats();
+            const { totalCleared, threeStarCount, records, speedRecords, tierStats } = stats;
+
+            if (totalCleared >= 1) unlockAchievement('first_clear');
+            if (threeStarCount >= 1) unlockAchievement('perfect_one');
+            if (threeStarCount >= 10) unlockAchievement('perfect_10');
+            if (threeStarCount >= 50) unlockAchievement('perfect_50');
+            if (totalCleared >= 10) unlockAchievement('clear_10');
+            if (totalCleared >= 50) unlockAchievement('clear_50');
+            if (totalCleared >= 100) unlockAchievement('clear_100');
+
+            const mainLevels = levels.filter(l => !l.hidden);
+            if (mainLevels.length > 0 && mainLevels.every(l => records[l.id])) unlockAchievement('clear_all');
+
+            for (const rec of Object.values(records)) {
+                const t = typeof rec === 'number' ? rec : rec.time;
+                if (t <= 120) unlockAchievement('speed_2min');
+                if (t <= 60) unlockAchievement('speed_1min');
+            }
+
+            if (tierStats[0].total > 0 && tierStats[0].cleared >= tierStats[0].total) unlockAchievement('tier_beginner');
+            if (tierStats.some(t => t.total > 0 && t.cleared >= t.total)) unlockAchievement('tier_any');
+
+            const clearedIds = new Set(Object.keys(records).map(Number));
+            if ([...clearedIds].some(id => { const l = levels.find(x => x.id === id); return l && l.stars === 5; })) unlockAchievement('nirvana_clear');
+            if ([...clearedIds].some(id => { const l = levels.find(x => x.id === id); return l && l.stars === 6; })) unlockAchievement('xy_master');
+            if ([...clearedIds].some(id => { const l = levels.find(x => x.id === id); return l && l.stars === 7; })) unlockAchievement('swordfish');
+            if ([...clearedIds].some(id => { const l = levels.find(x => x.id === id); return l && l.stars === 8; })) unlockAchievement('aic_master');
+
+            if (Object.keys(speedRecords).length > 0) unlockAchievement('speedrun_first');
+
+            processAchievementToasts();
+        }
+
+        function switchStatsTab(tab) {
+            const isOverview = tab === 'overview';
+            document.getElementById('stats-tab-overview').classList.toggle('active', isOverview);
+            document.getElementById('stats-tab-achievement').classList.toggle('active', !isOverview);
+            document.getElementById('stats-content-overview').style.display = isOverview ? 'block' : 'none';
+            document.getElementById('stats-content-achievement').style.display = isOverview ? 'none' : 'block';
+        }
+
+        function renderStatsModal() {
+            const stats = computeStats();
+            const achievements = loadAchievements();
+
+            // Overview
+            const completionPct = stats.totalLevels > 0 ? Math.round(stats.totalCleared / stats.totalLevels * 100) : 0;
+            const fastLabel = stats.fastestLevel ? stats.fastestLevel.displayName : '';
+            document.getElementById('stats-overview').innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${stats.totalCleared}<span style="font-size:0.7rem;color:var(--text-light)">/${stats.totalLevels}</span></div>
+                    <div class="stat-label">通關數 (${completionPct}%)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${stats.threeStarCount}</div>
+                    <div class="stat-label">三星通關</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${stats.totalCleared > 0 ? formatSeconds(stats.avgTime) : '--'}</div>
+                    <div class="stat-label">平均用時</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${stats.fastestTime > 0 ? formatSeconds(stats.fastestTime) : '--'}</div>
+                    <div class="stat-label">${fastLabel ? '最速 ' + fastLabel : '最速通關'}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${stats.totalStars}<span style="font-size:0.7rem;color:var(--text-light)">/${stats.maxStars}</span></div>
+                    <div class="stat-label">總星數</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${formatSeconds(stats.totalTime)}</div>
+                    <div class="stat-label">最佳用時總計</div>
+                </div>
+            `;
+
+            // Tier progress
+            document.getElementById('stats-tier-progress').innerHTML = stats.tierStats.map(t => {
+                const pct = t.total > 0 ? Math.round(t.cleared / t.total * 100) : 0;
+                return `<div class="tier-progress">
+                    <span class="tier-name">${t.name}</span>
+                    <div class="tier-bar"><div class="tier-bar-fill" style="width:${pct}%"></div></div>
+                    <span class="tier-count">${t.cleared}/${t.total}</span>
+                </div>`;
+            }).join('');
+
+            // Achievements
+            const unlockedCount = ACHIEVEMENTS.filter(a => achievements[a.id]).length;
+            document.getElementById('achievement-counter').innerHTML =
+                `已解鎖 <span>${unlockedCount}</span> / ${ACHIEVEMENTS.length}`;
+
+            document.getElementById('achievement-grid').innerHTML = ACHIEVEMENTS.map(a => {
+                const u = achievements[a.id];
+                return `<div class="achievement-card ${u ? 'unlocked' : 'locked'}">
+                    <div class="achievement-icon">${a.icon}</div>
+                    <div class="achievement-name">${a.name}</div>
+                    <div class="achievement-desc">${a.desc}</div>
+                    ${u ? `<div class="achievement-date">${u.date}</div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function openStatsModal() {
+            switchStatsTab('overview');
+            renderStatsModal();
+            // Retroactively check achievements from existing records
+            checkAllAchievements();
+            document.getElementById('stats-modal').style.display = 'flex';
+        }
+
+        function closeStatsModal() {
+            document.getElementById('stats-modal').style.display = 'none';
+        }
+
         function checkWin() {
             const isComplete = cellsData.every((data, i) => data.value === currentLevel.solution[i]);
             if (isComplete) {
@@ -2221,6 +3661,16 @@
                 clearGameStatus(currentLevel.id);
                 const earnedValue = saveProgress();
                 showWinCelebration(earnedValue);
+                // Duo mode: submit finish time
+                if (isDuoMode) {
+                    const duoStars = isSpeedrunMode ? null : earnedValue;
+                    submitDuoFinish(seconds, duoStars);
+                }
+                // Check achievements after a brief delay so win celebration shows first
+                setTimeout(() => {
+                    if (isGhostMode) unlockAchievement('ghost_win');
+                    checkAllAchievements();
+                }, 1000);
                 if (!isSpeedrunMode) {
                     submitFirstClear(currentLevel.id, seconds, earnedValue).then(() => {
                         loadLevelLeaderboard(currentLevel.id);
@@ -2257,6 +3707,7 @@
             createConfettiBurst(56);
             winCelebrationEl.style.display = 'flex';
             showFeedback('完成！太棒了！', 'success');
+            playWinSound();
             if (navigator.vibrate) navigator.vibrate([90, 40, 90]);
         }
 
@@ -2401,11 +3852,18 @@
 
             // Show modal
             preLevelModalEl.style.display = 'flex';
+
+            // Duo room: try to enter/create room for this level
+            if (firebaseReady) enterDuoRoom(levelId);
         }
 
         function hidePreLevelModal() {
             preLevelModalEl.style.display = 'none';
             pendingLevelId = null;
+            // Clean up duo state if not in a game
+            if (!isDuoMode && duoRole) {
+                leaveDuoRoom();
+            }
         }
 
         function startLevelFromModal(forceReset = false, playWithGhost = false, ghostData = null) {
@@ -2486,7 +3944,10 @@
             overlay.style.display = 'none';
             closeReplayModal();
             hidePreLevelModal();
+            if (isDuoMode) resetDuoState();
             switchTab(currentTab);
+            // Restart glow listener for partner detection
+            if (firebaseReady) startDuoGlowListener();
         }
 
         function switchTab(tab) {
@@ -2563,6 +4024,18 @@
                 list.appendChild(item);
             });
             requestAnimationFrame(syncLevelCardSize);
+            // Re-apply duo glow if partner is waiting on a level in this tab
+            if (duoRoomData && duoRoomData.status === 'waiting' && duoRoomData.levelId) {
+                const { playerId } = getPlayerIdentity();
+                if (duoRoomData.hostId !== playerId) {
+                    const items = document.querySelectorAll('#level-list .level-item');
+                    filtered.forEach((l, i) => {
+                        if (l.id === duoRoomData.levelId && items[i]) {
+                            items[i].classList.add('duo-glow');
+                        }
+                    });
+                }
+            }
         }
 
         function hashStringToSeed(str) {
@@ -2723,7 +4196,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.11-V2';
+        const APP_VERSION = '2026.03.21-V1';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
@@ -2797,6 +4270,7 @@
         // 執行版本檢查
         enforceAppVersion();
         initFirebase();
+        if (firebaseReady) startDuoGlowListener();
         loadAliasToInput();
         if (aliasInputEl) {
             aliasInputEl.addEventListener('keydown', (e) => {
@@ -2808,9 +4282,27 @@
                 if (e.target === replayModalEl) closeReplayModal();
             });
         }
+        const statsModalEl = document.getElementById('stats-modal');
+        if (statsModalEl) {
+            statsModalEl.addEventListener('click', (e) => {
+                if (e.target === statsModalEl) closeStatsModal();
+            });
+        }
+        const duoResultModalEl = document.getElementById('duo-result-modal');
+        if (duoResultModalEl) {
+            duoResultModalEl.addEventListener('click', (e) => {
+                if (e.target === duoResultModalEl) closeDuoResult();
+            });
+        }
         window.addEventListener('beforeunload', () => {
             if (document.querySelector('.game-container').style.display === 'flex') {
                 saveGameStatus();
+            }
+            // Best-effort cleanup on page close
+            if (isDuoMode && firebaseReady && duoRole) {
+                const field = duoRole === 'host' ? 'status' : 'guestId';
+                const val = duoRole === 'host' ? 'idle' : null;
+                navigator.sendBeacon && duoRoomRef().update({ [field]: val }).catch(() => {});
             }
         });
         window.addEventListener('resize', () => {
