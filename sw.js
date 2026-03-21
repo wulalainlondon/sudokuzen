@@ -1,10 +1,12 @@
-const CACHE_VERSION = '2026.03.21-V1';
+const CACHE_VERSION = '2026.03.21-V2';
 const CACHE_NAME = `sudoku-zen-${CACHE_VERSION}`;
 const ASSETS = [
     './',
     'index.html',
+    'style.css',
     'manifest.json',
     'levels.js',
+    'techniques.js',
     'firebase-config.js',
     'icon-192.png',
     'icon-512.png',

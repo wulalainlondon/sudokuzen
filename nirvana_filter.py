@@ -288,6 +288,490 @@ def apply_hidden_pair(board: List[int], cands: List[Set[int]], trace: List[Step]
     return True, False
 
 
+def apply_naked_triple(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for unit in UNITS:
+        unsolved = [idx for idx in unit if board[idx] == 0 and 2 <= len(cands[idx]) <= 3]
+        for combo in combinations(unsolved, 3):
+            union = set()
+            for idx in combo:
+                union |= cands[idx]
+            if len(union) != 3:
+                continue
+            changed = 0
+            for idx in unit:
+                if idx in combo or board[idx] != 0:
+                    continue
+                for d in union:
+                    if d in cands[idx]:
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                        changed += 1
+            if changed:
+                trace.append(Step("naked_triple", "eliminate", f"triple {tuple(sorted(union))} removed {changed}"))
+                return True, True
+    return True, False
+
+
+def apply_hidden_triple(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for unit in UNITS:
+        pos_by_digit: Dict[int, List[int]] = {}
+        for d in range(1, 10):
+            pos_by_digit[d] = [idx for idx in unit if board[idx] == 0 and d in cands[idx]]
+        for d1, d2, d3 in combinations(range(1, 10), 3):
+            p1, p2, p3 = pos_by_digit[d1], pos_by_digit[d2], pos_by_digit[d3]
+            # Each digit must appear in at least one cell
+            if not p1 or not p2 or not p3:
+                continue
+            union_pos = set(p1) | set(p2) | set(p3)
+            if len(union_pos) != 3:
+                continue
+            keep = {d1, d2, d3}
+            changed = 0
+            for idx in union_pos:
+                drop = cands[idx] - keep
+                if drop:
+                    for d in drop:
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                    changed += len(drop)
+            if changed:
+                trace.append(Step("hidden_triple", "eliminate", f"triple ({d1},{d2},{d3}) removed {changed}"))
+                return True, True
+    return True, False
+
+
+def apply_naked_quad(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for unit in UNITS:
+        unsolved = [idx for idx in unit if board[idx] == 0 and 2 <= len(cands[idx]) <= 4]
+        for combo in combinations(unsolved, 4):
+            union = set()
+            for idx in combo:
+                union |= cands[idx]
+            if len(union) != 4:
+                continue
+            changed = 0
+            for idx in unit:
+                if idx in combo or board[idx] != 0:
+                    continue
+                for d in union:
+                    if d in cands[idx]:
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                        changed += 1
+            if changed:
+                trace.append(Step("naked_quad", "eliminate", f"quad {tuple(sorted(union))} removed {changed}"))
+                return True, True
+    return True, False
+
+
+def apply_hidden_quad(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for unit in UNITS:
+        pos_by_digit: Dict[int, List[int]] = {}
+        for d in range(1, 10):
+            pos_by_digit[d] = [idx for idx in unit if board[idx] == 0 and d in cands[idx]]
+        for d1, d2, d3, d4 in combinations(range(1, 10), 4):
+            positions = [pos_by_digit[d] for d in (d1, d2, d3, d4)]
+            union_pos = set()
+            for p in positions:
+                union_pos |= set(p)
+            if len(union_pos) != 4:
+                continue
+            if any(len(p) == 0 for p in positions):
+                continue
+            keep = {d1, d2, d3, d4}
+            changed = 0
+            for idx in union_pos:
+                drop = cands[idx] - keep
+                if drop:
+                    for d in drop:
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                    changed += len(drop)
+            if changed:
+                trace.append(Step("hidden_quad", "eliminate", f"quad ({d1},{d2},{d3},{d4}) removed {changed}"))
+                return True, True
+    return True, False
+
+
+def apply_skyscraper(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for d in range(1, 10):
+        # Row-based skyscraper
+        row_positions: Dict[int, List[int]] = {}
+        for r in range(9):
+            cols = [c for c in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]]
+            if len(cols) == 2:
+                row_positions[r] = cols
+        for r1, r2 in combinations(sorted(row_positions.keys()), 2):
+            c1a, c1b = row_positions[r1]
+            c2a, c2b = row_positions[r2]
+            # One end shares a column, other ends differ
+            shared_pairs = []
+            if c1a == c2a:
+                shared_pairs.append((rc_to_cell(r1, c1b), rc_to_cell(r2, c2b)))
+            if c1a == c2b:
+                shared_pairs.append((rc_to_cell(r1, c1b), rc_to_cell(r2, c2a)))
+            if c1b == c2a:
+                shared_pairs.append((rc_to_cell(r1, c1a), rc_to_cell(r2, c2b)))
+            if c1b == c2b:
+                shared_pairs.append((rc_to_cell(r1, c1a), rc_to_cell(r2, c2a)))
+            for end1, end2 in shared_pairs:
+                if cell_to_rc(end1)[1] == cell_to_rc(end2)[1]:
+                    continue  # same column = X-Wing, not skyscraper
+                targets = PEERS[end1] & PEERS[end2]
+                changed = 0
+                for t in targets:
+                    if t in (rc_to_cell(r1, c1a), rc_to_cell(r1, c1b), rc_to_cell(r2, c2a), rc_to_cell(r2, c2b)):
+                        continue
+                    if board[t] == 0 and d in cands[t]:
+                        if not remove_candidate(board, cands, t, d):
+                            return False, False
+                        changed += 1
+                if changed:
+                    trace.append(Step("skyscraper", "eliminate", f"d{d} rows {r1+1},{r2+1} removed {changed}"))
+                    return True, True
+
+        # Col-based skyscraper
+        col_positions: Dict[int, List[int]] = {}
+        for c in range(9):
+            rows = [r for r in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]]
+            if len(rows) == 2:
+                col_positions[c] = rows
+        for c1, c2 in combinations(sorted(col_positions.keys()), 2):
+            r1a, r1b = col_positions[c1]
+            r2a, r2b = col_positions[c2]
+            shared_pairs = []
+            if r1a == r2a:
+                shared_pairs.append((rc_to_cell(r1b, c1), rc_to_cell(r2b, c2)))
+            if r1a == r2b:
+                shared_pairs.append((rc_to_cell(r1b, c1), rc_to_cell(r2a, c2)))
+            if r1b == r2a:
+                shared_pairs.append((rc_to_cell(r1a, c1), rc_to_cell(r2b, c2)))
+            if r1b == r2b:
+                shared_pairs.append((rc_to_cell(r1a, c1), rc_to_cell(r2a, c2)))
+            for end1, end2 in shared_pairs:
+                if cell_to_rc(end1)[0] == cell_to_rc(end2)[0]:
+                    continue
+                targets = PEERS[end1] & PEERS[end2]
+                changed = 0
+                for t in targets:
+                    if t in (rc_to_cell(r1a, c1), rc_to_cell(r1b, c1), rc_to_cell(r2a, c2), rc_to_cell(r2b, c2)):
+                        continue
+                    if board[t] == 0 and d in cands[t]:
+                        if not remove_candidate(board, cands, t, d):
+                            return False, False
+                        changed += 1
+                if changed:
+                    trace.append(Step("skyscraper", "eliminate", f"d{d} cols {c1+1},{c2+1} removed {changed}"))
+                    return True, True
+    return True, False
+
+
+def apply_unique_rectangle(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    # Type 1: 3 bivalue cells with same pair, 4th cell has extra candidates
+    for r1, r2 in combinations(range(9), 2):
+        for c1, c2 in combinations(range(9), 2):
+            # Must span exactly 2 boxes
+            boxes = {(r1 // 3, c1 // 3), (r1 // 3, c2 // 3),
+                     (r2 // 3, c1 // 3), (r2 // 3, c2 // 3)}
+            if len(boxes) != 2:
+                continue
+            cells = [rc_to_cell(r1, c1), rc_to_cell(r1, c2), rc_to_cell(r2, c1), rc_to_cell(r2, c2)]
+            # All must be unsolved
+            if any(board[idx] != 0 for idx in cells):
+                continue
+            # Find cells with exactly 2 candidates
+            bivalue = [idx for idx in cells if len(cands[idx]) == 2]
+            extra = [idx for idx in cells if len(cands[idx]) > 2]
+            if len(bivalue) != 3 or len(extra) != 1:
+                continue
+            # All bivalue cells must share the same pair
+            pair = cands[bivalue[0]]
+            if any(cands[idx] != pair for idx in bivalue[1:]):
+                continue
+            # The pair digits must be in the extra cell
+            if not pair.issubset(cands[extra[0]]):
+                continue
+            # Eliminate the pair from the extra cell
+            changed = 0
+            for d in pair:
+                if d in cands[extra[0]]:
+                    if not remove_candidate(board, cands, extra[0], d):
+                        return False, False
+                    changed += 1
+            if changed:
+                r, c = cell_to_rc(extra[0])
+                trace.append(Step("unique_rectangle", "eliminate", f"UR type1 at r{r+1}c{c+1} removed {changed}"))
+                return True, True
+    return True, False
+
+
+def apply_finned_x_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for d in range(1, 10):
+        # Row-based finned X-Wing
+        row_to_cols: Dict[int, List[int]] = {}
+        for r in range(9):
+            cols = [c for c in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]]
+            if 2 <= len(cols) <= 3:
+                row_to_cols[r] = cols
+        for r1, r2 in combinations(sorted(row_to_cols.keys()), 2):
+            c1s, c2s = row_to_cols[r1], row_to_cols[r2]
+            # One row has 2 cols, other has 2-3
+            if len(c1s) == 2 and len(c2s) == 2:
+                continue  # regular X-Wing
+            base_row, fin_row = (r1, r2) if len(c1s) == 2 else (r2, r1)
+            base_cols = row_to_cols[base_row]
+            fin_cols = row_to_cols[fin_row]
+            if len(row_to_cols[base_row]) != 2:
+                continue
+            extra = [c for c in fin_cols if c not in base_cols]
+            if len(extra) != 1:
+                continue
+            # Fin must be in same box as one of the base columns
+            fin_c = extra[0]
+            fin_cell = rc_to_cell(fin_row, fin_c)
+            fin_box_r, fin_box_c = fin_row // 3, fin_c // 3
+            matched_base_c = None
+            for bc in base_cols:
+                if bc in fin_cols and bc // 3 == fin_box_c and fin_row // 3 == fin_row // 3:
+                    matched_base_c = bc
+                    break
+            if matched_base_c is None:
+                continue
+            # Can eliminate d from cells that see both the base col and the fin
+            target_col = matched_base_c
+            changed = 0
+            for r in range(9):
+                if r == r1 or r == r2:
+                    continue
+                idx = rc_to_cell(r, target_col)
+                if board[idx] != 0 or d not in cands[idx]:
+                    continue
+                # Must be in same box as fin
+                if r // 3 != fin_box_r or target_col // 3 != fin_box_c:
+                    continue
+                if not remove_candidate(board, cands, idx, d):
+                    return False, False
+                changed += 1
+            if changed:
+                trace.append(Step("finned_x_wing", "eliminate", f"d{d} rows {r1+1},{r2+1} fin c{fin_c+1} removed {changed}"))
+                return True, True
+
+        # Col-based finned X-Wing
+        col_to_rows: Dict[int, List[int]] = {}
+        for c in range(9):
+            rows = [r for r in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]]
+            if 2 <= len(rows) <= 3:
+                col_to_rows[c] = rows
+        for c1, c2 in combinations(sorted(col_to_rows.keys()), 2):
+            r1s, r2s = col_to_rows[c1], col_to_rows[c2]
+            if len(r1s) == 2 and len(r2s) == 2:
+                continue
+            base_col, fin_col = (c1, c2) if len(r1s) == 2 else (c2, c1)
+            base_rows = col_to_rows[base_col]
+            fin_rows = col_to_rows[fin_col]
+            if len(col_to_rows[base_col]) != 2:
+                continue
+            extra = [r for r in fin_rows if r not in base_rows]
+            if len(extra) != 1:
+                continue
+            fin_r = extra[0]
+            fin_box_r, fin_box_c = fin_r // 3, fin_col // 3
+            matched_base_r = None
+            for br in base_rows:
+                if br in fin_rows and br // 3 == fin_box_r:
+                    matched_base_r = br
+                    break
+            if matched_base_r is None:
+                continue
+            target_row = matched_base_r
+            changed = 0
+            for c in range(9):
+                if c == c1 or c == c2:
+                    continue
+                idx = rc_to_cell(target_row, c)
+                if board[idx] != 0 or d not in cands[idx]:
+                    continue
+                if target_row // 3 != fin_box_r or c // 3 != fin_box_c:
+                    continue
+                if not remove_candidate(board, cands, idx, d):
+                    return False, False
+                changed += 1
+            if changed:
+                trace.append(Step("finned_x_wing", "eliminate", f"d{d} cols {c1+1},{c2+1} fin r{fin_r+1} removed {changed}"))
+                return True, True
+    return True, False
+
+
+def apply_xyz_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for pivot in range(81):
+        if board[pivot] != 0 or len(cands[pivot]) != 3:
+            continue
+        pivot_cands = sorted(cands[pivot])
+        peer_cells = [p for p in PEERS[pivot] if board[p] == 0 and len(cands[p]) == 2]
+        # Need two wings, each a subset of pivot's candidates
+        wings = [p for p in peer_cells if cands[p].issubset(cands[pivot])]
+        for w1, w2 in combinations(wings, 2):
+            if cands[w1] == cands[w2]:
+                continue  # wings must be different pairs
+            union = cands[w1] | cands[w2]
+            if union != cands[pivot]:
+                continue  # together must cover pivot
+            z = cands[w1] & cands[w2]
+            if len(z) != 1:
+                continue
+            z_val = next(iter(z))
+            # Eliminate z from cells that see all three (pivot, w1, w2)
+            targets = PEERS[pivot] & PEERS[w1] & PEERS[w2]
+            changed = 0
+            for t in targets:
+                if t in (pivot, w1, w2) or board[t] != 0 or z_val not in cands[t]:
+                    continue
+                if not remove_candidate(board, cands, t, z_val):
+                    return False, False
+                changed += 1
+            if changed:
+                rp, cp = cell_to_rc(pivot)
+                trace.append(Step("xyz_wing", "eliminate", f"pivot r{rp+1}c{cp+1} z={z_val} removed {changed}"))
+                return True, True
+    return True, False
+
+
+def apply_finned_swordfish(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for d in range(1, 10):
+        # Row-based
+        row_to_cols: Dict[int, Set[int]] = {}
+        for r in range(9):
+            cols = {c for c in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]}
+            if 2 <= len(cols) <= 4:
+                row_to_cols[r] = cols
+        for r1, r2, r3 in combinations(sorted(row_to_cols.keys()), 3):
+            union_cols = row_to_cols[r1] | row_to_cols[r2] | row_to_cols[r3]
+            if len(union_cols) != 4:
+                continue
+            # Find which row has the extra col (fin)
+            for base_rows, fin_row in [((r1, r2), r3), ((r1, r3), r2), ((r2, r3), r1)]:
+                base_cols = row_to_cols[base_rows[0]] | row_to_cols[base_rows[1]]
+                if len(base_cols) > 3:
+                    continue
+                fin_cols = row_to_cols[fin_row] - base_cols
+                if len(fin_cols) != 1:
+                    continue
+                fin_c = next(iter(fin_cols))
+                fin_box_r, fin_box_c = fin_row // 3, fin_c // 3
+                changed = 0
+                for c in base_cols & row_to_cols[fin_row]:
+                    if c // 3 != fin_box_c:
+                        continue
+                    for r in range(9):
+                        if r in (r1, r2, r3):
+                            continue
+                        idx = rc_to_cell(r, c)
+                        if board[idx] != 0 or d not in cands[idx]:
+                            continue
+                        if r // 3 != fin_box_r:
+                            continue
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                        changed += 1
+                if changed:
+                    trace.append(Step("finned_swordfish", "eliminate", f"d{d} rows {r1+1},{r2+1},{r3+1} removed {changed}"))
+                    return True, True
+
+        # Col-based
+        col_to_rows: Dict[int, Set[int]] = {}
+        for c in range(9):
+            rows = {r for r in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]}
+            if 2 <= len(rows) <= 4:
+                col_to_rows[c] = rows
+        for c1, c2, c3 in combinations(sorted(col_to_rows.keys()), 3):
+            union_rows = col_to_rows[c1] | col_to_rows[c2] | col_to_rows[c3]
+            if len(union_rows) != 4:
+                continue
+            for base_cols, fin_col in [((c1, c2), c3), ((c1, c3), c2), ((c2, c3), c1)]:
+                base_rows = col_to_rows[base_cols[0]] | col_to_rows[base_cols[1]]
+                if len(base_rows) > 3:
+                    continue
+                fin_rows = col_to_rows[fin_col] - base_rows
+                if len(fin_rows) != 1:
+                    continue
+                fin_r = next(iter(fin_rows))
+                fin_box_r, fin_box_c = fin_r // 3, fin_col // 3
+                changed = 0
+                for r in base_rows & col_to_rows[fin_col]:
+                    if r // 3 != fin_box_r:
+                        continue
+                    for c in range(9):
+                        if c in (c1, c2, c3):
+                            continue
+                        idx = rc_to_cell(r, c)
+                        if board[idx] != 0 or d not in cands[idx]:
+                            continue
+                        if c // 3 != fin_box_c:
+                            continue
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                        changed += 1
+                if changed:
+                    trace.append(Step("finned_swordfish", "eliminate", f"d{d} cols {c1+1},{c2+1},{c3+1} removed {changed}"))
+                    return True, True
+    return True, False
+
+
+def apply_jellyfish(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    # Row-based Jellyfish
+    for d in range(1, 10):
+        row_to_cols: Dict[int, Set[int]] = {}
+        for r in range(9):
+            cols = {c for c in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]}
+            if 2 <= len(cols) <= 4:
+                row_to_cols[r] = cols
+        for r1, r2, r3, r4 in combinations(sorted(row_to_cols.keys()), 4):
+            union_cols = row_to_cols[r1] | row_to_cols[r2] | row_to_cols[r3] | row_to_cols[r4]
+            if len(union_cols) != 4:
+                continue
+            changed = 0
+            for r in range(9):
+                if r in (r1, r2, r3, r4):
+                    continue
+                for c in union_cols:
+                    idx = rc_to_cell(r, c)
+                    if board[idx] == 0 and d in cands[idx]:
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                        changed += 1
+            if changed:
+                cols_txt = ",".join(str(c + 1) for c in sorted(union_cols))
+                trace.append(Step("jellyfish", "eliminate", f"d{d} rows {r1+1},{r2+1},{r3+1},{r4+1} cols {cols_txt} removed {changed}"))
+                return True, True
+
+    # Col-based Jellyfish
+    for d in range(1, 10):
+        col_to_rows: Dict[int, Set[int]] = {}
+        for c in range(9):
+            rows = {r for r in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]}
+            if 2 <= len(rows) <= 4:
+                col_to_rows[c] = rows
+        for c1, c2, c3, c4 in combinations(sorted(col_to_rows.keys()), 4):
+            union_rows = col_to_rows[c1] | col_to_rows[c2] | col_to_rows[c3] | col_to_rows[c4]
+            if len(union_rows) != 4:
+                continue
+            changed = 0
+            for c in range(9):
+                if c in (c1, c2, c3, c4):
+                    continue
+                for r in union_rows:
+                    idx = rc_to_cell(r, c)
+                    if board[idx] == 0 and d in cands[idx]:
+                        if not remove_candidate(board, cands, idx, d):
+                            return False, False
+                        changed += 1
+            if changed:
+                rows_txt = ",".join(str(r + 1) for r in sorted(union_rows))
+                trace.append(Step("jellyfish", "eliminate", f"d{d} cols {c1+1},{c2+1},{c3+1},{c4+1} rows {rows_txt} removed {changed}"))
+                return True, True
+    return True, False
+
+
 def apply_xy_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
     for pivot in range(81):
         if board[pivot] != 0 or len(cands[pivot]) != 2:
@@ -518,9 +1002,19 @@ TECHNIQUE_FUNCS = {
     "locked_candidates": apply_locked_candidates,
     "naked_pair": apply_naked_pair,
     "hidden_pair": apply_hidden_pair,
-    "xy_wing": apply_xy_wing,
+    "naked_triple": apply_naked_triple,
+    "hidden_triple": apply_hidden_triple,
+    "naked_quad": apply_naked_quad,
+    "hidden_quad": apply_hidden_quad,
+    "skyscraper": apply_skyscraper,
+    "unique_rectangle": apply_unique_rectangle,
     "x_wing": apply_x_wing,
+    "finned_x_wing": apply_finned_x_wing,
+    "xy_wing": apply_xy_wing,
+    "xyz_wing": apply_xyz_wing,
     "swordfish": apply_swordfish,
+    "finned_swordfish": apply_finned_swordfish,
+    "jellyfish": apply_jellyfish,
     "aic": apply_aic,
 }
 
@@ -530,9 +1024,19 @@ DEFAULT_TECHNIQUES = [
     "locked_candidates",
     "naked_pair",
     "hidden_pair",
-    "xy_wing",
+    "naked_triple",
+    "hidden_triple",
+    "naked_quad",
+    "hidden_quad",
+    "skyscraper",
+    "unique_rectangle",
     "x_wing",
+    "finned_x_wing",
+    "xy_wing",
+    "xyz_wing",
     "swordfish",
+    "finned_swordfish",
+    "jellyfish",
     "aic",
 ]
 
@@ -542,10 +1046,20 @@ DEFAULT_WEIGHTS = {
     "locked_candidates": 2,
     "naked_pair": 3,
     "hidden_pair": 4,
-    "xy_wing": 7,
-    "x_wing": 6,
-    "swordfish": 8,
-    "aic": 9,
+    "naked_triple": 5,
+    "hidden_triple": 6,
+    "naked_quad": 6,
+    "hidden_quad": 6,
+    "skyscraper": 7,
+    "unique_rectangle": 7,
+    "x_wing": 8,
+    "finned_x_wing": 9,
+    "xy_wing": 10,
+    "xyz_wing": 11,
+    "swordfish": 12,
+    "finned_swordfish": 13,
+    "jellyfish": 14,
+    "aic": 15,
 }
 
 
