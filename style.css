@@ -2062,3 +2062,203 @@ header h1 {
 .teach-book-btn:hover {
     opacity: 1;
 }
+/* ===== Practice Modal ===== */
+#practice-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 960;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+}
+#practice-modal.show {
+    display: flex;
+}
+.practice-panel {
+    background: var(--grid-bg);
+    border-radius: 16px;
+    padding: 20px 18px 16px;
+    max-width: 370px;
+    width: 92vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.practice-header {
+    text-align: center;
+}
+.practice-tech-name {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+.practice-instruction {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 2px;
+}
+.practice-board {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    gap: 0;
+    width: 100%;
+    max-width: 324px;
+    aspect-ratio: 1;
+    margin: 4px auto;
+    border: 2px solid var(--block-border);
+    background: var(--cell-border);
+}
+.practice-cell {
+    background: var(--grid-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(10px, 3.2vw, 16px);
+    font-weight: 600;
+    color: var(--text-main);
+    position: relative;
+    border: 0.5px solid var(--cell-border);
+    transition: background 0.3s;
+}
+.practice-cell.given-cell {
+    color: var(--text-light);
+}
+.practice-cell:nth-child(9n+3),
+.practice-cell:nth-child(9n+6) {
+    border-right: 2px solid var(--block-border);
+}
+.practice-cell:nth-child(n+19):nth-child(-n+27),
+.practice-cell:nth-child(n+46):nth-child(-n+54) {
+    border-bottom: 2px solid var(--block-border);
+}
+.practice-cell.focus {
+    box-shadow: inset 0 0 0 2px #FFB300;
+    z-index: 1;
+}
+.practice-cell .tc-notes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+}
+.practice-cell .tc-note {
+    font-size: clamp(6px, 1.8vw, 9px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--note-color);
+    line-height: 1;
+    min-width: 24px;
+    min-height: 24px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+.practice-cell .tc-note:empty {
+    cursor: default;
+}
+.practice-cell .tc-note:not(:empty):hover {
+    background: rgba(128,128,128,0.15);
+}
+.practice-cell .tc-note.strike {
+    text-decoration: line-through;
+    color: var(--error-color);
+    font-weight: 700;
+    background: rgba(214, 48, 49, 0.08);
+}
+.practice-cell .tc-note.wrong {
+    background: rgba(255, 165, 0, 0.25);
+    color: #e67e00;
+    text-decoration: line-through;
+    font-weight: 700;
+}
+.practice-cell .tc-note.correct-reveal {
+    text-decoration: line-through;
+    color: var(--error-color);
+    font-weight: 700;
+    background: rgba(214, 48, 49, 0.12);
+}
+.practice-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    font-size: 0.82rem;
+    color: var(--text-light);
+}
+.practice-status button {
+    background: none;
+    border: 1px solid var(--cell-border);
+    color: var(--text-main);
+    padding: 4px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.practice-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+.practice-confirm-btn {
+    background: var(--accent-strong);
+    color: #fff;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+.practice-confirm-btn:active {
+    transform: scale(0.95);
+}
+.practice-reveal-btn {
+    background: var(--btn-bg);
+    border: 1px solid var(--cell-border);
+    color: var(--text-main);
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.practice-result {
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-height: 28px;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+.practice-result.success {
+    color: #27ae60;
+}
+.practice-result.partial {
+    color: #f39c12;
+}
+.practice-result.error {
+    color: var(--error-color);
+}
+@keyframes practiceSuccess {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); box-shadow: 0 0 20px rgba(39,174,96,0.3); }
+    100% { transform: scale(1); }
+}
+.practice-panel.success-flash {
+    animation: practiceSuccess 0.6s ease;
+}

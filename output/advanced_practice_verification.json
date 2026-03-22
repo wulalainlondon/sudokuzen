@@ -1,0 +1,120 @@
+[
+  {
+    "star": 8.75,
+    "levelId": 20481,
+    "cell": 2,
+    "wrongDigit": 2,
+    "solutionDigit": 1,
+    "candidates": [
+      1,
+      2,
+      4
+    ],
+    "proofMode": "search_contradiction",
+    "proofLength": 4
+  },
+  {
+    "star": 9,
+    "levelId": 20521,
+    "cell": 2,
+    "wrongDigit": 2,
+    "solutionDigit": 1,
+    "candidates": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "proofMode": "search_contradiction",
+    "proofLength": 3
+  },
+  {
+    "star": 9.25,
+    "levelId": 20561,
+    "cell": 0,
+    "wrongDigit": 3,
+    "solutionDigit": 4,
+    "candidates": [
+      3,
+      4,
+      7,
+      8
+    ],
+    "proofMode": "search_contradiction",
+    "proofLength": 4
+  },
+  {
+    "star": 9.5,
+    "levelId": 20601,
+    "cell": 2,
+    "wrongDigit": 2,
+    "solutionDigit": 1,
+    "candidates": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "proofMode": "search_contradiction",
+    "proofLength": 4
+  },
+  {
+    "star": 9.6,
+    "levelId": 20641,
+    "cell": 0,
+    "wrongDigit": 2,
+    "solutionDigit": 1,
+    "candidates": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "proofMode": "search_contradiction",
+    "proofLength": 7
+  },
+  {
+    "star": 9.7,
+    "levelId": 20681,
+    "cell": 2,
+    "wrongDigit": 2,
+    "solutionDigit": 1,
+    "candidates": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "proofMode": "search_contradiction",
+    "proofLength": 3
+  },
+  {
+    "star": 9.85,
+    "levelId": 20721,
+    "cell": 2,
+    "wrongDigit": 1,
+    "solutionDigit": 4,
+    "candidates": [
+      1,
+      3,
+      4,
+      5
+    ],
+    "proofMode": "search_contradiction",
+    "proofLength": 5
+  },
+  {
+    "star": 10,
+    "levelId": 20761,
+    "cell": 2,
+    "wrongDigit": 1,
+    "solutionDigit": 2,
+    "candidates": [
+      1,
+      2,
+      4
+    ],
+    "proofMode": "search_contradiction",
+    "proofLength": 3
+  }
+]

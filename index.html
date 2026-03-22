@@ -303,7 +303,30 @@
                 <span id="teach-step-indicator">1/3</span>
                 <button id="teach-next-btn" onclick="teachNext()">下一步 →</button>
             </div>
-            <button class="teach-done-btn" onclick="hideTeachModal()">我學會了</button>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:4px;">
+                <button class="teach-done-btn" style="background:var(--btn-bg); color:var(--text-main); font-weight:500; padding:10px 22px;" onclick="hideTeachModal()">先跳過</button>
+                <button class="teach-done-btn" id="teach-practice-btn" onclick="startPractice()">馬上練習 →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Practice Modal -->
+    <div id="practice-modal">
+        <div class="practice-panel" id="practice-panel">
+            <div class="practice-header">
+                <span class="practice-tech-name" id="practice-tech-name"></span>
+                <span class="practice-instruction">點擊要消去的候選數</span>
+            </div>
+            <div class="practice-board" id="practice-board"></div>
+            <div class="practice-status">
+                <span id="practice-counter">已選 0 個</span>
+                <button onclick="showPracticeHint()">💡 提示</button>
+            </div>
+            <div class="practice-result" id="practice-result"></div>
+            <div class="practice-actions" id="practice-actions">
+                <button class="practice-confirm-btn" onclick="confirmPractice()">確認消去</button>
+                <button class="practice-reveal-btn" onclick="revealPracticeAnswer()">看答案</button>
+            </div>
         </div>
     </div>
 
@@ -2143,9 +2166,25 @@
             'locked_candidates': '鎖定候選數',
             'naked_pair': '顯性數對',
             'hidden_pair': '隱藏數對',
+            'naked_triple': '顯性三數組',
+            'hidden_triple': '隱藏三數組',
+            'x_wing': 'X-Wing',
+            'skyscraper': '摩天樓 (Skyscraper)',
+            'unique_rectangle': '唯一矩形 (UR)',
             'xy_wing': 'XY-Wing',
+            'xyz_wing': 'XYZ-Wing',
             'swordfish': '劍魚跡 (Swordfish)',
+            'finned_swordfish': '帶鰭劍魚',
+            'finned_x_wing': '帶鰭 X-Wing',
             'aic': 'AIC 強弱鏈',
+            'aic_mid_chain': 'AIC 中鏈',
+            'grouped_aic_nice_loop': 'Grouped AIC / Nice Loop',
+            'aic_long_chain': 'AIC 長鏈',
+            'als_xz': 'ALS-XZ',
+            'als_chain': 'ALS Chain',
+            'sue_de_coq': 'Sue de Coq',
+            'forcing_chain_net': 'Forcing Chain / Net',
+            'exocet_death_blossom': 'Exocet / Death Blossom',
             'unknown': '綜合技巧'
         };
 
@@ -2169,6 +2208,12 @@
             teachCurrentStep = 0;
             renderTeachBoard();
             updateTeachStep();
+
+            // Show/hide practice button based on data availability
+            const practiceBtn = document.getElementById('teach-practice-btn');
+            if (practiceBtn) {
+                practiceBtn.style.display = (teachData.practice && teachData.practice.length > 0) ? '' : 'none';
+            }
 
             document.getElementById('teach-modal').classList.add('show');
         }
@@ -2287,6 +2332,259 @@
             if (typeof TEACH_DATA === 'undefined' || !TEACH_DATA[stars]) return false;
             const read = JSON.parse(localStorage.getItem('sudoku_teach_read') || '{}');
             return !read[stars];
+        }
+
+        /* ===== Practice Modal Logic ===== */
+        let practiceState = null;
+        // { stars, puzzleIdx, marked: Set<"cell:digit">, hintLevel: 0, data: practiceObj, revealed: false }
+
+        function startPractice() {
+            if (!teachData || !teachData.practice || teachData.practice.length === 0) {
+                hideTeachModal();
+                return;
+            }
+            // Save ref before hideTeachModal clears it
+            const td = teachData;
+            // Find which stars this teachData belongs to
+            let stars = null;
+            for (const [s, d] of Object.entries(TEACH_DATA)) {
+                if (d === td) { stars = parseFloat(s); break; }
+            }
+            hideTeachModal();
+
+            // Pick a random puzzle
+            const idx = Math.floor(Math.random() * td.practice.length);
+            const pData = td.practice[idx];
+
+            practiceState = {
+                stars,
+                puzzleIdx: idx,
+                marked: new Set(),
+                hintLevel: 0,
+                data: pData,
+                teachRef: td,
+                revealed: false,
+            };
+
+            // Set title
+            const nameEl = document.getElementById('practice-tech-name');
+            nameEl.textContent = (td.name || '') + ' · ' + (td.technique || '');
+
+            document.getElementById('practice-result').textContent = '';
+            document.getElementById('practice-result').className = 'practice-result';
+            const actionsEl = document.getElementById('practice-actions');
+            actionsEl.style.display = 'flex';
+            actionsEl.innerHTML =
+                '<button class="practice-confirm-btn" onclick="confirmPractice()">確認消去</button>' +
+                '<button class="practice-reveal-btn" onclick="revealPracticeAnswer()">看答案</button>';
+
+            renderPracticeBoard();
+            document.getElementById('practice-modal').classList.add('show');
+        }
+
+        function renderPracticeBoard() {
+            const boardEl = document.getElementById('practice-board');
+            boardEl.innerHTML = '';
+            if (!practiceState) return;
+            const p = practiceState.data;
+            const board = p.board;
+            const given = p.given;
+            const notes = p.notes || {};
+
+            for (let i = 0; i < 81; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'practice-cell';
+                cell.dataset.idx = i;
+
+                if (board[i] !== 0) {
+                    cell.textContent = board[i];
+                    if (given[i] !== 0) cell.classList.add('given-cell');
+                } else if (notes[i] || notes[String(i)]) {
+                    const noteArr = notes[i] || notes[String(i)];
+                    const notesGrid = document.createElement('div');
+                    notesGrid.className = 'tc-notes';
+                    for (let d = 1; d <= 9; d++) {
+                        const span = document.createElement('span');
+                        span.className = 'tc-note';
+                        span.dataset.digit = d;
+                        span.dataset.cell = i;
+                        if (noteArr.includes(d)) {
+                            span.textContent = d;
+                            span.addEventListener('click', () => toggleElimination(i, d, span));
+                        }
+                        notesGrid.appendChild(span);
+                    }
+                    cell.appendChild(notesGrid);
+                }
+                boardEl.appendChild(cell);
+            }
+            updatePracticeCounter();
+        }
+
+        function toggleElimination(cellIdx, digit, spanEl) {
+            if (!practiceState || practiceState.revealed) return;
+            const key = cellIdx + ':' + digit;
+            if (practiceState.marked.has(key)) {
+                practiceState.marked.delete(key);
+                spanEl.classList.remove('strike');
+            } else {
+                practiceState.marked.add(key);
+                spanEl.classList.add('strike');
+            }
+            updatePracticeCounter();
+            // Clear previous result message
+            document.getElementById('practice-result').textContent = '';
+            document.getElementById('practice-result').className = 'practice-result';
+        }
+
+        function updatePracticeCounter() {
+            const el = document.getElementById('practice-counter');
+            if (el && practiceState) {
+                el.textContent = '已選 ' + practiceState.marked.size + ' 個';
+            }
+        }
+
+        function confirmPractice() {
+            if (!practiceState || practiceState.revealed) return;
+            const answer = practiceState.data.answer;
+            const correctSet = new Set(answer.eliminates.map(e => e.cell + ':' + e.digit));
+            const markedSet = practiceState.marked;
+
+            // Check correctness
+            let wrongCount = 0;
+            let correctCount = 0;
+            let missingCount = 0;
+
+            for (const key of markedSet) {
+                if (correctSet.has(key)) {
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                }
+            }
+            missingCount = correctSet.size - correctCount;
+
+            const resultEl = document.getElementById('practice-result');
+            const boardEl = document.getElementById('practice-board');
+
+            if (wrongCount === 0 && missingCount === 0) {
+                // Perfect!
+                resultEl.textContent = '太棒了！完全正確！';
+                resultEl.className = 'practice-result success';
+                document.getElementById('practice-panel').classList.add('success-flash');
+                practiceState.revealed = true;
+                // Mark done
+                const done = JSON.parse(localStorage.getItem('sudoku_practice_done') || '{}');
+                if (practiceState.stars !== null) done[practiceState.stars] = true;
+                localStorage.setItem('sudoku_practice_done', JSON.stringify(done));
+                // Auto close after delay
+                setTimeout(() => closePracticeModal(), 1800);
+            } else if (wrongCount === 0 && missingCount > 0) {
+                resultEl.textContent = '還有 ' + missingCount + ' 個候選數可以消去';
+                resultEl.className = 'practice-result partial';
+            } else {
+                resultEl.textContent = '有些消去不正確';
+                resultEl.className = 'practice-result error';
+                // Mark wrong ones orange
+                for (const key of markedSet) {
+                    if (!correctSet.has(key)) {
+                        const [c, d] = key.split(':');
+                        const noteEl = boardEl.querySelector(`.practice-cell[data-idx="${c}"] .tc-note[data-digit="${d}"]`);
+                        if (noteEl) {
+                            noteEl.classList.remove('strike');
+                            noteEl.classList.add('wrong');
+                            // Remove from marked
+                            practiceState.marked.delete(key);
+                        }
+                    }
+                }
+                updatePracticeCounter();
+                // Clear wrong highlight after 2s
+                setTimeout(() => {
+                    boardEl.querySelectorAll('.tc-note.wrong').forEach(n => n.classList.remove('wrong'));
+                }, 2000);
+            }
+        }
+
+        function showPracticeHint() {
+            if (!practiceState) return;
+            const answer = practiceState.data.answer;
+            const boardEl = document.getElementById('practice-board');
+            const cells = boardEl.querySelectorAll('.practice-cell');
+
+            practiceState.hintLevel++;
+
+            if (practiceState.hintLevel === 1) {
+                // Highlight pattern cells
+                (answer.patternCells || []).forEach(idx => {
+                    if (cells[idx]) cells[idx].classList.add('focus');
+                });
+            } else if (practiceState.hintLevel === 2) {
+                // Show description
+                const resultEl = document.getElementById('practice-result');
+                resultEl.textContent = formatPracticeExplanation(answer);
+                resultEl.className = 'practice-result';
+            } else if (practiceState.hintLevel >= 3) {
+                // Auto-mark correct answers
+                revealPracticeAnswer();
+            }
+        }
+
+        function formatPracticeExplanation(answer) {
+            const lines = [];
+            if (answer && answer.description) lines.push(answer.description);
+            if (answer && Array.isArray(answer.aicChain) && answer.aicChain.length > 0) {
+                lines.push('');
+                lines.push('推理節點鏈：');
+                answer.aicChain.forEach((line, i) => {
+                    lines.push((i + 1) + '. ' + line);
+                });
+            }
+            if (answer && Array.isArray(answer.proof) && answer.proof.length > 0) {
+                lines.push('');
+                lines.push('推理鏈：');
+                answer.proof.forEach((line, i) => {
+                    lines.push((i + 1) + '. ' + line);
+                });
+            }
+            return lines.join('\n');
+        }
+
+        function revealPracticeAnswer() {
+            if (!practiceState) return;
+            practiceState.revealed = true;
+            const answer = practiceState.data.answer;
+            const boardEl = document.getElementById('practice-board');
+            const cells = boardEl.querySelectorAll('.practice-cell');
+
+            // Clear all current marks
+            boardEl.querySelectorAll('.tc-note.strike').forEach(n => n.classList.remove('strike'));
+            boardEl.querySelectorAll('.tc-note.wrong').forEach(n => n.classList.remove('wrong'));
+
+            // Show correct eliminations
+            answer.eliminates.forEach(({cell: idx, digit}) => {
+                const noteEl = boardEl.querySelector(`.practice-cell[data-idx="${idx}"] .tc-note[data-digit="${digit}"]`);
+                if (noteEl) noteEl.classList.add('correct-reveal');
+            });
+
+            // Highlight pattern cells
+            (answer.patternCells || []).forEach(idx => {
+                if (cells[idx]) cells[idx].classList.add('focus');
+            });
+
+            const resultEl = document.getElementById('practice-result');
+            resultEl.textContent = formatPracticeExplanation(answer) || '答案已顯示';
+            resultEl.className = 'practice-result';
+
+            // Replace actions with close button
+            document.getElementById('practice-actions').innerHTML =
+                '<button class="practice-confirm-btn" onclick="closePracticeModal()">關閉</button>';
+        }
+
+        function closePracticeModal() {
+            document.getElementById('practice-modal').classList.remove('show');
+            document.getElementById('practice-panel').classList.remove('success-flash');
+            practiceState = null;
         }
 
         function showPreLevelModal(levelId) {
@@ -2771,7 +3069,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.21-V2';
+        const APP_VERSION = '2026.03.22-V1';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
