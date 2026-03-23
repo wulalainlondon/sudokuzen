@@ -31,6 +31,8 @@
             style="width: 100%; display: flex; justify-content: space-between; align-items: center; max-width: 400px; margin-bottom: 25px;">
             <h1 style="margin: 0; font-weight: 300; letter-spacing: 5px; font-family: 'Outfit';">SUDOKU ZEN</h1>
             <div style="display: flex; align-items: center; gap: 2px;">
+                <button id="library-btn" class="library-entry-btn" onclick="openLibraryOverlay()" title="技巧圖書館"
+                    aria-label="技巧圖書館">📚</button>
                 <button id="stats-btn" onclick="openStatsModal()" title="個人統計與成就"
                     aria-label="個人統計"
                     style="font-size: 1.2rem; opacity: 0.45; background: none; border: none; cursor: pointer; padding: 5px; transition: all 0.3s;">
@@ -62,6 +64,17 @@
             <div id="level-list"></div>
         </div>
         <div class="version-badge" id="version-badge">v--</div>
+    </div>
+
+    <div id="library-overlay">
+        <div class="library-page">
+            <div class="library-header">
+                <button class="library-back-btn" onclick="closeLibraryOverlay()">← 返回</button>
+                <h2 class="library-title">技巧圖書館</h2>
+                <div class="library-subtitle">依星級由淺入深閱讀</div>
+            </div>
+            <div class="library-list" id="library-list"></div>
+        </div>
     </div>
 
     <div id="pre-level-modal">
@@ -727,6 +740,22 @@
         async function submitFirstClear(levelId, clearSec, clearStars) {
             if (!firebaseReady) return;
             const { playerId, alias } = getPlayerIdentity();
+            const level = levels.find(l => l.id === levelId) || currentLevel || null;
+            const levelVersion = (typeof APP_VERSION !== 'undefined' && APP_VERSION)
+                ? APP_VERSION
+                : 'legacy-unknown';
+            const levelSnapshot = level ? {
+                schemaVersion: 1,
+                levelId: level.id,
+                stars: level.stars,
+                difficultyName: level.difficultyName,
+                displayName: level.displayName,
+                maxTechnique: level.maxTechnique || null,
+                techTier: level.techTier || null,
+                // Keep puzzle snapshot so future level remaps won't shift historical records.
+                puzzle: Array.isArray(level.puzzle) ? level.puzzle.slice() : null,
+                puzzleHash: Array.isArray(level.puzzle) ? `p81:${level.puzzle.join('')}` : null,
+            } : null;
             const docRef = db.collection('level_first_clears')
                 .doc(String(levelId))
                 .collection('players')
@@ -740,6 +769,8 @@
                         alias,
                         firstTimeSec: clearSec,
                         firstStars: clearStars,
+                        levelVersion,
+                        levelSnapshot,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     });
                 });
@@ -2025,6 +2056,70 @@
             document.getElementById('stats-modal').style.display = 'none';
         }
 
+        function isTeachReadable(stars) {
+            if (typeof TEACH_DATA === 'undefined') return false;
+            const t = TEACH_DATA[stars];
+            return !!(t && t.name && t.subtitle && t.example && Array.isArray(t.example.steps) && t.example.steps.length > 0);
+        }
+
+        function getLibraryItemsFromTeachData() {
+            if (typeof TEACH_DATA === 'undefined') return [];
+            return Object.entries(TEACH_DATA)
+                .map(([star, teach]) => ({ star: parseFloat(star), key: String(star), teach }))
+                .filter(item => Number.isFinite(item.star) && isTeachReadable(item.key))
+                .sort((a, b) => a.star - b.star);
+        }
+
+        function renderLibraryCards() {
+            if (!libraryListEl) return;
+            const items = getLibraryItemsFromTeachData();
+            const read = JSON.parse(localStorage.getItem('sudoku_teach_read') || '{}');
+
+            if (!items.length) {
+                libraryListEl.innerHTML = '<div class="library-empty">目前沒有可閱讀的技巧內容</div>';
+                return;
+            }
+
+            libraryListEl.innerHTML = items.map(({ star, key, teach }) => {
+                const isRead = !!read[key];
+                const hasPractice = Array.isArray(teach.practice) && teach.practice.length > 0;
+                return `
+                    <article class="library-card" data-star="${key}">
+                        <div class="library-card-head">
+                            <span class="library-star">⭐ ${star}</span>
+                            <div class="library-badges">
+                                ${isRead ? '<span class="library-badge read">已讀</span>' : ''}
+                                ${hasPractice ? '<span class="library-badge practice">可練習</span>' : ''}
+                            </div>
+                        </div>
+                        <h3 class="library-card-title">${teach.name}</h3>
+                        <p class="library-card-subtitle">${teach.subtitle}</p>
+                        <div class="library-card-key">${teach.technique || '-'}</div>
+                        <button class="library-open-btn" onclick="openTeachFromLibrary('${key}')">閱讀技巧</button>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function openLibraryOverlay() {
+            renderLibraryCards();
+            if (libraryOverlayEl) {
+                libraryOverlayEl.classList.add('show');
+            }
+            document.body.classList.add('library-open');
+        }
+
+        function closeLibraryOverlay() {
+            if (libraryOverlayEl) {
+                libraryOverlayEl.classList.remove('show');
+            }
+            document.body.classList.remove('library-open');
+        }
+
+        function openTeachFromLibrary(stars) {
+            showTeachModal(parseFloat(stars), 'library');
+        }
+
         function checkWin() {
             const isComplete = cellsData.every((data, i) => data.value === currentLevel.solution[i]);
             if (isComplete) {
@@ -2159,6 +2254,9 @@
         const preLevelGhostBtn = document.getElementById('pre-level-ghost-btn');
         const preLevelReplayBtn = document.getElementById('pre-level-replay-btn');
         const preLevelBackBtn = document.getElementById('pre-level-back-btn');
+        const libraryOverlayEl = document.getElementById('library-overlay');
+        const libraryListEl = document.getElementById('library-list');
+        let teachLaunchSource = 'tier';
 
         const TECH_MAP = {
             'naked_single': '顯性單數',
@@ -2169,6 +2267,8 @@
             'naked_triple': '顯性三數組',
             'hidden_triple': '隱藏三數組',
             'x_wing': 'X-Wing',
+            'w_wing': 'W-Wing',
+            'x_cycle_simple_coloring': 'X-Cycle / Simple Coloring',
             'skyscraper': '摩天樓 (Skyscraper)',
             'unique_rectangle': '唯一矩形 (UR)',
             'xy_wing': 'XY-Wing',
@@ -2193,10 +2293,11 @@
         let teachSteps = [];
         let teachData = null;
 
-        function showTeachModal(stars) {
+        function showTeachModal(stars, source = 'tier') {
             if (typeof TEACH_DATA === 'undefined') return;
             teachData = TEACH_DATA[stars];
             if (!teachData) return;
+            teachLaunchSource = source;
 
             document.getElementById('teach-title').textContent = teachData.name;
             document.getElementById('teach-subtitle').textContent = teachData.subtitle;
@@ -2218,7 +2319,7 @@
             document.getElementById('teach-modal').classList.add('show');
         }
 
-        function hideTeachModal() {
+        function hideTeachModal(returnToLibrary = true) {
             document.getElementById('teach-modal').classList.remove('show');
             // Mark as read
             if (teachData) {
@@ -2230,6 +2331,11 @@
                 localStorage.setItem('sudoku_teach_read', JSON.stringify(read));
             }
             teachData = null;
+            if (returnToLibrary && teachLaunchSource === 'library') {
+                renderLibraryCards();
+                openLibraryOverlay();
+            }
+            teachLaunchSource = 'tier';
         }
 
         function teachNext() {
@@ -2340,7 +2446,7 @@
 
         function startPractice() {
             if (!teachData || !teachData.practice || teachData.practice.length === 0) {
-                hideTeachModal();
+                hideTeachModal(false);
                 return;
             }
             // Save ref before hideTeachModal clears it
@@ -2350,7 +2456,7 @@
             for (const [s, d] of Object.entries(TEACH_DATA)) {
                 if (d === td) { stars = parseFloat(s); break; }
             }
-            hideTeachModal();
+            hideTeachModal(false);
 
             // Pick a random puzzle
             const idx = Math.floor(Math.random() * td.practice.length);
@@ -2724,6 +2830,7 @@
         }
 
         function showLevelScreen(returnToTier = false) {
+            closeLibraryOverlay();
             updateSpeedrunToggleUI();
             document.getElementById('level-screen').style.display = 'flex';
             document.querySelector('.game-container').style.display = 'none';
@@ -3069,7 +3176,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.22-V1';
+        const APP_VERSION = '2026.03.23-V1';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
@@ -3159,6 +3266,11 @@
         if (statsModalEl) {
             statsModalEl.addEventListener('click', (e) => {
                 if (e.target === statsModalEl) closeStatsModal();
+            });
+        }
+        if (libraryOverlayEl) {
+            libraryOverlayEl.addEventListener('click', (e) => {
+                if (e.target === libraryOverlayEl) closeLibraryOverlay();
             });
         }
         const duoResultModalEl = document.getElementById('duo-result-modal');
