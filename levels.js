@@ -7250,7 +7250,7 @@ const levels = [
             2
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "林浦煉門",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -7261,7 +7261,7 @@ const levels = [
     {
         "id": 9042,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "凝定吐息",
         "puzzle": [
             0,
@@ -7439,7 +7439,7 @@ const levels = [
     {
         "id": 9043,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "谷徑啟谷",
         "puzzle": [
             4,
@@ -7783,7 +7783,7 @@ const levels = [
             5
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "氣鍛觀門",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -7960,7 +7960,7 @@ const levels = [
             2
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "村橋煉息",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -8137,7 +8137,7 @@ const levels = [
             4
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "元禪闖谷",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -8148,7 +8148,7 @@ const levels = [
     {
         "id": 9047,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "山亭守脈",
         "puzzle": [
             4,
@@ -8492,7 +8492,7 @@ const levels = [
             5
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "暮禪觀骨",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -8669,7 +8669,7 @@ const levels = [
             2
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "脈巷定潮",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -8680,7 +8680,7 @@ const levels = [
     {
         "id": 9050,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "谷門破心",
         "puzzle": [
             0,
@@ -8858,7 +8858,7 @@ const levels = [
     {
         "id": 9051,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "鍛岸開光",
         "puzzle": [
             4,
@@ -9036,7 +9036,7 @@ const levels = [
     {
         "id": 9052,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "谷岑骨念",
         "puzzle": [
             0,
@@ -9214,7 +9214,7 @@ const levels = [
     {
         "id": 9053,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "野川觀光",
         "puzzle": [
             0,
@@ -9392,7 +9392,7 @@ const levels = [
     {
         "id": 9054,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "脈嶺守門",
         "puzzle": [
             4,
@@ -9570,7 +9570,7 @@ const levels = [
     {
         "id": 9055,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "開岸聽門",
         "puzzle": [
             0,
@@ -9748,7 +9748,7 @@ const levels = [
     {
         "id": 9056,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "基渡凝光",
         "puzzle": [
             0,
@@ -10092,7 +10092,7 @@ const levels = [
             4
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "脈門問峰",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -10103,7 +10103,7 @@ const levels = [
     {
         "id": 9058,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "聚骨吐骨",
         "puzzle": [
             4,
@@ -10447,7 +10447,7 @@ const levels = [
             2
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "凡岸引境",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -10624,7 +10624,7 @@ const levels = [
             4
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "通徑行海",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -10801,7 +10801,7 @@ const levels = [
             5
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "野渡骨光",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -10812,7 +10812,7 @@ const levels = [
     {
         "id": 9062,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "溪定觀路",
         "puzzle": [
             0,
@@ -11156,7 +11156,7 @@ const levels = [
             2
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "雨巷鍛峰",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -11333,7 +11333,7 @@ const levels = [
             4
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "築徑鍛門",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -11344,7 +11344,7 @@ const levels = [
     {
         "id": 9065,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "氣渡踏門",
         "puzzle": [
             4,
@@ -11688,7 +11688,7 @@ const levels = [
             2
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "氣亭煉念",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -11865,7 +11865,7 @@ const levels = [
             4
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "風門行影",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -12042,7 +12042,7 @@ const levels = [
             4
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "鍛橋問門",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -12219,7 +12219,7 @@ const levels = [
             5
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "雨定破鍛",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -12230,7 +12230,7 @@ const levels = [
     {
         "id": 9070,
         "stars": 7,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "氣橋引光",
         "puzzle": [
             0,
@@ -12574,7 +12574,7 @@ const levels = [
             4
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "野鍛踏塵",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -12751,7 +12751,7 @@ const levels = [
             5
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "河臺凝塵",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -12928,7 +12928,7 @@ const levels = [
             2
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "鍛骨行鍛",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -13105,7 +13105,7 @@ const levels = [
             6
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "鍛巷定息",
         "difficultyScore": 606,
         "singleRatio": 0.3333,
@@ -13282,7 +13282,7 @@ const levels = [
             5
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "築鍛定氣",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -13459,7 +13459,7 @@ const levels = [
             2
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "禪徑觀谷",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -13636,7 +13636,7 @@ const levels = [
             4
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "定岸守骨",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -13813,7 +13813,7 @@ const levels = [
             5
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "脈定納峰",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -13824,7 +13824,7 @@ const levels = [
     {
         "id": 9079,
         "stars": 8,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "禪亭骨門",
         "puzzle": [
             0,
@@ -14168,7 +14168,7 @@ const levels = [
             4
         ],
         "stars": 0.5,
-        "difficultyName": "禪定",
+        "difficultyName": "鍛骨",
         "displayName": "丹骨鍛關",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -71001,7 +71001,7 @@ const levels = [
             9
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "長舟照海",
         "difficultyScore": 600,
         "singleRatio": 0.358,
@@ -71178,7 +71178,7 @@ const levels = [
             6
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "海壇斬譜",
         "difficultyScore": 546,
         "singleRatio": 0.3457,
@@ -71355,7 +71355,7 @@ const levels = [
             8
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "合闕馭竅",
         "difficultyScore": 636,
         "singleRatio": 0.284,
@@ -71532,7 +71532,7 @@ const levels = [
             4
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "月宮神竅",
         "difficultyScore": 574,
         "singleRatio": 0.3086,
@@ -71709,7 +71709,7 @@ const levels = [
             7
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "合臺鎖域",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -71886,7 +71886,7 @@ const levels = [
             9
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "道舟巡星",
         "difficultyScore": 600,
         "singleRatio": 0.358,
@@ -72063,7 +72063,7 @@ const levels = [
             6
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "神壇馭霄",
         "difficultyScore": 546,
         "singleRatio": 0.3457,
@@ -72240,7 +72240,7 @@ const levels = [
             8
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "虛壇解魄",
         "difficultyScore": 636,
         "singleRatio": 0.284,
@@ -72417,7 +72417,7 @@ const levels = [
             4
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "神汀照神",
         "difficultyScore": 574,
         "singleRatio": 0.3086,
@@ -72594,7 +72594,7 @@ const levels = [
             7
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "返神悟局",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -72771,7 +72771,7 @@ const levels = [
             9
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "長穹化圖",
         "difficultyScore": 600,
         "singleRatio": 0.358,
@@ -72948,7 +72948,7 @@ const levels = [
             6
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "月壇神門",
         "difficultyScore": 546,
         "singleRatio": 0.3457,
@@ -73125,7 +73125,7 @@ const levels = [
             8
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "合壇神霄",
         "difficultyScore": 636,
         "singleRatio": 0.284,
@@ -73302,7 +73302,7 @@ const levels = [
             4
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "合舟斬魂",
         "difficultyScore": 574,
         "singleRatio": 0.3086,
@@ -73479,7 +73479,7 @@ const levels = [
             7
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "星汀推譜",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -73656,7 +73656,7 @@ const levels = [
             9
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "虛域解門",
         "difficultyScore": 600,
         "singleRatio": 0.358,
@@ -73833,7 +73833,7 @@ const levels = [
             6
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "海鏡照化",
         "difficultyScore": 546,
         "singleRatio": 0.3457,
@@ -74010,7 +74010,7 @@ const levels = [
             8
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "河壇衍魄",
         "difficultyScore": 636,
         "singleRatio": 0.284,
@@ -74187,7 +74187,7 @@ const levels = [
             4
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "仙壇照圖",
         "difficultyScore": 574,
         "singleRatio": 0.3086,
@@ -74364,7 +74364,7 @@ const levels = [
             7
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "返穹照識",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -74541,7 +74541,7 @@ const levels = [
             9
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "玄鏡鎖化",
         "difficultyScore": 600,
         "singleRatio": 0.358,
@@ -74718,7 +74718,7 @@ const levels = [
             6
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "虛穹解衡",
         "difficultyScore": 546,
         "singleRatio": 0.3457,
@@ -74895,7 +74895,7 @@ const levels = [
             8
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "靈化巡魄",
         "difficultyScore": 636,
         "singleRatio": 0.284,
@@ -75072,7 +75072,7 @@ const levels = [
             4
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "河穹化竅",
         "difficultyScore": 574,
         "singleRatio": 0.3086,
@@ -75249,7 +75249,7 @@ const levels = [
             7
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "海舟巡神",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -75426,7 +75426,7 @@ const levels = [
             9
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "虛庭證譜",
         "difficultyScore": 600,
         "singleRatio": 0.358,
@@ -75603,7 +75603,7 @@ const levels = [
             6
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "渡域神衡",
         "difficultyScore": 546,
         "singleRatio": 0.3457,
@@ -75780,7 +75780,7 @@ const levels = [
             8
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "劫灣參神",
         "difficultyScore": 636,
         "singleRatio": 0.284,
@@ -75957,7 +75957,7 @@ const levels = [
             4
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "長庭斬竅",
         "difficultyScore": 574,
         "singleRatio": 0.3086,
@@ -76134,7 +76134,7 @@ const levels = [
             7
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "長鏡參譜",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -76311,7 +76311,7 @@ const levels = [
             4
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "海神解星",
         "difficultyScore": 574,
         "singleRatio": 0.3086,
@@ -76488,7 +76488,7 @@ const levels = [
             7
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "真閣推衡",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -76665,7 +76665,7 @@ const levels = [
             9
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "神鏡衡魄",
         "difficultyScore": 600,
         "singleRatio": 0.358,
@@ -76842,7 +76842,7 @@ const levels = [
             6
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "虛化神局",
         "difficultyScore": 546,
         "singleRatio": 0.3457,
@@ -77019,7 +77019,7 @@ const levels = [
             8
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "化汀衍海",
         "difficultyScore": 636,
         "singleRatio": 0.284,
@@ -77196,7 +77196,7 @@ const levels = [
             4
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "仙鏈神譜",
         "difficultyScore": 574,
         "singleRatio": 0.3086,
@@ -77373,7 +77373,7 @@ const levels = [
             7
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "潮鏡解識",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -77550,7 +77550,7 @@ const levels = [
             9
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "真闕馭魄",
         "difficultyScore": 600,
         "singleRatio": 0.358,
@@ -77727,7 +77727,7 @@ const levels = [
             6
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "潮壇化衡",
         "difficultyScore": 546,
         "singleRatio": 0.3457,
@@ -77904,7 +77904,7 @@ const levels = [
             8
         ],
         "stars": 5.5,
-        "difficultyName": "長鏈",
+        "difficultyName": "化神",
         "displayName": "劫舟參星",
         "difficultyScore": 636,
         "singleRatio": 0.284,
@@ -78081,7 +78081,7 @@ const levels = [
             2
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "霧闕推圖",
         "difficultyScore": 616,
         "singleRatio": 0.2963,
@@ -78258,7 +78258,7 @@ const levels = [
             9
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "嬰域返譜",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -78435,7 +78435,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "返闕御霄",
         "difficultyScore": 586,
         "singleRatio": 0.3086,
@@ -78612,7 +78612,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "道鏡衍域",
         "difficultyScore": 588,
         "singleRatio": 0.3086,
@@ -78789,7 +78789,7 @@ const levels = [
             2
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "霧穹返圖",
         "difficultyScore": 616,
         "singleRatio": 0.2963,
@@ -78966,7 +78966,7 @@ const levels = [
             9
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "返閣衍竅",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -79143,7 +79143,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "河舟悟魂",
         "difficultyScore": 630,
         "singleRatio": 0.3086,
@@ -79320,7 +79320,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "潮闕虛局",
         "difficultyScore": 570,
         "singleRatio": 0.321,
@@ -79497,7 +79497,7 @@ const levels = [
             2
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "返壇推虛",
         "difficultyScore": 616,
         "singleRatio": 0.2963,
@@ -79674,7 +79674,7 @@ const levels = [
             9
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "月殿鎖衡",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -79851,7 +79851,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "河域巡魂",
         "difficultyScore": 630,
         "singleRatio": 0.3086,
@@ -80028,7 +80028,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "月環證門",
         "difficultyScore": 570,
         "singleRatio": 0.321,
@@ -80205,7 +80205,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "元宮虛竅",
         "difficultyScore": 586,
         "singleRatio": 0.3086,
@@ -80382,7 +80382,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "化鏈參魄",
         "difficultyScore": 588,
         "singleRatio": 0.3086,
@@ -80559,7 +80559,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "潮域斬門",
         "difficultyScore": 630,
         "singleRatio": 0.3086,
@@ -80736,7 +80736,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "嬰庭推魄",
         "difficultyScore": 570,
         "singleRatio": 0.321,
@@ -80913,7 +80913,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "環闕鎖星",
         "difficultyScore": 586,
         "singleRatio": 0.3086,
@@ -81090,7 +81090,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "鏈域參衡",
         "difficultyScore": 586,
         "singleRatio": 0.3086,
@@ -81267,7 +81267,7 @@ const levels = [
             9
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "虛鏡映圖",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -81444,7 +81444,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "環鏈映識",
         "difficultyScore": 630,
         "singleRatio": 0.3086,
@@ -81621,7 +81621,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "道鏈返霄",
         "difficultyScore": 570,
         "singleRatio": 0.321,
@@ -81798,7 +81798,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "渡闕悟域",
         "difficultyScore": 586,
         "singleRatio": 0.3086,
@@ -81975,7 +81975,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "靈鏡衡域",
         "difficultyScore": 588,
         "singleRatio": 0.3086,
@@ -82152,7 +82152,7 @@ const levels = [
             2
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "玄汀巡虛",
         "difficultyScore": 616,
         "singleRatio": 0.2963,
@@ -82329,7 +82329,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "仙殿證局",
         "difficultyScore": 570,
         "singleRatio": 0.321,
@@ -82506,7 +82506,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "靈闕斬局",
         "difficultyScore": 586,
         "singleRatio": 0.3086,
@@ -82683,7 +82683,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "合閣映霄",
         "difficultyScore": 588,
         "singleRatio": 0.3086,
@@ -82860,7 +82860,7 @@ const levels = [
             2
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "神鏈斬海",
         "difficultyScore": 616,
         "singleRatio": 0.2963,
@@ -83037,7 +83037,7 @@ const levels = [
             9
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "環殿鎖局",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -83214,7 +83214,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "嬰灣馭返",
         "difficultyScore": 586,
         "singleRatio": 0.3086,
@@ -83391,7 +83391,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "月灣御識",
         "difficultyScore": 588,
         "singleRatio": 0.3086,
@@ -83568,7 +83568,7 @@ const levels = [
             2
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "河灣斬圖",
         "difficultyScore": 616,
         "singleRatio": 0.2963,
@@ -83745,7 +83745,7 @@ const levels = [
             9
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "劫返斬返",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -83922,7 +83922,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "神庭推門",
         "difficultyScore": 630,
         "singleRatio": 0.3086,
@@ -84099,7 +84099,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "真返照局",
         "difficultyScore": 570,
         "singleRatio": 0.321,
@@ -84276,7 +84276,7 @@ const levels = [
             2
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "真穹虛門",
         "difficultyScore": 616,
         "singleRatio": 0.2963,
@@ -84453,7 +84453,7 @@ const levels = [
             9
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "鏈鏡返門",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -84630,7 +84630,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "真庭衡魂",
         "difficultyScore": 630,
         "singleRatio": 0.3086,
@@ -84807,7 +84807,7 @@ const levels = [
             7
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "星舟照衡",
         "difficultyScore": 570,
         "singleRatio": 0.321,
@@ -84984,7 +84984,7 @@ const levels = [
             6
         ],
         "stars": 6,
-        "difficultyName": "環鏈",
+        "difficultyName": "返虛",
         "displayName": "化庭照門",
         "difficultyScore": 586,
         "singleRatio": 0.3086,
@@ -85161,7 +85161,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "渡鏡參道",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -85338,7 +85338,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "星臺鎖魂",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -85515,7 +85515,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "神合映局",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -85692,7 +85692,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "雙鏡合霄",
         "difficultyScore": 568,
         "singleRatio": 0.321,
@@ -85869,7 +85869,7 @@ const levels = [
             9
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "虛灣衡合",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -86046,7 +86046,7 @@ const levels = [
             9
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "化閣衡局",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -86223,7 +86223,7 @@ const levels = [
             9
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "神雙道局",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -86400,7 +86400,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "雙閣馭星",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -86577,7 +86577,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "鎖穹道衡",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -86754,7 +86754,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "神道道域",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -86931,7 +86931,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "雙汀推星",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -87108,7 +87108,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "霧鏡御門",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -87285,7 +87285,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "鎖壇道魄",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -87462,7 +87462,7 @@ const levels = [
             4
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "靈宮證霄",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -87639,7 +87639,7 @@ const levels = [
             4
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "道汀鎖竅",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -87816,7 +87816,7 @@ const levels = [
             4
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "霧域照道",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -87993,7 +87993,7 @@ const levels = [
             4
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "返庭解霄",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -88170,7 +88170,7 @@ const levels = [
             4
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "仙舟衡道",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -88347,7 +88347,7 @@ const levels = [
             4
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "神鎖證衡",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -88524,7 +88524,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "河鏡證星",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -88701,7 +88701,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "海庭道界",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -88878,7 +88878,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "雙宮巡道",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -89055,7 +89055,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "玄鎖悟譜",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -89232,7 +89232,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "道壇衡界",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -89409,7 +89409,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "月庭解海",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -89586,7 +89586,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "嬰壇照霄",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -89763,7 +89763,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "河鎖推道",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -89940,7 +89940,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "渡臺推竅",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -90117,7 +90117,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "虛道證圖",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -90294,7 +90294,7 @@ const levels = [
             7
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "返域馭識",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -90471,7 +90471,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "玄域衍道",
         "difficultyScore": 568,
         "singleRatio": 0.321,
@@ -90648,7 +90648,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "劫合照域",
         "difficultyScore": 568,
         "singleRatio": 0.321,
@@ -90825,7 +90825,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "劫庭照譜",
         "difficultyScore": 568,
         "singleRatio": 0.321,
@@ -91002,7 +91002,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "神閣合譜",
         "difficultyScore": 568,
         "singleRatio": 0.321,
@@ -91179,7 +91179,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "化鎖衍局",
         "difficultyScore": 568,
         "singleRatio": 0.321,
@@ -91356,7 +91356,7 @@ const levels = [
             6
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "玄雙巡合",
         "difficultyScore": 568,
         "singleRatio": 0.321,
@@ -91533,7 +91533,7 @@ const levels = [
             8
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "鎖宮馭合",
         "difficultyScore": 576,
         "singleRatio": 0.358,
@@ -91710,7 +91710,7 @@ const levels = [
             8
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "鎖合映魂",
         "difficultyScore": 576,
         "singleRatio": 0.358,
@@ -91887,7 +91887,7 @@ const levels = [
             8
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "仙鏡證魄",
         "difficultyScore": 576,
         "singleRatio": 0.358,
@@ -92064,7 +92064,7 @@ const levels = [
             8
         ],
         "stars": 6.5,
-        "difficultyName": "雙鎖",
+        "difficultyName": "合道",
         "displayName": "霧庭解合",
         "difficultyScore": 576,
         "singleRatio": 0.358,
@@ -92241,7 +92241,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "星渡馭門",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -92418,7 +92418,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "仙宮衡門",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -92595,7 +92595,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "玄宮推魂",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -92772,7 +92772,7 @@ const levels = [
             4
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "合宮映魄",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -92949,7 +92949,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "星宮衍衡",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -93126,7 +93126,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "合汀巡渡",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -93303,7 +93303,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "靈鎖馭圖",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -93480,7 +93480,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "道庭馭渡",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -93657,7 +93657,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "神宮斬界",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -93834,7 +93834,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "渡劫照星",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -94011,7 +94011,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "海鎖劫海",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -94188,7 +94188,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "真鏡御渡",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -94365,7 +94365,7 @@ const levels = [
             2
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "真舟馭魂",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -94542,7 +94542,7 @@ const levels = [
             4
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "靈穹衡識",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -94719,7 +94719,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "靈殿照劫",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -94896,7 +94896,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "劫鎖巡劫",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -95073,7 +95073,7 @@ const levels = [
             2
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "神殿鎖門",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -95250,7 +95250,7 @@ const levels = [
             4
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "合殿衍圖",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -95427,7 +95427,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "星鏈斬星",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -95604,7 +95604,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "靈劫渡魂",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -95781,7 +95781,7 @@ const levels = [
             2
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "河閣渡界",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -95958,7 +95958,7 @@ const levels = [
             4
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "河劫巡界",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -96135,7 +96135,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "靈臺悟劫",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -96312,7 +96312,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "霧宮劫局",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -96489,7 +96489,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "道臺照竅",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -96666,7 +96666,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "渡穹渡霄",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -96843,7 +96843,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "虛闕參域",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -97020,7 +97020,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "嬰臺御海",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -97197,7 +97197,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "返灣衡渡",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -97374,7 +97374,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "真灣鎖魄",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -97551,7 +97551,7 @@ const levels = [
             2
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "真宮御域",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -97728,7 +97728,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "鏈閣悟竅",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -97905,7 +97905,7 @@ const levels = [
             2
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "虛劫衍霄",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -98082,7 +98082,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "真劫證竅",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -98259,7 +98259,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "合灣巡圖",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -98436,7 +98436,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "鎖殿馭域",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -98613,7 +98613,7 @@ const levels = [
             2
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "星殿劫霄",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -98790,7 +98790,7 @@ const levels = [
             4
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "鏈壇悟海",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -98967,7 +98967,7 @@ const levels = [
             1
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "海閣映衡",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -99144,7 +99144,7 @@ const levels = [
             6
         ],
         "stars": 7,
-        "difficultyName": "鎖鏈",
+        "difficultyName": "渡劫",
         "displayName": "鎖鏈劫界",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -99321,7 +99321,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "返鏈巡竅",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -99498,7 +99498,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "海穹參仙",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -99675,7 +99675,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "返宮仙衡",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -99852,7 +99852,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "鏈闕照真",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -100029,7 +100029,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "玄網仙譜",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -100206,7 +100206,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "靈汀解圖",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -100383,7 +100383,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "河網巡仙",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -100560,7 +100560,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "星網參竅",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -100737,7 +100737,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "劫鏡衡竅",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -100914,7 +100914,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "霧閣御魄",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -101091,7 +101091,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "霧汀悟魄",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -101268,7 +101268,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "鏈真衍真",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -101445,7 +101445,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "道宮斬識",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -101622,7 +101622,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "網閣衡真",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -101799,7 +101799,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "元網仙魄",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -101976,7 +101976,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "元鏡衍界",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -102153,7 +102153,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "化宮鎖界",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -102330,7 +102330,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "劫仙仙魂",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -102507,7 +102507,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "返真斬域",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -102684,7 +102684,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "月穹真界",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -102861,7 +102861,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "合域御圖",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -103038,7 +103038,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "嬰殿馭仙",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -103215,7 +103215,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "元闕衍星",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -103392,7 +103392,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "道真斬霄",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -103569,7 +103569,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "網鏡真識",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -103746,7 +103746,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "返仙仙局",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -103923,7 +103923,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "鏈殿悟真",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -104100,7 +104100,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "神闕衍仙",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -104277,7 +104277,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "神網仙霄",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -104454,7 +104454,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "劫網御局",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -104631,7 +104631,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "虛汀仙真",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -104808,7 +104808,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "潮閣解竅",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -104985,7 +104985,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "星壇映星",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -105162,7 +105162,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "網庭照界",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -105339,7 +105339,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "道闕映真",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -105516,7 +105516,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "潮鏈參識",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -105693,7 +105693,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "返網鎖真",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -105870,7 +105870,7 @@ const levels = [
             7
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "神域真衡",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -106047,7 +106047,7 @@ const levels = [
             4
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "仙閣真門",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -106224,7 +106224,7 @@ const levels = [
             1
         ],
         "stars": 7.5,
-        "difficultyName": "網鏈",
+        "difficultyName": "真仙",
         "displayName": "仙域巡霄",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -106401,7 +106401,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "二昇破劫",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -106578,7 +106578,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "鏈峰化界",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -106755,7 +106755,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "門梯二穹",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -106932,7 +106932,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "霆臺昇域",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -107109,7 +107109,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "鏈中熔星",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -107286,7 +107286,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "霆昇證昇",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -107463,7 +107463,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "霆中衝二",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -107640,7 +107640,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "二門開星",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -107817,7 +107817,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "光門裂二",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -107994,7 +107994,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "光鏈熔二",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -108171,7 +108171,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "中昇熔海",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -108348,7 +108348,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "門壇越二",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -108525,7 +108525,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "鏈梯裂界",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -108702,7 +108702,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "玄壇二海",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -108879,7 +108879,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "橋臺昇界",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -109056,7 +109056,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "劫鏈二域",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -109233,7 +109233,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "劫梯證鎖",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -109410,7 +109410,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "衍中裂關",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -109587,7 +109587,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "光壇開二",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -109764,7 +109764,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "昇穹二霄",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -109941,7 +109941,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "玄門二界",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -110118,7 +110118,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "玄闕越關",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -110295,7 +110295,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "化門躍界",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -110472,7 +110472,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "天中躍域",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -110649,7 +110649,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "天二越霄",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -110826,7 +110826,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "橋中躍昇",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -111003,7 +111003,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "橋二衝塵",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -111180,7 +111180,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "化梯熔鎖",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -111357,7 +111357,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "光闕裂劫",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -111534,7 +111534,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "衍穹熔域",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -111711,7 +111711,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "道梯衝界",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -111888,7 +111888,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "鏈橋衝霄",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -112065,7 +112065,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "中橋裂霄",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -112242,7 +112242,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "天穹裂星",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -112419,7 +112419,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "玄橋鎮海",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -112596,7 +112596,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "衍鏈躍霄",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -112773,7 +112773,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "玄鏈開鎖",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -112950,7 +112950,7 @@ const levels = [
             6
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "衍崖衝鎖",
         "difficultyScore": 598,
         "singleRatio": 0.3333,
@@ -113127,7 +113127,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "昇二熔關",
         "difficultyScore": 634,
         "singleRatio": 0.3086,
@@ -113304,7 +113304,7 @@ const levels = [
             2
         ],
         "stars": 8,
-        "difficultyName": "中鏈",
+        "difficultyName": "二昇",
         "displayName": "羽鏈化塵",
         "difficultyScore": 534,
         "singleRatio": 0.358,
@@ -113481,7 +113481,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "雲穹斷霄",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -113658,7 +113658,7 @@ const levels = [
             6
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "域玄封霄",
         "difficultyScore": 606,
         "singleRatio": 0.3333,
@@ -113835,7 +113835,7 @@ const levels = [
             5
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "大橋馭關",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -114012,7 +114012,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "聖城仙界",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -114189,7 +114189,7 @@ const levels = [
             6
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "靈壇鎮光",
         "difficultyScore": 606,
         "singleRatio": 0.3333,
@@ -114366,7 +114366,7 @@ const levels = [
             5
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "天臺證道",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -114543,7 +114543,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "靈鏈馭玄",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -114720,7 +114720,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "雲宮仙海",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -114897,7 +114897,7 @@ const levels = [
             6
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "羅域續局",
         "difficultyScore": 606,
         "singleRatio": 0.3333,
@@ -115074,7 +115074,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "羅玄玄局",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -115251,7 +115251,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "大域解影",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -115428,7 +115428,7 @@ const levels = [
             5
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "混海御念",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -115605,7 +115605,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "雲海衍念",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -115782,7 +115782,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "渚關封衡",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -115959,7 +115959,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "渚殿觀海",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -116136,7 +116136,7 @@ const levels = [
             6
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "推玄解關",
         "difficultyScore": 606,
         "singleRatio": 0.3333,
@@ -116313,7 +116313,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "庭門衍光",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -116490,7 +116490,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "聖仙鎮玄",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -116667,7 +116667,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "渚橋照念",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -116844,7 +116844,7 @@ const levels = [
             5
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "天海御光",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -117021,7 +117021,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "霄宮證關",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -117198,7 +117198,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "仙玄馭念",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -117375,7 +117375,7 @@ const levels = [
             5
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "混仙鎮界",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -117552,7 +117552,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "混橋觀道",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -117729,7 +117729,7 @@ const levels = [
             6
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "星關封星",
         "difficultyScore": 606,
         "singleRatio": 0.3333,
@@ -117906,7 +117906,7 @@ const levels = [
             5
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "混推續星",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -118083,7 +118083,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "羅殿合局",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -118260,7 +118260,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "漢宮仙道",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -118437,7 +118437,7 @@ const levels = [
             5
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "岳推續海",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -118614,7 +118614,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "鏈門觀仙",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -118791,7 +118791,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "尊城開仙",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -118968,7 +118968,7 @@ const levels = [
             6
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "仙庭證界",
         "difficultyScore": 606,
         "singleRatio": 0.3333,
@@ -119145,7 +119145,7 @@ const levels = [
             5
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "庭宮開念",
         "difficultyScore": 602,
         "singleRatio": 0.3333,
@@ -119322,7 +119322,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "天壇鎮心",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -119499,7 +119499,7 @@ const levels = [
             4
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "尊關觀玄",
         "difficultyScore": 626,
         "singleRatio": 0.321,
@@ -119676,7 +119676,7 @@ const levels = [
             6
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "推城續衡",
         "difficultyScore": 606,
         "singleRatio": 0.3333,
@@ -119853,7 +119853,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "岳門開玄",
         "difficultyScore": 526,
         "singleRatio": 0.358,
@@ -120030,7 +120030,7 @@ const levels = [
             3
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "尊域解念",
         "difficultyScore": 111,
         "singleRatio": 1,
@@ -120207,7 +120207,7 @@ const levels = [
             2
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "混庭玄心",
         "difficultyScore": 139,
         "singleRatio": 1,
@@ -120384,7 +120384,7 @@ const levels = [
             5
         ],
         "stars": 8.5,
-        "difficultyName": "鏈推",
+        "difficultyName": "玄仙",
         "displayName": "玄仙觀局",
         "difficultyScore": 100,
         "singleRatio": 1,
@@ -120561,7 +120561,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "靈蘇開太",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -120738,7 +120738,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "大海斷念",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -120915,7 +120915,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "岳乙太關",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -121092,7 +121092,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "渚穹馭影",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -121269,7 +121269,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "雲壇續影",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -121446,7 +121446,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "庭穹乙光",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -121623,7 +121623,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "混闕太界",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -121800,7 +121800,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "域德證光",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -121977,7 +121977,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "庭德衍關",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -122154,7 +122154,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "域乙照影",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -122331,7 +122331,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "元蘇合門",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -122508,7 +122508,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "羅乙馭乙",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -122685,7 +122685,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "蘇太馭道",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -122862,7 +122862,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "元海乙門",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -123039,7 +123039,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "天蘇續乙",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -123216,7 +123216,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "漢臺合念",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -123393,7 +123393,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "德穹衍影",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -123570,7 +123570,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "尊太斷關",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -123747,7 +123747,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "尊海證乙",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -123924,7 +123924,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "雲門斷光",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -124101,7 +124101,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "乙德合道",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -124278,7 +124278,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "天殿斷太",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -124455,7 +124455,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "玄殿封乙",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -124632,7 +124632,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "德乙封局",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -124809,7 +124809,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "混乙斷衡",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -124986,7 +124986,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "太德鎮門",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -125163,7 +125163,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "渚太觀界",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -125340,7 +125340,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "尊宮照乙",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -125517,7 +125517,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "混德封關",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -125694,7 +125694,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "域殿乙域",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -125871,7 +125871,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "漢庭斷局",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -126048,7 +126048,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "庭殿解心",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -126225,7 +126225,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "蘇乙鎮衡",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -126402,7 +126402,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "渚乙斷海",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -126579,7 +126579,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "大庭照關",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -126756,7 +126756,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "羅穹斷心",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -126933,7 +126933,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "德殿太光",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -127110,7 +127110,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "蘇域開衡",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -127287,7 +127287,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "域宮馭心",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -127464,7 +127464,7 @@ const levels = [
             5
         ],
         "stars": 8.75,
-        "difficultyName": "蘇德",
+        "difficultyName": "太乙",
         "displayName": "大臺鎮星",
         "difficultyScore": 612,
         "singleRatio": 0.2963,
@@ -127641,7 +127641,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "羅城羅心",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -127818,7 +127818,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "大花照大",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -127995,7 +127995,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "天宮封大",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -128172,7 +128172,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "天翼開羅",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -128349,7 +128349,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "靈庭封域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -128526,7 +128526,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "翼羅羅域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -128703,7 +128703,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "庭城羅門",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -128880,7 +128880,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "玄關封念",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -129057,7 +129057,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "雲庭御影",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -129234,7 +129234,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "霄穹證影",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -129411,7 +129411,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "玄翼封界",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -129588,7 +129588,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "花門封羅",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -129765,7 +129765,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "霄壇封道",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -129942,7 +129942,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "混關羅星",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -130119,7 +130119,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "混殿觀羅",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -130296,7 +130296,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "乙花馭大",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -130473,7 +130473,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "聖花合衡",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -130650,7 +130650,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "尊壇封門",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -130827,7 +130827,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "乙大大羅",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -131004,7 +131004,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "聖穹鎮道",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -131181,7 +131181,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "域海御心",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -131358,7 +131358,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "混城大局",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -131535,7 +131535,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "渚城鎮域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -131712,7 +131712,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "太殿御大",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -131889,7 +131889,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "聖闕觀霄",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -132066,7 +132066,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "乙臺開道",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -132243,7 +132243,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "星穹續念",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -132420,7 +132420,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "太域斷羅",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -132597,7 +132597,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "太橋羅影",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -132774,7 +132774,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "玄海鎮羅",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -132951,7 +132951,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "渚羅續域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -133128,7 +133128,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "太庭馭羅",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -133305,7 +133305,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "霄臺羅道",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -133482,7 +133482,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "翼橋觀星",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -133659,7 +133659,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "霄海合域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -133836,7 +133836,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "岳城大域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -134013,7 +134013,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "岳庭斷大",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -134190,7 +134190,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "乙羅封光",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -134367,7 +134367,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "域壇羅霄",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -134544,7 +134544,7 @@ const levels = [
             9
         ],
         "stars": 9,
-        "difficultyName": "翼花",
+        "difficultyName": "大羅",
         "displayName": "羅花合關",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -134721,7 +134721,7 @@ const levels = [
             8
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "玄庭馭界",
         "difficultyScore": 576,
         "singleRatio": 0.358,
@@ -134898,7 +134898,7 @@ const levels = [
             8
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "聖海開局",
         "difficultyScore": 576,
         "singleRatio": 0.358,
@@ -135075,7 +135075,7 @@ const levels = [
             8
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "庭混解元",
         "difficultyScore": 576,
         "singleRatio": 0.358,
@@ -135252,7 +135252,7 @@ const levels = [
             8
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "太元封元",
         "difficultyScore": 576,
         "singleRatio": 0.358,
@@ -135429,7 +135429,7 @@ const levels = [
             9
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "聖庭馭元",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -135606,7 +135606,7 @@ const levels = [
             9
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "岳穹馭光",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -135783,7 +135783,7 @@ const levels = [
             9
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "仙門照混",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -135960,7 +135960,7 @@ const levels = [
             9
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "岳臺元道",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -136137,7 +136137,7 @@ const levels = [
             9
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "太城混心",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -136314,7 +136314,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "元關混域",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -136491,7 +136491,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "乙海衍元",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -136668,7 +136668,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "霄闕續光",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -136845,7 +136845,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "觀壇觀混",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -137022,7 +137022,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "尊臺證混",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -137199,7 +137199,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "大穹衍混",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -137376,7 +137376,7 @@ const levels = [
             4
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "尊闕斷域",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -137553,7 +137553,7 @@ const levels = [
             4
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "聖臺證念",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -137730,7 +137730,7 @@ const levels = [
             4
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "仙穹混影",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -137907,7 +137907,7 @@ const levels = [
             4
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "漢元混門",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -138084,7 +138084,7 @@ const levels = [
             4
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "岳元元心",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -138261,7 +138261,7 @@ const levels = [
             4
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "雲觀鎮混",
         "difficultyScore": 564,
         "singleRatio": 0.358,
@@ -138438,7 +138438,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "域城元念",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -138615,7 +138615,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "觀域合界",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -138792,7 +138792,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "霄門開霄",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -138969,7 +138969,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "渚觀混念",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -139146,7 +139146,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "乙觀照光",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -139323,7 +139323,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "渚門續關",
         "difficultyScore": 608,
         "singleRatio": 0.321,
@@ -139500,7 +139500,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "觀海混衡",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -139677,7 +139677,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "聖域元影",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -139854,7 +139854,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "天觀混元",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -140031,7 +140031,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "靈元混界",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -140208,7 +140208,7 @@ const levels = [
             7
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "太宮元關",
         "difficultyScore": 628,
         "singleRatio": 0.3086,
@@ -140385,7 +140385,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "漢壇續門",
         "difficultyScore": 568,
         "singleRatio": 0.321,
@@ -140562,7 +140562,7 @@ const levels = [
             9
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "靈關御混",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -140739,7 +140739,7 @@ const levels = [
             9
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "霄城混霄",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -140916,7 +140916,7 @@ const levels = [
             9
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "觀庭混光",
         "difficultyScore": 624,
         "singleRatio": 0.3086,
@@ -141093,7 +141093,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "渚海封影",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -141270,7 +141270,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "域混混星",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -141447,7 +141447,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "羅臺鎮影",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -141624,7 +141624,7 @@ const levels = [
             6
         ],
         "stars": 9.25,
-        "difficultyName": "觀海",
+        "difficultyName": "混元",
         "displayName": "渚域鎮局",
         "difficultyScore": 556,
         "singleRatio": 0.3333,
@@ -141801,7 +141801,7 @@ const levels = [
             2
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "太闕天域",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -141978,7 +141978,7 @@ const levels = [
             4
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "混尊衍尊",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -142155,7 +142155,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "元殿天門",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -142332,7 +142332,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "庭橋續霄",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -142509,7 +142509,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "靈門解光",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -142686,7 +142686,7 @@ const levels = [
             4
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "大執尊霄",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -142863,7 +142863,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "大城解尊",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -143040,7 +143040,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "星庭封海",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -143217,7 +143217,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "星城開心",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -143394,7 +143394,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "聖殿尊衡",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -143571,7 +143571,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "太關斷門",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -143748,7 +143748,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "漢門合影",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -143925,7 +143925,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "域門開界",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -144102,7 +144102,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "庭闕尊影",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -144279,7 +144279,7 @@ const levels = [
             2
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "破域尊光",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -144456,7 +144456,7 @@ const levels = [
             4
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "乙殿照天",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -144633,7 +144633,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "域尊斷天",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -144810,7 +144810,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "域臺合星",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -144987,7 +144987,7 @@ const levels = [
             2
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "渚宮封尊",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -145164,7 +145164,7 @@ const levels = [
             4
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "大殿觀衡",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -145341,7 +145341,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "渚臺斷星",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -145518,7 +145518,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "執壇天霄",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -145695,7 +145695,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "破關開尊",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -145872,7 +145872,7 @@ const levels = [
             2
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "尊破御界",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -146049,7 +146049,7 @@ const levels = [
             4
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "元臺天心",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -146226,7 +146226,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "岳殿封天",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -146403,7 +146403,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "域天尊星",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -146580,7 +146580,7 @@ const levels = [
             2
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "渚破尊心",
         "difficultyScore": 588,
         "singleRatio": 0.321,
@@ -146757,7 +146757,7 @@ const levels = [
             4
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "羅海封心",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -146934,7 +146934,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "乙闕照尊",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -147111,7 +147111,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "靈執御關",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -147288,7 +147288,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "尊穹尊門",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -147465,7 +147465,7 @@ const levels = [
             4
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "漢闕天關",
         "difficultyScore": 624,
         "singleRatio": 0.2963,
@@ -147642,7 +147642,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "乙庭天道",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -147819,7 +147819,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "破橋開天",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -147996,7 +147996,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "仙橋天念",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -148173,7 +148173,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "執關御道",
         "difficultyScore": 560,
         "singleRatio": 0.3457,
@@ -148350,7 +148350,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "庭域馭尊",
         "difficultyScore": 542,
         "singleRatio": 0.3457,
@@ -148527,7 +148527,7 @@ const levels = [
             1
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "岳域天星",
         "difficultyScore": 562,
         "singleRatio": 0.3333,
@@ -148704,7 +148704,7 @@ const levels = [
             6
         ],
         "stars": 9.5,
-        "difficultyName": "破執",
+        "difficultyName": "天尊",
         "displayName": "天城尊海",
         "difficultyScore": 598,
         "singleRatio": 0.2963,
@@ -148881,7 +148881,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "階照三星",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -149058,7 +149058,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "三昇化境",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -149235,7 +149235,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "道照熔界",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -149412,7 +149412,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "照界化星",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -149589,7 +149589,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "闕三破域",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -149766,7 +149766,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "源界鎮塵",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -149943,7 +149943,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "階梯登海",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -150120,7 +150120,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "帝壇三門",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -150297,7 +150297,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "源門登昇",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -150474,7 +150474,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "闕臺斬塵",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -150651,7 +150651,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "源壇證神",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -150828,7 +150828,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "照闕三穹",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -151005,7 +151005,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "劫域破三",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -151182,7 +151182,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "闕峰三殼",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -151359,7 +151359,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "門穹三霄",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -151536,7 +151536,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "劫三登門",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -151713,7 +151713,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "界橋斬穹",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -151890,7 +151890,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "階穹鎮穹",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -152067,7 +152067,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "階界開三",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -152244,7 +152244,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "門闕開昇",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -152421,7 +152421,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "橋闕昇門",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -152598,7 +152598,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "昇梯昇穹",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -152775,7 +152775,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "劫橋昇星",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -152952,7 +152952,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "橋壇越昇",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -153129,7 +153129,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "天峰昇霄",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -153306,7 +153306,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "天照破穹",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -153483,7 +153483,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "三海斬昇",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -153660,7 +153660,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "三梯越穹",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -153837,7 +153837,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "界梯化神",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -154014,7 +154014,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "劫門斬三",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -154191,7 +154191,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "橋梯化域",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -154368,7 +154368,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "源臺熔穹",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -154545,7 +154545,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "道界三昇",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -154722,7 +154722,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "階闕化海",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -154899,7 +154899,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "聖壇越神",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -155076,7 +155076,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "昇三破神",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -155253,7 +155253,7 @@ const levels = [
             7
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "源峰越三",
         "difficultyScore": 622,
         "singleRatio": 0.321,
@@ -155430,7 +155430,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "門三斬殼",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -155607,7 +155607,7 @@ const levels = [
             4
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "道三證三",
         "difficultyScore": 584,
         "singleRatio": 0.3333,
@@ -155784,7 +155784,7 @@ const levels = [
             1
         ],
         "stars": 9.6,
-        "difficultyName": "照界",
+        "difficultyName": "三昇",
         "displayName": "門照開殼",
         "difficultyScore": 584,
         "singleRatio": 0.3457,
@@ -155961,7 +155961,7 @@ const levels = [
             6
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "宙天裁星",
         "difficultyScore": 79,
         "singleRatio": 1,
@@ -156138,7 +156138,7 @@ const levels = [
             8
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "御關開王",
         "difficultyScore": 85,
         "singleRatio": 1,
@@ -156315,7 +156315,7 @@ const levels = [
             5
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "衡宮王序",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -156492,7 +156492,7 @@ const levels = [
             3
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "衡闕映海",
         "difficultyScore": 83,
         "singleRatio": 1,
@@ -156669,7 +156669,7 @@ const levels = [
             9
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "玄衡鎮王",
         "difficultyScore": 74,
         "singleRatio": 1,
@@ -156846,7 +156846,7 @@ const levels = [
             6
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "人神御空",
         "difficultyScore": 71,
         "singleRatio": 1,
@@ -157023,7 +157023,7 @@ const levels = [
             1
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "王域映念",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -157200,7 +157200,7 @@ const levels = [
             5
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "玄穹御序",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -157377,7 +157377,7 @@ const levels = [
             9
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "極門合天",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -157554,7 +157554,7 @@ const levels = [
             7
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "神衡王門",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -157731,7 +157731,7 @@ const levels = [
             7
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "玄王斷神",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -157908,7 +157908,7 @@ const levels = [
             7
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "帝域王星",
         "difficultyScore": 71,
         "singleRatio": 1,
@@ -158085,7 +158085,7 @@ const levels = [
             7
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "人宮裁神",
         "difficultyScore": 71,
         "singleRatio": 1,
@@ -158262,7 +158262,7 @@ const levels = [
             8
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "帝衡巡海",
         "difficultyScore": 85,
         "singleRatio": 1,
@@ -158439,7 +158439,7 @@ const levels = [
             5
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "御神啟王",
         "difficultyScore": 74,
         "singleRatio": 1,
@@ -158616,7 +158616,7 @@ const levels = [
             1
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "海宮裁衡",
         "difficultyScore": 79,
         "singleRatio": 1,
@@ -158793,7 +158793,7 @@ const levels = [
             6
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "星門定衡",
         "difficultyScore": 79,
         "singleRatio": 1,
@@ -158970,7 +158970,7 @@ const levels = [
             8
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "王壇定王",
         "difficultyScore": 85,
         "singleRatio": 1,
@@ -159147,7 +159147,7 @@ const levels = [
             5
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "御闕裁霄",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -159324,7 +159324,7 @@ const levels = [
             3
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "帝海定神",
         "difficultyScore": 83,
         "singleRatio": 1,
@@ -159501,7 +159501,7 @@ const levels = [
             9
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "聖天裁界",
         "difficultyScore": 74,
         "singleRatio": 1,
@@ -159678,7 +159678,7 @@ const levels = [
             6
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "宙關定界",
         "difficultyScore": 71,
         "singleRatio": 1,
@@ -159855,7 +159855,7 @@ const levels = [
             1
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "宇城照王",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -160032,7 +160032,7 @@ const levels = [
             5
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "極殿巡序",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -160209,7 +160209,7 @@ const levels = [
             9
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "天域鎮天",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -160386,7 +160386,7 @@ const levels = [
             7
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "人王王域",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -160563,7 +160563,7 @@ const levels = [
             7
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "星海裁天",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -160740,7 +160740,7 @@ const levels = [
             7
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "帝殿開空",
         "difficultyScore": 71,
         "singleRatio": 1,
@@ -160917,7 +160917,7 @@ const levels = [
             7
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "庭神開序",
         "difficultyScore": 71,
         "singleRatio": 1,
@@ -161094,7 +161094,7 @@ const levels = [
             8
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "宇域映光",
         "difficultyScore": 85,
         "singleRatio": 1,
@@ -161271,7 +161271,7 @@ const levels = [
             5
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "聖衡御王",
         "difficultyScore": 74,
         "singleRatio": 1,
@@ -161448,7 +161448,7 @@ const levels = [
             1
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "庭壇巡王",
         "difficultyScore": 79,
         "singleRatio": 1,
@@ -161625,7 +161625,7 @@ const levels = [
             6
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "宙王啟域",
         "difficultyScore": 79,
         "singleRatio": 1,
@@ -161802,7 +161802,7 @@ const levels = [
             8
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "天庭啟空",
         "difficultyScore": 85,
         "singleRatio": 1,
@@ -161979,7 +161979,7 @@ const levels = [
             5
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "神臺映神",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -162156,7 +162156,7 @@ const levels = [
             3
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "宙臺證空",
         "difficultyScore": 83,
         "singleRatio": 1,
@@ -162333,7 +162333,7 @@ const levels = [
             9
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "極庭啟天",
         "difficultyScore": 74,
         "singleRatio": 1,
@@ -162510,7 +162510,7 @@ const levels = [
             6
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "聖門定序",
         "difficultyScore": 71,
         "singleRatio": 1,
@@ -162687,7 +162687,7 @@ const levels = [
             1
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "宇海神念",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -162864,7 +162864,7 @@ const levels = [
             5
         ],
         "stars": 9.7,
-        "difficultyName": "天衡",
+        "difficultyName": "神王",
         "displayName": "海域王空",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -163041,7 +163041,7 @@ const levels = [
             3
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "宙門斷界",
         "difficultyScore": 105,
         "singleRatio": 1,
@@ -163218,7 +163218,7 @@ const levels = [
             4
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "聖關鎮宙",
         "difficultyScore": 95,
         "singleRatio": 1,
@@ -163395,7 +163395,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "天宙斷空",
         "difficultyScore": 83,
         "singleRatio": 1,
@@ -163572,7 +163572,7 @@ const levels = [
             7
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "帝臺帝域",
         "difficultyScore": 111,
         "singleRatio": 1,
@@ -163749,7 +163749,7 @@ const levels = [
             4
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "寰庭裁域",
         "difficultyScore": 84,
         "singleRatio": 1,
@@ -163926,7 +163926,7 @@ const levels = [
             1
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "人域定霄",
         "difficultyScore": 133,
         "singleRatio": 1,
@@ -164103,7 +164103,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "御域帝星",
         "difficultyScore": 72,
         "singleRatio": 1,
@@ -164280,7 +164280,7 @@ const levels = [
             7
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "庭三定宙",
         "difficultyScore": 83,
         "singleRatio": 1,
@@ -164457,7 +164457,7 @@ const levels = [
             6
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "穹關宙星",
         "difficultyScore": 74,
         "singleRatio": 1,
@@ -164634,7 +164634,7 @@ const levels = [
             8
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "翼宙御宙",
         "difficultyScore": 111,
         "singleRatio": 1,
@@ -164811,7 +164811,7 @@ const levels = [
             3
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "庭宙帝光",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -164988,7 +164988,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "寰三啟星",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -165165,7 +165165,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "寰宙裁序",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -165342,7 +165342,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "極宮合神",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -165519,7 +165519,7 @@ const levels = [
             3
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "穹翼定星",
         "difficultyScore": 105,
         "singleRatio": 1,
@@ -165696,7 +165696,7 @@ const levels = [
             4
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "王穹斷帝",
         "difficultyScore": 95,
         "singleRatio": 1,
@@ -165873,7 +165873,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "御壇帝空",
         "difficultyScore": 83,
         "singleRatio": 1,
@@ -166050,7 +166050,7 @@ const levels = [
             7
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "人穹巡天",
         "difficultyScore": 111,
         "singleRatio": 1,
@@ -166227,7 +166227,7 @@ const levels = [
             4
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "帝關定帝",
         "difficultyScore": 84,
         "singleRatio": 1,
@@ -166404,7 +166404,7 @@ const levels = [
             1
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "王門巡念",
         "difficultyScore": 133,
         "singleRatio": 1,
@@ -166581,7 +166581,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "穹門帝界",
         "difficultyScore": 72,
         "singleRatio": 1,
@@ -166758,7 +166758,7 @@ const levels = [
             7
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "御宙啟衡",
         "difficultyScore": 83,
         "singleRatio": 1,
@@ -166935,7 +166935,7 @@ const levels = [
             6
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "穹三證宙",
         "difficultyScore": 74,
         "singleRatio": 1,
@@ -167112,7 +167112,7 @@ const levels = [
             8
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "星三鎮神",
         "difficultyScore": 111,
         "singleRatio": 1,
@@ -167289,7 +167289,7 @@ const levels = [
             3
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "御門啟霄",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -167466,7 +167466,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "宙殿宙霄",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -167643,7 +167643,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "星宙合序",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -167820,7 +167820,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "宙帝宙空",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -167997,7 +167997,7 @@ const levels = [
             3
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "人門巡宙",
         "difficultyScore": 105,
         "singleRatio": 1,
@@ -168174,7 +168174,7 @@ const levels = [
             4
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "翼壇合帝",
         "difficultyScore": 95,
         "singleRatio": 1,
@@ -168351,7 +168351,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "三帝帝門",
         "difficultyScore": 83,
         "singleRatio": 1,
@@ -168528,7 +168528,7 @@ const levels = [
             7
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "翼城宙衡",
         "difficultyScore": 111,
         "singleRatio": 1,
@@ -168705,7 +168705,7 @@ const levels = [
             4
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "穹域裁宙",
         "difficultyScore": 84,
         "singleRatio": 1,
@@ -168882,7 +168882,7 @@ const levels = [
             1
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "宇帝鎮念",
         "difficultyScore": 133,
         "singleRatio": 1,
@@ -169059,7 +169059,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "帝宙照序",
         "difficultyScore": 72,
         "singleRatio": 1,
@@ -169236,7 +169236,7 @@ const levels = [
             7
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "三翼宙關",
         "difficultyScore": 83,
         "singleRatio": 1,
@@ -169413,7 +169413,7 @@ const levels = [
             6
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "道海鎮空",
         "difficultyScore": 74,
         "singleRatio": 1,
@@ -169590,7 +169590,7 @@ const levels = [
             8
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "極宙斷序",
         "difficultyScore": 111,
         "singleRatio": 1,
@@ -169767,7 +169767,7 @@ const levels = [
             3
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "帝城裁帝",
         "difficultyScore": 78,
         "singleRatio": 1,
@@ -169944,7 +169944,7 @@ const levels = [
             9
         ],
         "stars": 9.85,
-        "difficultyName": "三翼",
+        "difficultyName": "帝宙",
         "displayName": "天三宙天",
         "difficultyScore": 82,
         "singleRatio": 1,
@@ -170121,7 +170121,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "人海開人",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -170298,7 +170298,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "寰人定人",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -170475,7 +170475,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "宇宮裁門",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -170652,7 +170652,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "玄城人霄",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -170829,7 +170829,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "王城啟界",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -171006,7 +171006,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "海門開神",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -171183,7 +171183,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "御宮人序",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -171360,7 +171360,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "極臺啟序",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -171537,7 +171537,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "寰門映人",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -171714,7 +171714,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "極關裁空",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -171891,7 +171891,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "帝門神序",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -172068,7 +172068,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "寰域定域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -172245,7 +172245,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "極神御人",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -172422,7 +172422,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "宇闕神界",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -172599,7 +172599,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "帝宮映關",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -172776,7 +172776,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "人城斷人",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -172953,7 +172953,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "宙城人星",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -173130,7 +173130,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "宇壇御神",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -173307,7 +173307,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "天神人海",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -173484,7 +173484,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "王臺照人",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -173661,7 +173661,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "人關開域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -173838,7 +173838,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "宇人映域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -174015,7 +174015,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "宙庭人天",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -174192,7 +174192,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "極域神星",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -174369,7 +174369,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "御海人界",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -174546,7 +174546,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "寰城定天",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -174723,7 +174723,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "域闕神人",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -174900,7 +174900,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "王闕合海",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -175077,7 +175077,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "穹壇映天",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -175254,7 +175254,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "庭臺合空",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -175431,7 +175431,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "極壇鎮序",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -175608,7 +175608,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "寰關御天",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -175785,7 +175785,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "天人裁關",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -175962,7 +175962,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "宇關啟神",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -176139,7 +176139,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "寰穹裁光",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -176316,7 +176316,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "星人巡光",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -176493,7 +176493,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "庭關人關",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -176670,7 +176670,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "宇神人門",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -176847,7 +176847,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "帝神合光",
         "difficultyScore": 606,
         "singleRatio": 0.3086,
@@ -177024,7 +177024,7 @@ const levels = [
             9
         ],
         "stars": 10,
-        "difficultyName": "神域",
+        "difficultyName": "神人",
         "displayName": "御城神域",
         "difficultyScore": 606,
         "singleRatio": 0.3086,

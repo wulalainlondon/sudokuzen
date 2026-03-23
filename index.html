@@ -1849,7 +1849,7 @@
             { id: 'tier_破陣', name: '破陣先鋒', desc: '全通「破陣」', icon: '✂️' },
             { id: 'tier_鋒刃', name: '鋒芒畢露', desc: '全通「鋒刃」', icon: '🗡️' },
             { id: 'tier_空鏡', name: '空鏡無塵', desc: '全通「空鏡」', icon: '🪞' },
-            { id: 'tier_三翼', name: '三翼齊飛', desc: '全通「三翼」', icon: '🦅' },
+            { id: 'tier_三翼', name: '帝宙齊飛', desc: '全通「帝宙」', icon: '🦅' },
             { id: 'tier_劍魚', name: '劍魚獵人', desc: '全通「劍魚」', icon: '🐟' },
             { id: 'tier_荊棘', name: '荊棘穿行', desc: '全通「荊棘」', icon: '🌿' },
             { id: 'tier_深淵', name: '深淵凝視', desc: '全通「深淵」', icon: '🌑' },
@@ -1962,7 +1962,7 @@
                 '初心': 'tier_初心', '本源': 'tier_本源', '寂滅': 'tier_寂滅',
                 '編織': 'tier_編織', '隱流': 'tier_隱流', '天望': 'tier_天望',
                 '法印': 'tier_法印', '破陣': 'tier_破陣', '鋒刃': 'tier_鋒刃',
-                '空鏡': 'tier_空鏡', '三翼': 'tier_三翼', '劍魚': 'tier_劍魚',
+                '空鏡': 'tier_空鏡', '帝宙': 'tier_三翼', '劍魚': 'tier_劍魚',
                 '荊棘': 'tier_荊棘', '深淵': 'tier_深淵', '玄鏈': 'tier_玄鏈',
             };
             tierStats.forEach(t => {
@@ -3178,7 +3178,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.23-V7';
+        const APP_VERSION = '2026.03.23-V8';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
