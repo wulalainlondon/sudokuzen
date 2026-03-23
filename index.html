@@ -2084,7 +2084,9 @@
                 const isRead = !!read[key];
                 const hasPractice = Array.isArray(teach.practice) && teach.practice.length > 0;
                 return `
-                    <article class="library-card" data-star="${key}">
+                    <article class="library-card" data-star="${key}" role="button" tabindex="0"
+                        onclick="openTeachFromLibrary('${key}')"
+                        onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openTeachFromLibrary('${key}'); }">
                         <div class="library-card-head">
                             <span class="library-star">⭐ ${star}</span>
                             <div class="library-badges">
@@ -2095,7 +2097,7 @@
                         <h3 class="library-card-title">${teach.name}</h3>
                         <p class="library-card-subtitle">${teach.subtitle}</p>
                         <div class="library-card-key">${teach.technique || '-'}</div>
-                        <button class="library-open-btn" onclick="openTeachFromLibrary('${key}')">閱讀技巧</button>
+                        <button class="library-open-btn" onclick="event.stopPropagation(); openTeachFromLibrary('${key}')">閱讀技巧</button>
                     </article>
                 `;
             }).join('');
@@ -3176,7 +3178,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.23-V6';
+        const APP_VERSION = '2026.03.23-V7';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
