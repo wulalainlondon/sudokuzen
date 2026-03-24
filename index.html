@@ -31,8 +31,8 @@
             style="width: 100%; display: flex; justify-content: space-between; align-items: center; max-width: 400px; margin-bottom: 25px;">
             <h1 style="margin: 0; font-weight: 300; letter-spacing: 5px; font-family: 'Outfit';">SUDOKU ZEN</h1>
             <div style="display: flex; align-items: center; gap: 2px;">
-                <button id="library-btn" class="library-entry-btn" onclick="openLibraryOverlay()" title="技巧圖書館"
-                    aria-label="技巧圖書館">📚</button>
+                <button id="library-btn" class="library-entry-btn" onclick="openLibraryOverlay()" title="境界秘笈"
+                    aria-label="境界秘笈">📚</button>
                 <button id="stats-btn" onclick="openStatsModal()" title="個人統計與成就"
                     aria-label="個人統計"
                     style="font-size: 1.2rem; opacity: 0.45; background: none; border: none; cursor: pointer; padding: 5px; transition: all 0.3s;">
@@ -58,7 +58,7 @@
             <div class="tier-header">
                 <button class="tier-back-btn" onclick="backToStageMap()">← 返回</button>
                 <div class="tier-title" id="tier-title"></div>
-                <button class="teach-book-btn" id="tier-teach-btn" style="display:none;" title="技巧教學">📖</button>
+                <button class="teach-book-btn" id="tier-teach-btn" style="display:none;" title="境界秘笈">📖</button>
                 <div class="tier-progress-text" id="tier-progress-text"></div>
             </div>
             <div id="level-list"></div>
@@ -70,8 +70,8 @@
         <div class="library-page">
             <div class="library-header">
                 <button class="library-back-btn" onclick="closeLibraryOverlay()">← 返回</button>
-                <h2 class="library-title">技巧圖書館</h2>
-                <div class="library-subtitle">依星級由淺入深閱讀</div>
+                <h2 class="library-title">境界秘笈</h2>
+                <div class="library-subtitle">依境界由淺入深研讀</div>
             </div>
             <div class="library-list" id="library-list"></div>
         </div>
@@ -1333,9 +1333,9 @@
                 const waitingLevel = levels.find(l => l.id === d.levelId);
                 if (waitingLevel) {
                     const stageNodes = document.querySelectorAll('.stage-node');
-                    const tiers = getStarTiers();
-                    tiers.forEach((star, i) => {
-                        if (star === waitingLevel.stars && stageNodes[i]) {
+                    const tiers = getDifficultyTiers();
+                    tiers.forEach((tierName, i) => {
+                        if (tierName === waitingLevel.difficultyName && stageNodes[i]) {
                             stageNodes[i].classList.add('duo-waiting');
                         }
                     });
@@ -1916,10 +1916,19 @@
                 }
             }
 
-            const tierStarSet = [...new Set(mainLevels.map(l => l.stars))].sort((a, b) => a - b);
-            const tierStats = tierStarSet.map(star => {
-                const tierLevels = mainLevels.filter(l => l.stars === star);
-                const name = tierLevels.length > 0 ? tierLevels[0].difficultyName : `Stars ${star}`;
+            // 以大關名稱分組，避免同一大關跨多星級時統計被切碎
+            const tierOrder = [];
+            const tierMap = new Map();
+            mainLevels.forEach(level => {
+                const name = level.difficultyName || `Stars ${level.stars}`;
+                if (!tierMap.has(name)) {
+                    tierMap.set(name, []);
+                    tierOrder.push(name);
+                }
+                tierMap.get(name).push(level);
+            });
+            const tierStats = tierOrder.map(name => {
+                const tierLevels = tierMap.get(name) || [];
                 const tierCleared = tierLevels.filter(l => records[l.id]).length;
                 return { name, total: tierLevels.length, cleared: tierCleared };
             });
@@ -2065,9 +2074,9 @@
         function getLibraryItemsFromTeachData() {
             if (typeof TEACH_DATA === 'undefined') return [];
             return Object.entries(TEACH_DATA)
-                .map(([star, teach]) => ({ star: parseFloat(star), key: String(star), teach }))
-                .filter(item => Number.isFinite(item.star) && isTeachReadable(item.key))
-                .sort((a, b) => a.star - b.star);
+                .map(([book, teach]) => ({ book: parseFloat(book), key: String(book), teach }))
+                .filter(item => Number.isFinite(item.book) && isTeachReadable(item.key))
+                .sort((a, b) => a.book - b.book);
         }
 
         function renderLibraryCards() {
@@ -2076,11 +2085,11 @@
             const read = JSON.parse(localStorage.getItem('sudoku_teach_read') || '{}');
 
             if (!items.length) {
-                libraryListEl.innerHTML = '<div class="library-empty">目前沒有可閱讀的技巧內容</div>';
+                libraryListEl.innerHTML = '<div class="library-empty">目前沒有可研讀的秘笈內容</div>';
                 return;
             }
 
-            libraryListEl.innerHTML = items.map(({ star, key, teach }) => {
+            libraryListEl.innerHTML = items.map(({ book, key, teach }) => {
                 const isRead = !!read[key];
                 const hasPractice = Array.isArray(teach.practice) && teach.practice.length > 0;
                 return `
@@ -2088,7 +2097,7 @@
                         onclick="openTeachFromLibrary('${key}')"
                         onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openTeachFromLibrary('${key}'); }">
                         <div class="library-card-head">
-                            <span class="library-star">⭐ ${star}</span>
+                            <span class="library-star">秘笈 ${book}</span>
                             <div class="library-badges">
                                 ${isRead ? '<span class="library-badge read">已讀</span>' : ''}
                                 ${hasPractice ? '<span class="library-badge practice">可練習</span>' : ''}
@@ -2097,7 +2106,7 @@
                         <h3 class="library-card-title">${teach.name}</h3>
                         <p class="library-card-subtitle">${teach.subtitle}</p>
                         <div class="library-card-key">${teach.technique || '-'}</div>
-                        <button class="library-open-btn" onclick="event.stopPropagation(); openTeachFromLibrary('${key}')">閱讀技巧</button>
+                        <button class="library-open-btn" onclick="event.stopPropagation(); openTeachFromLibrary('${key}')">研讀秘笈</button>
                     </article>
                 `;
             }).join('');
@@ -2244,7 +2253,7 @@
             }
         }
 
-        let currentTab = 0;
+        let currentTab = null;
         let pendingLevelId = null;
 
         const preLevelModalEl = document.getElementById('pre-level-modal');
@@ -2695,10 +2704,14 @@
             practiceState = null;
         }
 
-        function showPreLevelModal(levelId) {
+        function showPreLevelModal(levelId, ignoreTierLock = false) {
             pendingLevelId = levelId;
             const level = levels.find(l => l.id === levelId);
             if (!level) return;
+            if (!ignoreTierLock && !canAccessLevel(level)) {
+                showFeedback(getTierUnlockMessage(level.difficultyName), 'error');
+                return;
+            }
 
             // Set level name
             preLevelNameEl.textContent = level.displayName;
@@ -2852,39 +2865,137 @@
             if (firebaseReady) startDuoGlowListener();
         }
 
-        function getStarTiers() {
-            const tierSet = new Set(levels.filter(l => !l.hidden).map(l => l.stars));
-            return [...tierSet].sort((a, b) => a - b);
+        function getDifficultyTiers() {
+            const REALM_ORDER = [
+                '初心', '鍛骨', '虛空', '無我', '破陣', '空鏡', '星潮', '玄鏈',
+                '本源', '寂滅',
+                '化神', '返虛', '合道', '渡劫', '真仙', '二昇', '玄仙', '太乙',
+                '大羅', '混元', '天尊', '三昇', '神王', '帝宙', '神人'
+            ];
+            const present = new Set(levels.filter(l => !l.hidden).map(l => l.difficultyName || '未命名境界'));
+            const ordered = REALM_ORDER.filter(name => present.has(name));
+            const extras = [...present].filter(name => !REALM_ORDER.includes(name));
+            return ordered.concat(extras);
         }
 
-        function getTierName(star) {
-            const lv = levels.find(l => l.stars === star);
-            return lv ? lv.difficultyName : `Stars ${star}`;
+        const REALM_TEACH_KEY = {
+            '初心': 1,
+            '鍛骨': 2,
+            '虛空': 3,
+            '無我': 4,
+            '破陣': 5,
+            '空鏡': 6,
+            '星潮': 7,
+            '玄鏈': 8,
+            '本源': 9,
+            '寂滅': 10,
+            '化神': 11,
+            '返虛': 12,
+            '合道': 13,
+            '渡劫': 14,
+            '真仙': 15,
+            '二昇': 16,
+            '玄仙': 17,
+            '太乙': 18,
+            '大羅': 19,
+            '混元': 20,
+            '天尊': 21,
+            '三昇': 22,
+            '神王': 23,
+            '帝宙': 24,
+            '神人': 25
+        };
+
+        function getTierRepresentativeStar(tierName) {
+            if (Object.prototype.hasOwnProperty.call(REALM_TEACH_KEY, tierName)) {
+                return REALM_TEACH_KEY[tierName];
+            }
+            const lv = levels.find(l => !l.hidden && l.difficultyName === tierName);
+            return lv ? lv.stars : null;
+        }
+
+        function getRealmUnlockState() {
+            const tiers = getDifficultyTiers();
+            const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+            const stats = tiers.map(name => {
+                const tierLevels = levels.filter(l => l.difficultyName === name && !l.hidden);
+                const cleared = tierLevels.filter(l => records[l.id]).length;
+                const total = tierLevels.length;
+                return {
+                    name,
+                    cleared,
+                    total,
+                    isCleared: total > 0 && cleared >= total
+                };
+            });
+
+            let highestConsecutiveCleared = -1;
+            for (let i = 0; i < stats.length; i++) {
+                if (stats[i].isCleared) {
+                    highestConsecutiveCleared = i;
+                } else {
+                    break;
+                }
+            }
+
+            const currentIndex = Math.min(highestConsecutiveCleared + 1, Math.max(0, stats.length - 1));
+            const unlockedMaxIndex = Math.min(currentIndex + 1, Math.max(0, stats.length - 1)); // 當前境界 + 下一境界
+            const unlockedTiers = new Set(stats.slice(0, unlockedMaxIndex + 1).map(s => s.name));
+
+            return { tiers, stats, unlockedTiers };
+        }
+
+        function getTierUnlockMessage(tierName, unlockState = null) {
+            const state = unlockState || getRealmUnlockState();
+            if (state.unlockedTiers.has(tierName)) return '';
+            const idx = state.tiers.indexOf(tierName);
+            if (idx <= 0) return '境界尚未達成，暫時無法挑戰。';
+            const prev = state.stats[idx - 1];
+            return `需先全通「${prev.name}」(${prev.cleared}/${prev.total}) 才能挑戰後續境界`;
+        }
+
+        function canAccessLevel(level, unlockState = null) {
+            if (!level || level.hidden) return false;
+            const state = unlockState || getRealmUnlockState();
+            return state.unlockedTiers.has(level.difficultyName);
+        }
+
+        function getTierName(tierName) {
+            return tierName;
         }
 
         function renderStageMap() {
             const map = document.getElementById('stage-map');
             const recordsKey = isSpeedrunMode ? 'sudoku_speed_records' : 'sudoku_records';
             const records = JSON.parse(localStorage.getItem(recordsKey) || '{}');
-            const tiers = getStarTiers();
+            const tiers = getDifficultyTiers();
+            const unlockState = getRealmUnlockState();
             map.innerHTML = '';
 
-            tiers.forEach(star => {
-                const tierLevels = levels.filter(l => l.stars === star && !l.hidden);
+            tiers.forEach(tierName => {
+                const tierLevels = levels.filter(l => l.difficultyName === tierName && !l.hidden);
                 const total = tierLevels.length;
                 const cleared = tierLevels.filter(l => records[l.id]).length;
                 const pct = total > 0 ? (cleared / total) * 100 : 0;
                 const isCleared = cleared === total && total > 0;
                 const isPartial = cleared > 0 && !isCleared;
+                const isLocked = !unlockState.unlockedTiers.has(tierName);
+                const lockHint = getTierUnlockMessage(tierName, unlockState);
 
                 const node = document.createElement('div');
-                node.className = 'stage-node' + (isCleared ? ' cleared' : '') + (isPartial ? ' partial' : '');
-                node.onclick = () => enterTier(star);
+                node.className = 'stage-node' + (isCleared ? ' cleared' : '') + (isPartial ? ' partial' : '') + (isLocked ? ' locked' : '');
+                node.onclick = () => {
+                    if (isLocked) {
+                        showFeedback(lockHint, 'error');
+                        return;
+                    }
+                    enterTier(tierName);
+                };
                 node.innerHTML = `
-                    <div class="stage-dot">${isCleared ? '✓' : ''}</div>
+                    <div class="stage-dot">${isLocked ? '🔒' : (isCleared ? '✓' : '')}</div>
                     <div class="stage-info">
-                        <div class="stage-name">${getTierName(star)}</div>
-                        <div class="stage-progress">${cleared === 0 ? '尚未挑戰' : isCleared ? '已全通' : '進行中'}</div>
+                        <div class="stage-name">${getTierName(tierName)}</div>
+                        <div class="stage-progress">${isLocked ? lockHint : (cleared === 0 ? '尚未挑戰' : isCleared ? '已全通' : '進行中')}</div>
                     </div>
                     <div class="stage-bar-wrap"><div class="stage-bar-fill" style="width:${pct}%"></div></div>
                     <div class="stage-count">${cleared}/${total}</div>
@@ -2893,24 +3004,30 @@
             });
         }
 
-        function enterTier(star) {
-            currentTab = star;
+        function enterTier(tierName) {
+            const unlockState = getRealmUnlockState();
+            if (!unlockState.unlockedTiers.has(tierName)) {
+                showFeedback(getTierUnlockMessage(tierName, unlockState), 'error');
+                return;
+            }
+            currentTab = tierName;
             document.getElementById('stage-view').style.display = 'none';
             document.getElementById('tier-view').style.display = 'flex';
 
             const recordsKey = isSpeedrunMode ? 'sudoku_speed_records' : 'sudoku_records';
             const records = JSON.parse(localStorage.getItem(recordsKey) || '{}');
-            const tierLevels = levels.filter(l => l.stars === star && !l.hidden);
+            const tierLevels = levels.filter(l => l.difficultyName === tierName && !l.hidden);
             const cleared = tierLevels.filter(l => records[l.id]).length;
 
-            document.getElementById('tier-title').textContent = getTierName(star);
+            document.getElementById('tier-title').textContent = getTierName(tierName);
             document.getElementById('tier-progress-text').textContent = `${cleared}/${tierLevels.length}`;
 
             // Show/hide teach book button
             const bookBtn = document.getElementById('tier-teach-btn');
-            if (typeof TEACH_DATA !== 'undefined' && TEACH_DATA[star]) {
+            const representativeStar = getTierRepresentativeStar(tierName);
+            if (typeof TEACH_DATA !== 'undefined' && representativeStar !== null && TEACH_DATA[representativeStar]) {
                 bookBtn.style.display = '';
-                bookBtn.onclick = () => showTeachModal(star);
+                bookBtn.onclick = () => showTeachModal(representativeStar);
             } else {
                 bookBtn.style.display = 'none';
             }
@@ -2918,8 +3035,8 @@
             renderLevelGrid();
 
             // Auto-show teach modal on first visit for stars >= 3
-            if (shouldShowTeach(star)) {
-                setTimeout(() => showTeachModal(star), 350);
+            if (representativeStar !== null && representativeStar >= 3 && shouldShowTeach(representativeStar)) {
+                setTimeout(() => showTeachModal(representativeStar), 350);
             }
         }
 
@@ -2940,7 +3057,7 @@
         }
 
         function getFilteredLevels() {
-            return levels.filter(l => l.stars === currentTab);
+            return levels.filter(l => l.difficultyName === currentTab);
         }
 
         function syncLevelCardSize() {
@@ -2955,11 +3072,13 @@
             const recordsKey = isSpeedrunMode ? 'sudoku_speed_records' : 'sudoku_records';
             const records = JSON.parse(localStorage.getItem(recordsKey) || '{}');
             const list = document.getElementById('level-list');
+            const unlockState = getRealmUnlockState();
             list.innerHTML = '';
 
             const filtered = getFilteredLevels().filter(l => !l.hidden);
             filtered.forEach((l, index) => {
                 const record = records[l.id];
+                const isLocked = !canAccessLevel(l, unlockState);
                 // 向下相容：處理舊的數字格式
                 let bestTime = null;
                 let bestStars = 0;
@@ -2978,8 +3097,14 @@
                 }
 
                 const item = document.createElement('div');
-                item.className = `level-item ${bestTime !== null ? 'completed' : ''}`;
-                item.onclick = () => showPreLevelModal(l.id);
+                item.className = `level-item ${bestTime !== null ? 'completed' : ''}${isLocked ? ' locked' : ''}`;
+                item.onclick = () => {
+                    if (isLocked) {
+                        showFeedback(getTierUnlockMessage(l.difficultyName, unlockState), 'error');
+                        return;
+                    }
+                    showPreLevelModal(l.id);
+                };
 
                 const hasRecord = bestTime !== null;
                 const timeStr = hasRecord
@@ -2998,11 +3123,19 @@
                         : '☆☆☆';
                 }
 
-                item.innerHTML = `
-                    <div class="level-num">${l.displayName}</div>
-                    <div class="${starsClass}">${starsText}</div>
-                    <div class="${statsClass}">${timeStr}</div>
-                `;
+                if (isLocked) {
+                    item.innerHTML = `
+                        <div class="level-num">${l.displayName}</div>
+                        <div class="level-lock">🔒 境界未達</div>
+                        <div class="level-lock-hint">完成前一境界後解鎖</div>
+                    `;
+                } else {
+                    item.innerHTML = `
+                        <div class="level-num">${l.displayName}</div>
+                        <div class="${starsClass}">${starsText}</div>
+                        <div class="${statsClass}">${timeStr}</div>
+                    `;
+                }
                 list.appendChild(item);
             });
             requestAnimationFrame(syncLevelCardSize);
@@ -3030,14 +3163,16 @@
         }
 
         function startRandomLevel() {
-            const pool = getFilteredLevels();
+            const unlockState = getRealmUnlockState();
+            const pool = getFilteredLevels().filter(l => canAccessLevel(l, unlockState));
             if (!pool.length) return;
             const idx = Math.floor(Math.random() * pool.length);
             showPreLevelModal(pool[idx].id);
         }
 
         function startDailyRandom() {
-            const pool = getFilteredLevels();
+            const unlockState = getRealmUnlockState();
+            const pool = getFilteredLevels().filter(l => canAccessLevel(l, unlockState));
             if (!pool.length) return;
             const now = new Date();
             const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-tab${currentTab}`;
@@ -3067,18 +3202,15 @@
             }
 
             const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
-            // 過濾出尚未通關的關卡
-            const unplayedPool = midPoolLevels.filter(l => !records[l.id]);
-
-            let pool = unplayedPool;
-            if (!unplayedPool.length) {
-                // 防呆：如果題庫全刷完了，就退回從全部裡面抽，並給予鼓勵
-                pool = midPoolLevels;
-                showFeedback('太厲害了！您已通關隨機題庫所有關卡，為您隨機抽取一題挑戰！', 'success');
+            // 今日隨機改為固定出題：
+            // 1) 優先給題庫中第一個尚未通關關卡
+            // 2) 若全數通關，固定給題庫第一關
+            const next = midPoolLevels.find(l => !records[l.id]) || midPoolLevels[0];
+            if (!next) return;
+            if (records[next.id]) {
+                showFeedback('今日題庫已全通，已為你開啟固定挑戰題。', 'success');
             }
-
-            const idx = Math.floor(Math.random() * pool.length);
-            showPreLevelModal(pool[idx].id);
+            showPreLevelModal(next.id, true);
         }
 
         function selectCell(idx) {
@@ -3178,7 +3310,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.23-V8';
+        const APP_VERSION = '2026.03.24-V1';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
