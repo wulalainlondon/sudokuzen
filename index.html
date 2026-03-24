@@ -1407,6 +1407,8 @@
         }
 
         function initGame(levelId = 1, forceReset = false, playWithGhost = false, ghostData = null) {
+            // Safety: never keep library overlay when entering actual gameplay
+            closeLibraryOverlay();
             currentLevel = levels.find(l => l.id === levelId) || levels[0];
             closeReplayModal();
             localStorage.setItem('sudoku_last_level', String(currentLevel.id));
@@ -1840,20 +1842,30 @@
             { id: 'speed_1min', name: '光速通關', desc: '1 分鐘內通關', icon: '💨' },
             { id: 'tier_any', name: '悟道者', desc: '全通任一難度分類', icon: '🪷' },
             { id: 'tier_初心', name: '初心圓滿', desc: '全通「初心」', icon: '🧘' },
+            { id: 'tier_鍛骨', name: '鍛骨初成', desc: '全通「鍛骨」', icon: '🦴' },
+            { id: 'tier_虛空', name: '虛空凝意', desc: '全通「虛空」', icon: '🌌' },
+            { id: 'tier_無我', name: '無我通明', desc: '全通「無我」', icon: '🫧' },
+            { id: 'tier_破陣', name: '破陣先鋒', desc: '全通「破陣」', icon: '✂️' },
+            { id: 'tier_空鏡', name: '空鏡無塵', desc: '全通「空鏡」', icon: '🪞' },
+            { id: 'tier_星潮', name: '星潮湧動', desc: '全通「星潮」', icon: '🌠' },
+            { id: 'tier_玄鏈', name: '鏈術宗師', desc: '全通「玄鏈」', icon: '🔗' },
             { id: 'tier_本源', name: '本源歸真', desc: '全通「本源」', icon: '🌀' },
             { id: 'tier_寂滅', name: '寂滅突破', desc: '全通「寂滅」', icon: '🕳️' },
-            { id: 'tier_編織', name: '織網成陣', desc: '全通「編織」', icon: '🕸️' },
-            { id: 'tier_隱流', name: '暗流湧動', desc: '全通「隱流」', icon: '🌊' },
-            { id: 'tier_天望', name: '登臨絕頂', desc: '全通「天望」', icon: '🏔️' },
-            { id: 'tier_法印', name: '印證之道', desc: '全通「法印」', icon: '🔮' },
-            { id: 'tier_破陣', name: '破陣先鋒', desc: '全通「破陣」', icon: '✂️' },
-            { id: 'tier_鋒刃', name: '鋒芒畢露', desc: '全通「鋒刃」', icon: '🗡️' },
-            { id: 'tier_空鏡', name: '空鏡無塵', desc: '全通「空鏡」', icon: '🪞' },
-            { id: 'tier_三翼', name: '帝宙齊飛', desc: '全通「帝宙」', icon: '🦅' },
-            { id: 'tier_劍魚', name: '劍魚獵人', desc: '全通「劍魚」', icon: '🐟' },
-            { id: 'tier_荊棘', name: '荊棘穿行', desc: '全通「荊棘」', icon: '🌿' },
-            { id: 'tier_深淵', name: '深淵凝視', desc: '全通「深淵」', icon: '🌑' },
-            { id: 'tier_玄鏈', name: '鏈術宗師', desc: '全通「玄鏈」', icon: '🔗' },
+            { id: 'tier_化神', name: '化神顯聖', desc: '全通「化神」', icon: '🔥' },
+            { id: 'tier_返虛', name: '返虛守一', desc: '全通「返虛」', icon: '🌫️' },
+            { id: 'tier_合道', name: '合道同源', desc: '全通「合道」', icon: '☯️' },
+            { id: 'tier_渡劫', name: '渡劫無懼', desc: '全通「渡劫」', icon: '⛈️' },
+            { id: 'tier_真仙', name: '真仙問世', desc: '全通「真仙」', icon: '🪽' },
+            { id: 'tier_二昇', name: '二昇破關', desc: '全通「二昇」', icon: '🪜' },
+            { id: 'tier_玄仙', name: '玄仙立極', desc: '全通「玄仙」', icon: '✨' },
+            { id: 'tier_太乙', name: '太乙歸元', desc: '全通「太乙」', icon: '🌞' },
+            { id: 'tier_大羅', name: '大羅無量', desc: '全通「大羅」', icon: '🜂' },
+            { id: 'tier_混元', name: '混元一炁', desc: '全通「混元」', icon: '🌊' },
+            { id: 'tier_天尊', name: '天尊鎮界', desc: '全通「天尊」', icon: '👑' },
+            { id: 'tier_三昇', name: '三昇凌霄', desc: '全通「三昇」', icon: '🚀' },
+            { id: 'tier_神王', name: '神王臨世', desc: '全通「神王」', icon: '⚔️' },
+            { id: 'tier_帝宙', name: '帝宙齊天', desc: '全通「帝宙」', icon: '🦅' },
+            { id: 'tier_神人', name: '神人無雙', desc: '全通「神人」', icon: '🌟' },
             { id: 'speedrun_first', name: '競速初體驗', desc: '競速模式通關', icon: '🏎️' },
             { id: 'ghost_win', name: '鬼影殺手', desc: '幽靈模式下通關', icon: '👻' },
         ];
@@ -1968,11 +1980,31 @@
 
             // Per-tier full clear achievements
             const tierAchievementMap = {
-                '初心': 'tier_初心', '本源': 'tier_本源', '寂滅': 'tier_寂滅',
-                '編織': 'tier_編織', '隱流': 'tier_隱流', '天望': 'tier_天望',
-                '法印': 'tier_法印', '破陣': 'tier_破陣', '鋒刃': 'tier_鋒刃',
-                '空鏡': 'tier_空鏡', '帝宙': 'tier_三翼', '劍魚': 'tier_劍魚',
-                '荊棘': 'tier_荊棘', '深淵': 'tier_深淵', '玄鏈': 'tier_玄鏈',
+                '初心': 'tier_初心',
+                '鍛骨': 'tier_鍛骨',
+                '虛空': 'tier_虛空',
+                '無我': 'tier_無我',
+                '破陣': 'tier_破陣',
+                '空鏡': 'tier_空鏡',
+                '星潮': 'tier_星潮',
+                '玄鏈': 'tier_玄鏈',
+                '本源': 'tier_本源',
+                '寂滅': 'tier_寂滅',
+                '化神': 'tier_化神',
+                '返虛': 'tier_返虛',
+                '合道': 'tier_合道',
+                '渡劫': 'tier_渡劫',
+                '真仙': 'tier_真仙',
+                '二昇': 'tier_二昇',
+                '玄仙': 'tier_玄仙',
+                '太乙': 'tier_太乙',
+                '大羅': 'tier_大羅',
+                '混元': 'tier_混元',
+                '天尊': 'tier_天尊',
+                '三昇': 'tier_三昇',
+                '神王': 'tier_神王',
+                '帝宙': 'tier_帝宙',
+                '神人': 'tier_神人',
             };
             tierStats.forEach(t => {
                 if (t.total > 0 && t.cleared >= t.total && tierAchievementMap[t.name]) {
@@ -2460,6 +2492,8 @@
                 hideTeachModal(false);
                 return;
             }
+            // Practice should not keep the library overlay mounted behind modals
+            closeLibraryOverlay();
             // Save ref before hideTeachModal clears it
             const td = teachData;
             // Find which stars this teachData belongs to
@@ -2705,6 +2739,7 @@
         }
 
         function showPreLevelModal(levelId, ignoreTierLock = false) {
+            closeLibraryOverlay();
             pendingLevelId = levelId;
             const level = levels.find(l => l.id === levelId);
             if (!level) return;
@@ -2777,6 +2812,8 @@
         function startLevelFromModal(forceReset = false, playWithGhost = false, ghostData = null) {
             if (pendingLevelId === null) return;
             const levelId = pendingLevelId;
+            // Safety: ensure overlay is closed before launching level
+            closeLibraryOverlay();
             hidePreLevelModal();
             document.getElementById('level-screen').style.display = 'none';
             initGame(levelId, forceReset, playWithGhost, ghostData);
@@ -3005,6 +3042,7 @@
         }
 
         function enterTier(tierName) {
+            closeLibraryOverlay();
             const unlockState = getRealmUnlockState();
             if (!unlockState.unlockedTiers.has(tierName)) {
                 showFeedback(getTierUnlockMessage(tierName, unlockState), 'error');
@@ -3310,7 +3348,7 @@
         const savedTheme = localStorage.getItem('sudoku_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
-        const APP_VERSION = '2026.03.24-V1';
+        const APP_VERSION = '2026.03.24-V2';
         document.getElementById('version-badge').textContent = `v${APP_VERSION}`;
 
         function enforceAppVersion() {
