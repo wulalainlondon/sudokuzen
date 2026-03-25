@@ -1219,7 +1219,7 @@ export function bootLegacyRuntime(appVersion: string): void {
             gridEl.innerHTML = '';
             cellsData.forEach((data, i) => {
                 const cell = document.createElement('div');
-                cell.className = `cell ${data.fixed ? 'fixed' : ''} ${data.isError ? 'error' : ''}`;
+                cell.className = `cell ${data.fixed ? 'is-fixed' : ''} ${data.isError ? 'error' : ''}`;
                 updateCellDisplay(cell, data);
                 // Use pointerdown for immediate selection; aligns timing with numpad input.
                 cell.addEventListener('pointerdown', (ev) => {

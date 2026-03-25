@@ -277,7 +277,7 @@ header h1 {
     animation: shake 0.4s ease;
 }
 
-.cell.fixed {
+.cell.is-fixed {
     color: var(--text-main);
     font-weight: 600;
     z-index: 2;
