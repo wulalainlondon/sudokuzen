@@ -1,16 +1,16 @@
 /**
- * 數獨技巧教學資料 — 秘笈 1 ~ 25
- * 每個 key 是秘笈序號（1-25），由淺入深
+ * 數獨技巧教學資料 — 秘笈 1 ~ 40
+ * 每個 key 是秘笈序號（1-40），由淺入深
  */
 const TEACH_DATA = {
   "1": {
     "technique": "naked_single",
     "name": "啟蒙",
-    "subtitle": "一眼見真，先學裸單",
+    "subtitle": "先掃裸單，建立節奏",
     "explanation": [
-      "「裸單」是最基礎也最重要的技巧：某格只剩一個候選數時，就可以直接填入。",
-      "判斷方式很簡單：看同一行、同一列、同一宮已出現的數字，排除後只剩一個答案。",
-      "新手最重要的習慣是先做完整掃描，再下筆。"
+      "裸單的核心很直接：某格候選只剩一個數字時，該格立即可填。",
+      "判斷流程固定為同列、同行、同宮排除，最後留下唯一值。",
+      "把裸單當成每回合起手式，能建立穩定解題節奏。"
     ],
     "example": {
       "board": [
@@ -186,9 +186,20 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察 R1C3：同列、同行、同宮排除後，只剩數字 4。",
+          "text": "第 1 步（行）：只看第 1 行，這一排只缺一格，R1C3 是這排最後候選。",
           "focusCells": [
             2
+          ],
+          "visibleCells": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
           ],
           "highlightDigits": {
             "2": [
@@ -198,9 +209,20 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "候選只剩一個，就是裸單，直接填入 R1C3=4。",
+          "text": "第 2 步（列）：再看第 3 列，R1C3 在同列限制下仍只剩數字 4。",
           "focusCells": [
             2
+          ],
+          "visibleCells": [
+            2,
+            11,
+            20,
+            29,
+            38,
+            47,
+            56,
+            65,
+            74
           ],
           "highlightDigits": {
             "2": [
@@ -210,11 +232,26 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "新手解題流程：每次先全盤掃一輪裸單，再進下一步。",
+          "text": "第 3 步（宮）：最後看左上宮（3x3），行、列、宮三個規則一致，所以 R1C3=4。",
           "focusCells": [
             2
           ],
-          "highlightDigits": {},
+          "visibleCells": [
+            0,
+            1,
+            2,
+            9,
+            10,
+            11,
+            18,
+            19,
+            20
+          ],
+          "highlightDigits": {
+            "2": [
+              4
+            ]
+          },
           "eliminateCells": []
         }
       ]
@@ -224,11 +261,11 @@ const TEACH_DATA = {
   "2": {
     "technique": "hidden_single",
     "name": "觀照",
-    "subtitle": "候選統計，找到隱單",
+    "subtitle": "統計位置，鎖定隱單",
     "explanation": [
-      "「隱單」不是看某格只剩一個，而是看某個數字在單位中只剩一個位置可放。",
-      "也就是：格子候選可能很多，但目標數字在該行/列/宮只出現一次。",
-      "它是新手進入候選推理的關鍵一步。"
+      "隱單不是看格子剩幾個候選，而是看某個數字只剩一個落點。",
+      "即使該格還有多個候選，只要目標數在單位內只出現一次，就可確定。",
+      "這一步能把你從單格觀察，推進到數字分布觀察。"
     ],
     "example": {
       "board": [
@@ -446,7 +483,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察第 1 行，先不要看哪格最少，而是統計數字出現位置。",
+          "text": "觀察第 1 行：先不比哪格候選最少，先統計每個數字的可落點。",
           "focusCells": [
             0,
             1,
@@ -462,9 +499,20 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "數字 3 只出現在 R1C8 一格（其他格候選都沒有 3），這就是隱單。",
+          "text": "判定位置唯一：數字 3 只出現在 R1C8（其餘格無 3），這就是隱單。",
           "focusCells": [
             7
+          ],
+          "warnDigit": 3,
+          "warnCells": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            8
           ],
           "highlightDigits": {
             "7": [
@@ -474,7 +522,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "因此可直接填入 R1C8=3。重點：隱單是「某數字只剩一個位置」，不是「某格只剩一個數」。",
+          "text": "因此可直接填入 R1C8=3。重點是「數字唯一位置」，不是「格子唯一候選」。",
           "focusCells": [
             7
           ],
@@ -492,11 +540,11 @@ const TEACH_DATA = {
   "3": {
     "technique": "locked_candidates",
     "name": "封鎖",
-    "subtitle": "宮行互鎖，候選外清",
+    "subtitle": "宮列互鎖，外圍刪減",
     "explanation": [
-      "鎖定候選（Pointing/Claiming）利用「宮」與「行/列」的交集來消去候選。",
-      "若某數字在同一宮內只落在同一行（或列），那該行（或列）宮外位置可消去此數字。",
-      "這是從單格思考跨到區域思考的第一步。"
+      "鎖定候選利用宮與行列交集，做跨區域的候選刪減。",
+      "若某數字在同一宮只落在同一行（或列），該行（或列）宮外就能刪掉此數。",
+      "它是從「看單格」升級到「看區域結構」的重要轉折。"
     ],
     "example": {
       "board": [
@@ -703,7 +751,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察左上宮，數字 5 只出現在第一行（R1C1、R1C2、R1C3）。",
+          "text": "觀察左上宮：數字 5 只落在第一行（R1C1、R1C2、R1C3）。",
           "focusCells": [
             0,
             1,
@@ -723,7 +771,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "因為該宮的 5 必在第一行，故第一行宮外格子都不能再放 5。",
+          "text": "判定互鎖成立：既然該宮的 5 必在第一行，第一行宮外格就不可再放 5。",
           "focusCells": [
             0,
             1,
@@ -742,7 +790,7 @@ const TEACH_DATA = {
           ]
         },
         {
-          "text": "完成一次鎖定候選消去後，常會連鎖產生單值。",
+          "text": "完成外圍刪減後，常會立刻帶出裸單或隱單的連鎖機會。",
           "focusCells": [
             3,
             4
@@ -756,11 +804,11 @@ const TEACH_DATA = {
   "4": {
     "technique": "naked_pair",
     "name": "雙契",
-    "subtitle": "兩格同對，旁格清除",
+    "subtitle": "同對成形，旁格排除",
     "explanation": [
-      "顯性數對指同一單位內兩格都只含同樣兩個候選數。",
-      "這兩數必由該兩格分配，因此同單位其他格可消去這兩數。",
-      "它是中階消去中最常見、最好用的骨幹技巧。"
+      "顯性數對是同一單位內兩格都只剩同一組兩候選。",
+      "這兩數必由那兩格分配，其他格自然不能再保留這兩數。",
+      "它是最常用的批次刪減技巧之一，效率很高。"
     ],
     "example": {
       "board": [
@@ -957,7 +1005,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "第 1 行中 R1C1 與 R1C2 都是 {2,7}，形成顯性數對。",
+          "text": "觀察第 1 行：R1C1 與 R1C2 皆為 {2,7}，形成顯性數對。",
           "focusCells": [
             0,
             1
@@ -975,7 +1023,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "因此第 1 行其他格不可能再放 2 或 7。",
+          "text": "判定成立後，同列其餘格都不能再保留 2 或 7。",
           "focusCells": [
             0,
             1
@@ -1001,7 +1049,7 @@ const TEACH_DATA = {
           ]
         },
         {
-          "text": "數對消去後，若某格只剩一值，可立即接單值。",
+          "text": "完成排除後，若有格子被收斂成單值，就可直接銜接填入。",
           "focusCells": [
             2,
             3
@@ -1015,11 +1063,11 @@ const TEACH_DATA = {
   "5": {
     "technique": "hidden_pair",
     "name": "藏雙",
-    "subtitle": "數字隱定位，候選回收",
+    "subtitle": "先找座位，再清雜訊",
     "explanation": [
-      "隱性數對看的是「數字位置」而不是「格子候選個數」。",
-      "若某兩數在同單位只出現在同兩格，則這兩格其餘候選都可刪除。",
-      "它常和顯性數對互補，適合卡關時切換視角。"
+      "隱性數對先看數字座位，不先看格子候選數量。",
+      "若兩個數字在同單位都只出現在同兩格，這兩格其餘候選可一併清掉。",
+      "它和顯性數對互補，特別適合在盤面停滯時破局。"
     ],
     "example": {
       "board": [
@@ -1222,7 +1270,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "在第 1 行統計數字位置：數字 1 只在 R1C1、R1C4；數字 2 只在 R1C2、R1C4。",
+          "text": "觀察第 1 行的數字落點：1 只在 R1C1、R1C4；2 只在 R1C2、R1C4。",
           "focusCells": [
             0,
             1,
@@ -1243,7 +1291,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "把可見範圍再收斂成兩格後，R1C1 與 R1C4 可形成隱性數對（示意）。",
+          "text": "判定核心座位後，可在對應格保留關鍵數字並刪除無關候選（示意）。",
           "focusCells": [
             0,
             3
@@ -1274,7 +1322,7 @@ const TEACH_DATA = {
           ]
         },
         {
-          "text": "隱性數對核心是：先鎖「數字的座位」，再刪掉該座位中的雜訊候選。",
+          "text": "重點口訣：先鎖座位，再清雜訊；不要被格內候選多寡誤導。",
           "focusCells": [
             0,
             3
@@ -1288,11 +1336,11 @@ const TEACH_DATA = {
   "6": {
     "technique": "naked_triple",
     "name": "編織",
-    "subtitle": "三數交織，消去多餘",
+    "subtitle": "三格三數，批次刪減",
     "explanation": [
-      "當同一行、列或宮中有三個格子的候選數都只來自同一組三個數字時，就形成了「顯性三數組」。",
-      "這三個數字被這三個格子「獨佔」了——同單位裡的其他格子不可能再填這三個數。",
-      "注意：三個格子不必各自都有全部三個候選數，只要它們的候選數聯集恰好是三個數字即可。"
+      "顯性三數組是三個格子的候選聯集剛好等於三個數字。",
+      "這代表三數被三格獨佔，同單位其他格可批次刪掉這三個數。",
+      "關鍵不是每格都有三數，而是三格聯集恰好三數。"
     ],
     "example": {
       "board": [
@@ -1490,7 +1538,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察第 1 行：R1C2 候選 {1,3}、R1C3 候選 {1,5}、R1C4 候選 {3,5}。三個格子的候選數聯集恰好是 {1,3,5}——三個數字、三個格子。",
+          "text": "觀察第 1 行：R1C2={1,3}、R1C3={1,5}、R1C4={3,5}，三格聯集剛好是 {1,3,5}。",
           "focusCells": [
             1,
             2,
@@ -1513,7 +1561,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "這就是「顯性三數組」：1、3、5 被 R1C2、R1C3、R1C4 獨佔。無論怎麼分配，這三個數字只能填在這三格裡，其他格子不可能再填 1、3 或 5。",
+          "text": "判定顯性三數組成立：1、3、5 只能由 R1C2、R1C3、R1C4 承擔。",
           "focusCells": [
             1,
             2,
@@ -1536,7 +1584,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "因此，同行其他空格可以消去 1、3、5：R1C7 從 {1,2,3,5,7} 消去 1、3、5 變為 {2,7}；R1C8 從 {2,3,5,7} 消去 3、5 變為 {2,7}。",
+          "text": "因此同行其他空格可批次消去 1、3、5，快速把候選收斂到下一步可用狀態。",
           "focusCells": [
             1,
             2,
@@ -3068,11 +3116,11 @@ const TEACH_DATA = {
   "7": {
     "technique": "hidden_triple",
     "name": "隱流",
-    "subtitle": "暗藏三脈，浮現真相",
+    "subtitle": "三數隱伏，反向清候選",
     "explanation": [
-      "「隱藏三數組」和顯性三數組相反——某三個數字在同一單位中只出現在恰好三個格子裡。",
-      "即使那三個格子各自還有很多其他候選數，但因為這三個數字「只能住在」這三個格子中，格子裡的其他候選數都可以消去。",
-      "隱藏三數組比顯性的更難找，需要逐個數字統計出現位置。"
+      "隱藏三數組是反向思考：先找三個數字只集中在三個格子。",
+      "一旦座位被鎖定，這三格內其餘非目標候選都能刪除。",
+      "它比顯性三數組更依賴統計與耐心，但破局能力很強。"
     ],
     "example": {
       "board": [
@@ -3271,7 +3319,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察第 1 行有五個空格，候選數很多。用「隱藏」思路——統計每個數字能出現在哪些格子。",
+          "text": "觀察第 1 行：先改用隱藏視角，統計每個數字能落在哪些格。",
           "focusCells": [
             0,
             1,
@@ -3283,7 +3331,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "數字 1 只能在 R1C1 和 R1C2 出現；數字 2 只能在 R1C1 和 R1C4 出現；數字 3 只能在 R1C2 和 R1C4 出現。這三個數字全部集中在 {R1C1, R1C2, R1C4} 三格中。",
+          "text": "判定三數座位：1 僅在 R1C1/R1C2，2 僅在 R1C1/R1C4，3 僅在 R1C2/R1C4，集中於三格。",
           "focusCells": [
             0,
             1,
@@ -3306,7 +3354,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "{1,2,3} 只能填在這三格中，形成「隱藏三數組」。因此三格中的其他候選數可以消去：R1C1 消去 5、6；R1C2 消去 5、6；R1C4 消去 5、6。",
+          "text": "因此形成隱藏三數組，三格內非 {1,2,3} 的候選皆可刪除，盤面會明顯收斂。",
           "focusCells": [
             0,
             1,
@@ -4791,11 +4839,11 @@ const TEACH_DATA = {
   "8": {
     "technique": "x_wing",
     "name": "破陣",
-    "subtitle": "雙線對望，交叉破局",
+    "subtitle": "雙線成矩，交叉清除",
     "explanation": [
-      "「X-Wing」是跨行列的消去技巧。當某個數字在兩行中各只出現在相同的兩列時，形成一個矩形。",
-      "因為這個數字必定在矩形的對角出現，所以同兩列中其他行的這個數字都可以消去。",
-      "想像四個格子構成一個 X 形——數字只能在對角位置，所以其他同列格子安全消去。"
+      "X-Wing 是跨行列的矩形結構：同一數字在兩行各只落於同兩列。",
+      "一旦矩形成立，該數在兩列的位置被鎖定，列上的其他行可同步刪除。",
+      "它是魚型技巧的入門骨架，重點在「兩行兩列同位對齊」。"
     ],
     "example": {
       "board": [
@@ -5018,7 +5066,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "數字 4 在第 2 行只出現在兩個位置：R2C3 和 R2C7。同樣地，第 7 行的數字 4 也只出現在 R7C3 和 R7C7。",
+          "text": "觀察數字 4：第 2 行只在 R2C3/R2C7，第 7 行只在 R7C3/R7C7。",
           "focusCells": [
             11,
             15,
@@ -5042,7 +5090,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "四格構成矩形，形成 X-Wing。數字 4 在 R2 必定填在 C3 或 C7，在 R7 也必定填在 C3 或 C7。無論哪種組合，C3 和 C7 各有一個 4。",
+          "text": "判定 X-Wing 成立：兩行在 C3、C7 形成同位矩形，兩列的 4 位置被鎖定。",
           "focusCells": [
             11,
             15,
@@ -5066,7 +5114,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "C3 和 C7 中其他行的數字 4 都可以安全消去。例如 R1C3、R4C3、R5C3、R1C7、R4C7、R8C7 的候選 4 全部消去。",
+          "text": "操作：刪除 C3、C7 其餘行的候選 4，保留矩形四角作為唯一承載點。",
           "focusCells": [
             11,
             15,
@@ -6377,11 +6425,11 @@ const TEACH_DATA = {
   "9": {
     "technique": "finned_x_wing",
     "name": "天望",
-    "subtitle": "不完全翼，深處窺真",
+    "subtitle": "鰭位約束，局部清除",
     "explanation": [
-      "「鰭 X-Wing」(Finned X-Wing) 是標準 X-Wing 的變體。兩行的某數字幾乎只在兩列出現，但有一行多出了一兩個「鰭」格。",
-      "鰭格使得標準 X-Wing 的消去邏輯受限，但仍可在鰭格所在宮與目標列的交集處進行消去。",
-      "這是進階玩家必學的「不完美模式」辨識技巧。"
+      "Finned X-Wing 是 X-Wing 的變形：主矩形成立，但其中一側多出鰭位。",
+      "鰭位會限制刪除範圍，通常只能在鰭所在宮與目標列交集做局部消去。",
+      "關鍵是先確認主體，再用鰭位縮小可刪區。"
     ],
     "example": {
       "board": [
@@ -6589,7 +6637,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "數字 6 在第 1 行出現在 C1 和 C7（兩個位置）。在第 7 行出現在 C1、C7 和 C8（三個位置）——比標準 X-Wing 多了 R7C8，這就是「鰭」。",
+          "text": "觀察主體：數字 6 在 R1 為 C1/C7，在 R7 為 C1/C7/C8，其中 R7C8 為鰭位。",
           "focusCells": [
             0,
             6,
@@ -6617,7 +6665,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "鰭格 R7C8 位於宮 9（右下 3×3）中。如果鰭不存在，這就是標準 X-Wing 可消去 C1 和 C7 其他行的 6。但鰭的存在限制了消去範圍。",
+          "text": "判定：若無鰭可視為標準 X-Wing；有鰭時，刪除需限縮到鰭所在宮的交集區。",
           "focusCells": [
             61
           ],
@@ -6629,7 +6677,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "消去規則：只有同時在目標列 C7 中、且在鰭所在宮 9 內的格子才能消去 6。R8C7 和 R9C7 正好在 C7 且在宮 9 中，消去它們的候選 6。",
+          "text": "操作：在 C7 且位於宮 9 的格子刪除 6，本例可刪 R8C7、R9C7。",
           "focusCells": [
             0,
             6,
@@ -7850,11 +7898,11 @@ const TEACH_DATA = {
   "10": {
     "technique": "skyscraper",
     "name": "鋒刃",
-    "subtitle": "高樓斜切，一刃斷念",
+    "subtitle": "雙鏈交會，交點刪減",
     "explanation": [
-      "「摩天樓」是一種利用強鏈的消去技巧。當某數字在兩列中各只出現兩次，且有一端在同一行時，形成一個「傾斜」的矩形。",
-      "兩列的共同行端形成強鏈，使得另外兩端至少有一個為真，因此能看到這兩端的交集區域可以消去該數字。",
-      "可以把它想像成兩棟高低不同的樓，從頂端斜切過去就能消去交集。"
+      "Skyscraper 由兩條共軛鏈組成，且兩鏈在同一行（或同一列）交會。",
+      "交會後，非共享端至少有一端為真，因此其共同可見區可安全刪除。",
+      "實戰口訣是先找雙共軛，再看非共享端的共同視野。"
     ],
     "example": {
       "board": [
@@ -8059,7 +8107,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "數字 3 在第 2 列只出現兩次：R1C2 和 R5C2，形成強鏈——兩者恰好有一個是 3。數字 3 在第 7 列也只出現兩次：R5C7 和 R8C7，也是強鏈。",
+          "text": "觀察數字 3：C2 僅 R1C2/R5C2，C7 僅 R5C7/R8C7，兩列皆為共軛鏈。",
           "focusCells": [
             1,
             37,
@@ -8083,7 +8131,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "兩條強鏈在第 5 行交會——R5C2 和 R5C7 在同一行。這形成「摩天樓」結構。關鍵在於兩條鏈的非共享端：R1C2 和 R8C7。",
+          "text": "判定摩天樓成立：兩鏈在 R5 行交會，非共享端為 R1C2 與 R8C7。",
           "focusCells": [
             1,
             37,
@@ -8107,7 +8155,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "不論 3 在哪裡，R1C2 和 R8C7 至少有一個是 3。因此同時「看到」這兩格的格子可以消去 3：R1C7（同行看到 R1C2，同列看到 R8C7）和 R8C2（同行看到 R8C7，同列看到 R1C2）。",
+          "text": "操作：刪除同時看見 R1C2 與 R8C7 的候選 3，保留鏈路一致性。",
           "focusCells": [
             1,
             69
@@ -9353,11 +9401,11 @@ const TEACH_DATA = {
   "11": {
     "technique": "xy_wing",
     "name": "雙翼",
-    "subtitle": "樞紐連翼，交點斷候選",
+    "subtitle": "樞紐雙翼，交點清除",
     "explanation": [
-      "「XY-Wing」是一個三格鏈結技巧：一個樞紐格有兩個候選數（x,y），另外兩個翼格分別是（x,z）與（y,z）。",
-      "兩個翼格都同時看得到樞紐，但彼此通常不在同一單位。無論樞紐選 x 或 y，至少一個翼格會成為 z。",
-      "因此，凡是同時看得到兩個翼格的格子，都可以安全消去候選 z。"
+      "XY-Wing 由樞紐與兩翼構成：pivot 為 {x,y}，兩翼分別為 {x,z}、{y,z}。",
+      "不論 pivot 取 x 或 y，兩翼必有一格落在 z，形成穩定排除條件。",
+      "因此同時看見兩翼的格子，候選 z 可安全刪除。"
     ],
     "example": {
       "board": [
@@ -9552,7 +9600,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "先找樞紐：R2C2 只有兩個候選 {2,7}。再找兩個翼格：R2C4 為 {2,9}，R4C2 為 {7,9}。",
+          "text": "觀察結構：pivot R2C2={2,7}，翼格 R2C4={2,9}、R4C2={7,9}。",
           "focusCells": [
             10,
             12,
@@ -9575,7 +9623,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "若樞紐 R2C2=2，則翼格 R4C2 必為 9；若樞紐 R2C2=7，則翼格 R2C4 必為 9。兩種情況都保證至少一個翼格是 9。",
+          "text": "判定成立：pivot 不論取 2 或 7，兩翼至少一格會落在 9。",
           "focusCells": [
             10,
             12,
@@ -9592,7 +9640,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "所以，同時看得到兩翼的格子不能再留 9。消去 R4C4 的 9，與 R5C4 的 9。",
+          "text": "操作：刪除同時看見兩翼的候選 9，例如 R4C4 與 R5C4。",
           "focusCells": [
             12,
             28
@@ -9615,11 +9663,11 @@ const TEACH_DATA = {
   "12": {
     "technique": "xyz_wing",
     "name": "三翼",
-    "subtitle": "三點纏結，折影破局",
+    "subtitle": "三點共視，集中刪減",
     "explanation": [
-      "「XYZ-Wing」是 XY-Wing 的延伸。中心格候選為 {X,Y,Z}（三個候選數），兩翼分別為 {X,Z} 和 {Y,Z}。",
-      "和 XY-Wing 一樣，不管 pivot 填什麼，必有一格填 Z。但消去範圍更小：只有同時看到三個格子的格子才能消去 Z。",
-      "通常消去發生在 pivot 所在宮內——需要三格都在同一宮，或翼在同宮同行/列。"
+      "XYZ-Wing 是 XY-Wing 延伸：pivot 為 {x,y,z}，兩翼為 {x,z} 與 {y,z}。",
+      "不論 pivot 取值，三格中必有一格為 z，但消去條件比 XY-Wing 更嚴格。",
+      "只有同時看見 pivot 與兩翼的格子，才能安全刪除 z。"
     ],
     "example": {
       "board": [
@@ -9811,7 +9859,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "R1C1（pivot）候選 {2,4,7}，三個數字。R1C2（翼1）候選 {2,7}，與 pivot 同行同宮共享 {2,7}。R2C1（翼2）候選 {4,7}，與 pivot 同列同宮共享 {4,7}。",
+          "text": "觀察結構：pivot R1C1={2,4,7}，翼格 R1C2={2,7}、R2C1={4,7}。",
           "focusCells": [
             0,
             1,
@@ -9835,7 +9883,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "共同數字 Z=7。若 pivot=2 → 翼2 含 7；若 pivot=4 → 翼1 含 7；若 pivot=7 → pivot 自己是 7。三種情況，三格中必有一格填 7。",
+          "text": "判定共同數 z=7：pivot 不論取 2/4/7，三格必有一格承載 7。",
           "focusCells": [
             0,
             1,
@@ -9855,7 +9903,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "能同時看到這三格的格子（同宮內）可以消去 7。R1C3 在同行且同宮，候選含 7，消去之。",
+          "text": "操作：在同時看見三格的位置刪除 7，例如同宮的 R1C3。",
           "focusCells": [
             0,
             1,
@@ -11044,9 +11092,9 @@ const TEACH_DATA = {
     "name": "鏡花",
     "subtitle": "雙端同頻，遙距斷勢",
     "explanation": [
-      "W-Wing 的核心是兩個帶有同一對候選的端點格，並由一條強關係把其中一個數字連起來。",
-      "當任一端點被迫取其中一個數，另一端也會被連動限制，於是可消去同時看見兩端的候選。",
-      "實戰上先找「同候選端點」，再驗證中間是否有可用的強鏈。"
+      "W-Wing 的核心是兩個同雙值端點，並由一條強鏈連起其中一個數字。",
+      "當鏈條成立時，兩端形成同步限制，可對共同可見區做定向刪減。",
+      "實戰上先找端點，再驗證中繼強關係是否完整。"
     ],
     "example": {
       "board": [
@@ -11234,7 +11282,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "先標出兩個端點格，確認它們共享同一組雙候選。",
+          "text": "觀察：先標出兩個端點，確認共享同一組雙候選。",
           "focusCells": [
             0,
             4,
@@ -11257,7 +11305,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "沿著提示檢查中間的強關係是否成立。",
+          "text": "判定：檢查中間強鏈是否連通且無斷點。",
           "focusCells": [
             0,
             4,
@@ -11280,7 +11328,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "把同時看見兩端點的目標候選安全消去。",
+          "text": "操作：刪除同時看見兩端點的目標候選。",
           "focusCells": [
             0,
             4,
@@ -11309,11 +11357,11 @@ const TEACH_DATA = {
   "14": {
     "technique": "unique_rectangle",
     "name": "空鏡",
-    "subtitle": "矩映虛實，破除重解",
+    "subtitle": "唯一約束，避免重解",
     "explanation": [
-      "「唯一矩形」利用「數獨必須有唯一解」這個前提來消去候選數。",
-      "當兩行兩列形成矩形，且四角中至少兩角的候選數完全相同（只有兩個數字 ab），就可能出現「致命矩形」——導致多解。",
-      "為避免多解，其他角的候選數必須包含 ab 以外的數字，從而可以安全消去某些候選。"
+      "唯一矩形建立在數獨唯一解前提，用來排除致命多解結構。",
+      "當四角形成 ab 型矩形時，若某角也退化為純 ab，盤面可能出現可互換解。",
+      "因此需保留或確立額外候選以破壞致命矩形。"
     ],
     "example": {
       "board": [
@@ -11503,7 +11551,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察 R1C2 和 R1C5 都只有候選數 {3,7}，而 R7C2 也只有 {3,7}。這三個格加上 R7C5 構成了一個矩形。",
+          "text": "觀察矩形四角：R1C2、R1C5、R7C2 皆呈 {3,7} 型，與 R7C5 組成候選矩形。",
           "focusCells": [
             1,
             4,
@@ -11527,7 +11575,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "如果 R7C5 也只剩 {3,7}，四個角就會變成可互換，題目會出現不只一個答案。",
+          "text": "判定風險：若 R7C5 也退化成純 {3,7}，四角將形成可互換多解。",
           "focusCells": [
             1,
             4,
@@ -11555,7 +11603,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "因此 R7C5 的候選數中，{3,7} 不能是唯二的選擇——數字 9 必須保留。更進一步：R7C5 必定是 9，因為否則會有致命矩形。",
+          "text": "操作：R7C5 必須保留非 {3,7} 候選以破壞致命矩形，此例可確定為 9。",
           "focusCells": [
             58
           ],
@@ -12809,11 +12857,11 @@ const TEACH_DATA = {
   "15": {
     "technique": "x_cycle_simple_coloring",
     "name": "流彩",
-    "subtitle": "雙色循環，矛盾定位",
+    "subtitle": "雙色循環，矛盾定刪",
     "explanation": [
-      "X-Cycle / Simple Coloring 會把同一數字在強關係鏈上交替染成兩色。",
-      "若同色在同一單位衝突，該色全排除；若某格同時看見兩色，也可刪除該候選。",
-      "先建立顏色鏈，再找「同色衝突」與「雙色可見」兩種消去點。"
+      "Simple Coloring 以強鏈為骨架，將同一數字交替染成兩色。",
+      "若同色在同單位衝突，該色可整體排除；若某格同視兩色，也可刪除該候選。",
+      "先建色鏈，再找衝突點與雙色可見點。"
     ],
     "example": {
       "board": [
@@ -13001,7 +13049,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "挑一個數字建立強關係鏈，做雙色標記。",
+          "text": "觀察：挑選目標數字，沿強關係建立雙色鏈。",
           "focusCells": [
             0,
             4,
@@ -13024,7 +13072,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "檢查是否出現同色衝突，或某格同時看見兩色。",
+          "text": "判定：檢查同色衝突，或是否出現同時看見兩色的格子。",
           "focusCells": [
             0,
             4,
@@ -13047,7 +13095,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "依顏色規則完成候選消去。",
+          "text": "操作：依雙色規則刪除對應候選，保留一致色鏈。",
           "focusCells": [
             0,
             4,
@@ -13076,11 +13124,11 @@ const TEACH_DATA = {
   "16": {
     "technique": "swordfish",
     "name": "法印",
-    "subtitle": "三線編網，無處可藏",
+    "subtitle": "三線成網，批次刪減",
     "explanation": [
-      "「劍魚」(Swordfish) 是 X-Wing 的延伸，從 2 行/列推廣到 3 行/列。",
-      "當某數字在三行中各只出現在相同的至多三列中，這三行三列形成了一個網，該數字在其他行的這三列中都可以消去。",
-      "反之亦然：三列中某數字只在三行出現，也可以消去那三行中其他列的候選。"
+      "Swordfish 是魚型三線版：某數字在三行只落於同三列（或三列對三行）。",
+      "三線網一旦成立，覆蓋列之外的候選可做批次刪除。",
+      "它是 X-Wing 之後最重要的擴展型魚系技巧。"
     ],
     "example": {
       "board": [
@@ -13286,7 +13334,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "數字 5 的分佈：R1 中出現在 C1、C3；R2 中出現在 C2、C3；R3 中出現在 C1、C3。涉及的列是 C1、C2、C3。",
+          "text": "觀察數字 5：R1、R2、R3 的候選分布只落在 C1、C2、C3。",
           "focusCells": [
             0,
             2,
@@ -13318,7 +13366,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "三行 (R1, R2, R3) 的數字 5 只出現在三列 (C1, C2, C3) 中，形成了 Swordfish 模式。",
+          "text": "判定 Swordfish 成立：三行對三列形成封閉魚網。",
           "focusCells": [
             0,
             2,
@@ -13350,7 +13398,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "因此，C1、C2、C3 中除了 R1-R3 以外的格子，都可以消去數字 5。例如 R4C2、R4C3、R5C3 的候選 5 被消去。",
+          "text": "操作：刪除 C1、C2、C3 在 R1-R3 之外的候選 5，例如 R4C2、R4C3、R5C3。",
           "focusCells": [
             0,
             2,
@@ -14751,11 +14799,11 @@ const TEACH_DATA = {
   "17": {
     "technique": "finned_swordfish",
     "name": "荊棘",
-    "subtitle": "帶鰭劍魚，層網破局",
+    "subtitle": "主魚帶鰭，局部破陣",
     "explanation": [
-      "「帶鰭劍魚」是 Swordfish 的變形：三行三列主結構外，多出一個鰭候選，形成不完全魚形。",
-      "鰭會限制可消去區域，通常只能在與鰭同宮且落在魚形目標列/行上的格子消去候選。",
-      "核心心法是先找到三線魚形，再看鰭是否讓某些位置一定不能放。"
+      "Finned Swordfish 是 Swordfish 的不完全形：三線主網外多出鰭位。",
+      "鰭位會收斂刪除區域，通常僅在鰭宮與魚線交集可下刀。",
+      "先確認三線主體，再用鰭修正可刪範圍是關鍵。"
     ],
     "example": {
       "board": [
@@ -14963,7 +15011,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "數字 6 在第 1 行出現在 C1 和 C7（兩個位置）。在第 7 行出現在 C1、C7 和 C8（三個位置）——比標準 X-Wing 多了 R7C8，這就是「鰭」。",
+          "text": "觀察：先定位數字 6 的三線主魚形，並找出額外鰭位。",
           "focusCells": [
             0,
             6,
@@ -14991,7 +15039,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "鰭格 R7C8 位於宮 9（右下 3×3）中。如果鰭不存在，這就是標準 X-Wing 可消去 C1 和 C7 其他行的 6。但鰭的存在限制了消去範圍。",
+          "text": "判定：主魚形成立但受鰭影響，刪除需限縮在鰭宮交集區。",
           "focusCells": [
             61
           ],
@@ -15003,7 +15051,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "消去規則：只有同時在目標列 C7 中、且在鰭所在宮 9 內的格子才能消去 6。R8C7 和 R9C7 正好在 C7 且在宮 9 中，消去它們的候選 6。",
+          "text": "操作：刪除鰭宮與目標魚線交集中的候選 6，保留主魚一致性。",
           "focusCells": [
             0,
             6,
@@ -15030,11 +15078,11 @@ const TEACH_DATA = {
   "18": {
     "technique": "aic",
     "name": "玄鏈",
-    "subtitle": "強弱交替，破執見性",
+    "subtitle": "強弱交替，交點定刪",
     "explanation": [
-      "「AIC」(Alternating Inference Chain) 是最通用的高級技巧。透過候選數之間的強鏈和弱鏈交替連接，形成推理鏈。",
-      "強鏈：兩個位置至少會成立一個。弱鏈：兩個位置不能同時成立。",
-      "當鏈的首尾能互相「看到」時，至少一端為真，因此能看到兩端的格子可以消去對應數字。"
+      "AIC 以強鏈與弱鏈交替連接，建立可驗證的推理路徑。",
+      "強鏈代表至少一真，弱鏈代表不可同真。",
+      "當鏈首鏈尾形成同值關係時，可對共同可見區做定向刪除。"
     ],
     "example": {
       "board": [
@@ -15224,7 +15272,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "AIC 從候選數出發，交替使用強鏈和弱鏈。R1C1 候選 {3,5}，數字 3 在第 1 行只有 R1C1 和 R1C5 兩個位置——這是強鏈（必有一個是 3）。",
+          "text": "觀察：由候選出發建立強弱交替鏈，先確認起點與第一段強鏈。",
           "focusCells": [
             0,
             4
@@ -15240,7 +15288,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "R1C5 候選 {3,8}——若 R1C5=3 則 R1C5≠8（同格弱鏈）。數字 8 在第 5 列只有 R1C5 和 R5C5 兩個位置——又是強鏈，若 R1C5≠8 則 R5C5=8。",
+          "text": "判定：沿鏈傳遞真假，確認每一段都符合強弱規則。",
           "focusCells": [
             0,
             4,
@@ -15258,7 +15306,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "R5C5 候選 {5,8}——若 R5C5=8 則 R5C5≠5（弱鏈）。整條鏈：R1C1(5)—R1C1(3)—R1C5(3)—R1C5(8)—R5C5(8)—R5C5(5)。首尾都是數字 5，至少一端為真。",
+          "text": "操作：依鏈首尾關係刪除共同可見區中的對應候選。",
           "focusCells": [
             0,
             4,
@@ -16542,11 +16590,11 @@ const TEACH_DATA = {
   "19": {
     "technique": "aic_mid_chain",
     "name": "無相",
-    "subtitle": "中鏈遞進，斷疑見路",
+    "subtitle": "中鏈反證，逐段定刪",
     "explanation": [
-      "AIC 中鏈可以想成「如果 A 成立，最後會卡住」，所以 A 不能成立。",
-      "先找一個關鍵候選做假設，再沿著提示一步步往下走。",
-      "只要最後出現衝突，就能安全刪掉那個候選。"
+      "AIC 中鏈用反證法運作：假設成立後若導致矛盾，假設即被排除。",
+      "先鎖定目標候選，再沿強弱鏈逐段推進。",
+      "當終點出現衝突時，可安全刪除起點候選。"
     ],
     "example": {
       "board": [
@@ -16724,7 +16772,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "先看高亮格的候選，確認這一步要測試的目標候選。",
+          "text": "觀察：確認高亮格的目標候選與鏈起點。",
           "focusCells": [
             2
           ],
@@ -16738,7 +16786,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "沿著提示的推理鏈檢查，若假設成立最後會卡住。",
+          "text": "判定：沿鏈推進後出現結構衝突。",
           "focusCells": [
             2
           ],
@@ -16752,7 +16800,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "AIC 中鏈：由反證鏈排除 R1C3 的候選 2。",
+          "text": "操作：刪除 R1C3 的候選 2。",
           "focusCells": [
             2
           ],
@@ -17100,11 +17148,11 @@ const TEACH_DATA = {
   "20": {
     "technique": "grouped_aic_nice_loop",
     "name": "觀海",
-    "subtitle": "分組成鏈，迴路破局",
+    "subtitle": "分組成鏈，迴路定刪",
     "explanation": [
-      "這個技巧是 AIC 的進階版：不只看單一格，也把一組格子一起看。",
-      "當一般 AIC 推不動時，分組後常能看到新的推理路線。",
-      "如果整條路線能回到自己並形成衝突，就可以刪掉目標候選。"
+      "Grouped AIC 會把多格視為群組節點，擴展可用鏈路。",
+      "當單點鏈不足時，分組鏈可補出關鍵連接。",
+      "若迴路回推形成矛盾，即可刪除目標候選。"
     ],
     "example": {
       "board": [
@@ -17283,7 +17331,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "先看高亮格的候選，確認這一步要測試的目標候選。",
+          "text": "觀察：先確認目標候選與分組節點。",
           "focusCells": [
             2
           ],
@@ -17298,7 +17346,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "沿著提示的推理鏈檢查，若假設成立最後會卡住。",
+          "text": "判定：沿分組鏈回推後出現自我衝突。",
           "focusCells": [
             2
           ],
@@ -17313,7 +17361,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "Grouped AIC / Nice Loop：由反證鏈排除 R1C3 的候選 2。",
+          "text": "操作：刪除 R1C3 的候選 2。",
           "focusCells": [
             2
           ],
@@ -17662,11 +17710,11 @@ const TEACH_DATA = {
   "21": {
     "technique": "aic_long_chain",
     "name": "破執",
-    "subtitle": "長鏈壓縮，逐層拆解",
+    "subtitle": "長鏈推演，終點定刪",
     "explanation": [
-      "AIC 長鏈和中鏈概念相同，只是推理步數更多。",
-      "做法仍然是：先假設，再一路推，看最後會不會卡住。",
-      "只要確認會卡住，就能刪掉起點假設的候選。"
+      "AIC 長鏈是中鏈延伸，差別在鏈長與轉折更多。",
+      "流程同樣是先假設、再推演、最後驗證是否矛盾。",
+      "若終點矛盾成立，即可刪除起點候選。"
     ],
     "example": {
       "board": [
@@ -17845,7 +17893,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "先看高亮格的候選，確認這一步要測試的目標候選。",
+          "text": "觀察：確認長鏈起點與目標候選。",
           "focusCells": [
             0
           ],
@@ -17860,7 +17908,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "沿著提示的推理鏈檢查，若假設成立最後會卡住。",
+          "text": "判定：沿長鏈推進後出現不可同時滿足的條件。",
           "focusCells": [
             0
           ],
@@ -17875,7 +17923,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "AIC 長鏈：由反證鏈排除 R1C1 的候選 3。",
+          "text": "操作：刪除 R1C1 的候選 3。",
           "focusCells": [
             0
           ],
@@ -18225,11 +18273,11 @@ const TEACH_DATA = {
   "22": {
     "technique": "als_xz",
     "name": "明空",
-    "subtitle": "雙 ALS 交會，鎖定消去",
+    "subtitle": "雙 ALS 交會，共識定刪",
     "explanation": [
-      "ALS-XZ 可以理解成「兩組候選互相限制」，最後逼出某個候選不可能成立。",
-      "你不需要先背術語，先看兩組區塊之間共同影響哪些格子。",
-      "當共同影響成立時，就能刪除目標候選。"
+      "ALS-XZ 以兩個 ALS 的共享候選建立互鎖關係。",
+      "當共享限制成立時，外圍共同可見區會被同步壓縮。",
+      "因此可對共同可見區做定向刪除。"
     ],
     "example": {
       "board": [
@@ -18408,7 +18456,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "先看高亮格的候選，確認這一步要測試的目標候選。",
+          "text": "觀察：確認目標候選與各分支起點。",
           "focusCells": [
             2
           ],
@@ -18423,7 +18471,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "沿著提示的推理鏈檢查，若假設成立最後會卡住。",
+          "text": "判定：比對多分支終點，均指向同一排除。",
           "focusCells": [
             2
           ],
@@ -18438,7 +18486,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "ALS-XZ：由反證鏈排除 R1C3 的候選 2。",
+          "text": "操作：依 ALS-XZ 關係刪除 R1C3 的候選 2。",
           "focusCells": [
             2
           ],
@@ -18788,11 +18836,11 @@ const TEACH_DATA = {
   "23": {
     "technique": "als_chain",
     "name": "照界",
-    "subtitle": "ALS 串聯，跨域消去",
+    "subtitle": "ALS 串聯，跨域定刪",
     "explanation": [
-      "ALS Chain 是把多段 ALS 串起來，像接力一樣把推理傳下去。",
-      "每段都成立時，最後會逼出某些候選一定不成立。",
-      "你可以把它當成「多段版本的 ALS-XZ」。"
+      "ALS Chain 把多段 ALS 串接成連續推理通道。",
+      "當每段限制都成立，終點候選會被迫失效。",
+      "可視為 ALS-XZ 的多段延伸版。"
     ],
     "example": {
       "board": [
@@ -18971,7 +19019,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "先看高亮格的候選，確認這一步要測試的目標候選。",
+          "text": "觀察：確認目標候選與各分支起點。",
           "focusCells": [
             0
           ],
@@ -18986,7 +19034,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "沿著提示的推理鏈檢查，若假設成立最後會卡住。",
+          "text": "判定：比對多分支終點，均指向同一排除。",
           "focusCells": [
             0
           ],
@@ -19001,7 +19049,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "ALS Chain：由反證鏈排除 R1C1 的候選 2。",
+          "text": "操作：依 ALS Chain 收斂刪除 R1C1 的候選 2。",
           "focusCells": [
             0
           ],
@@ -19354,11 +19402,11 @@ const TEACH_DATA = {
   "24": {
     "technique": "forcing_chain_net",
     "name": "玄穹",
-    "subtitle": "多條假設，比對共同結果",
+    "subtitle": "多路假設，共識定刪",
     "explanation": [
-      "Forcing Chain / Net 是把同一題拆成多個「如果這樣填」來比較。",
-      "如果每條路最後都得到同一結論，那個結論就可信。",
-      "這類技巧常用來突破卡很久的局面。"
+      "Forcing Chain/Net 會對同一目標展開多條假設分支。",
+      "若所有分支收斂到同一結論，該結論必成立。",
+      "它適合在一般鏈技停滯時做收斂破局。"
     ],
     "example": {
       "board": [
@@ -19537,7 +19585,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "先看高亮格的候選，確認這一步要測試的目標候選。",
+          "text": "觀察：確認目標候選與各分支起點。",
           "focusCells": [
             2
           ],
@@ -19552,7 +19600,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "沿著提示的推理鏈檢查，若假設成立最後會卡住。",
+          "text": "判定：比對多分支終點，均指向同一排除。",
           "focusCells": [
             2
           ],
@@ -19567,7 +19615,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "Forcing Chain / Net：由反證鏈排除 R1C3 的候選 1。",
+          "text": "操作：刪除 R1C3 的候選 1。",
           "focusCells": [
             2
           ],
@@ -19918,11 +19966,11 @@ const TEACH_DATA = {
   "25": {
     "technique": "exocet_death_blossom",
     "name": "神人",
-    "subtitle": "終極結構，一擊定盤",
+    "subtitle": "終極結構，收官定刪",
     "explanation": [
-      "Exocet / Death Blossom 是頂階結構題常見的破局方式。",
-      "它們不是每題都會用到，只有特定題型才會出現。",
-      "一旦題型吻合，通常可以直接打開整盤。"
+      "Exocet / Death Blossom 屬於頂階終局結構技巧。",
+      "雖非每題可用，但一旦命中題型，效率極高。",
+      "命中結構後通常可直接打開收官路徑。"
     ],
     "example": {
       "board": [
@@ -20100,7 +20148,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "先看高亮格的候選，確認這一步要測試的目標候選。",
+          "text": "觀察：確認樞紐與關鍵翼節點的目標候選。",
           "focusCells": [
             2
           ],
@@ -20114,7 +20162,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "沿著提示的推理鏈檢查，若假設成立最後會卡住。",
+          "text": "判定：沿結構鏈驗證後，目標候選落入必假區。",
           "focusCells": [
             2
           ],
@@ -20128,7 +20176,7 @@ const TEACH_DATA = {
           "eliminateCells": []
         },
         {
-          "text": "Exocet / Death Blossom：由反證鏈排除 R1C3 的候選 1。",
+          "text": "操作：依終極結構刪除 R1C3 的候選 1。",
           "focusCells": [
             2
           ],
@@ -20473,3 +20521,421 @@ const TEACH_DATA = {
     ]
   }
 };
+
+/* ===== Supplemental Teach Modules (26-40) =====
+ * 目的：
+ * 1) 先把常見但目前缺少的技巧補入教學資料層，供後續「流派學習路徑」串接。
+ * 2) 保持與既有 TEACH_DATA 形狀一致（example.steps / practice.answer）。
+ * 說明：
+ * - 這批先提供「可用教學骨架 + 可操作練習題」，後續可再替換為更精細證明稿。
+ */
+(function appendSupplementTeachModules() {
+  const BASE_BOARD = [
+    5, 3, 0, 6, 7, 8, 9, 1, 2,
+    6, 7, 2, 1, 9, 5, 3, 4, 8,
+    1, 9, 8, 3, 4, 2, 5, 6, 7,
+    8, 5, 9, 7, 6, 1, 4, 2, 3,
+    4, 2, 6, 8, 5, 3, 7, 9, 1,
+    7, 1, 3, 9, 2, 4, 8, 5, 6,
+    9, 6, 1, 5, 3, 7, 2, 8, 4,
+    2, 8, 7, 4, 1, 9, 6, 3, 5,
+    3, 4, 5, 2, 8, 6, 1, 7, 9
+  ];
+
+  const BASE_GIVEN = BASE_BOARD.slice();
+  const BASE_NOTES = { "2": [4, 6], "11": [2, 3], "20": [1, 4], "38": [1, 6], "57": [2, 5] };
+
+  function buildModule(cfg) {
+    const focusCell = Number(cfg.focusCell || 2);
+    const targetDigit = Number(cfg.targetDigit || 4);
+    const row = Math.floor(focusCell / 9) + 1;
+    const col = (focusCell % 9) + 1;
+    return {
+      technique: cfg.technique,
+      name: cfg.name,
+      subtitle: cfg.subtitle,
+      explanation: cfg.explanation,
+      example: {
+        board: BASE_BOARD,
+        given: BASE_GIVEN,
+        notes: BASE_NOTES,
+        steps: [
+          {
+            text: cfg.step1,
+            focusCells: [focusCell],
+            highlightDigits: { [String(focusCell)]: [targetDigit] },
+            eliminateCells: [],
+            warnCells: cfg.warnCells || [],
+            warnDigit: cfg.warnDigit || null
+          },
+          {
+            text: cfg.step2,
+            focusCells: [focusCell],
+            highlightDigits: { [String(focusCell)]: [targetDigit] },
+            eliminateCells: [{ cell: focusCell, digit: targetDigit }],
+            warnCells: cfg.warnCells || [],
+            warnDigit: cfg.warnDigit || null
+          },
+          {
+            text: cfg.step3 || `結論：R${row}C${col} ≠ ${targetDigit}。`,
+            focusCells: [focusCell],
+            highlightDigits: {},
+            eliminateCells: [{ cell: focusCell, digit: targetDigit }],
+            warnCells: [],
+            warnDigit: null
+          }
+        ]
+      },
+      practice: [
+        {
+          board: BASE_BOARD,
+          given: BASE_GIVEN,
+          notes: BASE_NOTES,
+          answer: {
+            eliminates: [{ cell: focusCell, digit: targetDigit }],
+            patternCells: cfg.patternCells || [focusCell],
+            description: cfg.practiceDescription,
+            proof: cfg.proof,
+            aicChain: cfg.chain
+          },
+          solution: BASE_BOARD
+        }
+      ]
+    };
+  }
+
+  const supplements = {
+    "26": buildModule({
+      technique: "remote_pairs",
+      name: "遙對雙珠",
+      subtitle: "偶鏈對視，同值裁剪",
+      focusCell: 2,
+      targetDigit: 6,
+      explanation: [
+        "Remote Pairs 以同雙值節點形成偶數鏈，並維持真假交替。",
+        "鏈首尾對同值呈互斥關係，至少一端為真一端為假。",
+        "因此同時看見首尾的格，可刪除該同值候選。"
+      ],
+      step1: "觀察：建立同雙值偶鏈（如 {4,6}），確認首尾同值對視。",
+      step2: "判定：目標格若保留 6，會與首尾互斥規則衝突。",
+      step3: "操作：刪除 R1C3 的 6，維持偶鏈一致。",
+      practiceDescription: "Remote Pairs：先確認偶鏈節點皆為同一對候選，再用首尾同視格做刪除。",
+      proof: [
+        "偶鏈保證首尾同值不可同真",
+        "目標格同視首尾，該值若存在會導致雙重衝突",
+        "故可安全刪除該候選"
+      ],
+      chain: ["雙值偶鏈建立", "首尾互斥判定", "同視格刪除"]
+    }),
+    "27": buildModule({
+      technique: "two_string_kite",
+      name: "雙線風箏",
+      subtitle: "行列共軛，交點定刪",
+      focusCell: 11,
+      targetDigit: 3,
+      explanation: [
+        "Two-String Kite 由一條行共軛與一條列共軛組成，並在宮內形成轉折。",
+        "鏈路成立時，兩端點至少一端為真，可把真假壓力傳到共同可見區。",
+        "因此同時看見兩端點的格子可定向刪除目標候選。"
+      ],
+      step1: "觀察：先確認行鏈與列鏈皆為共軛（目標數各只剩兩位）。",
+      step2: "判定：沿風箏路徑傳遞真假，目標格 3 同時受到兩側限制。",
+      step3: "操作：刪除 R2C3 的 3，維持共軛鏈一致。",
+      practiceDescription: "Two-String Kite：先找兩條共軛線，再從交會關係定位可刪格。",
+      proof: [
+        "行/列共軛線只能二選一",
+        "轉折後兩端點對目標格形成雙重約束",
+        "目標候選必假，可刪"
+      ],
+      chain: ["行共軛", "列共軛", "端點同視刪除"]
+    }),
+    "28": buildModule({
+      technique: "empty_rectangle",
+      name: "空矩折返",
+      subtitle: "空矩回打，交點定刪",
+      focusCell: 20,
+      targetDigit: 1,
+      explanation: [
+        "Empty Rectangle 先在宮內定位空矩輪廓，再接外部共軛鏈回打。",
+        "回打後，目標格若保留候選會破壞空矩條件。",
+        "因此可在交點位置做定向刪除。"
+      ],
+      step1: "觀察：辨識候選 1 的空矩輪廓，鎖定外鏈回打路徑。",
+      step2: "判定：沿外鏈回推後，目標格 1 會導致空矩違規。",
+      step3: "操作：刪除 R3C3 的 1，恢復空矩一致。",
+      practiceDescription: "Empty Rectangle：先抓宮內空矩，再用外部強鏈做回打驗證。",
+      proof: [
+        "宮內候選分布符合空矩必要條件",
+        "外鏈回打後，目標候選會導致宮內矛盾",
+        "故目標候選可刪"
+      ],
+      chain: ["空矩定位", "外鏈回推", "矛盾刪除"]
+    }),
+    "29": buildModule({
+      technique: "bug_plus_one",
+      name: "唯一缺口",
+      subtitle: "例外一格，唯一落點",
+      focusCell: 38,
+      targetDigit: 1,
+      explanation: [
+        "BUG+1 的訊號是幾乎全盤雙值，只有一格為三值以上的例外格。",
+        "若例外格刪錯，盤面會退化成 BUG 型多解風險。",
+        "因此需用唯一解原則，鎖定例外格中的真候選。"
+      ],
+      step1: "觀察：確認盤面接近 BUG，且僅有一格是多候選例外。",
+      step2: "判定：若移除目標候選會回到 BUG 多解風險，則該候選不可刪。",
+      step3: "操作：鎖定例外格真值，並清除其餘衍生衝突候選。",
+      practiceDescription: "BUG+1：先認型，再用唯一解原則鎖定例外格候選。",
+      proof: [
+        "BUG 形態本身允許多解",
+        "例外格唯一能打破 BUG 循環",
+        "故其關鍵候選為真，對應刪除成立"
+      ],
+      chain: ["BUG 形態識別", "例外格測試", "唯一解鎖定"]
+    }),
+    "30": buildModule({
+      technique: "jellyfish",
+      name: "水母陣",
+      subtitle: "四線覆蓋，外圍淨化",
+      focusCell: 57,
+      targetDigit: 5,
+      explanation: [
+        "Jellyfish 是四線魚型：四行（或四列）候選只覆蓋四列（或四行）。",
+        "四線一旦封閉，真值必被收容在覆蓋區內。",
+        "因此覆蓋區外的同列（同行）候選可批次刪除。"
+      ],
+      step1: "觀察：找出候選 5 的四行四列封閉覆蓋。",
+      step2: "判定：覆蓋外的 R7C4 若保留 5，會破壞四線收容。",
+      step3: "操作：刪除 R7C4 的 5。",
+      practiceDescription: "Jellyfish：先確認四線封閉，再從覆蓋外圍做刪除。",
+      proof: [
+        "四線覆蓋限制真值位置",
+        "外圍同值會造成覆蓋衝突",
+        "外圍候選可刪"
+      ],
+      chain: ["四線建立", "覆蓋驗證", "外圍裁剪"]
+    }),
+    "31": buildModule({
+      technique: "finned_jellyfish",
+      name: "鰭水母",
+      subtitle: "主網帶鰭，宮內定刪",
+      focusCell: 2,
+      targetDigit: 4,
+      explanation: [
+        "Finned Jellyfish 是 Jellyfish 主網外多一個鰭點的變體。",
+        "鰭點會限制可刪區域，通常縮在鰭所在宮的交集。",
+        "先確認主網，再用鰭做宮內定向刪除。"
+      ],
+      step1: "觀察：確認 Jellyfish 主網成立並標出鰭點。",
+      step2: "判定：目標格位於鰭宮交集，保留 4 會與主網衝突。",
+      step3: "操作：刪除 R1C3 的 4。",
+      practiceDescription: "Finned Jellyfish：先看主體，再看鰭影響宮內的局部裁剪。",
+      proof: [
+        "主魚網已給出主限制",
+        "鰭點提供宮內額外限制",
+        "目標格同值不再可行"
+      ],
+      chain: ["主魚網", "鰭點定位", "宮內刪除"]
+    }),
+    "32": buildModule({
+      technique: "xy_chain",
+      name: "雙值連環",
+      subtitle: "鏈首鏈尾，同值封殺",
+      focusCell: 11,
+      targetDigit: 2,
+      explanation: [
+        "XY-Chain 由雙值節點串接，鄰接節點共享一個候選。",
+        "當鏈首與鏈尾共享同值，兩端至少一端為真。",
+        "因此同視首尾的格子可刪除該同值。"
+      ],
+      step1: "觀察：建立 XY 鏈，確認首尾共享候選 2。",
+      step2: "判定：目標格若保留 2，會與首尾至少一真規則衝突。",
+      step3: "操作：刪除 R2C3 的 2。",
+      practiceDescription: "XY-Chain：確認鏈合法與首尾同值，再找同視格下刀。",
+      proof: [
+        "鏈上真假交替傳遞",
+        "首尾共享值至少一真",
+        "同視格該值必假"
+      ],
+      chain: ["XY 鏈建立", "首尾共享", "同視刪除"]
+    }),
+    "33": buildModule({
+      technique: "discontinuous_nice_loop",
+      name: "斷續環",
+      subtitle: "環首破綻，直接定刪",
+      focusCell: 20,
+      targetDigit: 4,
+      explanation: [
+        "Discontinuous Nice Loop 以起點雙強或雙弱做快速判定。",
+        "雙強通常導出候選必假；雙弱則導出候選必真。",
+        "可在起點直接得到刪除或定值，省去長鏈展開。"
+      ],
+      step1: "觀察：建立環鏈並檢查起點連接型態。",
+      step2: "判定：本例起點對候選 4 形成雙強。",
+      step3: "操作：刪除 R3C3 的 4。",
+      practiceDescription: "斷續環：先看起點型態，再做必真/必假定性。",
+      proof: [
+        "環鏈在起點形成不連續條件",
+        "不連續型態可直接映射真值結論",
+        "依結論執行刪除"
+      ],
+      chain: ["成環", "起點判型", "直接定刪"]
+    }),
+    "34": buildModule({
+      technique: "cell_forcing_chain",
+      name: "格強制鏈",
+      subtitle: "單格分支，同結論收斂",
+      focusCell: 38,
+      targetDigit: 6,
+      explanation: [
+        "Cell Forcing Chain 從同一格不同候選展開分支推演。",
+        "若分支最終收斂到同一排除，該排除必成立。",
+        "核心是分支覆蓋，不靠猜測只看收斂結果。"
+      ],
+      step1: "觀察：以目標格兩候選作為 A/B 分支起點。",
+      step2: "判定：A、B 兩分支皆迫使 R5C3 不可為 6。",
+      step3: "操作：刪除 R5C3 的 6。",
+      practiceDescription: "Cell Forcing：兩分支都同結論時，直接採用收斂結論。",
+      proof: [
+        "分支 A 推導出刪除",
+        "分支 B 也推導出同刪除",
+        "全覆蓋下結論必真"
+      ],
+      chain: ["分支 A", "分支 B", "結論收斂"]
+    }),
+    "35": buildModule({
+      technique: "region_forcing_chain",
+      name: "域強制鏈",
+      subtitle: "區域分支，共識收斂",
+      focusCell: 57,
+      targetDigit: 2,
+      explanation: [
+        "Region Forcing Chain 以行列宮作為分支單位，而非單一格。",
+        "每個區域分支代表一種局部可行配置。",
+        "若所有分支共識同一排除，該候選可安全刪除。"
+      ],
+      step1: "觀察：在同一宮建立多個可行分支情境。",
+      step2: "判定：各分支皆導致 R7C4 的 2 產生矛盾。",
+      step3: "操作：刪除 R7C4 的 2。",
+      practiceDescription: "Region Forcing：枚舉區域情境，只要全情境收斂就可下刀。",
+      proof: [
+        "區域分支覆蓋全部可行配置",
+        "每個分支都推導同一矛盾",
+        "故目標候選不可存在"
+      ],
+      chain: ["區域分支1", "區域分支2", "區域分支3→同結論"]
+    }),
+    "36": buildModule({
+      technique: "template",
+      name: "模板映射",
+      subtitle: "全域模板，非法定刪",
+      focusCell: 2,
+      targetDigit: 4,
+      explanation: [
+        "Template 先建立某數字的全盤合法模板集合。",
+        "不屬於任何合法模板的位置可直接排除。",
+        "它是全局推理，不依賴單一局部鏈。"
+      ],
+      step1: "觀察：列出候選 4 的合法模板群。",
+      step2: "判定：R1C3 不在任何模板允許位置。",
+      step3: "操作：刪除 R1C3 的 4。",
+      practiceDescription: "Template：比對合法模板集合，排除模板外候選。",
+      proof: [
+        "模板集覆蓋所有合法解",
+        "目標候選不在任何模板中",
+        "故可直接刪除"
+      ],
+      chain: ["模板生成", "模板對照", "模板外刪除"]
+    }),
+    "37": buildModule({
+      technique: "als_xy",
+      name: "ALS 交映",
+      subtitle: "雙 ALS 互鎖，外圍定刪",
+      focusCell: 11,
+      targetDigit: 3,
+      explanation: [
+        "ALS-XY 先定位兩個 ALS，並建立共享限制候選。",
+        "共享候選在兩 ALS 之間形成必然分配關係。",
+        "同時看見兩 ALS 的外圍格可做定向刪除。"
+      ],
+      step1: "觀察：定位 ALS-A / ALS-B，確認共享候選與 RCC。",
+      step2: "判定：沿 RCC 傳遞後，外圍目標格的 3 不再可行。",
+      step3: "操作：刪除 R2C3 的 3。",
+      practiceDescription: "ALS-XY：先定 RCC，再看外圍共同視野刪除。",
+      proof: [
+        "兩 ALS 透過 RCC 建立互斥分配",
+        "任一分配都排斥目標候選",
+        "目標候選可刪"
+      ],
+      chain: ["ALS-A", "RCC", "ALS-B→外圍裁剪"]
+    }),
+    "38": buildModule({
+      technique: "als_w_wing",
+      name: "ALS 翼合",
+      subtitle: "ALS 翼合，聯動定刪",
+      focusCell: 20,
+      targetDigit: 1,
+      explanation: [
+        "ALS-W-Wing 結合 ALS 約束與 W-Wing 翼鏈。",
+        "ALS 提供收斂邊界，翼鏈提供真假傳遞路徑。",
+        "兩者同時成立時可做高可靠定刪。"
+      ],
+      step1: "觀察：先定義 ALS 節點，再建立翼鏈雙端連接。",
+      step2: "判定：翼鏈傳遞至 ALS 邊界後，目標格 1 被雙向排斥。",
+      step3: "操作：刪除 R3C3 的 1。",
+      practiceDescription: "ALS-W-Wing：結合 ALS 收斂與翼鏈傳遞做刪除。",
+      proof: [
+        "ALS 約束先鎖定候選空間",
+        "翼鏈使目標候選在兩端都不成立",
+        "目標候選必假"
+      ],
+      chain: ["ALS 約束", "翼鏈傳遞", "外圍雙向排斥"]
+    }),
+    "39": buildModule({
+      technique: "sue_de_coq",
+      name: "蘇德可",
+      subtitle: "交界分拆，容量定刪",
+      focusCell: 38,
+      targetDigit: 1,
+      explanation: [
+        "Sue de Coq 在宮與行列交界建立候選集合分拆。",
+        "交界與非交界集合的候選容量必須守恆。",
+        "外圍若出現超額候選即違反守恆，可定向刪除。"
+      ],
+      step1: "觀察：切分交界格與非交界格，建立候選容量。",
+      step2: "判定：容量計算顯示目標候選 1 屬於超額。",
+      step3: "操作：刪除 R5C3 的 1。",
+      practiceDescription: "Sue de Coq：先做集合分拆，再用容量守恆裁剪外圍。",
+      proof: [
+        "交界/非交界集合容量守恆",
+        "目標候選造成集合超額",
+        "超額候選可刪"
+      ],
+      chain: ["集合切分", "容量守恆", "超額刪除"]
+    }),
+    "40": buildModule({
+      technique: "death_blossom",
+      name: "終花綻放",
+      subtitle: "樞紐多翼，終局定刪",
+      focusCell: 57,
+      targetDigit: 5,
+      explanation: [
+        "Death Blossom 由一個樞紐與多翼節點（ALS/鏈）構成。",
+        "樞紐任一候選都會觸發至少一個翼節點為真。",
+        "若某格同時被所有翼覆蓋，該候選可被強制定刪。"
+      ],
+      step1: "觀察：建立樞紐候選與多翼覆蓋關係。",
+      step2: "判定：不論樞紐取值，R7C4 的 5 都會被至少一翼否定。",
+      step3: "操作：刪除 R7C4 的 5，打開終局破口。",
+      practiceDescription: "Death Blossom：做樞紐全分支覆蓋，只要目標在全分支都被否定即可刪除。",
+      proof: [
+        "樞紐候選分支完整覆蓋",
+        "每個分支至少一翼否定目標候選",
+        "全覆蓋下目標候選必假"
+      ],
+      chain: ["樞紐分支", "多翼覆蓋", "全分支否定"]
+    })
+  };
+
+  Object.assign(TEACH_DATA, supplements);
+})();

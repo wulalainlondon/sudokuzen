@@ -1,1 +1,5 @@
 firebase-config.local.js
+node_modules/
+dist/
+.vitest/
+coverage/

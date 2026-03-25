@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --rz-surface: rgba(255, 255, 255, 0.78);
+  --rz-panel: rgba(255, 255, 255, 0.88);
+  --rz-accent: #4a90e2;
+  --rz-text: #1e293b;
+  --rz-muted: #64748b;
+  --rz-ring: rgba(74, 144, 226, 0.45);
+}
+
+html[data-theme='dark'] {
+  --rz-surface: rgba(20, 24, 32, 0.68);
+  --rz-panel: rgba(22, 27, 36, 0.84);
+  --rz-accent: #78b7ff;
+  --rz-text: #edf2f7;
+  --rz-muted: #9fb0c7;
+  --rz-ring: rgba(120, 183, 255, 0.55);
+}
+
+.react-teach-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  pointer-events: none;
+}
+
+.react-teach-overlay[data-open='true'] {
+  pointer-events: auto;
+}
+
+.rz-focus-ring:focus-visible {
+  outline: 2px solid var(--rz-ring);
+  outline-offset: 2px;
+}
