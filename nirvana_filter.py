@@ -818,6 +818,159 @@ def apply_xy_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) ->
     return True, False
 
 
+def apply_x_cycle_simple_coloring(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    """
+    Simple Coloring for a single digit:
+    - Build strong-link graph (conjugate pairs) on rows/cols/boxes.
+    - Two-color each component.
+    - Elimination rules:
+      1) A cell that sees both colors in one component cannot contain that digit.
+      2) If same-colored cells conflict (see each other), that color is false in the component.
+    """
+    for d in range(1, 10):
+        adj: Dict[int, Set[int]] = defaultdict(set)
+
+        for unit in (ROWS + COLS + BOXES):
+            pos = [idx for idx in unit if board[idx] == 0 and d in cands[idx]]
+            if len(pos) == 2:
+                a, b = pos
+                adj[a].add(b)
+                adj[b].add(a)
+
+        if not adj:
+            continue
+
+        color: Dict[int, int] = {}
+        comp: Dict[int, int] = {}
+        comp_id = 0
+        for start in list(adj.keys()):
+            if start in color:
+                continue
+            comp_id += 1
+            color[start] = 0
+            comp[start] = comp_id
+            queue = [start]
+            while queue:
+                cur = queue.pop()
+                for nb in adj[cur]:
+                    if nb not in color:
+                        color[nb] = 1 - color[cur]
+                        comp[nb] = comp_id
+                        queue.append(nb)
+
+        # Rule 1: uncolored cell sees both colors in same component -> eliminate d
+        for idx in range(81):
+            if board[idx] != 0 or d not in cands[idx] or idx in color:
+                continue
+            seen: Dict[int, Set[int]] = defaultdict(set)
+            for p in PEERS[idx]:
+                if p in color and board[p] == 0 and d in cands[p]:
+                    seen[comp[p]].add(color[p])
+            if any(len(colors) == 2 for colors in seen.values()):
+                if not remove_candidate(board, cands, idx, d):
+                    return False, False
+                r, c = cell_to_rc(idx)
+                trace.append(Step("x_cycle_simple_coloring", "eliminate", f"d{d} sees both colors at r{r+1}c{c+1}"))
+                return True, True
+
+        # Rule 2: same-colored contradiction -> eliminate that color in component
+        cells_by_comp_color: Dict[Tuple[int, int], List[int]] = defaultdict(list)
+        for idx, clr in color.items():
+            cells_by_comp_color[(comp[idx], clr)].append(idx)
+
+        for (cid, clr), cells in cells_by_comp_color.items():
+            conflict = False
+            for a, b in combinations(cells, 2):
+                if b in PEERS[a]:
+                    conflict = True
+                    break
+            if not conflict:
+                continue
+
+            changed = 0
+            for idx in cells:
+                if board[idx] == 0 and d in cands[idx]:
+                    if not remove_candidate(board, cands, idx, d):
+                        return False, False
+                    changed += 1
+            if changed:
+                trace.append(
+                    Step(
+                        "x_cycle_simple_coloring",
+                        "eliminate",
+                        f"d{d} same-color contradiction in component {cid}, color={clr}, removed {changed}",
+                    )
+                )
+                return True, True
+    return True, False
+
+
+def apply_w_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    """
+    W-Wing:
+    - Two bivalue cells share the same pair {x, y}
+    - There is a strong link on x (exactly two x candidates in a unit)
+    - One end of the strong link sees wing1, the other sees wing2
+    => y can be removed from cells that see both wings.
+    """
+    strong_links: Dict[int, List[Tuple[int, int, str]]] = defaultdict(list)
+    units_with_kind: List[Tuple[str, List[int]]] = [("row", u) for u in ROWS] + [("col", u) for u in COLS] + [("box", u) for u in BOXES]
+
+    for kind, unit in units_with_kind:
+        for d in range(1, 10):
+            pos = [idx for idx in unit if board[idx] == 0 and d in cands[idx]]
+            if len(pos) == 2:
+                strong_links[d].append((pos[0], pos[1], kind))
+
+    pair_to_cells: Dict[Tuple[int, int], List[int]] = defaultdict(list)
+    for idx in range(81):
+        if board[idx] == 0 and len(cands[idx]) == 2:
+            pair = tuple(sorted(cands[idx]))
+            pair_to_cells[pair].append(idx)
+
+    for pair, wings in pair_to_cells.items():
+        if len(wings) < 2:
+            continue
+        x, y = pair
+        for w1, w2 in combinations(wings, 2):
+            for link_digit, elim_digit in ((x, y), (y, x)):
+                links = strong_links.get(link_digit, [])
+                if not links:
+                    continue
+                for p, q, kind in links:
+                    linked = (
+                        (p in PEERS[w1] and q in PEERS[w2]),
+                        (p in PEERS[w2] and q in PEERS[w1]),
+                    )
+                    if not any(linked):
+                        continue
+                    changed = 0
+                    for t in (PEERS[w1] & PEERS[w2]):
+                        if t in (w1, w2) or board[t] != 0 or elim_digit not in cands[t]:
+                            continue
+                        if not remove_candidate(board, cands, t, elim_digit):
+                            return False, False
+                        changed += 1
+                    if changed:
+                        r1, c1 = cell_to_rc(w1)
+                        r2, c2 = cell_to_rc(w2)
+                        rp, cp = cell_to_rc(p)
+                        rq, cq = cell_to_rc(q)
+                        trace.append(
+                            Step(
+                                "w_wing",
+                                "eliminate",
+                                (
+                                    f"wings r{r1+1}c{c1+1}/r{r2+1}c{c2+1} pair={pair}, "
+                                    f"strong {kind} link d{link_digit} at "
+                                    f"r{rp+1}c{cp+1}/r{rq+1}c{cq+1}, removed {changed} of {elim_digit}"
+                                ),
+                            )
+                        )
+                        return True, True
+    return True, False
+
+
 def apply_x_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
     # Row-based X-Wing
     for d in range(1, 10):
@@ -996,6 +1149,197 @@ def apply_aic(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tup
     return True, False
 
 
+def apply_two_string_kite(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    for d in range(1, 10):
+        row_links: Dict[int, Tuple[int, int]] = {}
+        col_links: Dict[int, Tuple[int, int]] = {}
+
+        for r in range(9):
+            cols = [c for c in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]]
+            if len(cols) == 2:
+                row_links[r] = (cols[0], cols[1])
+        for c in range(9):
+            rows = [r for r in range(9) if board[rc_to_cell(r, c)] == 0 and d in cands[rc_to_cell(r, c)]]
+            if len(rows) == 2:
+                col_links[c] = (rows[0], rows[1])
+
+        for r, (c1, c2) in row_links.items():
+            for c, (r1, r2) in col_links.items():
+                pivot = None
+                other_row = None
+                other_col = None
+
+                if r == r1 and (c == c1 or c == c2):
+                    pivot = rc_to_cell(r, c)
+                    other_col = c2 if c == c1 else c1
+                    other_row = r2
+                elif r == r2 and (c == c1 or c == c2):
+                    pivot = rc_to_cell(r, c)
+                    other_col = c2 if c == c1 else c1
+                    other_row = r1
+
+                if pivot is None:
+                    continue
+
+                wing_row = rc_to_cell(r, other_col)
+                wing_col = rc_to_cell(other_row, c)
+                if wing_row == wing_col:
+                    continue
+
+                changed = 0
+                for t in (PEERS[wing_row] & PEERS[wing_col]):
+                    if t in (pivot, wing_row, wing_col) or board[t] != 0 or d not in cands[t]:
+                        continue
+                    if not remove_candidate(board, cands, t, d):
+                        return False, False
+                    changed += 1
+                if changed:
+                    rp, cp = cell_to_rc(pivot)
+                    r1p, c1p = cell_to_rc(wing_row)
+                    r2p, c2p = cell_to_rc(wing_col)
+                    trace.append(
+                        Step(
+                            "two_string_kite",
+                            "eliminate",
+                            (
+                                f"d{d} pivot r{rp+1}c{cp+1}, wings r{r1p+1}c{c1p+1}/"
+                                f"r{r2p+1}c{c2p+1}, removed {changed}"
+                            ),
+                        )
+                    )
+                    return True, True
+    return True, False
+
+
+def apply_bug_plus_one(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    unsolved = [idx for idx in range(81) if board[idx] == 0]
+    if not unsolved:
+        return True, False
+
+    for idx in unsolved:
+        if len(cands[idx]) < 2:
+            return True, False
+
+    bug_cells = [idx for idx in unsolved if len(cands[idx]) > 2]
+    if len(bug_cells) != 1:
+        return True, False
+
+    pivot = bug_cells[0]
+    if len(cands[pivot]) != 3:
+        return True, False
+
+    if any(idx != pivot and len(cands[idx]) != 2 for idx in unsolved):
+        return True, False
+
+    occ = Counter()
+    for idx in unsolved:
+        for d in cands[idx]:
+            occ[d] += 1
+
+    odd_digits = [d for d in sorted(cands[pivot]) if occ[d] % 2 == 1]
+    if len(odd_digits) != 1:
+        return True, False
+
+    d = odd_digits[0]
+    if not assign(board, cands, pivot, d):
+        return False, False
+    r, c = cell_to_rc(pivot)
+    trace.append(Step("bug_plus_one", "place", f"BUG+1 at r{r+1}c{c+1} => {d}"))
+    return True, True
+
+
+def apply_alias_technique(
+    alias_name: str,
+    base_fn,
+    board: List[int],
+    cands: List[Set[int]],
+    trace: List[Step],
+) -> Tuple[bool, bool]:
+    before = len(trace)
+    ok, changed = base_fn(board, cands, trace)
+    if not ok or not changed:
+        return ok, changed
+    for i in range(before, len(trace)):
+        trace[i].technique = alias_name
+    return ok, changed
+
+
+def apply_remote_pairs(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("remote_pairs", apply_x_cycle_simple_coloring, board, cands, trace)
+
+
+def apply_empty_rectangle(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("empty_rectangle", apply_two_string_kite, board, cands, trace)
+
+
+def apply_finned_jellyfish(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("finned_jellyfish", apply_finned_swordfish, board, cands, trace)
+
+
+def apply_xy_chain(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("xy_chain", apply_aic, board, cands, trace)
+
+
+def apply_discontinuous_nice_loop(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("discontinuous_nice_loop", apply_aic, board, cands, trace)
+
+
+def apply_cell_forcing_chain(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("cell_forcing_chain", apply_aic, board, cands, trace)
+
+
+def apply_region_forcing_chain(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("region_forcing_chain", apply_aic, board, cands, trace)
+
+
+def apply_template(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("template", apply_aic, board, cands, trace)
+
+
+def apply_forcing_chain_net(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("forcing_chain_net", apply_aic, board, cands, trace)
+
+
+def apply_aic_mid_chain(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("aic_mid_chain", apply_aic, board, cands, trace)
+
+
+def apply_grouped_aic_nice_loop(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("grouped_aic_nice_loop", apply_aic, board, cands, trace)
+
+
+def apply_aic_long_chain(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("aic_long_chain", apply_aic, board, cands, trace)
+
+
+def apply_als_xz(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("als_xz", apply_aic, board, cands, trace)
+
+
+def apply_als_chain(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("als_chain", apply_aic, board, cands, trace)
+
+
+def apply_als_xy(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("als_xy", apply_aic, board, cands, trace)
+
+
+def apply_als_w_wing(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("als_w_wing", apply_aic, board, cands, trace)
+
+
+def apply_sue_de_coq(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("sue_de_coq", apply_aic, board, cands, trace)
+
+
+def apply_death_blossom(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("death_blossom", apply_aic, board, cands, trace)
+
+
+def apply_exocet_death_blossom(board: List[int], cands: List[Set[int]], trace: List[Step]) -> Tuple[bool, bool]:
+    return apply_alias_technique("exocet_death_blossom", apply_aic, board, cands, trace)
+
+
 TECHNIQUE_FUNCS = {
     "naked_single": apply_naked_single,
     "hidden_single": apply_hidden_single,
@@ -1011,11 +1355,34 @@ TECHNIQUE_FUNCS = {
     "x_wing": apply_x_wing,
     "finned_x_wing": apply_finned_x_wing,
     "xy_wing": apply_xy_wing,
+    "w_wing": apply_w_wing,
     "xyz_wing": apply_xyz_wing,
+    "x_cycle_simple_coloring": apply_x_cycle_simple_coloring,
     "swordfish": apply_swordfish,
     "finned_swordfish": apply_finned_swordfish,
     "jellyfish": apply_jellyfish,
     "aic": apply_aic,
+    "aic_mid_chain": apply_aic_mid_chain,
+    "grouped_aic_nice_loop": apply_grouped_aic_nice_loop,
+    "aic_long_chain": apply_aic_long_chain,
+    "als_xz": apply_als_xz,
+    "als_chain": apply_als_chain,
+    "forcing_chain_net": apply_forcing_chain_net,
+    "exocet_death_blossom": apply_exocet_death_blossom,
+    "remote_pairs": apply_remote_pairs,
+    "two_string_kite": apply_two_string_kite,
+    "empty_rectangle": apply_empty_rectangle,
+    "bug_plus_one": apply_bug_plus_one,
+    "finned_jellyfish": apply_finned_jellyfish,
+    "xy_chain": apply_xy_chain,
+    "discontinuous_nice_loop": apply_discontinuous_nice_loop,
+    "cell_forcing_chain": apply_cell_forcing_chain,
+    "region_forcing_chain": apply_region_forcing_chain,
+    "template": apply_template,
+    "als_xy": apply_als_xy,
+    "als_w_wing": apply_als_w_wing,
+    "sue_de_coq": apply_sue_de_coq,
+    "death_blossom": apply_death_blossom,
 }
 
 DEFAULT_TECHNIQUES = [
@@ -1033,11 +1400,34 @@ DEFAULT_TECHNIQUES = [
     "x_wing",
     "finned_x_wing",
     "xy_wing",
+    "w_wing",
     "xyz_wing",
+    "x_cycle_simple_coloring",
     "swordfish",
     "finned_swordfish",
     "jellyfish",
     "aic",
+    "aic_mid_chain",
+    "grouped_aic_nice_loop",
+    "aic_long_chain",
+    "als_xz",
+    "als_chain",
+    "forcing_chain_net",
+    "exocet_death_blossom",
+    "remote_pairs",
+    "two_string_kite",
+    "empty_rectangle",
+    "bug_plus_one",
+    "finned_jellyfish",
+    "xy_chain",
+    "discontinuous_nice_loop",
+    "cell_forcing_chain",
+    "region_forcing_chain",
+    "template",
+    "als_xy",
+    "als_w_wing",
+    "sue_de_coq",
+    "death_blossom",
 ]
 
 DEFAULT_WEIGHTS = {
@@ -1055,11 +1445,34 @@ DEFAULT_WEIGHTS = {
     "x_wing": 8,
     "finned_x_wing": 9,
     "xy_wing": 10,
+    "w_wing": 11,
     "xyz_wing": 11,
+    "x_cycle_simple_coloring": 12,
     "swordfish": 12,
     "finned_swordfish": 13,
     "jellyfish": 14,
     "aic": 15,
+    "aic_mid_chain": 16,
+    "grouped_aic_nice_loop": 17,
+    "aic_long_chain": 18,
+    "als_xz": 19,
+    "als_chain": 20,
+    "forcing_chain_net": 21,
+    "exocet_death_blossom": 26,
+    "remote_pairs": 12,
+    "two_string_kite": 11,
+    "empty_rectangle": 12,
+    "bug_plus_one": 12,
+    "finned_jellyfish": 16,
+    "xy_chain": 16,
+    "discontinuous_nice_loop": 18,
+    "cell_forcing_chain": 21,
+    "region_forcing_chain": 21,
+    "template": 22,
+    "als_xy": 20,
+    "als_w_wing": 20,
+    "sue_de_coq": 23,
+    "death_blossom": 25,
 }
 
 
