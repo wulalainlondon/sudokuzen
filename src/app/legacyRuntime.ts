@@ -1097,11 +1097,26 @@ export function bootLegacyRuntime(appVersion: string): void {
             const saved = forceReset ? null : loadGameStatus(currentLevel.id);
 
             if (saved) {
-                cellsData = saved.cellsData;
-                seconds = saved.seconds;
-                errors = saved.errors;
-                submissionCount = saved.submissionCount || 0;
-                actionHistory = Array.isArray(saved.actionHistory) ? saved.actionHistory : [];
+                const normalizedCells = normalizeSavedCells(saved.cellsData, currentLevel.puzzle);
+                if (normalizedCells) {
+                    cellsData = normalizedCells;
+                    seconds = Number.isFinite(saved.seconds) ? Math.max(0, Math.floor(saved.seconds)) : 0;
+                    errors = Number.isFinite(saved.errors) ? Math.min(maxErrors, Math.max(0, Math.floor(saved.errors))) : 0;
+                    submissionCount = Number.isFinite(saved.submissionCount) ? Math.max(0, Math.floor(saved.submissionCount)) : 0;
+                    actionHistory = Array.isArray(saved.actionHistory) ? saved.actionHistory : [];
+                } else {
+                    clearGameStatus(currentLevel.id);
+                    errors = 0;
+                    seconds = 0;
+                    submissionCount = 0;
+                    actionHistory = [];
+                    cellsData = currentLevel.puzzle.map((val, idx) => ({
+                        value: val,
+                        fixed: val !== 0,
+                        notes: [],
+                        isError: false
+                    }));
+                }
                 if (saved.isGhostMode === true && saved.ghostHistory) {
                     // Resume ghost state
                     isGhostMode = true;
@@ -1160,6 +1175,44 @@ export function bootLegacyRuntime(appVersion: string): void {
         function clearGameStatus(levelId) {
             const prefix = isSpeedrunMode ? 'sudoku_speed_save_' : 'sudoku_save_';
             localStorage.removeItem(`${prefix}${levelId}`);
+        }
+
+        function clampDigit(v) {
+            const n = Number(v);
+            if (!Number.isFinite(n)) return 0;
+            const rounded = Math.round(n);
+            return rounded >= 1 && rounded <= 9 ? rounded : 0;
+        }
+
+        function normalizeNotes(rawNotes) {
+            if (!Array.isArray(rawNotes)) return [];
+            const uniq = new Set();
+            rawNotes.forEach((n) => {
+                const d = clampDigit(n);
+                if (d !== 0) uniq.add(d);
+            });
+            return Array.from(uniq).sort((a, b) => a - b);
+        }
+
+        function normalizeSavedCells(rawCells, puzzle) {
+            if (!Array.isArray(rawCells) || !Array.isArray(puzzle) || puzzle.length !== 81) return null;
+            const safe = [];
+            for (let i = 0; i < 81; i++) {
+                const clue = clampDigit(puzzle[i]);
+                if (clue !== 0) {
+                    safe.push({ value: clue, fixed: true, notes: [], isError: false });
+                    continue;
+                }
+                const raw = rawCells[i];
+                const value = clampDigit(raw && raw.value);
+                safe.push({
+                    value,
+                    fixed: false,
+                    notes: value === 0 ? normalizeNotes(raw && raw.notes) : [],
+                    isError: false
+                });
+            }
+            return safe;
         }
 
         function renderGrid() {
