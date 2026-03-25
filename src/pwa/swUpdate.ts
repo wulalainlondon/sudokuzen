@@ -37,26 +37,24 @@ export function registerServiceWorkerUpdateFlow(): void {
   });
 
   navigator.serviceWorker.register('sw.js').then((reg) => {
-    if (reg.waiting) offerUpdate(reg.waiting);
+    if (reg.waiting) applyUpdateImmediately(reg.waiting);
 
     reg.onupdatefound = () => {
       const installingWorker = reg.installing;
       if (!installingWorker) return;
       installingWorker.onstatechange = () => {
         if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          offerUpdate(installingWorker);
+          applyUpdateImmediately(installingWorker);
         }
       };
     };
 
+    // Check immediately when page boots, then keep checking in the background.
+    reg.update();
     setInterval(() => reg.update(), 1000 * 60 * 60);
   }).catch((err) => console.error('SW init fail:', err));
 }
 
-function offerUpdate(worker: ServiceWorker): void {
-  setTimeout(() => {
-    if (confirm('發現新的版本與關卡！是否立即更新以體驗最新內容？')) {
-      worker.postMessage({ type: 'SKIP_WAITING' });
-    }
-  }, 1000);
+function applyUpdateImmediately(worker: ServiceWorker): void {
+  worker.postMessage({ type: 'SKIP_WAITING' });
 }
