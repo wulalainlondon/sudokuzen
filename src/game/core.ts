@@ -209,11 +209,15 @@ export function handleInput(num: number): void {
       if (gs.isDuoMode) {
         const remaining = gs.maxErrors - gs.errors;
         if (remaining > 0) {
-          // First 3 errors: same as solo — lose a life, no cooldown
+          // Still have lives — lose a life, no cooldown
           updateLivesUI();
           showFeedback(`錯誤！${remaining} 次機會剩餘`, 'error');
+        } else if (remaining === 0) {
+          // Just lost the last life — show warning, start first cooldown
+          updateLivesUI();
+          showFeedback('命用完了！之後答錯將會冷卻', 'error');
         } else {
-          // Lives depleted: cooldown based on same-cell streak
+          // Lives already depleted: cooldown based on same-cell streak
           const now = Date.now();
           const BASE_CD = 5;
           if (gs.selectedIdx === gs.duoLastErrorCell && now - gs.duoLastErrorTime < 30000) {
