@@ -80,7 +80,6 @@ export function subscribeDuoRoom(): void {
 
 export function handleDuoSnapshot(d: any): void {
   if (!d || !gs.duoRole) return;
-  const { playerId } = getPlayerIdentity();
 
   if (d.status === 'waiting' || d.status === 'countdown') {
     updateDuoPreLevelUI(d);
@@ -263,6 +262,8 @@ export function startDuoCountdown(startAtTs: any): void {
 export async function launchDuoGame(): Promise<void> {
   if (!gs.duoRoomData) return;
   gs.isDuoMode = true;
+  // Reset continuous fill mode for fair play
+  gs.continuousFillDigit = null;
 
   // Calculate total cells to fill
   const { getAllLevels } = await import('../data/dataRegistry');
@@ -347,13 +348,16 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
 
 // ── Result Modal ─────────────────────────────────────────────────────
 
+let duoResultShown = false;
 export function showDuoResult(d: any): void {
+  if (duoResultShown) return;
   const modal = document.getElementById('duo-result-modal');
   const cardsEl = document.getElementById('duo-result-cards');
   const diffEl = document.getElementById('duo-result-diff');
   const streakEl = document.getElementById('duo-result-streak');
   const recordEl = document.getElementById('duo-result-record');
-  if (!modal || !cardsEl || modal.style.display === 'flex') return;
+  if (!modal || !cardsEl) return;
+  duoResultShown = true;
 
   const hTime = d.hostFinishTime;
   const gTime = d.guestFinishTime;
@@ -531,6 +535,7 @@ export async function leaveDuoRoom(): Promise<void> {
 }
 
 export function resetDuoState(): void {
+  duoResultShown = false;
   gs.isDuoMode = false;
   gs.duoRole = null;
   gs.duoRoomData = null;
