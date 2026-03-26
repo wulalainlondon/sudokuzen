@@ -1,6 +1,7 @@
-import type { ReactElement } from 'react';
+import { useRef, type ReactElement } from 'react';
 
 import type { PracticeItemModel, PracticeSessionState } from '../../../entities/teach';
+import { ChainOverlay } from './ChainOverlay';
 
 type Props = {
   item: PracticeItemModel | null;
@@ -13,15 +14,22 @@ function getNotes(notes: Record<string, number[]>, idx: number): number[] {
 }
 
 export function PracticeBoard({ item, practice, onToggle }: Props): ReactElement {
+  const boardRef = useRef<HTMLDivElement | null>(null);
+
   if (!item) return <div className="practice-board" />;
 
   const selected = practice.selected;
   const correct = new Set(item.answer.eliminates.map(([c, d]) => `${c}:${d}`));
   const hintLevel = practice.hintLevel;
-  const focusSet = new Set(hintLevel >= 1 ? item.answer.patternCells : []);
+  const patternCells = item.answer.patternCells ?? [];
+  const focusSet = new Set(hintLevel >= 1 ? patternCells : []);
+  const eliminateIndices = practice.revealed ? item.answer.eliminates.map(([c]) => c) : [];
+
+  // Show chain when hint >= 1 (pattern cells highlighted) and we have 2+ cells
+  const showChain = hintLevel >= 1 && patternCells.length >= 2;
 
   return (
-    <div className="practice-board" id="react-practice-board">
+    <div className="practice-board" id="react-practice-board" ref={boardRef}>
       {Array.from({ length: 81 }, (_, i) => {
         const value = Number(item.board[i] ?? 0);
         const given = Number(item.given[i] ?? 0);
@@ -64,6 +72,15 @@ export function PracticeBoard({ item, practice, onToggle }: Props): ReactElement
           </div>
         );
       })}
+
+      {showChain && (
+        <ChainOverlay
+          boardRef={boardRef}
+          cells={patternCells}
+          eliminateCells={eliminateIndices}
+          animate
+        />
+      )}
     </div>
   );
 }

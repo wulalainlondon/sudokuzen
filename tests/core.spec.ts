@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatSeconds } from '../src/game/timer';
+import { formatSeconds } from '../src/game/utils';
 import { filterReplayActions } from '../src/replay/filter';
 import { hashStringToSeed, pickDailyIndex } from '../src/game/levelSelector';
 

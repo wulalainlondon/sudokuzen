@@ -1,0 +1,389 @@
+// Core game logic — init, input, win detection, save/load
+
+import { gs } from './state';
+import type { CellData } from './state';
+import { getAllLevels } from '../data/dataRegistry';
+import { SK, readJson, writeJson } from '../storage/keys';
+import { formatSeconds, cellLabel, normalizeSavedCells } from './utils';
+import { playFillSound, playUnitCompleteSound, playWinSound, playErrorFeedback } from './audio';
+import { showFeedback, markErrorArea } from '../ui/feedback';
+import { renderGrid, updateCellDisplay, selectCell, getUnitIndices, isUnitComplete, updateNumpadState } from './board';
+import { startTimer } from './timer';
+import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
+import { recalculatePlayerFilledCount, updateGhostProgressUI } from '../features/ghost';
+import { updateDuoProgress, submitDuoFinish } from '../features/duo';
+import { checkAllAchievements, unlockAchievement } from '../features/stats';
+import { closeReplayModal } from '../features/replay';
+import { closeLibraryOverlay } from '../features/teach-legacy';
+
+// ── Action recording ────────────────────────────────────────────────
+
+function recordAction(type: string, detail: string, idx: number | null = null, val: number | null = null, notes: number[] | null = null): void {
+  gs.actionHistory.push({ t: gs.seconds, type, detail, idx, val, notes: notes ? notes.slice() : null });
+  if (gs.actionHistory.length > 1200) gs.actionHistory.shift();
+}
+
+// ── Game lifecycle ──────────────────────────────────────────────────
+
+export function initGame(levelId = 1, forceReset = false, playWithGhost = false, ghostData: any = null): void {
+  closeLibraryOverlay();
+  const levels = getAllLevels();
+  gs.currentLevel = levels.find(l => l.id === levelId) || levels[0];
+  closeReplayModal();
+  localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
+
+  gs.isGhostMode = playWithGhost;
+  gs.ghostHistory = gs.isGhostMode && ghostData ? ghostData : [];
+  document.getElementById('ghost-progress-container')!.style.display = gs.isGhostMode ? 'flex' : 'none';
+  Array.from(gs.gridEl!.children).forEach(c => c.classList.remove('ghost-marked'));
+
+  const saved = forceReset ? null : loadGameStatus(gs.currentLevel.id);
+
+  if (saved) {
+    const normalizedCells = normalizeSavedCells(saved.cellsData, gs.currentLevel.puzzle);
+    if (normalizedCells) {
+      gs.cellsData = normalizedCells;
+      gs.seconds = Number.isFinite(saved.seconds) ? Math.max(0, Math.floor(saved.seconds)) : 0;
+      gs.errors = Number.isFinite(saved.errors) ? Math.min(gs.maxErrors, Math.max(0, Math.floor(saved.errors))) : 0;
+      gs.submissionCount = Number.isFinite(saved.submissionCount) ? Math.max(0, Math.floor(saved.submissionCount)) : 0;
+      gs.actionHistory = Array.isArray(saved.actionHistory) ? saved.actionHistory : [];
+    } else {
+      clearGameStatus(gs.currentLevel.id);
+      resetGameState();
+    }
+    if (saved.isGhostMode === true && saved.ghostHistory) {
+      gs.isGhostMode = true;
+      gs.ghostHistory = saved.ghostHistory;
+      document.getElementById('ghost-progress-container')!.style.display = 'flex';
+    }
+  } else {
+    resetGameState();
+  }
+
+  updateLivesUI();
+  gs.overlay!.style.display = 'none';
+  document.getElementById('pause-screen')!.style.display = 'none';
+  gs.winCelebrationEl!.style.display = 'none';
+  renderGrid();
+  startTimer(false);
+  loadLevelLeaderboard(gs.currentLevel.id);
+  document.getElementById('level-screen')!.style.display = 'none';
+  (document.querySelector('.game-container') as HTMLElement).style.display = 'flex';
+}
+
+function resetGameState(): void {
+  gs.errors = 0;
+  gs.seconds = 0;
+  gs.submissionCount = 0;
+  gs.actionHistory = [];
+  gs.cellsData = gs.currentLevel!.puzzle.map((val: number) => ({
+    value: val, fixed: val !== 0, notes: [], isError: false,
+  }));
+}
+
+// ── Save / Load ─────────────────────────────────────────────────────
+
+export function saveGameStatus(): void {
+  if (!gs.currentLevel) return;
+  const data = {
+    levelId: gs.currentLevel.id, cellsData: gs.cellsData, seconds: gs.seconds,
+    errors: gs.errors, submissionCount: gs.submissionCount, actionHistory: gs.actionHistory,
+    isGhostMode: gs.isGhostMode, ghostHistory: gs.isGhostMode ? gs.ghostHistory : null,
+  };
+  localStorage.setItem(SK.save(gs.currentLevel.id, gs.isSpeedrunMode), JSON.stringify(data));
+  localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
+}
+
+function loadGameStatus(levelId: number): any {
+  const saved = localStorage.getItem(SK.save(levelId, gs.isSpeedrunMode));
+  return saved ? JSON.parse(saved) : null;
+}
+
+function clearGameStatus(levelId: number): void {
+  localStorage.removeItem(SK.save(levelId, gs.isSpeedrunMode));
+}
+
+// ── Input handling ──────────────────────────────────────────────────
+
+export function handleInput(num: number): void {
+  if (gs.selectedIdx === null || gs.cellsData[gs.selectedIdx].fixed || gs.errors >= gs.maxErrors) return;
+
+  const data = gs.cellsData[gs.selectedIdx];
+  const cellEl = gs.gridEl!.children[gs.selectedIdx] as HTMLElement;
+
+  if (gs.isNotesMode) {
+    if (data.value !== 0) return;
+    const ni = data.notes.indexOf(num);
+    if (ni > -1) data.notes.splice(ni, 1);
+    else data.notes.push(num);
+    recordAction('note', `${cellLabel(gs.selectedIdx)} 候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`, gs.selectedIdx, null, data.notes);
+  } else {
+    if (gs.isSpeedrunMode) {
+      data.value = num;
+      data.notes = [];
+      data.isError = false;
+      recordAction('fill', `${cellLabel(gs.selectedIdx)} (競速) 填入 ${num}`, gs.selectedIdx, num);
+      playFillSound();
+      updateCellDisplay(cellEl, data);
+      saveGameStatus();
+      updateNumpadState();
+      if (gs.isDuoMode) updateDuoProgress();
+      checkSpeedrunComplete(gs.selectedIdx);
+      return;
+    }
+
+    if (num !== gs.currentLevel!.solution[gs.selectedIdx]) {
+      gs.errors++;
+      updateLivesUI();
+      data.isError = true;
+      cellEl.classList.add('error');
+      const originalValue = data.value;
+      const originalNotes = data.notes.slice();
+      data.value = num;
+      data.notes = [];
+      cellEl.classList.add('wrong-preview');
+      updateCellDisplay(cellEl, data);
+      markErrorArea(gs.selectedIdx);
+      showFeedback(`錯誤！${3 - gs.errors} 次機會剩餘`, 'error');
+      playErrorFeedback();
+      recordAction('mistake', `${cellLabel(gs.selectedIdx)} 輸入 ${num}（錯誤）`, gs.selectedIdx, num);
+      setTimeout(() => {
+        data.isError = false;
+        cellEl.classList.remove('error');
+        cellEl.classList.remove('wrong-preview');
+        data.value = originalValue;
+        data.notes = originalNotes;
+        updateCellDisplay(cellEl, data);
+      }, 400);
+      saveGameStatus();
+      if (gs.errors >= gs.maxErrors) showGameOver();
+      return;
+    }
+
+    const { rowIndices, colIndices, boxIndices } = getUnitIndices(gs.selectedIdx);
+    const beforeState = {
+      row: isUnitComplete(rowIndices),
+      col: isUnitComplete(colIndices),
+      box: isUnitComplete(boxIndices),
+    };
+    gs.cellsData[gs.selectedIdx].value = num;
+    gs.cellsData[gs.selectedIdx].notes = [];
+    gs.cellsData[gs.selectedIdx].isError = false;
+    recordAction('fill', `${cellLabel(gs.selectedIdx)} 填入 ${num}`, gs.selectedIdx, num);
+    playFillSound();
+    if (navigator.vibrate) navigator.vibrate(8);
+
+    if (gs.isGhostMode) { recalculatePlayerFilledCount(); updateGhostProgressUI(); }
+    if (!gs.isSpeedrunMode) celebrateCompletedUnits(gs.selectedIdx, beforeState);
+    if (gs.isDuoMode) updateDuoProgress();
+    checkWin();
+  }
+  updateCellDisplay(cellEl, data);
+  saveGameStatus();
+  updateNumpadState();
+  selectCell(gs.selectedIdx);
+}
+
+export function erase(): void {
+  if (gs.selectedIdx !== null && !gs.cellsData[gs.selectedIdx].fixed) {
+    const oldVal = gs.cellsData[gs.selectedIdx].value;
+    const oldNotes = gs.cellsData[gs.selectedIdx].notes.slice();
+    gs.cellsData[gs.selectedIdx].value = 0;
+    gs.cellsData[gs.selectedIdx].notes = [];
+    updateCellDisplay(gs.gridEl!.children[gs.selectedIdx] as HTMLElement, gs.cellsData[gs.selectedIdx]);
+    if (oldVal !== 0 || oldNotes.length) recordAction('erase', `${cellLabel(gs.selectedIdx)} 清除`, gs.selectedIdx, 0);
+    saveGameStatus();
+    updateNumpadState();
+  }
+}
+
+// ── Win / Game Over ─────────────────────────────────────────────────
+
+function checkWin(): void {
+  const isComplete = gs.cellsData.every((data, i) => data.value === gs.currentLevel!.solution[i]);
+  if (!isComplete) return;
+  clearInterval(gs.timerInterval!);
+  clearGameStatus(gs.currentLevel!.id);
+  const earnedValue = saveProgress();
+  showWinCelebration(earnedValue);
+  if (gs.isDuoMode) submitDuoFinish(gs.seconds, gs.isSpeedrunMode ? 0 : earnedValue);
+  setTimeout(() => {
+    if (gs.isGhostMode) unlockAchievement('ghost_win');
+    checkAllAchievements();
+  }, 1000);
+  if (!gs.isSpeedrunMode) {
+    submitFirstClear(gs.currentLevel!.id, gs.seconds, earnedValue).then(() => loadLevelLeaderboard(gs.currentLevel!.id));
+  }
+}
+
+function checkSpeedrunComplete(lastIdx: number): void {
+  const isFull = gs.cellsData.every(c => c.value !== 0);
+  if (!isFull) return;
+  let isCorrect = true;
+  for (let i = 0; i < 81; i++) {
+    if (gs.cellsData[i].value !== gs.currentLevel!.solution[i]) { isCorrect = false; break; }
+  }
+  if (isCorrect) { checkWin(); return; }
+
+  gs.submissionCount++;
+  showFeedback(`盤面有誤！已重置最後一步 (第 ${gs.submissionCount} 次提交)`, 'error');
+  playErrorFeedback();
+  Array.from(gs.gridEl!.children).forEach(c => c.classList.add('error-strong'));
+  setTimeout(() => { Array.from(gs.gridEl!.children).forEach(c => c.classList.remove('error-strong')); }, 500);
+
+  if (lastIdx !== null) {
+    gs.cellsData[lastIdx].value = 0;
+    gs.cellsData[lastIdx].isError = true;
+    const cellEl = gs.gridEl!.children[lastIdx] as HTMLElement;
+    cellEl.classList.add('error');
+    updateCellDisplay(cellEl, gs.cellsData[lastIdx]);
+    setTimeout(() => {
+      gs.cellsData[lastIdx].isError = false;
+      cellEl.classList.remove('error');
+      updateCellDisplay(cellEl, gs.cellsData[lastIdx]);
+    }, 400);
+    saveGameStatus();
+    updateNumpadState();
+  }
+}
+
+function saveProgress(): number {
+  if (gs.isSpeedrunMode) {
+    const records = readJson<Record<string, any>>(SK.SPEED_RECORDS, {});
+    const existing = records[gs.currentLevel!.id];
+    const currentSubs = gs.submissionCount + 1;
+    const shouldUpdate = !existing ||
+      currentSubs < (existing.submissions || Infinity) ||
+      (currentSubs === (existing.submissions || Infinity) && gs.seconds < (existing.time || Infinity));
+    if (shouldUpdate) {
+      records[gs.currentLevel!.id] = { time: gs.seconds, submissions: currentSubs, replayHistory: gs.actionHistory };
+      writeJson(SK.SPEED_RECORDS, records);
+    }
+    return currentSubs;
+  } else {
+    const records = readJson<Record<string, any>>(SK.RECORDS, {});
+    const existing = records[gs.currentLevel!.id];
+    const earnedStars = Math.max(1, 3 - gs.errors);
+    const shouldUpdate = !existing ||
+      earnedStars > (existing.stars || 1) ||
+      (earnedStars === (existing.stars || 1) && gs.seconds < (existing.time || Infinity));
+    if (shouldUpdate) {
+      records[gs.currentLevel!.id] = { time: gs.seconds, stars: earnedStars, replayHistory: gs.actionHistory };
+      writeJson(SK.RECORDS, records);
+    }
+    return earnedStars;
+  }
+}
+
+function showGameOver(): void {
+  clearInterval(gs.timerInterval!);
+  clearGameStatus(gs.currentLevel!.id);
+  gs.overlay!.style.display = 'flex';
+}
+
+export function resetGame(): void {
+  if (confirm('確定要重新開始本關嗎？當前進度將遺失。')) {
+    clearGameStatus(gs.currentLevel!.id);
+    initGame(gs.currentLevel!.id, true);
+  }
+}
+
+// ── UI helpers ──────────────────────────────────────────────────────
+
+export function updateLivesUI(): void {
+  if (!gs.livesEl) return;
+  if (gs.isSpeedrunMode) {
+    gs.livesEl.innerHTML = '<span style="color: #FFC107; text-shadow: 0 0 5px rgba(255,193,7,0.5);">⚡</span>';
+    return;
+  }
+  let html = '';
+  const remaining = gs.maxErrors - gs.errors;
+  for (let i = 0; i < remaining; i++) html += '<span>✖</span> ';
+  gs.livesEl.innerHTML = html;
+}
+
+function showWinCelebration(earnedValue: number): void {
+  const mins = Math.floor(gs.seconds / 60).toString().padStart(2, '0');
+  const secs = (gs.seconds % 60).toString().padStart(2, '0');
+  document.getElementById('win-level-name')!.textContent = gs.currentLevel!.displayName;
+  document.getElementById('win-time')!.textContent = `${mins}:${secs}`;
+  if (gs.isSpeedrunMode) {
+    document.getElementById('win-stars')!.textContent = `⚡ 總提交: ${earnedValue}次`;
+  } else {
+    document.getElementById('win-stars')!.textContent = '★'.repeat(earnedValue) + '☆'.repeat(3 - earnedValue);
+  }
+  createConfettiBurst(56);
+  gs.winCelebrationEl!.style.display = 'flex';
+  showFeedback('完成！太棒了！', 'success');
+  playWinSound();
+  if (navigator.vibrate) navigator.vibrate([90, 40, 90]);
+}
+
+function createConfettiBurst(count = 50): void {
+  gs.confettiLayerEl!.innerHTML = '';
+  const colors = ['#0984E3', '#74B9FF', '#F1C40F', '#00B894', '#6C5CE7'];
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti';
+    piece.style.left = `${Math.random() * 100}%`;
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = `${2.1 + Math.random() * 1.3}s`;
+    piece.style.animationDelay = `${Math.random() * 0.4}s`;
+    piece.style.transform = `translateY(-20px) rotate(${Math.random() * 180}deg)`;
+    gs.confettiLayerEl!.appendChild(piece);
+  }
+}
+
+function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: boolean; box: boolean }): void {
+  const { rowIndices, colIndices, boxIndices } = getUnitIndices(idx);
+  const justRow = !beforeState.row && isUnitComplete(rowIndices);
+  const justCol = !beforeState.col && isUnitComplete(colIndices);
+  const justBox = !beforeState.box && isUnitComplete(boxIndices);
+  if (!justRow && !justCol && !justBox) return;
+
+  const flashSet = new Set<number>();
+  if (justRow) rowIndices.forEach(i => flashSet.add(i));
+  if (justCol) colIndices.forEach(i => flashSet.add(i));
+  if (justBox) boxIndices.forEach(i => flashSet.add(i));
+
+  flashSet.forEach(i => gs.gridEl!.children[i].classList.add('unit-complete'));
+  setTimeout(() => { flashSet.forEach(i => gs.gridEl!.children[i].classList.remove('unit-complete')); }, 560);
+
+  const parts: string[] = [];
+  if (justRow) parts.push('一列');
+  if (justCol) parts.push('一欄');
+  if (justBox) parts.push('一宮');
+  showFeedback(`完成 ${parts.join(' + ')}！`, 'success');
+  playUnitCompleteSound();
+  if (navigator.vibrate) navigator.vibrate([12, 30, 12]);
+}
+
+// ── Pause / Resume ──────────────────────────────────────────────────
+
+export function pauseGame(): void {
+  clearInterval(gs.timerInterval!);
+  document.getElementById('pause-level-name')!.textContent = gs.currentLevel!.displayName;
+  document.getElementById('pause-timer')!.textContent = formatSeconds(gs.seconds);
+  saveGameStatus();
+  loadLevelLeaderboard(gs.currentLevel!.id);
+  document.getElementById('pause-screen')!.style.display = 'flex';
+}
+
+export function resumeGame(): void {
+  document.getElementById('pause-screen')!.style.display = 'none';
+  startTimer(false);
+}
+
+// ── Theme / Notes ───────────────────────────────────────────────────
+
+export function toggleTheme(): void {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem(SK.THEME, next);
+}
+
+export function toggleNoteMode(): void {
+  gs.isNotesMode = !gs.isNotesMode;
+  document.getElementById('note-toggle')!.classList.toggle('active', gs.isNotesMode);
+}

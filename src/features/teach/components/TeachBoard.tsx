@@ -1,6 +1,7 @@
-import type { ReactElement } from 'react';
+import { useRef, type ReactElement } from 'react';
 
 import type { TeachExampleModel, TeachStepModel } from '../../../entities/teach';
+import { ChainOverlay } from './ChainOverlay';
 
 type Props = {
   example: TeachExampleModel | null;
@@ -12,19 +13,23 @@ function getNotes(notes: Record<string, number[]>, idx: number): number[] {
 }
 
 export function TeachBoard({ example, step }: Props): ReactElement {
+  const boardRef = useRef<HTMLDivElement | null>(null);
+
   if (!example) {
     return <div className="teach-board" />;
   }
 
-  const focusSet = new Set(step?.focusCells ?? []);
+  const focusCells = step?.focusCells ?? [];
+  const focusSet = new Set(focusCells);
   const visibleSet = new Set(step?.visibleCells ?? []);
   const hasVisibleMask = visibleSet.size > 0;
   const eliminateMap = new Map((step?.eliminateCells ?? []).map((x) => [x.cell, x.digit]));
+  const eliminateIndices = (step?.eliminateCells ?? []).map(x => x.cell);
   const warnSet = new Set(step?.warnCells ?? []);
   const warnDigit = step?.warnDigit ?? null;
 
   return (
-    <div className="teach-board">
+    <div className="teach-board" ref={boardRef}>
       {Array.from({ length: 81 }, (_, i) => {
         const value = Number(example.board[i] ?? 0);
         const noteArr = getNotes(example.notes, i);
@@ -62,6 +67,15 @@ export function TeachBoard({ example, step }: Props): ReactElement {
           </div>
         );
       })}
+
+      {focusCells.length >= 2 && (
+        <ChainOverlay
+          boardRef={boardRef}
+          cells={focusCells}
+          eliminateCells={eliminateIndices}
+          animate
+        />
+      )}
     </div>
   );
 }
