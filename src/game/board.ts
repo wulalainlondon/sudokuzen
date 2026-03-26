@@ -2,6 +2,7 @@
 
 import { gs } from './state';
 import type { CellData } from './state';
+import { playCellSelectSound } from './audio';
 
 export function renderGrid(): void {
   if (!gs.gridEl) return;
@@ -12,11 +13,18 @@ export function renderGrid(): void {
     updateCellDisplay(cell, data);
     cell.addEventListener('pointerdown', (ev) => {
       if (ev && ev.button !== undefined && ev.button !== 0) return;
-      // In continuous fill mode, clicking a cell directly fills
-      if (gs.continuousFillDigit && gs.continuousFillDigit >= 1) {
-        import('./core').then(m => {
-          if (!m.handleContinuousCellClick(i)) selectCell(i);
-        });
+      // In continuous fill mode
+      if (gs.continuousFillDigit !== null && gs.continuousFillDigit >= 1) {
+        const cellVal = gs.cellsData[i].value;
+        if (cellVal !== 0) {
+          // Tapped a filled cell → switch locked digit to that number
+          import('./core').then(m => m.setContinuousDigit(cellVal));
+          selectCell(i);
+        } else {
+          import('./core').then(m => {
+            if (!m.handleContinuousCellClick(i)) selectCell(i);
+          });
+        }
       } else {
         selectCell(i);
       }
@@ -27,11 +35,21 @@ export function renderGrid(): void {
 }
 
 export function updateCellDisplay(cell: HTMLElement, data: CellData): void {
+  const prevText = cell.textContent;
   cell.innerHTML = '';
   if (data.value !== 0) {
     cell.textContent = String(data.value);
-    if (!data.fixed) cell.classList.add('user-val');
-    else cell.classList.remove('user-val');
+    if (!data.fixed) {
+      cell.classList.add('user-val');
+      // Trigger fill pop-in if value just changed
+      if (prevText !== String(data.value)) {
+        cell.classList.remove('fill-pop');
+        void cell.offsetWidth;
+        cell.classList.add('fill-pop');
+      }
+    } else {
+      cell.classList.remove('user-val');
+    }
   } else {
     const ng = document.createElement('div');
     ng.className = 'notes-grid';
@@ -48,6 +66,7 @@ export function updateCellDisplay(cell: HTMLElement, data: CellData): void {
 export function selectCell(idx: number): void {
   gs.selectedIdx = idx;
   if (!gs.gridEl) return;
+  playCellSelectSound();
   const selectedVal = gs.cellsData[idx].value;
   // In continuous mode, highlight the locked digit; otherwise use selected cell's value
   const highlightDigit = (gs.continuousFillDigit && gs.continuousFillDigit >= 1)

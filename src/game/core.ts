@@ -5,7 +5,7 @@ import type { CellData } from './state';
 import { getAllLevels } from '../data/dataRegistry';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds, cellLabel, normalizeSavedCells } from './utils';
-import { playFillSound, playUnitCompleteSound, playWinSound, playErrorFeedback } from './audio';
+import { playFillSound, playUnitCompleteSound, playWinSound, playErrorFeedback, playNoteToggleSound, playEraseSound } from './audio';
 import { showFeedback, markErrorArea } from '../ui/feedback';
 import { renderGrid, updateCellDisplay, selectCell, getUnitIndices, isUnitComplete, updateNumpadState } from './board';
 import { startTimer } from './timer';
@@ -137,6 +137,8 @@ export function handleInput(num: number): void {
     if (ni > -1) data.notes.splice(ni, 1);
     else data.notes.push(num);
     recordAction('note', `${cellLabel(gs.selectedIdx)} 候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`, gs.selectedIdx, null, data.notes);
+    playNoteToggleSound();
+    if (navigator.vibrate) navigator.vibrate(5);
   } else {
     if (gs.isSpeedrunMode) {
       data.value = num;
@@ -166,6 +168,7 @@ export function handleInput(num: number): void {
       markErrorArea(gs.selectedIdx);
       showFeedback(`錯誤！${3 - gs.errors} 次機會剩餘`, 'error');
       playErrorFeedback();
+      if (navigator.vibrate) navigator.vibrate([35, 20, 25]);
       recordAction('mistake', `${cellLabel(gs.selectedIdx)} 輸入 ${num}（錯誤）`, gs.selectedIdx, num);
       setTimeout(() => {
         data.isError = false;
@@ -193,7 +196,7 @@ export function handleInput(num: number): void {
     // Auto-clear this digit from peer cells' notes
     eliminateNoteFromPeers(gs.selectedIdx, num);
     playFillSound();
-    if (navigator.vibrate) navigator.vibrate(8);
+    if (navigator.vibrate) navigator.vibrate(12);
 
     if (gs.isGhostMode) { recalculatePlayerFilledCount(); updateGhostProgressUI(); }
     if (!gs.isSpeedrunMode) celebrateCompletedUnits(gs.selectedIdx, beforeState);
@@ -213,7 +216,11 @@ export function erase(): void {
     gs.cellsData[gs.selectedIdx].value = 0;
     gs.cellsData[gs.selectedIdx].notes = [];
     updateCellDisplay(gs.gridEl!.children[gs.selectedIdx] as HTMLElement, gs.cellsData[gs.selectedIdx]);
-    if (oldVal !== 0 || oldNotes.length) recordAction('erase', `${cellLabel(gs.selectedIdx)} 清除`, gs.selectedIdx, 0);
+    if (oldVal !== 0 || oldNotes.length) {
+      recordAction('erase', `${cellLabel(gs.selectedIdx)} 清除`, gs.selectedIdx, 0);
+      playEraseSound();
+      if (navigator.vibrate) navigator.vibrate(5);
+    }
     saveGameStatus();
     updateNumpadState();
   }
@@ -334,16 +341,16 @@ function showWinCelebration(earnedValue: number): void {
   } else {
     document.getElementById('win-stars')!.textContent = '★'.repeat(earnedValue) + '☆'.repeat(3 - earnedValue);
   }
-  createConfettiBurst(56);
+  createConfettiBurst(22);
   gs.winCelebrationEl!.style.display = 'flex';
   showFeedback('完成！太棒了！', 'success');
   playWinSound();
-  if (navigator.vibrate) navigator.vibrate([90, 40, 90]);
+  if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
 }
 
 function createConfettiBurst(count = 50): void {
   gs.confettiLayerEl!.innerHTML = '';
-  const colors = ['#0984E3', '#74B9FF', '#F1C40F', '#00B894', '#6C5CE7'];
+  const colors = ['#0984E3', '#74B9FF', '#A29BFE', '#DFE6E9', '#B2BEC3'];
   for (let i = 0; i < count; i++) {
     const piece = document.createElement('div');
     piece.className = 'confetti';
@@ -368,8 +375,24 @@ function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: 
   if (justCol) colIndices.forEach(i => flashSet.add(i));
   if (justBox) boxIndices.forEach(i => flashSet.add(i));
 
-  flashSet.forEach(i => gs.gridEl!.children[i].classList.add('unit-complete'));
-  setTimeout(() => { flashSet.forEach(i => gs.gridEl!.children[i].classList.remove('unit-complete')); }, 560);
+  // Staggered ripple from the trigger cell
+  const sorted = [...flashSet].sort((a, b) => {
+    const dA = Math.abs(Math.floor(a / 9) - Math.floor(idx / 9)) + Math.abs(a % 9 - idx % 9);
+    const dB = Math.abs(Math.floor(b / 9) - Math.floor(idx / 9)) + Math.abs(b % 9 - idx % 9);
+    return dA - dB;
+  });
+  sorted.forEach((i, order) => {
+    const el = gs.gridEl!.children[i] as HTMLElement;
+    el.style.animationDelay = `${order * 25}ms`;
+    el.classList.add('unit-complete');
+  });
+  setTimeout(() => {
+    flashSet.forEach(i => {
+      const el = gs.gridEl!.children[i] as HTMLElement;
+      el.classList.remove('unit-complete');
+      el.style.animationDelay = '';
+    });
+  }, 900);
 
   const parts: string[] = [];
   if (justRow) parts.push('一列');
@@ -377,7 +400,7 @@ function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: 
   if (justBox) parts.push('一宮');
   showFeedback(`完成 ${parts.join(' + ')}！`, 'success');
   playUnitCompleteSound();
-  if (navigator.vibrate) navigator.vibrate([12, 30, 12]);
+  if (navigator.vibrate) navigator.vibrate([8, 20, 8, 20, 8]);
 }
 
 // ── Pause / Resume ──────────────────────────────────────────────────

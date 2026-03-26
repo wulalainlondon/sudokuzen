@@ -121,6 +121,11 @@ export const gs = {
 
   // ── Audio ─────────────────────────────────────────────────────────
   _audioCtx: null as AudioContext | null,
+  _masterGain: null as GainNode | null,
+  _reverbNode: null as ConvolverNode | null,
+  _reverbGain: null as GainNode | null,
+  _dryGain: null as GainNode | null,
+  _noiseBuffer: null as AudioBuffer | null,
 
   // ── App ───────────────────────────────────────────────────────────
   appVersion: '',
