@@ -189,7 +189,78 @@ export function bootLegacyRuntime(appVersion: string): void {
       saveGameStatus();
   });
 
-  // 14. Show level screen
+  // 14. Android back button — navigate within app, never leave
+  history.replaceState({ screen: 'stage' }, '');
+  window.addEventListener('popstate', () => {
+    // Always push state back so we never run out of history
+    history.pushState({ screen: 'nav' }, '');
+
+    // Priority: close modals first
+    const teachModal = document.getElementById('teach-modal');
+    const practiceModal = document.getElementById('practice-modal');
+    const statsModal = document.getElementById('stats-modal');
+    const replayModal = gs.replayModalEl;
+    const duoResult = document.getElementById('duo-result-modal');
+    const preLevel = gs.preLevelModalEl;
+    const libraryEl = gs.libraryOverlayEl;
+
+    if (teachModal?.classList.contains('show')) {
+      hideTeachModal();
+      return;
+    }
+    if (practiceModal?.classList.contains('show')) {
+      closePracticeModal();
+      return;
+    }
+    if (statsModal?.style.display === 'flex') {
+      closeStatsModal();
+      return;
+    }
+    if (replayModal?.style.display === 'flex') {
+      closeReplayModal();
+      return;
+    }
+    if (duoResult?.style.display === 'flex') {
+      closeDuoResult();
+      return;
+    }
+    if (libraryEl?.classList.contains('show')) {
+      closeLibraryOverlay();
+      return;
+    }
+    if (preLevel?.style.display === 'flex') {
+      hidePreLevelModal();
+      return;
+    }
+
+    // Game screen → pause
+    if ((document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') {
+      const pauseScreen = document.getElementById('pause-screen');
+      const overlay = gs.overlay;
+      const winEl = gs.winCelebrationEl;
+      if (pauseScreen?.style.display === 'flex') {
+        // Already paused → go back to level screen
+        showLevelScreen(true);
+      } else if (overlay?.style.display === 'flex' || winEl?.style.display === 'flex') {
+        // Game over or win → back to levels
+        showLevelScreen(true);
+      } else {
+        // Playing → pause
+        pauseGame();
+      }
+      return;
+    }
+
+    // Tier view → stage map
+    if (document.getElementById('tier-view')?.style.display === 'flex') {
+      backToStageMap();
+      return;
+    }
+
+    // Stage map = top level → do nothing (stay in app)
+  });
+
+  // 15. Show level screen
   showLevelScreen();
 
   // 15. Bind window facade for onclick="" handlers in HTML
