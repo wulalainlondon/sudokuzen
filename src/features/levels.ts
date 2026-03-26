@@ -329,6 +329,10 @@ export async function startLevelFromModal(forceReset = false, playWithGhost = fa
 // ── Navigation ──────────────────────────────────────────────────────
 
 export function showLevelScreen(returnToTier = false): void {
+  // Save progress before leaving game screen
+  if (gs.currentLevel && (document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') {
+    import('../game/core').then(m => m.saveGameStatus());
+  }
   closeLibraryOverlay();
   updateSpeedrunToggleUI();
   document.getElementById('level-screen')!.style.display = 'flex';
