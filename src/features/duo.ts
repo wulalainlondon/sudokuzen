@@ -536,6 +536,12 @@ export async function leaveDuoRoom(): Promise<void> {
 
 export function resetDuoState(): void {
   duoResultShown = false;
+  gs.duoPenaltySeconds = 0;
+  gs.duoCooldownUntil = 0;
+  gs.duoLastErrorCell = -1;
+  gs.duoLastErrorTime = 0;
+  gs.duoSameCellStreak = 0;
+  if (gs.duoCooldownTimer) { clearInterval(gs.duoCooldownTimer); gs.duoCooldownTimer = null; }
   gs.isDuoMode = false;
   gs.duoRole = null;
   gs.duoRoomData = null;

@@ -126,7 +126,9 @@ function clearGameStatus(levelId: number): void {
 // ── Input handling ──────────────────────────────────────────────────
 
 export function handleInput(num: number): void {
-  if (gs.selectedIdx === null || gs.cellsData[gs.selectedIdx].fixed || gs.errors >= gs.maxErrors) return;
+  if (gs.selectedIdx === null || gs.cellsData[gs.selectedIdx].fixed) return;
+  if (!gs.isDuoMode && gs.errors >= gs.maxErrors) return;
+  if (isDuoCooldownActive()) return;
 
   const data = gs.cellsData[gs.selectedIdx];
   const cellEl = gs.gridEl!.children[gs.selectedIdx] as HTMLElement;
@@ -156,7 +158,6 @@ export function handleInput(num: number): void {
 
     if (num !== gs.currentLevel!.solution[gs.selectedIdx]) {
       gs.errors++;
-      updateLivesUI();
       data.isError = true;
       cellEl.classList.add('error');
       const originalValue = data.value;
@@ -166,7 +167,33 @@ export function handleInput(num: number): void {
       cellEl.classList.add('wrong-preview');
       updateCellDisplay(cellEl, data);
       markErrorArea(gs.selectedIdx);
-      showFeedback(`錯誤！${3 - gs.errors} 次機會剩餘`, 'error');
+
+      if (gs.isDuoMode) {
+        const remaining = gs.maxErrors - gs.errors;
+        if (remaining > 0) {
+          // First 3 errors: same as solo — lose a life, no cooldown
+          updateLivesUI();
+          showFeedback(`錯誤！${remaining} 次機會剩餘`, 'error');
+        } else {
+          // Lives depleted: cooldown based on same-cell streak
+          const now = Date.now();
+          const BASE_CD = 5;
+          if (gs.selectedIdx === gs.duoLastErrorCell && now - gs.duoLastErrorTime < 30000) {
+            gs.duoSameCellStreak++;
+          } else {
+            gs.duoSameCellStreak = 1;
+          }
+          gs.duoLastErrorCell = gs.selectedIdx!;
+          gs.duoLastErrorTime = now;
+          const cooldownSec = Math.min(BASE_CD * gs.duoSameCellStreak, 30);
+          startDuoCooldown(cooldownSec);
+          showFeedback(`錯誤！冷卻 ${cooldownSec}s`, 'error');
+        }
+      } else {
+        updateLivesUI();
+        showFeedback(`錯誤！${gs.maxErrors - gs.errors} 次機會剩餘`, 'error');
+      }
+
       playErrorFeedback();
       if (navigator.vibrate) navigator.vibrate([35, 20, 25]);
       recordAction('mistake', `${cellLabel(gs.selectedIdx)} 輸入 ${num}（錯誤）`, gs.selectedIdx, num);
@@ -179,7 +206,7 @@ export function handleInput(num: number): void {
         updateCellDisplay(cellEl, data);
       }, 400);
       saveGameStatus();
-      if (gs.errors >= gs.maxErrors) showGameOver();
+      if (!gs.isDuoMode && gs.errors >= gs.maxErrors) showGameOver();
       return;
     }
 
@@ -210,6 +237,7 @@ export function handleInput(num: number): void {
 }
 
 export function erase(): void {
+  if (isDuoCooldownActive()) return;
   if (gs.selectedIdx !== null && !gs.cellsData[gs.selectedIdx].fixed) {
     const oldVal = gs.cellsData[gs.selectedIdx].value;
     const oldNotes = gs.cellsData[gs.selectedIdx].notes.slice();
@@ -325,6 +353,13 @@ export function updateLivesUI(): void {
     gs.livesEl.innerHTML = '<span style="color: #FFC107; text-shadow: 0 0 5px rgba(255,193,7,0.5);">⚡</span>';
     return;
   }
+  if (gs.isDuoMode && gs.errors >= gs.maxErrors) {
+    // Lives depleted — cooldown UI takes over (handled by updateDuoCooldownUI)
+    if (!isDuoCooldownActive()) {
+      gs.livesEl.innerHTML = '<span style="color: var(--error-color); font-size: 0.8rem;">⚠ 無剩餘</span>';
+    }
+    return;
+  }
   let html = '';
   const remaining = gs.maxErrors - gs.errors;
   for (let i = 0; i < remaining; i++) html += '<span>✖</span> ';
@@ -401,6 +436,38 @@ function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: 
   showFeedback(`完成 ${parts.join(' + ')}！`, 'success');
   playUnitCompleteSound();
   if (navigator.vibrate) navigator.vibrate([8, 20, 8, 20, 8]);
+}
+
+// ── Duo Cooldown Lock ───────────────────────────────────────────────
+
+function startDuoCooldown(seconds: number): void {
+  gs.duoCooldownUntil = Date.now() + seconds * 1000;
+
+  // Clear any existing timer
+  if (gs.duoCooldownTimer) clearInterval(gs.duoCooldownTimer);
+
+  updateDuoCooldownUI();
+  gs.duoCooldownTimer = setInterval(() => {
+    const left = Math.ceil((gs.duoCooldownUntil - Date.now()) / 1000);
+    if (left <= 0) {
+      clearInterval(gs.duoCooldownTimer!);
+      gs.duoCooldownTimer = null;
+      gs.duoCooldownUntil = 0;
+      updateLivesUI(); // restore normal display
+    } else {
+      updateDuoCooldownUI();
+    }
+  }, 200);
+}
+
+function updateDuoCooldownUI(): void {
+  if (!gs.livesEl) return;
+  const left = Math.max(0, Math.ceil((gs.duoCooldownUntil - Date.now()) / 1000));
+  gs.livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem; font-weight: 600;">🔒 ${left}s</span>`;
+}
+
+export function isDuoCooldownActive(): boolean {
+  return gs.isDuoMode && gs.duoCooldownUntil > Date.now();
 }
 
 // ── Pause / Resume ──────────────────────────────────────────────────
