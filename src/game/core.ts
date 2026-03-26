@@ -511,6 +511,18 @@ function startDuoCooldown(seconds: number): void {
   // Clear any existing timer
   if (gs.duoCooldownTimer) clearInterval(gs.duoCooldownTimer);
 
+  // Add shrinking mask on the target cell
+  removeCooldownMask();
+  if (gs.gridEl && gs.duoLastErrorCell >= 0) {
+    const cellEl = gs.gridEl.children[gs.duoLastErrorCell] as HTMLElement;
+    if (cellEl) {
+      const mask = document.createElement('div');
+      mask.className = 'cell-cooldown-mask';
+      mask.style.animationDuration = `${seconds}s`;
+      cellEl.appendChild(mask);
+    }
+  }
+
   updateDuoCooldownUI();
   gs.duoCooldownTimer = setInterval(() => {
     const left = Math.ceil((gs.duoCooldownUntil - Date.now()) / 1000);
@@ -518,11 +530,16 @@ function startDuoCooldown(seconds: number): void {
       clearInterval(gs.duoCooldownTimer!);
       gs.duoCooldownTimer = null;
       gs.duoCooldownUntil = 0;
+      removeCooldownMask();
       updateLivesUI(); // restore normal display
     } else {
       updateDuoCooldownUI();
     }
   }, 200);
+}
+
+function removeCooldownMask(): void {
+  document.querySelectorAll('.cell-cooldown-mask').forEach((el) => el.remove());
 }
 
 function updateDuoCooldownUI(): void {

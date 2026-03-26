@@ -2614,6 +2614,22 @@ body.library-open {
     animation: practiceSuccess 0.6s ease;
 }
 
+/* ── Duo cooldown cell mask ─────────────────────────────────────── */
+.cell-cooldown-mask {
+    position: absolute;
+    inset: 0;
+    background: var(--error-color);
+    opacity: 0.18;
+    z-index: 3;
+    pointer-events: none;
+    transform-origin: bottom center;
+    animation: cooldownShrink linear forwards;
+}
+@keyframes cooldownShrink {
+    0%   { transform: scaleY(1); }
+    100% { transform: scaleY(0); }
+}
+
 /* ── Teach shared animations ───────────────────────────────────── */
 
 /* Digit elimination: gentle fade + strike — matches zen aesthetic */
