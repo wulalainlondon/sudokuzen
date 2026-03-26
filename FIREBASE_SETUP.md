@@ -97,3 +97,15 @@ service cloud.firestore {
 ```
 
 Adjust as needed for stronger anti-abuse (App Check / auth / Cloud Functions).
+
+## 8) GitHub Actions 自動部署 Firebase 預覽站（不影響正式 GitHub Pages）
+
+Repo 已加入 `.github/workflows/deploy-firebase-preview.yml`，會把 `main` 部署到 Firebase Hosting preview channel：`web-preview`。
+
+你需要在 GitHub repo secrets 新增：
+
+- `FIREBASE_SERVICE_ACCOUNT`
+  - 值為 Firebase/GCP service account JSON（整段 JSON 字串）
+  - 權限至少可部署 Hosting（Firebase Hosting Admin）
+
+部署後可用 Firebase preview URL 做線上調整與驗證，不會影響 GitHub Pages 既有用戶。

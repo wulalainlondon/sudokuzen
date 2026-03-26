@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const deployTarget = process.env.DEPLOY_TARGET;
+const base = deployTarget === 'github-pages' ? '/sudokuzen/' : '/';
+
 export default defineConfig({
-  base: process.env.GITHUB_ACTIONS ? '/sudokuzen/' : '/',
+  base,
   plugins: [react()],
   server: {
     host: true,
