@@ -1,11 +1,17 @@
 // Core game logic — init, input, win detection, save/load
 
 import { gs } from './state';
-import type { CellData } from './state';
 import { getAllLevels } from '../data/dataRegistry';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds, cellLabel, normalizeSavedCells } from './utils';
-import { playFillSound, playUnitCompleteSound, playWinSound, playErrorFeedback, playNoteToggleSound, playEraseSound } from './audio';
+import {
+  playFillSound,
+  playUnitCompleteSound,
+  playWinSound,
+  playErrorFeedback,
+  playNoteToggleSound,
+  playEraseSound,
+} from './audio';
 import { showFeedback, markErrorArea } from '../ui/feedback';
 import { renderGrid, updateCellDisplay, selectCell, getUnitIndices, isUnitComplete, updateNumpadState } from './board';
 import { startTimer } from './timer';
@@ -14,10 +20,22 @@ import { recalculatePlayerFilledCount, updateGhostProgressUI } from '../features
 import { checkAllAchievements, unlockAchievement } from '../features/stats';
 
 // Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
-async function callDuoProgress() { const m = await import('../features/duo'); m.updateDuoProgress(); }
-async function callDuoFinish(sec: number, stars: number) { const m = await import('../features/duo'); m.submitDuoFinish(sec, stars); }
-async function callCloseReplay() { const m = await import('../features/replay'); m.closeReplayModal(); }
-async function callCloseLibrary() { const m = await import('../features/teach-legacy'); m.closeLibraryOverlay(); }
+async function callDuoProgress() {
+  const m = await import('../features/duo');
+  m.updateDuoProgress();
+}
+async function callDuoFinish(sec: number, stars: number) {
+  const m = await import('../features/duo');
+  m.submitDuoFinish(sec, stars);
+}
+async function callCloseReplay() {
+  const m = await import('../features/replay');
+  m.closeReplayModal();
+}
+async function callCloseLibrary() {
+  const m = await import('../features/teach-legacy');
+  m.closeLibraryOverlay();
+}
 
 // ── Auto-eliminate notes from peers ─────────────────────────────────
 
@@ -38,7 +56,13 @@ function eliminateNoteFromPeers(idx: number, digit: number): void {
 
 // ── Action recording ────────────────────────────────────────────────
 
-function recordAction(type: string, detail: string, idx: number | null = null, val: number | null = null, notes: number[] | null = null): void {
+function recordAction(
+  type: string,
+  detail: string,
+  idx: number | null = null,
+  val: number | null = null,
+  notes: number[] | null = null,
+): void {
   gs.actionHistory.push({ t: gs.seconds, type, detail, idx, val, notes: notes ? notes.slice() : null });
   if (gs.actionHistory.length > 1200) gs.actionHistory.shift();
 }
@@ -48,14 +72,14 @@ function recordAction(type: string, detail: string, idx: number | null = null, v
 export function initGame(levelId = 1, forceReset = false, playWithGhost = false, ghostData: any = null): void {
   callCloseLibrary();
   const levels = getAllLevels();
-  gs.currentLevel = levels.find(l => l.id === levelId) || levels[0];
+  gs.currentLevel = levels.find((l) => l.id === levelId) || levels[0];
   callCloseReplay();
   localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
 
   gs.isGhostMode = playWithGhost;
   gs.ghostHistory = gs.isGhostMode && ghostData ? ghostData : [];
   document.getElementById('ghost-progress-container')!.style.display = gs.isGhostMode ? 'flex' : 'none';
-  Array.from(gs.gridEl!.children).forEach(c => c.classList.remove('ghost-marked'));
+  Array.from(gs.gridEl!.children).forEach((c) => c.classList.remove('ghost-marked'));
 
   const saved = forceReset ? null : loadGameStatus(gs.currentLevel.id);
 
@@ -97,7 +121,10 @@ function resetGameState(): void {
   gs.submissionCount = 0;
   gs.actionHistory = [];
   gs.cellsData = gs.currentLevel!.puzzle.map((val: number) => ({
-    value: val, fixed: val !== 0, notes: [], isError: false,
+    value: val,
+    fixed: val !== 0,
+    notes: [],
+    isError: false,
   }));
 }
 
@@ -106,9 +133,14 @@ function resetGameState(): void {
 export function saveGameStatus(): void {
   if (!gs.currentLevel) return;
   const data = {
-    levelId: gs.currentLevel.id, cellsData: gs.cellsData, seconds: gs.seconds,
-    errors: gs.errors, submissionCount: gs.submissionCount, actionHistory: gs.actionHistory,
-    isGhostMode: gs.isGhostMode, ghostHistory: gs.isGhostMode ? gs.ghostHistory : null,
+    levelId: gs.currentLevel.id,
+    cellsData: gs.cellsData,
+    seconds: gs.seconds,
+    errors: gs.errors,
+    submissionCount: gs.submissionCount,
+    actionHistory: gs.actionHistory,
+    isGhostMode: gs.isGhostMode,
+    ghostHistory: gs.isGhostMode ? gs.ghostHistory : null,
   };
   localStorage.setItem(SK.save(gs.currentLevel.id, gs.isSpeedrunMode), JSON.stringify(data));
   localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
@@ -138,7 +170,13 @@ export function handleInput(num: number): void {
     const ni = data.notes.indexOf(num);
     if (ni > -1) data.notes.splice(ni, 1);
     else data.notes.push(num);
-    recordAction('note', `${cellLabel(gs.selectedIdx)} 候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`, gs.selectedIdx, null, data.notes);
+    recordAction(
+      'note',
+      `${cellLabel(gs.selectedIdx)} 候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`,
+      gs.selectedIdx,
+      null,
+      data.notes,
+    );
     playNoteToggleSound();
     if (navigator.vibrate) navigator.vibrate(5);
   } else {
@@ -225,7 +263,10 @@ export function handleInput(num: number): void {
     playFillSound();
     if (navigator.vibrate) navigator.vibrate(12);
 
-    if (gs.isGhostMode) { recalculatePlayerFilledCount(); updateGhostProgressUI(); }
+    if (gs.isGhostMode) {
+      recalculatePlayerFilledCount();
+      updateGhostProgressUI();
+    }
     if (!gs.isSpeedrunMode) celebrateCompletedUnits(gs.selectedIdx, beforeState);
     if (gs.isDuoMode) callDuoProgress();
     checkWin();
@@ -261,7 +302,10 @@ function checkWin(): void {
   if (!isComplete) return;
   clearInterval(gs.timerInterval!);
   // Clear duo cooldown if active
-  if (gs.duoCooldownTimer) { clearInterval(gs.duoCooldownTimer); gs.duoCooldownTimer = null; }
+  if (gs.duoCooldownTimer) {
+    clearInterval(gs.duoCooldownTimer);
+    gs.duoCooldownTimer = null;
+  }
   gs.duoCooldownUntil = 0;
   clearGameStatus(gs.currentLevel!.id);
   const earnedValue = saveProgress();
@@ -272,24 +316,34 @@ function checkWin(): void {
     checkAllAchievements();
   }, 1000);
   if (!gs.isSpeedrunMode) {
-    submitFirstClear(gs.currentLevel!.id, gs.seconds, earnedValue).then(() => loadLevelLeaderboard(gs.currentLevel!.id));
+    submitFirstClear(gs.currentLevel!.id, gs.seconds, earnedValue).then(() =>
+      loadLevelLeaderboard(gs.currentLevel!.id),
+    );
   }
 }
 
 function checkSpeedrunComplete(lastIdx: number): void {
-  const isFull = gs.cellsData.every(c => c.value !== 0);
+  const isFull = gs.cellsData.every((c) => c.value !== 0);
   if (!isFull) return;
   let isCorrect = true;
   for (let i = 0; i < 81; i++) {
-    if (gs.cellsData[i].value !== gs.currentLevel!.solution[i]) { isCorrect = false; break; }
+    if (gs.cellsData[i].value !== gs.currentLevel!.solution[i]) {
+      isCorrect = false;
+      break;
+    }
   }
-  if (isCorrect) { checkWin(); return; }
+  if (isCorrect) {
+    checkWin();
+    return;
+  }
 
   gs.submissionCount++;
   showFeedback(`盤面有誤！已重置最後一步 (第 ${gs.submissionCount} 次提交)`, 'error');
   playErrorFeedback();
-  Array.from(gs.gridEl!.children).forEach(c => c.classList.add('error-strong'));
-  setTimeout(() => { Array.from(gs.gridEl!.children).forEach(c => c.classList.remove('error-strong')); }, 500);
+  Array.from(gs.gridEl!.children).forEach((c) => c.classList.add('error-strong'));
+  setTimeout(() => {
+    Array.from(gs.gridEl!.children).forEach((c) => c.classList.remove('error-strong'));
+  }, 500);
 
   if (lastIdx !== null) {
     gs.cellsData[lastIdx].value = 0;
@@ -312,7 +366,8 @@ function saveProgress(): number {
     const records = readJson<Record<string, any>>(SK.SPEED_RECORDS, {});
     const existing = records[gs.currentLevel!.id];
     const currentSubs = gs.submissionCount + 1;
-    const shouldUpdate = !existing ||
+    const shouldUpdate =
+      !existing ||
       currentSubs < (existing.submissions || Infinity) ||
       (currentSubs === (existing.submissions || Infinity) && gs.seconds < (existing.time || Infinity));
     if (shouldUpdate) {
@@ -324,7 +379,8 @@ function saveProgress(): number {
     const records = readJson<Record<string, any>>(SK.RECORDS, {});
     const existing = records[gs.currentLevel!.id];
     const earnedStars = Math.max(1, 3 - gs.errors);
-    const shouldUpdate = !existing ||
+    const shouldUpdate =
+      !existing ||
       earnedStars > (existing.stars || 1) ||
       (earnedStars === (existing.stars || 1) && gs.seconds < (existing.time || Infinity));
     if (shouldUpdate) {
@@ -370,7 +426,9 @@ export function updateLivesUI(): void {
 }
 
 function showWinCelebration(earnedValue: number): void {
-  const mins = Math.floor(gs.seconds / 60).toString().padStart(2, '0');
+  const mins = Math.floor(gs.seconds / 60)
+    .toString()
+    .padStart(2, '0');
   const secs = (gs.seconds % 60).toString().padStart(2, '0');
   document.getElementById('win-level-name')!.textContent = gs.currentLevel!.displayName;
   document.getElementById('win-time')!.textContent = `${mins}:${secs}`;
@@ -409,14 +467,14 @@ function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: 
   if (!justRow && !justCol && !justBox) return;
 
   const flashSet = new Set<number>();
-  if (justRow) rowIndices.forEach(i => flashSet.add(i));
-  if (justCol) colIndices.forEach(i => flashSet.add(i));
-  if (justBox) boxIndices.forEach(i => flashSet.add(i));
+  if (justRow) rowIndices.forEach((i) => flashSet.add(i));
+  if (justCol) colIndices.forEach((i) => flashSet.add(i));
+  if (justBox) boxIndices.forEach((i) => flashSet.add(i));
 
   // Staggered ripple from the trigger cell
   const sorted = [...flashSet].sort((a, b) => {
-    const dA = Math.abs(Math.floor(a / 9) - Math.floor(idx / 9)) + Math.abs(a % 9 - idx % 9);
-    const dB = Math.abs(Math.floor(b / 9) - Math.floor(idx / 9)) + Math.abs(b % 9 - idx % 9);
+    const dA = Math.abs(Math.floor(a / 9) - Math.floor(idx / 9)) + Math.abs((a % 9) - (idx % 9));
+    const dB = Math.abs(Math.floor(b / 9) - Math.floor(idx / 9)) + Math.abs((b % 9) - (idx % 9));
     return dA - dB;
   });
   sorted.forEach((i, order) => {
@@ -425,7 +483,7 @@ function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: 
     el.classList.add('unit-complete');
   });
   setTimeout(() => {
-    flashSet.forEach(i => {
+    flashSet.forEach((i) => {
       const el = gs.gridEl!.children[i] as HTMLElement;
       el.classList.remove('unit-complete');
       el.style.animationDelay = '';

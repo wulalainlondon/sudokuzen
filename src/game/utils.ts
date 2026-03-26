@@ -1,7 +1,9 @@
 // Pure utility functions — no state, no side effects
 
 export function formatSeconds(sec: number): string {
-  const mins = Math.floor(sec / 60).toString().padStart(2, '0');
+  const mins = Math.floor(sec / 60)
+    .toString()
+    .padStart(2, '0');
   const secs = (sec % 60).toString().padStart(2, '0');
   return `${mins}:${secs}`;
 }
@@ -38,10 +40,7 @@ export function normalizeNotes(rawNotes: any): number[] {
   return Array.from(uniq).sort((a, b) => a - b);
 }
 
-export function normalizeSavedCells(
-  rawCells: any,
-  puzzle: number[],
-): import('./state').CellData[] | null {
+export function normalizeSavedCells(rawCells: any, puzzle: number[]): import('./state').CellData[] | null {
   if (!Array.isArray(rawCells) || !Array.isArray(puzzle) || puzzle.length !== 81) return null;
   const safe: import('./state').CellData[] = [];
   for (let i = 0; i < 81; i++) {

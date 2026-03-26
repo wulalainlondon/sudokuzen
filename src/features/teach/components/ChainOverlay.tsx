@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactElement } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 
 type Props = {
   boardRef: React.RefObject<HTMLElement | null>;
@@ -35,15 +35,15 @@ export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = t
 
   useEffect(() => {
     const board = boardRef.current;
-    if (!board || cells.length < 2) { setLinks([]); setDots([]); setElims([]); return; }
+    if (!board || cells.length < 2) return;
 
-    function compute() {
+    const ro = new ResizeObserver(() => {
       const b = boardRef.current;
       if (!b) return;
       const rect = b.getBoundingClientRect();
       setSize({ w: rect.width, h: rect.height });
 
-      const pts = cells.map(idx => cellCenter(b, idx)).filter(Boolean) as { x: number; y: number }[];
+      const pts = cells.map((idx) => cellCenter(b, idx)).filter(Boolean) as { x: number; y: number }[];
       setDots(pts);
 
       const newLinks: { x1: number; y1: number; x2: number; y2: number }[] = [];
@@ -51,11 +51,9 @@ export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = t
         newLinks.push({ x1: pts[i].x, y1: pts[i].y, x2: pts[i + 1].x, y2: pts[i + 1].y });
       }
       setLinks(newLinks);
-      setElims(eliminateCells.map(idx => cellCenter(b, idx)).filter(Boolean) as { x: number; y: number }[]);
-    }
+      setElims(eliminateCells.map((idx) => cellCenter(b, idx)).filter(Boolean) as { x: number; y: number }[]);
+    });
 
-    compute();
-    const ro = new ResizeObserver(compute);
     ro.observe(board);
     return () => ro.disconnect();
   }, [boardRef, cells, eliminateCells]);
@@ -82,7 +80,10 @@ export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = t
       {links.map((l, i) => (
         <line
           key={`l-${i}`}
-          x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
+          x1={l.x1}
+          y1={l.y1}
+          x2={l.x2}
+          y2={l.y2}
           stroke={chainColor}
           strokeWidth={1.8}
           strokeOpacity={chainOpacity}
@@ -97,7 +98,9 @@ export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = t
       {dots.map((d, i) => (
         <circle
           key={`d-${i}`}
-          cx={d.x} cy={d.y} r={3}
+          cx={d.x}
+          cy={d.y}
+          r={3}
           fill={chainColor}
           fillOpacity={chainOpacity + 0.15}
           stroke="white"
@@ -110,7 +113,9 @@ export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = t
       {elims.map((e, i) => (
         <circle
           key={`e-${i}`}
-          cx={e.x} cy={e.y} r={6}
+          cx={e.x}
+          cy={e.y}
+          r={6}
           fill="none"
           stroke={elimColor}
           strokeWidth={1.5}

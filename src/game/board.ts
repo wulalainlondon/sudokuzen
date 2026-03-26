@@ -18,10 +18,10 @@ export function renderGrid(): void {
         const cellVal = gs.cellsData[i].value;
         if (cellVal !== 0) {
           // Tapped a filled cell → switch locked digit to that number
-          import('./core').then(m => m.setContinuousDigit(cellVal));
+          import('./core').then((m) => m.setContinuousDigit(cellVal));
           selectCell(i);
         } else {
-          import('./core').then(m => {
+          import('./core').then((m) => {
             if (!m.handleContinuousCellClick(i)) selectCell(i);
           });
         }
@@ -69,9 +69,7 @@ export function selectCell(idx: number): void {
   playCellSelectSound();
   const selectedVal = gs.cellsData[idx].value;
   // In continuous mode, highlight the locked digit; otherwise use selected cell's value
-  const highlightDigit = (gs.continuousFillDigit && gs.continuousFillDigit >= 1)
-    ? gs.continuousFillDigit
-    : selectedVal;
+  const highlightDigit = gs.continuousFillDigit && gs.continuousFillDigit >= 1 ? gs.continuousFillDigit : selectedVal;
   const row = Math.floor(idx / 9);
   const col = idx % 9;
   const box = Math.floor(row / 3) * 3 + Math.floor(col / 3);
@@ -79,7 +77,7 @@ export function selectCell(idx: number): void {
   Array.from(gs.gridEl.children).forEach((c, i) => {
     c.classList.remove('selected', 'related', 'match', 'note-match');
     // Clear previous note highlights
-    c.querySelectorAll('.note-num.note-highlight').forEach(n => n.classList.remove('note-highlight'));
+    c.querySelectorAll('.note-num.note-highlight').forEach((n) => n.classList.remove('note-highlight'));
 
     const r = Math.floor(i / 9);
     const l = i % 9;
@@ -125,7 +123,7 @@ export function getUnitIndices(idx: number): {
 }
 
 export function isUnitComplete(indices: number[]): boolean {
-  return indices.every(i => gs.cellsData[i].value !== 0);
+  return indices.every((i) => gs.cellsData[i].value !== 0);
 }
 
 export function updateNumpadState(): void {

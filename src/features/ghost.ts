@@ -33,5 +33,5 @@ export function updateGhostProgressUI(): void {
 }
 
 export function recalculatePlayerFilledCount(): void {
-  gs.playerFilledCount = gs.cellsData.filter(c => c.value !== 0).length;
+  gs.playerFilledCount = gs.cellsData.filter((c) => c.value !== 0).length;
 }

@@ -5,10 +5,10 @@
 
 import type { LevelData } from '../game/state';
 
-/* global declarations matching the <script>-loaded variables */
+// Ambient declarations for script-tag globals (used via typeof checks below)
 declare const levels: LevelData[];
 declare const midPool: LevelData[];
-declare const TEACH_DATA: Record<string, any>;
+declare const TEACH_DATA: Record<string, unknown>;
 
 let _merged: LevelData[] | null = null;
 
@@ -34,9 +34,9 @@ export function getTeachData(): Record<string, any> {
 export function getAllLevels(): LevelData[] {
   if (_merged) return _merged;
   const main = getLevels();
-  const mid = getMidPool().map(l => ({ ...l, hidden: true }) as LevelData);
-  const existingIds = new Set(main.map(l => l.id));
-  mid.forEach(l => {
+  const mid = getMidPool().map((l) => ({ ...l, hidden: true }) as LevelData);
+  const existingIds = new Set(main.map((l) => l.id));
+  mid.forEach((l) => {
     if (!existingIds.has(l.id)) main.push(l);
   });
   _merged = main;

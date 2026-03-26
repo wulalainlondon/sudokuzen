@@ -24,7 +24,7 @@ export function TeachBoard({ example, step }: Props): ReactElement {
   const visibleSet = new Set(step?.visibleCells ?? []);
   const hasVisibleMask = visibleSet.size > 0;
   const eliminateMap = new Map((step?.eliminateCells ?? []).map((x) => [x.cell, x.digit]));
-  const eliminateIndices = (step?.eliminateCells ?? []).map(x => x.cell);
+  const eliminateIndices = (step?.eliminateCells ?? []).map((x) => x.cell);
   const warnSet = new Set(step?.warnCells ?? []);
   const warnDigit = step?.warnDigit ?? null;
 
@@ -69,12 +69,7 @@ export function TeachBoard({ example, step }: Props): ReactElement {
       })}
 
       {focusCells.length >= 2 && (
-        <ChainOverlay
-          boardRef={boardRef}
-          cells={focusCells}
-          eliminateCells={eliminateIndices}
-          animate
-        />
+        <ChainOverlay boardRef={boardRef} cells={focusCells} eliminateCells={eliminateIndices} animate />
       )}
     </div>
   );

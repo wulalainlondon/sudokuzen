@@ -83,7 +83,9 @@ export function TeachOverlay(): ReactElement {
                     {policy.allowCanvasFx ? <StepPulseCanvas active={flow === 'stepping'} /> : null}
 
                     <Dialog.Title className="teach-title relative z-10">{module?.name ?? '教學'}</Dialog.Title>
-                    <Dialog.Description className="teach-subtitle relative z-10">【{stage}】{module?.subtitle ?? ''}</Dialog.Description>
+                    <Dialog.Description className="teach-subtitle relative z-10">
+                      【{stage}】{module?.subtitle ?? ''}
+                    </Dialog.Description>
 
                     <div className="teach-explanation relative z-10">
                       <p className="teach-level-note">章節定位：{stage}層</p>
@@ -102,7 +104,9 @@ export function TeachOverlay(): ReactElement {
                           <button className="rz-focus-ring" onClick={prevStep} disabled={stepIndex <= 0}>
                             ← 上一步
                           </button>
-                          <span id="teach-step-indicator">{stepIndex + 1}/{stepsTotal}</span>
+                          <span id="teach-step-indicator">
+                            {stepIndex + 1}/{stepsTotal}
+                          </span>
                           <button className="rz-focus-ring" onClick={nextStep} disabled={stepIndex >= stepsTotal - 1}>
                             下一步 →
                           </button>
@@ -113,13 +117,17 @@ export function TeachOverlay(): ReactElement {
                     {flow === 'practice' || flow === 'result' ? (
                       <>
                         <div className="practice-header">
-                          <span className="practice-tech-name">{module?.name} · {module?.technique}</span>
+                          <span className="practice-tech-name">
+                            {module?.name} · {module?.technique}
+                          </span>
                           <span className="practice-instruction">點擊要消去的候選數</span>
                         </div>
                         <PracticeBoard item={practiceItem} practice={practice} onToggle={toggleSelection} />
                         <div className="practice-status">
                           <span id="practice-counter">已選 {practice.selected.size} 個</span>
-                          <button className="rz-focus-ring" onClick={showHint}>💡 提示</button>
+                          <button className="rz-focus-ring" onClick={showHint}>
+                            💡 提示
+                          </button>
                         </div>
                         <p className={`${resultToneClass(practice.tone)} whitespace-pre-line`}>{practice.message}</p>
                       </>
@@ -129,20 +137,32 @@ export function TeachOverlay(): ReactElement {
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
                     {flow === 'stepping' ? (
                       <>
-                        <button className="teach-done-btn rz-focus-ring" onClick={closeTeach}>先跳過</button>
-                        <button className="teach-done-btn rz-focus-ring" onClick={startPractice}>馬上練習 →</button>
+                        <button className="teach-done-btn rz-focus-ring" onClick={closeTeach}>
+                          先跳過
+                        </button>
+                        <button className="teach-done-btn rz-focus-ring" onClick={startPractice}>
+                          馬上練習 →
+                        </button>
                       </>
                     ) : null}
                     {flow === 'practice' ? (
                       <>
-                        <button className="practice-reveal-btn rz-focus-ring" onClick={revealPractice}>看答案</button>
-                        <button className="practice-confirm-btn rz-focus-ring" onClick={submitPractice}>確認消去</button>
+                        <button className="practice-reveal-btn rz-focus-ring" onClick={revealPractice}>
+                          看答案
+                        </button>
+                        <button className="practice-confirm-btn rz-focus-ring" onClick={submitPractice}>
+                          確認消去
+                        </button>
                       </>
                     ) : null}
                     {flow === 'result' ? (
                       <>
-                        <button className="practice-confirm-btn rz-focus-ring" onClick={backToSteps}>返回步驟</button>
-                        <button className="practice-confirm-btn rz-focus-ring" onClick={closeTeach}>關閉</button>
+                        <button className="practice-confirm-btn rz-focus-ring" onClick={backToSteps}>
+                          返回步驟
+                        </button>
+                        <button className="practice-confirm-btn rz-focus-ring" onClick={closeTeach}>
+                          關閉
+                        </button>
                       </>
                     ) : null}
                   </div>

@@ -79,10 +79,7 @@ function normalizePracticeItem(item: any): PracticeItemModel {
 export function getTeachModuleByStars(stars: string | number): TeachModuleModel | null {
   const key = String(stars);
   const unsafeGlobalTeachData = (globalThis as any)['TEACH_DATA'];
-  const teachData =
-    (window as any).TEACH_DATA ??
-    (globalThis as any).TEACH_DATA ??
-    unsafeGlobalTeachData;
+  const teachData = (window as any).TEACH_DATA ?? (globalThis as any).TEACH_DATA ?? unsafeGlobalTeachData;
   const raw = teachData?.[key];
   if (!raw) return null;
 

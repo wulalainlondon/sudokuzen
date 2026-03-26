@@ -27,14 +27,22 @@ describe('teach store state machine', () => {
           board: [],
           given: [],
           notes: {},
-          steps: [{ text: 's1', focusCells: [], highlightDigits: {}, eliminateCells: [], warnCells: [], warnDigit: null }],
+          steps: [
+            { text: 's1', focusCells: [], highlightDigits: {}, eliminateCells: [], warnCells: [], warnDigit: null },
+          ],
         },
         practice: [
           {
             board: [],
             given: [],
             notes: {},
-            answer: { eliminates: [{ cell: 2, digit: 4 }], patternCells: [2], description: 'ok', proof: [], aicChain: [] },
+            answer: {
+              eliminates: [{ cell: 2, digit: 4 }],
+              patternCells: [2],
+              description: 'ok',
+              proof: [],
+              aicChain: [],
+            },
             solution: [],
           },
         ],

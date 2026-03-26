@@ -11,29 +11,49 @@ import { bindLegacyFacade } from '../facade/windowFacade';
 
 import { initFirebase, loadAliasToInput, saveAlias } from '../firebase/client';
 import {
-  initGame, handleInput, erase, resetGame, saveGameStatus,
-  pauseGame, resumeGame, toggleTheme, toggleNoteMode, updateLivesUI,
-  toggleContinuousFill, setContinuousDigit,
+  handleInput,
+  erase,
+  resetGame,
+  saveGameStatus,
+  pauseGame,
+  resumeGame,
+  toggleTheme,
+  toggleNoteMode,
+  toggleContinuousFill,
+  setContinuousDigit,
 } from '../game/core';
-import { updateNumpadState } from '../game/board';
 import {
-  openReplayModal, closeReplayModal, setReplayFilter,
-  replayReset, replayStepBack, replayStepForward, replayTogglePlay, replayToggleSpeed,
+  openReplayModal,
+  closeReplayModal,
+  setReplayFilter,
+  replayReset,
+  replayStepBack,
+  replayStepForward,
+  replayTogglePlay,
+  replayToggleSpeed,
 } from '../features/replay';
-import {
-  toggleDuoReady, sendDuoEmoji, closeDuoResult, resetDuoState, startDuoGlowListener,
-} from '../features/duo';
+import { toggleDuoReady, sendDuoEmoji, closeDuoResult, startDuoGlowListener } from '../features/duo';
 import { openStatsModal, closeStatsModal, switchStatsTab } from '../features/stats';
 import {
-  showLevelScreen, renderStageMap, enterTier, backToStageMap,
-  toggleSpeedrunMode, startPoolRandom, renderLevelGrid,
-  showPreLevelModal, hidePreLevelModal, startLevelFromModal,
+  showLevelScreen,
+  backToStageMap,
+  toggleSpeedrunMode,
+  startPoolRandom,
+  hidePreLevelModal,
+  startLevelFromModal,
 } from '../features/levels';
 import {
-  openLibraryOverlay, closeLibraryOverlay,
-  showTeachModal, hideTeachModal, teachPrev, teachNext,
-  startPractice, showPracticeHint, confirmPractice, revealPracticeAnswer,
-  openTeachFromLibrary, closePracticeModal,
+  openLibraryOverlay,
+  closeLibraryOverlay,
+  hideTeachModal,
+  teachPrev,
+  teachNext,
+  startPractice,
+  showPracticeHint,
+  confirmPractice,
+  revealPracticeAnswer,
+  openTeachFromLibrary,
+  closePracticeModal,
 } from '../features/teach-legacy';
 
 export function bootLegacyRuntime(appVersion: string): void {
@@ -98,30 +118,42 @@ export function bootLegacyRuntime(appVersion: string): void {
   // 10. Alias
   loadAliasToInput();
   if (gs.aliasInputEl) {
-    gs.aliasInputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveAlias(); });
+    gs.aliasInputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') saveAlias();
+    });
   }
 
   // 11. Modal backdrop-click handlers
   if (gs.replayModalEl) {
-    gs.replayModalEl.addEventListener('click', (e) => { if (e.target === gs.replayModalEl) closeReplayModal(); });
+    gs.replayModalEl.addEventListener('click', (e) => {
+      if (e.target === gs.replayModalEl) closeReplayModal();
+    });
   }
   const statsModalEl = document.getElementById('stats-modal');
   if (statsModalEl) {
-    statsModalEl.addEventListener('click', (e) => { if (e.target === statsModalEl) closeStatsModal(); });
+    statsModalEl.addEventListener('click', (e) => {
+      if (e.target === statsModalEl) closeStatsModal();
+    });
   }
   if (gs.libraryOverlayEl) {
-    gs.libraryOverlayEl.addEventListener('click', (e) => { if (e.target === gs.libraryOverlayEl) closeLibraryOverlay(); });
+    gs.libraryOverlayEl.addEventListener('click', (e) => {
+      if (e.target === gs.libraryOverlayEl) closeLibraryOverlay();
+    });
   }
   const duoResultModalEl = document.getElementById('duo-result-modal');
   if (duoResultModalEl) {
-    duoResultModalEl.addEventListener('click', (e) => { if (e.target === duoResultModalEl) closeDuoResult(); });
+    duoResultModalEl.addEventListener('click', (e) => {
+      if (e.target === duoResultModalEl) closeDuoResult();
+    });
   }
 
   // 12. Pre-level modal buttons
   gs.preLevelStartBtn?.addEventListener('click', () => startLevelFromModal(true, false, null));
   gs.preLevelBackBtn?.addEventListener('click', hidePreLevelModal);
   if (gs.preLevelModalEl) {
-    gs.preLevelModalEl.addEventListener('click', (e) => { if (e.target === gs.preLevelModalEl) hidePreLevelModal(); });
+    gs.preLevelModalEl.addEventListener('click', (e) => {
+      if (e.target === gs.preLevelModalEl) hidePreLevelModal();
+    });
   }
 
   // 13. Global event handlers
@@ -131,7 +163,14 @@ export function bootLegacyRuntime(appVersion: string): void {
       // Best-effort cleanup
       const field = gs.duoRole === 'host' ? 'status' : 'guestId';
       const val = gs.duoRole === 'host' ? 'idle' : null;
-      try { gs.db.collection('duo_room').doc('current').update({ [field]: val }); } catch { /* ignore */ }
+      try {
+        gs.db
+          .collection('duo_room')
+          .doc('current')
+          .update({ [field]: val });
+      } catch {
+        /* ignore */
+      }
     }
   });
   window.addEventListener('resize', () => {
@@ -146,7 +185,8 @@ export function bootLegacyRuntime(appVersion: string): void {
     }
   });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden && (document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') saveGameStatus();
+    if (document.hidden && (document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex')
+      saveGameStatus();
   });
 
   // 14. Show level screen
@@ -154,14 +194,42 @@ export function bootLegacyRuntime(appVersion: string): void {
 
   // 15. Bind window facade for onclick="" handlers in HTML
   bindLegacyFacade({
-    openLibraryOverlay, openStatsModal, toggleSpeedrunMode, saveAlias,
-    startPoolRandom, backToStageMap, closeLibraryOverlay, toggleDuoReady,
-    resetGame, showLevelScreen, resumeGame, pauseGame, toggleTheme, toggleContinuousFill,
-    toggleNoteMode, erase, sendDuoEmoji, replayReset, replayStepBack,
-    replayTogglePlay, replayStepForward, replayToggleSpeed, setReplayFilter,
-    closeReplayModal, switchStatsTab, closeStatsModal, closeDuoResult,
-    teachPrev, teachNext, hideTeachModal, startPractice, showPracticeHint,
-    confirmPractice, revealPracticeAnswer, openTeachFromLibrary,
-    closePracticeModal, openReplayModal,
+    openLibraryOverlay,
+    openStatsModal,
+    toggleSpeedrunMode,
+    saveAlias,
+    startPoolRandom,
+    backToStageMap,
+    closeLibraryOverlay,
+    toggleDuoReady,
+    resetGame,
+    showLevelScreen,
+    resumeGame,
+    pauseGame,
+    toggleTheme,
+    toggleContinuousFill,
+    toggleNoteMode,
+    erase,
+    sendDuoEmoji,
+    replayReset,
+    replayStepBack,
+    replayTogglePlay,
+    replayStepForward,
+    replayToggleSpeed,
+    setReplayFilter,
+    closeReplayModal,
+    switchStatsTab,
+    closeStatsModal,
+    closeDuoResult,
+    teachPrev,
+    teachNext,
+    hideTeachModal,
+    startPractice,
+    showPracticeHint,
+    confirmPractice,
+    revealPracticeAnswer,
+    openTeachFromLibrary,
+    closePracticeModal,
+    openReplayModal,
   });
 }

@@ -8,51 +8,68 @@ import { getTeachData } from '../data/dataRegistry';
 // ── Tech name mapping ─────────────────────────────────────────────
 
 export const TECH_MAP: Record<string, string> = {
-  'naked_single': '顯性單數',
-  'hidden_single': '隱藏單數',
-  'locked_candidates': '鎖定候選數',
-  'naked_pair': '顯性數對',
-  'hidden_pair': '隱藏數對',
-  'naked_triple': '顯性三數組',
-  'hidden_triple': '隱藏三數組',
-  'x_wing': 'X-Wing',
-  'w_wing': 'W-Wing',
-  'x_cycle_simple_coloring': 'X-Cycle / Simple Coloring',
-  'skyscraper': '摩天樓 (Skyscraper)',
-  'unique_rectangle': '唯一矩形 (UR)',
-  'xy_wing': 'XY-Wing',
-  'xyz_wing': 'XYZ-Wing',
-  'swordfish': '劍魚跡 (Swordfish)',
-  'finned_swordfish': '帶鰭劍魚',
-  'finned_x_wing': '帶鰭 X-Wing',
-  'aic': 'AIC 強弱鏈',
-  'aic_mid_chain': 'AIC 中鏈',
-  'grouped_aic_nice_loop': 'Grouped AIC / Nice Loop',
-  'aic_long_chain': 'AIC 長鏈',
-  'als_xz': 'ALS-XZ',
-  'als_chain': 'ALS Chain',
-  'sue_de_coq': 'Sue de Coq',
-  'forcing_chain_net': 'Forcing Chain / Net',
-  'exocet_death_blossom': 'Exocet / Death Blossom',
-  'unknown': '綜合技巧',
+  naked_single: '顯性單數',
+  hidden_single: '隱藏單數',
+  locked_candidates: '鎖定候選數',
+  naked_pair: '顯性數對',
+  hidden_pair: '隱藏數對',
+  naked_triple: '顯性三數組',
+  hidden_triple: '隱藏三數組',
+  x_wing: 'X-Wing',
+  w_wing: 'W-Wing',
+  x_cycle_simple_coloring: 'X-Cycle / Simple Coloring',
+  skyscraper: '摩天樓 (Skyscraper)',
+  unique_rectangle: '唯一矩形 (UR)',
+  xy_wing: 'XY-Wing',
+  xyz_wing: 'XYZ-Wing',
+  swordfish: '劍魚跡 (Swordfish)',
+  finned_swordfish: '帶鰭劍魚',
+  finned_x_wing: '帶鰭 X-Wing',
+  aic: 'AIC 強弱鏈',
+  aic_mid_chain: 'AIC 中鏈',
+  grouped_aic_nice_loop: 'Grouped AIC / Nice Loop',
+  aic_long_chain: 'AIC 長鏈',
+  als_xz: 'ALS-XZ',
+  als_chain: 'ALS Chain',
+  sue_de_coq: 'Sue de Coq',
+  forcing_chain_net: 'Forcing Chain / Net',
+  exocet_death_blossom: 'Exocet / Death Blossom',
+  unknown: '綜合技巧',
 };
 
 // ── Learning order & group definitions ────────────────────────────
 
 const LEARNING_ORDER = [
-  1, 2, 3, 4, 5, 6, 7,
-  8, 10, 27, 11, 13, 12, 14, 29,
-  9, 16, 17, 30, 31, 15, 26, 28, 32,
-  18, 19, 20, 33, 21, 24, 34, 35,
+  1, 2, 3, 4, 5, 6, 7, 8, 10, 27, 11, 13, 12, 14, 29, 9, 16, 17, 30, 31, 15, 26, 28, 32, 18, 19, 20, 33, 21, 24, 34, 35,
   22, 23, 37, 38, 39, 36, 25, 40,
 ];
 
 const GROUPS = [
   { id: 'foundation', name: '第一層・基礎定式', hint: '先建立基本觀念與候選數紀律', ids: [1, 2, 3, 4, 5, 6, 7] },
-  { id: 'candidate', name: '第二層・候選數結構', hint: '看懂線上/宮內候選關係與初階刪減', ids: [8, 10, 27, 11, 13, 12, 14, 29] },
-  { id: 'pattern', name: '第三層・圖形與刪減', hint: '翼型、魚型與鎖定鏈的實戰應用', ids: [9, 16, 17, 30, 31, 15, 26, 28, 32] },
-  { id: 'chain', name: '第四層・鏈式推理', hint: '進入顏色鏈、唯一矩形與高階魚型', ids: [18, 19, 20, 33, 21, 24, 34, 35] },
-  { id: 'master', name: '第五層・高階極限', hint: 'ALS、AIC、Death Blossom 與終局型技巧', ids: [22, 23, 37, 38, 39, 36, 25, 40] },
+  {
+    id: 'candidate',
+    name: '第二層・候選數結構',
+    hint: '看懂線上/宮內候選關係與初階刪減',
+    ids: [8, 10, 27, 11, 13, 12, 14, 29],
+  },
+  {
+    id: 'pattern',
+    name: '第三層・圖形與刪減',
+    hint: '翼型、魚型與鎖定鏈的實戰應用',
+    ids: [9, 16, 17, 30, 31, 15, 26, 28, 32],
+  },
+  {
+    id: 'chain',
+    name: '第四層・鏈式推理',
+    hint: '進入顏色鏈、唯一矩形與高階魚型',
+    ids: [18, 19, 20, 33, 21, 24, 34, 35],
+  },
+  {
+    id: 'master',
+    name: '第五層・高階極限',
+    hint: 'ALS、AIC、Death Blossom 與終局型技巧',
+    ids: [22, 23, 37, 38, 39, 36, 25, 40],
+  },
 ];
 
 // ── Library functions ─────────────────────────────────────────────
@@ -72,7 +89,7 @@ export function getLibraryItemsFromTeachData(): { book: number; key: string; tea
 
   return Object.entries(td)
     .map(([book, teach]) => ({ book: parseFloat(book), key: String(book), teach }))
-    .filter(item => Number.isFinite(item.book) && isTeachReadable(item.key))
+    .filter((item) => Number.isFinite(item.book) && isTeachReadable(item.key))
     .sort((a, b) => {
       const ai = orderIndex.has(a.book) ? orderIndex.get(a.book)! : Number.MAX_SAFE_INTEGER;
       const bi = orderIndex.has(b.book) ? orderIndex.get(b.book)! : Number.MAX_SAFE_INTEGER;
@@ -82,18 +99,20 @@ export function getLibraryItemsFromTeachData(): { book: number; key: string; tea
 }
 
 export function getLibraryLearningGroups(items: { book: number; key: string; teach: any }[]) {
-  const byId = new Map(items.map(item => [item.book, item]));
+  const byId = new Map(items.map((item) => [item.book, item]));
   const used = new Set<number>();
 
-  const groups = GROUPS.map(group => {
-    const groupItems = group.ids
-      .map(id => byId.get(id))
-      .filter(Boolean) as { book: number; key: string; teach: any }[];
-    groupItems.forEach(item => used.add(item.book));
+  const groups = GROUPS.map((group) => {
+    const groupItems = group.ids.map((id) => byId.get(id)).filter(Boolean) as {
+      book: number;
+      key: string;
+      teach: any;
+    }[];
+    groupItems.forEach((item) => used.add(item.book));
     return { ...group, items: groupItems };
-  }).filter(group => group.items.length > 0);
+  }).filter((group) => group.items.length > 0);
 
-  const ungrouped = items.filter(item => !used.has(item.book));
+  const ungrouped = items.filter((item) => !used.has(item.book));
   if (ungrouped.length) {
     groups.push({
       id: 'extra',
@@ -130,13 +149,15 @@ export function renderLibraryCards(): void {
   const orderIndex = new Map(items.map((item, idx) => [item.book, idx + 1]));
   const groups = getLibraryLearningGroups(items);
 
-  gs.libraryListEl.innerHTML = groups.map((group) => {
-    const cardsHtml = group.items.map(({ book, key, teach }) => {
-      const isRead = !!read[key];
-      const hasPractice = Array.isArray(teach.practice) && teach.practice.length > 0;
-      const orderNo = orderIndex.get(book) || '-';
-      const stage = getTeachStageLabel(book);
-      return `
+  gs.libraryListEl.innerHTML = groups
+    .map((group) => {
+      const cardsHtml = group.items
+        .map(({ book, key, teach }) => {
+          const isRead = !!read[key];
+          const hasPractice = Array.isArray(teach.practice) && teach.practice.length > 0;
+          const orderNo = orderIndex.get(book) || '-';
+          const stage = getTeachStageLabel(book);
+          return `
         <article class="library-card" data-star="${key}" role="button" tabindex="0"
             onclick="openTeachFromLibrary('${key}')"
             onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openTeachFromLibrary('${key}'); }">
@@ -153,9 +174,10 @@ export function renderLibraryCards(): void {
             <button class="library-open-btn" onclick="event.stopPropagation(); openTeachFromLibrary('${key}')">研讀秘笈</button>
         </article>
       `;
-    }).join('');
+        })
+        .join('');
 
-    return `
+      return `
       <section class="library-group" data-group="${group.id}">
           <header class="library-group-head">
               <h3 class="library-group-title">${group.name}</h3>
@@ -164,7 +186,8 @@ export function renderLibraryCards(): void {
           <div class="library-group-cards">${cardsHtml}</div>
       </section>
     `;
-  }).join('');
+    })
+    .join('');
 }
 
 export function openLibraryOverlay(): void {
@@ -214,7 +237,7 @@ export function showTeachModal(stars: number | string, source = 'tier'): void {
   // Show/hide practice button based on data availability
   const practiceBtn = document.getElementById('teach-practice-btn');
   if (practiceBtn) {
-    practiceBtn.style.display = (data.practice && data.practice.length > 0) ? '' : 'none';
+    practiceBtn.style.display = data.practice && data.practice.length > 0 ? '' : 'none';
   }
 
   document.getElementById('teach-modal')!.classList.add('show');
@@ -228,7 +251,10 @@ export function hideTeachModal(returnToLibrary = true): void {
     const td = getTeachData();
     const read = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
     for (const [s, d] of Object.entries(td)) {
-      if (d === gs.teachData) { read[s] = true; break; }
+      if (d === gs.teachData) {
+        read[s] = true;
+        break;
+      }
     }
     writeJson(SK.TEACH_READ, read);
   }
@@ -260,7 +286,8 @@ export function updateTeachStep(): void {
   document.getElementById('teach-step-text')!.textContent = step.text;
   document.getElementById('teach-step-indicator')!.textContent = `${gs.teachCurrentStep + 1}/${gs.teachSteps.length}`;
   (document.getElementById('teach-prev-btn') as HTMLButtonElement).disabled = gs.teachCurrentStep === 0;
-  (document.getElementById('teach-next-btn') as HTMLButtonElement).disabled = gs.teachCurrentStep === gs.teachSteps.length - 1;
+  (document.getElementById('teach-next-btn') as HTMLButtonElement).disabled =
+    gs.teachCurrentStep === gs.teachSteps.length - 1;
   applyTeachHighlights(step);
 }
 
@@ -304,9 +331,9 @@ export function applyTeachHighlights(step: any): void {
   const cells = boardEl.querySelectorAll('.teach-cell');
 
   // Reset all highlights
-  cells.forEach(c => {
+  cells.forEach((c) => {
     c.classList.remove('focus', 'eliminate', 'warn', 'masked');
-    c.querySelectorAll('.tc-note').forEach(n => {
+    c.querySelectorAll('.tc-note').forEach((n) => {
       n.classList.remove('highlight', 'strike', 'warn-missing');
     });
   });
@@ -329,7 +356,7 @@ export function applyTeachHighlights(step: any): void {
   for (const [cellIdx, digits] of Object.entries(hd)) {
     const cell = cells[parseInt(cellIdx)];
     if (!cell) continue;
-    (digits as number[]).forEach(d => {
+    (digits as number[]).forEach((d) => {
       const note = cell.querySelector(`.tc-note[data-digit="${d}"]`);
       if (note) note.classList.add('highlight');
     });
@@ -381,7 +408,10 @@ export function startPractice(): void {
   const teachDataMap = getTeachData();
   let stars: number | null = null;
   for (const [s, d] of Object.entries(teachDataMap)) {
-    if (d === td) { stars = parseFloat(s); break; }
+    if (d === td) {
+      stars = parseFloat(s);
+      break;
+    }
   }
   hideTeachModal(false);
 
@@ -534,7 +564,7 @@ export function confirmPractice(): void {
     updatePracticeCounter();
     // Clear wrong highlight after 2s
     setTimeout(() => {
-      boardEl.querySelectorAll('.tc-note.wrong').forEach(n => n.classList.remove('wrong'));
+      boardEl.querySelectorAll('.tc-note.wrong').forEach((n) => n.classList.remove('wrong'));
     }, 2000);
   }
 }
@@ -570,14 +600,14 @@ export function formatPracticeExplanation(answer: any): string {
     lines.push('');
     lines.push('推理節點鏈：');
     answer.aicChain.forEach((line: string, i: number) => {
-      lines.push((i + 1) + '. ' + line);
+      lines.push(i + 1 + '. ' + line);
     });
   }
   if (answer && Array.isArray(answer.proof) && answer.proof.length > 0) {
     lines.push('');
     lines.push('推理鏈：');
     answer.proof.forEach((line: string, i: number) => {
-      lines.push((i + 1) + '. ' + line);
+      lines.push(i + 1 + '. ' + line);
     });
   }
   return lines.join('\n');
@@ -591,8 +621,8 @@ export function revealPracticeAnswer(): void {
   const cells = boardEl.querySelectorAll('.practice-cell');
 
   // Clear all current marks
-  boardEl.querySelectorAll('.tc-note.strike').forEach(n => n.classList.remove('strike'));
-  boardEl.querySelectorAll('.tc-note.wrong').forEach(n => n.classList.remove('wrong'));
+  boardEl.querySelectorAll('.tc-note.strike').forEach((n) => n.classList.remove('strike'));
+  boardEl.querySelectorAll('.tc-note.wrong').forEach((n) => n.classList.remove('wrong'));
 
   // Show correct eliminations
   answer.eliminates.forEach(({ cell: idx, digit }: { cell: number; digit: number }) => {

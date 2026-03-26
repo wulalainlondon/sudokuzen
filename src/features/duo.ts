@@ -27,27 +27,39 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
       const now = firebase.firestore.FieldValue.serverTimestamp();
 
       // Check staleness (>2 min old waiting rooms can be overwritten)
-      const isStale = d && d.updatedAt && d.updatedAt.toDate &&
-        (Date.now() - d.updatedAt.toDate().getTime() > 120000);
+      const isStale = d && d.updatedAt && d.updatedAt.toDate && Date.now() - d.updatedAt.toDate().getTime() > 120000;
 
       if (!d || d.status === 'idle' || d.status === 'finished' || isStale) {
         // Create new room as host
         tx.set(duoRoomRef(), {
-          levelId, status: 'waiting',
-          hostId: playerId, hostAlias: alias, hostReady: false,
-          hostProgress: 0, hostFinishTime: null, hostStars: null,
-          guestId: null, guestAlias: null, guestReady: false,
-          guestProgress: 0, guestFinishTime: null, guestStars: null,
-          startAt: null, updatedAt: now
+          levelId,
+          status: 'waiting',
+          hostId: playerId,
+          hostAlias: alias,
+          hostReady: false,
+          hostProgress: 0,
+          hostFinishTime: null,
+          hostStars: null,
+          guestId: null,
+          guestAlias: null,
+          guestReady: false,
+          guestProgress: 0,
+          guestFinishTime: null,
+          guestStars: null,
+          startAt: null,
+          updatedAt: now,
         });
         gs.duoRole = 'host';
       } else if (d.status === 'waiting' && d.hostId !== playerId) {
         // Join as guest
         tx.update(duoRoomRef(), {
-          guestId: playerId, guestAlias: alias,
-          guestReady: false, guestProgress: 0,
-          guestFinishTime: null, guestStars: null,
-          updatedAt: now
+          guestId: playerId,
+          guestAlias: alias,
+          guestReady: false,
+          guestProgress: 0,
+          guestFinishTime: null,
+          guestStars: null,
+          updatedAt: now,
         });
         gs.duoRole = 'guest';
       } else if (d.status === 'waiting' && d.hostId === playerId) {
@@ -67,13 +79,19 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
 
 export function subscribeDuoRoom(): void {
   if (gs.duoUnsubscribe) gs.duoUnsubscribe();
-  gs.duoUnsubscribe = duoRoomRef().onSnapshot((snap: any) => {
-    if (!snap.exists) { resetDuoState(); return; }
-    gs.duoRoomData = snap.data();
-    handleDuoSnapshot(gs.duoRoomData);
-  }, (err: any) => {
-    console.warn('duo snapshot error:', err);
-  });
+  gs.duoUnsubscribe = duoRoomRef().onSnapshot(
+    (snap: any) => {
+      if (!snap.exists) {
+        resetDuoState();
+        return;
+      }
+      gs.duoRoomData = snap.data();
+      handleDuoSnapshot(gs.duoRoomData);
+    },
+    (err: any) => {
+      console.warn('duo snapshot error:', err);
+    },
+  );
 }
 
 // ── Snapshot Handler ─────────────────────────────────────────────────
@@ -98,7 +116,7 @@ export function handleDuoSnapshot(d: any): void {
     gs.duoRoundLaunched = true;
     // Update opponent progress bar
     const oppProgress = gs.duoRole === 'host' ? d.guestProgress : d.hostProgress;
-    const oppAlias = gs.duoRole === 'host' ? (d.guestAlias || '對手') : (d.hostAlias || '對手');
+    const oppAlias = gs.duoRole === 'host' ? d.guestAlias || '對手' : d.hostAlias || '對手';
     updateDuoProgressUI(oppAlias, oppProgress || 0);
 
     // Handle emoji reactions
@@ -112,8 +130,12 @@ export function handleDuoSnapshot(d: any): void {
     }
 
     // Check if both finished
-    if (d.hostFinishTime !== null && d.hostFinishTime !== undefined &&
-      d.guestFinishTime !== null && d.guestFinishTime !== undefined) {
+    if (
+      d.hostFinishTime !== null &&
+      d.hostFinishTime !== undefined &&
+      d.guestFinishTime !== null &&
+      d.guestFinishTime !== undefined
+    ) {
       showDuoResult(d);
     }
   }
@@ -195,7 +217,6 @@ export function updateDuoPreLevelUI(d: any): void {
 
 export async function toggleDuoReady(): Promise<void> {
   if (!gs.firebaseReady || !gs.duoRole) return;
-  const { playerId } = getPlayerIdentity();
   const field = gs.duoRole === 'host' ? 'hostReady' : 'guestReady';
   gs.duoMyReady = !gs.duoMyReady;
 
@@ -268,7 +289,7 @@ export async function launchDuoGame(): Promise<void> {
   // Calculate total cells to fill
   const { getAllLevels } = await import('../data/dataRegistry');
   const levels = getAllLevels();
-  const level = levels.find(l => l.id === gs.duoRoomData.levelId);
+  const level = levels.find((l) => l.id === gs.duoRoomData.levelId);
   if (level) {
     gs.duoTotalToFill = level.puzzle.filter((v: number) => v === 0).length;
   }
@@ -286,12 +307,16 @@ export async function launchDuoGame(): Promise<void> {
 
   // Update room status to playing
   if (gs.duoRole === 'host') {
-    duoRoomRef().update({
-      status: 'playing',
-      hostProgress: 0, guestProgress: 0,
-      hostFinishTime: null, guestFinishTime: null,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).catch(() => {});
+    duoRoomRef()
+      .update({
+        status: 'playing',
+        hostProgress: 0,
+        guestProgress: 0,
+        hostFinishTime: null,
+        guestFinishTime: null,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      })
+      .catch(() => {});
   }
 }
 
@@ -302,19 +327,21 @@ export function updateDuoProgress(): void {
   const now = Date.now();
   if (now - gs.duoProgressThrottle < 3000) return; // throttle to every 3s
   gs.duoProgressThrottle = now;
-  const filled = gs.cellsData.filter(c => !c.fixed && c.value !== 0).length;
+  const filled = gs.cellsData.filter((c) => !c.fixed && c.value !== 0).length;
   const field = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
-  duoRoomRef().update({
-    [field]: filled,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).catch(() => {});
+  duoRoomRef()
+    .update({
+      [field]: filled,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+    .catch(() => {});
 }
 
 export function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
   const el = document.getElementById('duo-progress-text');
   const fill = document.getElementById('duo-progress-fill');
   if (!el || !fill) return;
-  const pct = gs.duoTotalToFill > 0 ? Math.min(100, Math.round(oppProgress / gs.duoTotalToFill * 100)) : 0;
+  const pct = gs.duoTotalToFill > 0 ? Math.min(100, Math.round((oppProgress / gs.duoTotalToFill) * 100)) : 0;
   el.textContent = `\u{1F495} ${oppAlias}: ${oppProgress}/${gs.duoTotalToFill}`;
   fill.style.width = `${pct}%`;
 }
@@ -341,9 +368,11 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
       [timeField]: timeSec,
       [starsField]: stars,
       [progressField]: gs.duoTotalToFill,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
-  } catch (e) { console.warn('submitDuoFinish failed:', e); }
+  } catch (e) {
+    console.warn('submitDuoFinish failed:', e);
+  }
 }
 
 // ── Result Modal ─────────────────────────────────────────────────────
@@ -395,8 +424,7 @@ export function showDuoResult(d: any): void {
   }
 
   cardsEl.innerHTML =
-    makeCard(d.hostAlias, hTime, d.hostStars, hWin) +
-    makeCard(d.guestAlias, gTime, d.guestStars, gWin);
+    makeCard(d.hostAlias, hTime, d.hostStars, hWin) + makeCard(d.guestAlias, gTime, d.guestStars, gWin);
 
   if (isDraw) {
     diffEl!.textContent = '平手！心有靈犀 \u{1F495}';
@@ -466,10 +494,12 @@ export function sendDuoEmoji(emoji: string): void {
   gs.duoEmojiCooldown = now;
   const field = gs.duoRole === 'host' ? 'hostEmoji' : 'guestEmoji';
   const tsField = gs.duoRole === 'host' ? 'hostEmojiTs' : 'guestEmojiTs';
-  duoRoomRef().update({
-    [field]: emoji,
-    [tsField]: Date.now()
-  }).catch(() => {});
+  duoRoomRef()
+    .update({
+      [field]: emoji,
+      [tsField]: Date.now(),
+    })
+    .catch(() => {});
   // Show own emoji as confirmation
   spawnEmojiFloat(emoji, true);
 }
@@ -511,7 +541,9 @@ export async function closeDuoResult(): Promise<void> {
   document.getElementById('duo-result-modal')!.style.display = 'none';
   // Mark room finished
   if (gs.firebaseReady) {
-    duoRoomRef().update({ status: 'finished' }).catch(() => {});
+    duoRoomRef()
+      .update({ status: 'finished' })
+      .catch(() => {});
   }
   resetDuoState();
   const { showLevelScreen } = await import('../features/levels');
@@ -519,18 +551,27 @@ export async function closeDuoResult(): Promise<void> {
 }
 
 export async function leaveDuoRoom(): Promise<void> {
-  if (!gs.firebaseReady || !gs.duoRole) { resetDuoState(); return; }
+  if (!gs.firebaseReady || !gs.duoRole) {
+    resetDuoState();
+    return;
+  }
   try {
     if (gs.duoRole === 'host') {
       await duoRoomRef().update({ status: 'idle' });
     } else {
       await duoRoomRef().update({
-        guestId: null, guestAlias: null, guestReady: false,
-        guestProgress: 0, guestFinishTime: null, guestStars: null,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        guestId: null,
+        guestAlias: null,
+        guestReady: false,
+        guestProgress: 0,
+        guestFinishTime: null,
+        guestStars: null,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
     }
-  } catch (_) {}
+  } catch {
+    /* ignore */
+  }
   resetDuoState();
 }
 
@@ -541,7 +582,10 @@ export function resetDuoState(): void {
   gs.duoLastErrorCell = -1;
   gs.duoLastErrorTime = 0;
   gs.duoSameCellStreak = 0;
-  if (gs.duoCooldownTimer) { clearInterval(gs.duoCooldownTimer); gs.duoCooldownTimer = null; }
+  if (gs.duoCooldownTimer) {
+    clearInterval(gs.duoCooldownTimer);
+    gs.duoCooldownTimer = null;
+  }
   gs.isDuoMode = false;
   gs.duoRole = null;
   gs.duoRoomData = null;
@@ -550,8 +594,14 @@ export function resetDuoState(): void {
   gs.duoCountdownStartMs = null;
   gs.duoOpponentNotified = false;
   gs.duoProgressThrottle = 0;
-  if (gs.duoCountdownTimer) { clearInterval(gs.duoCountdownTimer); gs.duoCountdownTimer = null; }
-  if (gs.duoUnsubscribe) { gs.duoUnsubscribe(); gs.duoUnsubscribe = null; }
+  if (gs.duoCountdownTimer) {
+    clearInterval(gs.duoCountdownTimer);
+    gs.duoCountdownTimer = null;
+  }
+  if (gs.duoUnsubscribe) {
+    gs.duoUnsubscribe();
+    gs.duoUnsubscribe = null;
+  }
   const readyZone = document.getElementById('duo-ready-zone');
   if (readyZone) readyZone.style.display = 'none';
   const progressContainer = document.getElementById('duo-progress-container');
@@ -566,39 +616,42 @@ export function resetDuoState(): void {
 export function startDuoGlowListener(): void {
   if (!gs.firebaseReady) return;
   if (gs.duoGlowUnsubscribe) gs.duoGlowUnsubscribe();
-  gs.duoGlowUnsubscribe = duoRoomRef().onSnapshot(async (snap: any) => {
-    // Remove old glow
-    document.querySelectorAll('.level-item.duo-glow').forEach(el => el.classList.remove('duo-glow'));
-    document.querySelectorAll('.stage-node.duo-waiting').forEach(el => el.classList.remove('duo-waiting'));
-    if (!snap.exists) return;
-    const d = snap.data();
-    if (d.status !== 'waiting' || !d.levelId) return;
-    const { playerId } = getPlayerIdentity();
-    if (d.hostId === playerId) return; // Don't glow my own room
+  gs.duoGlowUnsubscribe = duoRoomRef().onSnapshot(
+    async (snap: any) => {
+      // Remove old glow
+      document.querySelectorAll('.level-item.duo-glow').forEach((el) => el.classList.remove('duo-glow'));
+      document.querySelectorAll('.stage-node.duo-waiting').forEach((el) => el.classList.remove('duo-waiting'));
+      if (!snap.exists) return;
+      const d = snap.data();
+      if (d.status !== 'waiting' || !d.levelId) return;
+      const { playerId } = getPlayerIdentity();
+      if (d.hostId === playerId) return; // Don't glow my own room
 
-    const { getAllLevels } = await import('../data/dataRegistry');
-    const levels = getAllLevels();
-    const { getDifficultyTiers, getFilteredLevels } = await import('../features/levels');
+      const { getAllLevels } = await import('../data/dataRegistry');
+      const levels = getAllLevels();
+      const { getDifficultyTiers, getFilteredLevels } = await import('../features/levels');
 
-    // Mark the stage node for the waiting level's tier
-    const waitingLevel = levels.find(l => l.id === d.levelId);
-    if (waitingLevel) {
-      const stageNodes = document.querySelectorAll('.stage-node');
-      const tiers = getDifficultyTiers();
-      tiers.forEach((tierName: string, i: number) => {
-        if (tierName === waitingLevel.difficultyName && stageNodes[i]) {
-          stageNodes[i].classList.add('duo-waiting');
+      // Mark the stage node for the waiting level's tier
+      const waitingLevel = levels.find((l) => l.id === d.levelId);
+      if (waitingLevel) {
+        const stageNodes = document.querySelectorAll('.stage-node');
+        const tiers = getDifficultyTiers();
+        tiers.forEach((tierName: string, i: number) => {
+          if (tierName === waitingLevel.difficultyName && stageNodes[i]) {
+            stageNodes[i].classList.add('duo-waiting');
+          }
+        });
+      }
+
+      // Find the matching level card and make it glow
+      const items = document.querySelectorAll('#level-list .level-item');
+      const filtered = getFilteredLevels().filter((l: any) => !l.hidden);
+      filtered.forEach((l: any, i: number) => {
+        if (l.id === d.levelId && items[i]) {
+          items[i].classList.add('duo-glow');
         }
       });
-    }
-
-    // Find the matching level card and make it glow
-    const items = document.querySelectorAll('#level-list .level-item');
-    const filtered = getFilteredLevels().filter((l: any) => !l.hidden);
-    filtered.forEach((l: any, i: number) => {
-      if (l.id === d.levelId && items[i]) {
-        items[i].classList.add('duo-glow');
-      }
-    });
-  }, () => {});
+    },
+    () => {},
+  );
 }

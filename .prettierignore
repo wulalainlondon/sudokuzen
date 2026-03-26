@@ -1,0 +1,12 @@
+dist/
+node_modules/
+levels.js
+mid_pool.js
+techniques.js
+firebase-config*.js
+sw.js
+*.py
+flutter_app/
+output/
+external_data/
+package-lock.json

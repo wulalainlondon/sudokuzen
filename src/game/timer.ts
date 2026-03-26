@@ -28,7 +28,9 @@ export function startTimer(reset = true): void {
 
 export function updateTimerUI(): void {
   if (!gs.timerEl || !gs.currentLevel) return;
-  const mins = Math.floor(gs.seconds / 60).toString().padStart(2, '0');
+  const mins = Math.floor(gs.seconds / 60)
+    .toString()
+    .padStart(2, '0');
   const secs = (gs.seconds % 60).toString().padStart(2, '0');
   gs.timerEl.textContent = `${gs.currentLevel.displayName} / ${mins}:${secs}`;
 }

@@ -73,14 +73,7 @@ export function PracticeBoard({ item, practice, onToggle }: Props): ReactElement
         );
       })}
 
-      {showChain && (
-        <ChainOverlay
-          boardRef={boardRef}
-          cells={patternCells}
-          eliminateCells={eliminateIndices}
-          animate
-        />
-      )}
+      {showChain && <ChainOverlay boardRef={boardRef} cells={patternCells} eliminateCells={eliminateIndices} animate />}
     </div>
   );
 }

@@ -41,11 +41,7 @@ function createPracticeState(overrides?: Partial<PracticeSessionState>): Practic
   };
 }
 
-function formatPracticeExplanation(answer: {
-  description: string;
-  aicChain: string[];
-  proof: string[];
-}): string {
+function formatPracticeExplanation(answer: { description: string; aicChain: string[]; proof: string[] }): string {
   const lines: string[] = [];
   if (answer.description) lines.push(answer.description);
   if (answer.aicChain.length) {

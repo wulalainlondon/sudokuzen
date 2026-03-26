@@ -36,7 +36,7 @@ export function markErrorArea(idx: number): void {
   void gs.livesEl?.offsetWidth;
   gs.livesEl?.classList.add('hit');
   setTimeout(() => {
-    Array.from(gs.gridEl!.children).forEach(c => c.classList.remove('error-strong', 'error-peer'));
+    Array.from(gs.gridEl!.children).forEach((c) => c.classList.remove('error-strong', 'error-peer'));
     gs.livesEl?.classList.remove('hit');
   }, 650);
 }

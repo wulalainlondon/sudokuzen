@@ -32,19 +32,19 @@ export function setReplayFilter(filterKey: 'all' | 'mistake' | 'key'): void {
 
 export function renderReplayList(): void {
   const filtered = getFilteredReplayActions();
-  const filterLabel =
-    gs.replayFilter === 'mistake' ? '錯誤步驟' :
-      gs.replayFilter === 'key' ? '關鍵步驟' : '全部步驟';
-  gs.replaySummaryEl!.textContent =
-    `${gs.currentLevel!.displayName} / 用時 ${formatSeconds(gs.seconds)} / ${filterLabel} ${filtered.length}/${gs.actionHistory.length}`;
+  const filterLabel = gs.replayFilter === 'mistake' ? '錯誤步驟' : gs.replayFilter === 'key' ? '關鍵步驟' : '全部步驟';
+  gs.replaySummaryEl!.textContent = `${gs.currentLevel!.displayName} / 用時 ${formatSeconds(gs.seconds)} / ${filterLabel} ${filtered.length}/${gs.actionHistory.length}`;
 
   if (!filtered.length) {
     gs.replayListEl!.innerHTML = '<div class="replay-item">此篩選下暫無步驟</div>';
     return;
   }
-  gs.replayListEl!.innerHTML = filtered.map((a: any, i: number) => (
-    `<div class="replay-item"><span class="replay-time">${formatSeconds(a.t)}</span>#${i + 1} ${a.detail}</div>`
-  )).join('');
+  gs.replayListEl!.innerHTML = filtered
+    .map(
+      (a: any, i: number) =>
+        `<div class="replay-item"><span class="replay-time">${formatSeconds(a.t)}</span>#${i + 1} ${a.detail}</div>`,
+    )
+    .join('');
 }
 
 export function openReplayModal(): void {
@@ -58,14 +58,14 @@ export function openReplayModal(): void {
 
 export function openHistoricalReplay(levelId: number, savedHistory: any[]): void {
   const levels = getAllLevels();
-  gs.currentLevel = levels.find(l => l.id === levelId) || levels[0];
+  gs.currentLevel = levels.find((l) => l.id === levelId) || levels[0];
   gs.actionHistory = savedHistory;
   // Clean slate for cellsData so the UI can rebuild it cleanly
   gs.cellsData = gs.currentLevel.puzzle.map((val: number) => ({
     value: val,
     fixed: val !== 0,
     notes: [] as number[],
-    isError: false
+    isError: false,
   }));
 
   document.getElementById('pre-level-modal')!.style.display = 'none';
@@ -121,7 +121,8 @@ export function replayRenderBoard(highlightIdx: number): void {
   gs.rbState.forEach((cell: any, i: number) => {
     const div = document.createElement('div');
     div.className = 'rb-cell';
-    const row = Math.floor(i / 9), col = i % 9;
+    const row = Math.floor(i / 9),
+      col = i % 9;
     if (col === 2 || col === 5) div.classList.add('rb-box-border-right');
     if (row === 2 || row === 5) div.classList.add('rb-box-border-bottom');
     if (cell.fixed) {
@@ -160,7 +161,10 @@ export function replayUpdateButtons(): void {
 }
 
 export function replayStepForward(): void {
-  if (gs.rbStepIdx >= gs.actionHistory.length) { replayPause(); return; }
+  if (gs.rbStepIdx >= gs.actionHistory.length) {
+    replayPause();
+    return;
+  }
   const action = gs.actionHistory[gs.rbStepIdx];
   gs.rbState = replayBuildStateAtStep(gs.rbStepIdx + 1);
   gs.rbStepIdx++;
@@ -181,7 +185,10 @@ export function replayStepBack(): void {
 }
 
 export function replayPause(): void {
-  if (gs.rbTimer) { clearInterval(gs.rbTimer); gs.rbTimer = null; }
+  if (gs.rbTimer) {
+    clearInterval(gs.rbTimer);
+    gs.rbTimer = null;
+  }
   gs.rbIsPlaying = false;
   replayUpdateButtons();
 }
@@ -190,17 +197,21 @@ export function replayPlay(): void {
   if (gs.rbStepIdx >= gs.actionHistory.length) replayReset();
   gs.rbIsPlaying = true;
   replayUpdateButtons();
-  gs.rbTimer = setInterval(() => {
-    if (gs.rbStepIdx >= gs.actionHistory.length) {
-      replayPause();
-    } else {
-      replayStepForward();
-    }
-  }, Math.round(RB_BASE_INTERVAL / gs.rbSpeed));
+  gs.rbTimer = setInterval(
+    () => {
+      if (gs.rbStepIdx >= gs.actionHistory.length) {
+        replayPause();
+      } else {
+        replayStepForward();
+      }
+    },
+    Math.round(RB_BASE_INTERVAL / gs.rbSpeed),
+  );
 }
 
 export function replayTogglePlay(): void {
-  if (gs.rbIsPlaying) replayPause(); else replayPlay();
+  if (gs.rbIsPlaying) replayPause();
+  else replayPlay();
 }
 
 export function replayReset(): void {
@@ -218,5 +229,8 @@ export function replayToggleSpeed(): void {
   const speedBtn = document.getElementById('rb-speed-btn');
   if (speedBtn) speedBtn.textContent = `${gs.rbSpeed}x`;
   // Restart timer at new speed if playing
-  if (gs.rbIsPlaying) { replayPause(); replayPlay(); }
+  if (gs.rbIsPlaying) {
+    replayPause();
+    replayPlay();
+  }
 }

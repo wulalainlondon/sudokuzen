@@ -50,13 +50,31 @@ const ACHIEVEMENTS = [
 export { ACHIEVEMENTS };
 
 export const tierAchievementMap: Record<string, string> = {
-  '初心': 'tier_初心', '鍛骨': 'tier_鍛骨', '虛空': 'tier_虛空', '無我': 'tier_無我',
-  '破陣': 'tier_破陣', '空鏡': 'tier_空鏡', '星潮': 'tier_星潮', '玄鏈': 'tier_玄鏈',
-  '本源': 'tier_本源', '寂滅': 'tier_寂滅', '化神': 'tier_化神', '返虛': 'tier_返虛',
-  '合道': 'tier_合道', '渡劫': 'tier_渡劫', '真仙': 'tier_真仙', '二昇': 'tier_二昇',
-  '玄仙': 'tier_玄仙', '太乙': 'tier_太乙', '大羅': 'tier_大羅', '混元': 'tier_混元',
-  '天尊': 'tier_天尊', '三昇': 'tier_三昇', '神王': 'tier_神王', '帝宙': 'tier_帝宙',
-  '神人': 'tier_神人',
+  初心: 'tier_初心',
+  鍛骨: 'tier_鍛骨',
+  虛空: 'tier_虛空',
+  無我: 'tier_無我',
+  破陣: 'tier_破陣',
+  空鏡: 'tier_空鏡',
+  星潮: 'tier_星潮',
+  玄鏈: 'tier_玄鏈',
+  本源: 'tier_本源',
+  寂滅: 'tier_寂滅',
+  化神: 'tier_化神',
+  返虛: 'tier_返虛',
+  合道: 'tier_合道',
+  渡劫: 'tier_渡劫',
+  真仙: 'tier_真仙',
+  二昇: 'tier_二昇',
+  玄仙: 'tier_玄仙',
+  太乙: 'tier_太乙',
+  大羅: 'tier_大羅',
+  混元: 'tier_混元',
+  天尊: 'tier_天尊',
+  三昇: 'tier_三昇',
+  神王: 'tier_神王',
+  帝宙: 'tier_帝宙',
+  神人: 'tier_神人',
 };
 
 // ── Persistence helpers ───────────────────────────────────────────────
@@ -76,7 +94,7 @@ export function unlockAchievement(id: string): boolean {
   if (data[id]) return false;
   data[id] = { date: new Date().toISOString().slice(0, 10) };
   saveAchievementsData(data);
-  const a = ACHIEVEMENTS.find(x => x.id === id);
+  const a = ACHIEVEMENTS.find((x) => x.id === id);
   if (a) gs.achievementToastQueue.push(a);
   return true;
 }
@@ -86,7 +104,10 @@ export function processAchievementToasts(): void {
   gs.achievementToastActive = true;
   const a = gs.achievementToastQueue.shift()!;
   const toast = document.getElementById('achievement-toast');
-  if (!toast) { gs.achievementToastActive = false; return; }
+  if (!toast) {
+    gs.achievementToastActive = false;
+    return;
+  }
   document.getElementById('achievement-toast-icon')!.textContent = a.icon;
   document.getElementById('achievement-toast-name')!.textContent = a.name;
   toast.classList.add('show');
@@ -103,29 +124,32 @@ export function computeStats() {
   const records = readJson<Record<string, any>>(SK.RECORDS, {});
   const speedRecords = readJson<Record<string, any>>(SK.SPEED_RECORDS, {});
   const levels = getAllLevels();
-  const mainLevels = levels.filter(l => !l.hidden);
+  const mainLevels = levels.filter((l) => !l.hidden);
 
-  let totalCleared = 0, totalTime = 0, totalStars = 0, threeStarCount = 0;
+  let totalCleared = 0,
+    totalTime = 0,
+    totalStars = 0,
+    threeStarCount = 0;
   let fastestTime = Infinity;
-  let fastestLevel: typeof levels[number] | null = null;
+  let fastestLevel: (typeof levels)[number] | null = null;
 
   for (const [id, rec] of Object.entries(records)) {
     const time = typeof rec === 'number' ? rec : rec.time;
-    const stars = typeof rec === 'number' ? 1 : (rec.stars || 1);
+    const stars = typeof rec === 'number' ? 1 : rec.stars || 1;
     totalCleared++;
     totalTime += time;
     totalStars += stars;
     if (stars === 3) threeStarCount++;
     if (time < fastestTime) {
       fastestTime = time;
-      fastestLevel = levels.find(l => l.id === Number(id)) ?? null;
+      fastestLevel = levels.find((l) => l.id === Number(id)) ?? null;
     }
   }
 
   // Group by tier name to avoid splitting a tier across star-levels
   const tierOrder: string[] = [];
   const tierMap = new Map<string, typeof mainLevels>();
-  mainLevels.forEach(level => {
+  mainLevels.forEach((level) => {
     const name = level.difficultyName || `Stars ${level.stars}`;
     if (!tierMap.has(name)) {
       tierMap.set(name, []);
@@ -133,19 +157,26 @@ export function computeStats() {
     }
     tierMap.get(name)!.push(level);
   });
-  const tierStats = tierOrder.map(name => {
+  const tierStats = tierOrder.map((name) => {
     const tierLevels = tierMap.get(name) || [];
-    const tierCleared = tierLevels.filter(l => records[l.id]).length;
+    const tierCleared = tierLevels.filter((l) => records[l.id]).length;
     return { name, total: tierLevels.length, cleared: tierCleared };
   });
 
   return {
-    totalCleared, totalLevels: mainLevels.length,
-    threeStarCount, totalStars, maxStars: mainLevels.length * 3,
-    totalTime, avgTime: totalCleared > 0 ? Math.round(totalTime / totalCleared) : 0,
-    fastestTime: fastestTime === Infinity ? 0 : fastestTime, fastestLevel,
+    totalCleared,
+    totalLevels: mainLevels.length,
+    threeStarCount,
+    totalStars,
+    maxStars: mainLevels.length * 3,
+    totalTime,
+    avgTime: totalCleared > 0 ? Math.round(totalTime / totalCleared) : 0,
+    fastestTime: fastestTime === Infinity ? 0 : fastestTime,
+    fastestLevel,
     speedrunCleared: Object.keys(speedRecords).length,
-    tierStats, records, speedRecords,
+    tierStats,
+    records,
+    speedRecords,
   };
 }
 
@@ -164,8 +195,8 @@ export function checkAllAchievements(): void {
   if (totalCleared >= 100) unlockAchievement('clear_100');
 
   const levels = getAllLevels();
-  const mainLevels = levels.filter(l => !l.hidden);
-  if (mainLevels.length > 0 && mainLevels.every(l => records[l.id])) unlockAchievement('clear_all');
+  const mainLevels = levels.filter((l) => !l.hidden);
+  if (mainLevels.length > 0 && mainLevels.every((l) => records[l.id])) unlockAchievement('clear_all');
 
   for (const rec of Object.values(records)) {
     const t = typeof rec === 'number' ? rec : rec.time;
@@ -173,10 +204,10 @@ export function checkAllAchievements(): void {
     if (t <= 60) unlockAchievement('speed_1min');
   }
 
-  if (tierStats.some(t => t.total > 0 && t.cleared >= t.total)) unlockAchievement('tier_any');
+  if (tierStats.some((t) => t.total > 0 && t.cleared >= t.total)) unlockAchievement('tier_any');
 
   // Per-tier full clear achievements
-  tierStats.forEach(t => {
+  tierStats.forEach((t) => {
     if (t.total > 0 && t.cleared >= t.total && tierAchievementMap[t.name]) {
       unlockAchievement(tierAchievementMap[t.name]);
     }
@@ -202,7 +233,7 @@ export function renderStatsModal(): void {
   const achievements = loadAchievements();
 
   // Overview
-  const completionPct = stats.totalLevels > 0 ? Math.round(stats.totalCleared / stats.totalLevels * 100) : 0;
+  const completionPct = stats.totalLevels > 0 ? Math.round((stats.totalCleared / stats.totalLevels) * 100) : 0;
   const fastLabel = stats.fastestLevel ? stats.fastestLevel.displayName : '';
   document.getElementById('stats-overview')!.innerHTML = `
     <div class="stat-item">
@@ -232,21 +263,23 @@ export function renderStatsModal(): void {
   `;
 
   // Tier progress
-  document.getElementById('stats-tier-progress')!.innerHTML = stats.tierStats.map(t => {
-    const pct = t.total > 0 ? Math.round(t.cleared / t.total * 100) : 0;
-    return `<div class="tier-progress">
+  document.getElementById('stats-tier-progress')!.innerHTML = stats.tierStats
+    .map((t) => {
+      const pct = t.total > 0 ? Math.round((t.cleared / t.total) * 100) : 0;
+      return `<div class="tier-progress">
         <span class="tier-name">${t.name}</span>
         <div class="tier-bar"><div class="tier-bar-fill" style="width:${pct}%"></div></div>
         <span class="tier-count">${t.cleared}/${t.total}</span>
     </div>`;
-  }).join('');
+    })
+    .join('');
 
   // Achievements
-  const unlockedCount = ACHIEVEMENTS.filter(a => achievements[a.id]).length;
+  const unlockedCount = ACHIEVEMENTS.filter((a) => achievements[a.id]).length;
   document.getElementById('achievement-counter')!.innerHTML =
     `已解鎖 <span>${unlockedCount}</span> / ${ACHIEVEMENTS.length}`;
 
-  document.getElementById('achievement-grid')!.innerHTML = ACHIEVEMENTS.map(a => {
+  document.getElementById('achievement-grid')!.innerHTML = ACHIEVEMENTS.map((a) => {
     const u = achievements[a.id];
     return `<div class="achievement-card ${u ? 'unlocked' : 'locked'}">
         <div class="achievement-icon">${a.icon}</div>

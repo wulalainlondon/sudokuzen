@@ -1,7 +1,7 @@
 // Firebase initialisation, leaderboard, and player identity
 
 import { gs } from '../game/state';
-import { SK, readJson, writeJson } from '../storage/keys';
+import { SK } from '../storage/keys';
 import { formatSeconds, normalizeAlias, ALIAS_MIN_LEN } from '../game/utils';
 import { showFeedback } from '../ui/feedback';
 import { getAllLevels } from '../data/dataRegistry';
@@ -60,8 +60,14 @@ export function saveAlias(): void {
 
 export function renderLeaderboard(el: HTMLElement | null, rows: any[]): void {
   if (!el) return;
-  if (!gs.firebaseReady) { el.textContent = '尚未啟用 Firebase 排行。'; return; }
-  if (!rows.length) { el.textContent = '尚無玩家首通紀錄'; return; }
+  if (!gs.firebaseReady) {
+    el.textContent = '尚未啟用 Firebase 排行。';
+    return;
+  }
+  if (!rows.length) {
+    el.textContent = '尚無玩家首通紀錄';
+    return;
+  }
   el.innerHTML = rows
     .map((r, i) => `${i + 1}. ${r.alias}  ${formatSeconds(r.firstTimeSec)}  ${'★'.repeat(r.firstStars)}`)
     .join('<br>');
@@ -74,8 +80,13 @@ export async function loadLevelLeaderboard(levelId: number): Promise<void> {
     return;
   }
   try {
-    const snap = await gs.db.collection('level_first_clears').doc(String(levelId)).collection('players')
-      .orderBy('firstTimeSec', 'asc').limit(3).get();
+    const snap = await gs.db
+      .collection('level_first_clears')
+      .doc(String(levelId))
+      .collection('players')
+      .orderBy('firstTimeSec', 'asc')
+      .limit(3)
+      .get();
     const rows = snap.docs.map((d: any) => d.data());
     renderLeaderboard(gs.leaderboardListEl, rows);
     renderLeaderboard(gs.winLeaderboardListEl, rows);
@@ -92,16 +103,26 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
     return;
   }
   try {
-    const snap = await gs.db.collection('level_first_clears').doc(String(levelId)).collection('players')
-      .orderBy('firstTimeSec', 'asc').limit(3).get();
+    const snap = await gs.db
+      .collection('level_first_clears')
+      .doc(String(levelId))
+      .collection('players')
+      .orderBy('firstTimeSec', 'asc')
+      .limit(3)
+      .get();
     const rows = snap.docs.map((d: any) => d.data());
     if (!gs.preLevelLeaderboardEl) return;
-    if (!rows.length) { gs.preLevelLeaderboardEl.textContent = '尚無玩家首通紀錄'; return; }
-    gs.preLevelLeaderboardEl.innerHTML = rows.map((r: any, i: number) => {
-      const timeStr = formatSeconds(r.firstTimeSec);
-      if (gs.isSpeedrunMode) return `${i + 1}. ${r.alias}  ${timeStr} (經典)`;
-      return `${i + 1}. ${r.alias}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
-    }).join('<br>');
+    if (!rows.length) {
+      gs.preLevelLeaderboardEl.textContent = '尚無玩家首通紀錄';
+      return;
+    }
+    gs.preLevelLeaderboardEl.innerHTML = rows
+      .map((r: any, i: number) => {
+        const timeStr = formatSeconds(r.firstTimeSec);
+        if (gs.isSpeedrunMode) return `${i + 1}. ${r.alias}  ${timeStr} (經典)`;
+        return `${i + 1}. ${r.alias}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
+      })
+      .join('<br>');
   } catch (e) {
     console.warn('load pre-level leaderboard failed:', e);
     if (gs.preLevelLeaderboardEl) gs.preLevelLeaderboardEl.textContent = '載入失敗';
@@ -112,13 +133,16 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
   if (!gs.firebaseReady) return;
   const { playerId, alias } = getPlayerIdentity();
   const levels = getAllLevels();
-  const level = levels.find(l => l.id === levelId) || gs.currentLevel || null;
+  const level = levels.find((l) => l.id === levelId) || gs.currentLevel || null;
   const levelVersion = gs.appVersion || 'legacy-unknown';
   const levelSnapshot = level
     ? {
         schemaVersion: 1,
-        levelId: level.id, stars: level.stars, difficultyName: level.difficultyName,
-        displayName: level.displayName, maxTechnique: level.maxTechnique || null,
+        levelId: level.id,
+        stars: level.stars,
+        difficultyName: level.difficultyName,
+        displayName: level.displayName,
+        maxTechnique: level.maxTechnique || null,
         techTier: level.techTier || null,
         puzzle: Array.isArray(level.puzzle) ? level.puzzle.slice() : null,
         puzzleHash: Array.isArray(level.puzzle) ? `p81:${level.puzzle.join('')}` : null,
@@ -130,8 +154,12 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
       const doc = await tx.get(docRef);
       if (doc.exists) return;
       tx.set(docRef, {
-        playerId, alias, firstTimeSec: clearSec, firstStars: clearStars,
-        levelVersion, levelSnapshot,
+        playerId,
+        alias,
+        firstTimeSec: clearSec,
+        firstStars: clearStars,
+        levelVersion,
+        levelSnapshot,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
     });

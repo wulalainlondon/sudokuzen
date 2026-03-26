@@ -15,7 +15,9 @@ function getCtx(): AudioContext | null {
     }
     if (gs._audioCtx!.state === 'suspended') gs._audioCtx!.resume();
     return gs._audioCtx;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 function ensureGraph(ctx: AudioContext): GainNode {
@@ -45,7 +47,9 @@ function ensureGraph(ctx: AudioContext): GainNode {
     reverbGain.connect(master);
     gs._reverbNode = conv;
     gs._reverbGain = reverbGain;
-  } catch { /* reverb optional */ }
+  } catch {
+    /* reverb optional */
+  }
 
   // Dry path
   const dry = ctx.createGain();
@@ -96,7 +100,9 @@ export function playCellSelectSound(): void {
     connectToRoom(g, ctx);
     src.start(t);
     src.stop(t + 0.04);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── Sound: number fill — ceramic pebble on wood ─────────────────────
@@ -142,7 +148,9 @@ export function playFillSound(): void {
     connectToRoom(g2, ctx);
     src.start(t);
     src.stop(t + 0.025);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── Sound: note toggle — pencil tick ────────────────────────────────
@@ -164,7 +172,9 @@ export function playNoteToggleSound(): void {
     connectToRoom(g, ctx);
     osc.start(t);
     osc.stop(t + 0.05);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── Sound: erase — soft brush sweep ─────────────────────────────────
@@ -191,7 +201,9 @@ export function playEraseSound(): void {
     connectToRoom(g, ctx);
     src.start(t);
     src.stop(t + 0.08);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── Sound: unit complete — wind chime, two notes ────────────────────
@@ -203,7 +215,7 @@ export function playUnitCompleteSound(): void {
   try {
     const t = ctx.currentTime;
     const notes: [number, number, number][] = [
-      [784, t, 0.04],       // G5
+      [784, t, 0.04], // G5
       [1175, t + 0.12, 0.03], // D6 — perfect fifth
     ];
     const lp = ctx.createBiquadFilter();
@@ -233,7 +245,9 @@ export function playUnitCompleteSound(): void {
       gs._reverbGain.gain.setValueAtTime(0.45, t + 0.8);
       gs._reverbGain.gain.linearRampToValueAtTime(0.28, t + 1.2);
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── Sound: win — pentatonic cascade with afterglow ──────────────────
@@ -290,7 +304,9 @@ export function playWinSound(): void {
       gs._reverbGain.gain.setValueAtTime(0.55, t + 3.5);
       gs._reverbGain.gain.linearRampToValueAtTime(0.28, t + 4.2);
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── Sound: error — muted wooden thunk ───────────────────────────────
@@ -339,5 +355,7 @@ export function playErrorFeedback(): void {
     else g2.connect(gs._masterGain || ctx.destination);
     src.start(t);
     src.stop(t + 0.04);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
