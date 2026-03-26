@@ -11,10 +11,13 @@ import { renderGrid, updateCellDisplay, selectCell, getUnitIndices, isUnitComple
 import { startTimer } from './timer';
 import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
 import { recalculatePlayerFilledCount, updateGhostProgressUI } from '../features/ghost';
-import { updateDuoProgress, submitDuoFinish } from '../features/duo';
 import { checkAllAchievements, unlockAchievement } from '../features/stats';
-import { closeReplayModal } from '../features/replay';
-import { closeLibraryOverlay } from '../features/teach-legacy';
+
+// Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
+async function callDuoProgress() { const m = await import('../features/duo'); m.updateDuoProgress(); }
+async function callDuoFinish(sec: number, stars: number) { const m = await import('../features/duo'); m.submitDuoFinish(sec, stars); }
+async function callCloseReplay() { const m = await import('../features/replay'); m.closeReplayModal(); }
+async function callCloseLibrary() { const m = await import('../features/teach-legacy'); m.closeLibraryOverlay(); }
 
 // ── Action recording ────────────────────────────────────────────────
 
@@ -26,10 +29,10 @@ function recordAction(type: string, detail: string, idx: number | null = null, v
 // ── Game lifecycle ──────────────────────────────────────────────────
 
 export function initGame(levelId = 1, forceReset = false, playWithGhost = false, ghostData: any = null): void {
-  closeLibraryOverlay();
+  callCloseLibrary();
   const levels = getAllLevels();
   gs.currentLevel = levels.find(l => l.id === levelId) || levels[0];
-  closeReplayModal();
+  callCloseReplay();
   localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
 
   gs.isGhostMode = playWithGhost;
@@ -127,7 +130,7 @@ export function handleInput(num: number): void {
       updateCellDisplay(cellEl, data);
       saveGameStatus();
       updateNumpadState();
-      if (gs.isDuoMode) updateDuoProgress();
+      if (gs.isDuoMode) callDuoProgress();
       checkSpeedrunComplete(gs.selectedIdx);
       return;
     }
@@ -175,7 +178,7 @@ export function handleInput(num: number): void {
 
     if (gs.isGhostMode) { recalculatePlayerFilledCount(); updateGhostProgressUI(); }
     if (!gs.isSpeedrunMode) celebrateCompletedUnits(gs.selectedIdx, beforeState);
-    if (gs.isDuoMode) updateDuoProgress();
+    if (gs.isDuoMode) callDuoProgress();
     checkWin();
   }
   updateCellDisplay(cellEl, data);
@@ -206,7 +209,7 @@ function checkWin(): void {
   clearGameStatus(gs.currentLevel!.id);
   const earnedValue = saveProgress();
   showWinCelebration(earnedValue);
-  if (gs.isDuoMode) submitDuoFinish(gs.seconds, gs.isSpeedrunMode ? 0 : earnedValue);
+  if (gs.isDuoMode) callDuoFinish(gs.seconds, gs.isSpeedrunMode ? 0 : earnedValue);
   setTimeout(() => {
     if (gs.isGhostMode) unlockAchievement('ghost_win');
     checkAllAchievements();

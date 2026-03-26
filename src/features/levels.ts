@@ -8,8 +8,13 @@ import { showFeedback } from '../ui/feedback';
 import { loadPreLevelLeaderboard } from '../firebase/client';
 import { syncLevelCardSize } from '../game/board';
 import { TECH_MAP, showTeachModal, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
-import { enterDuoRoom, leaveDuoRoom, resetDuoState, startDuoGlowListener } from './duo';
 import { getPlayerIdentity } from '../firebase/client';
+
+// Lazy imports to break circular: levels ↔ duo ↔ core
+async function callEnterDuoRoom(levelId: number) { const m = await import('./duo'); m.enterDuoRoom(levelId); }
+async function callLeaveDuoRoom() { const m = await import('./duo'); m.leaveDuoRoom(); }
+function callResetDuoState() { import('./duo').then(m => m.resetDuoState()); }
+function callStartDuoGlowListener() { import('./duo').then(m => m.startDuoGlowListener()); }
 
 // ── Constants ───────────────────────────────────────────────────────
 
@@ -302,13 +307,13 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false): void
   gs.preLevelLeaderboardEl!.textContent = '載入中...';
   loadPreLevelLeaderboard(levelId);
   gs.preLevelModalEl!.style.display = 'flex';
-  if (gs.firebaseReady) enterDuoRoom(levelId);
+  if (gs.firebaseReady) callEnterDuoRoom(levelId);
 }
 
 export function hidePreLevelModal(): void {
   gs.preLevelModalEl!.style.display = 'none';
   gs.pendingLevelId = null;
-  if (!gs.isDuoMode && gs.duoRole) leaveDuoRoom();
+  if (!gs.isDuoMode && gs.duoRole) callLeaveDuoRoom();
 }
 
 export async function startLevelFromModal(forceReset = false, playWithGhost = false, ghostData: any = null): Promise<void> {
@@ -332,7 +337,7 @@ export function showLevelScreen(returnToTier = false): void {
   gs.overlay!.style.display = 'none';
   import('./replay').then(m => m.closeReplayModal());
   hidePreLevelModal();
-  if (gs.isDuoMode) resetDuoState();
+  if (gs.isDuoMode) callResetDuoState();
   if (returnToTier && gs.currentTab !== null) {
     enterTier(gs.currentTab);
   } else {
@@ -340,7 +345,7 @@ export function showLevelScreen(returnToTier = false): void {
     document.getElementById('stage-view')!.style.display = 'flex';
     renderStageMap();
   }
-  if (gs.firebaseReady) startDuoGlowListener();
+  if (gs.firebaseReady) callStartDuoGlowListener();
 }
 
 export function toggleSpeedrunMode(): void {
