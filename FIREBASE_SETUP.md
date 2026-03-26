@@ -109,3 +109,14 @@ Repo 已加入 `.github/workflows/deploy-firebase-preview.yml`，會把 `main` �
   - 權限至少可部署 Hosting（Firebase Hosting Admin）
 
 部署後可用 Firebase preview URL 做線上調整與驗證，不會影響 GitHub Pages 既有用戶。
+
+## 9) 不等 GitHub，直接本機一鍵部署（推薦調整期）
+
+已加入 npm scripts：
+
+- `npm run deploy:preview`
+  - 建置後直接部署到 Firebase preview channel `web-preview`
+- `npm run deploy:live`
+  - 建置後直接部署到 Firebase Hosting 正式站
+
+兩者都會先跑 `build:firebase`，確保使用 Firebase base path 與完整靜態資產輸出。
