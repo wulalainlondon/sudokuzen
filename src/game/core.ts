@@ -260,6 +260,9 @@ function checkWin(): void {
   const isComplete = gs.cellsData.every((data, i) => data.value === gs.currentLevel!.solution[i]);
   if (!isComplete) return;
   clearInterval(gs.timerInterval!);
+  // Clear duo cooldown if active
+  if (gs.duoCooldownTimer) { clearInterval(gs.duoCooldownTimer); gs.duoCooldownTimer = null; }
+  gs.duoCooldownUntil = 0;
   clearGameStatus(gs.currentLevel!.id);
   const earnedValue = saveProgress();
   showWinCelebration(earnedValue);
@@ -498,6 +501,12 @@ export function toggleTheme(): void {
 export function toggleNoteMode(): void {
   gs.isNotesMode = !gs.isNotesMode;
   document.getElementById('note-toggle')!.classList.toggle('active', gs.isNotesMode);
+  // If continuous fill is active, let user know notes mode changes how it fills
+  if (gs.continuousFillDigit !== null && gs.isNotesMode) {
+    showFeedback('連續填入：切換為筆記模式', 'neutral');
+  } else if (gs.continuousFillDigit !== null && !gs.isNotesMode) {
+    showFeedback('連續填入：切換為答案模式', 'neutral');
+  }
 }
 
 // ── Continuous Fill Mode ────────────────────────────────────────────
@@ -531,7 +540,8 @@ function updateContinuousFillUI(): void {
 export function handleContinuousCellClick(idx: number): boolean {
   if (gs.continuousFillDigit === null || gs.continuousFillDigit === 0) return false;
   if (gs.cellsData[idx].fixed) return false;
-  if (gs.errors >= gs.maxErrors) return false;
+  if (!gs.isDuoMode && gs.errors >= gs.maxErrors) return false;
+  if (isDuoCooldownActive()) return false;
 
   gs.selectedIdx = idx;
   selectCell(idx);
