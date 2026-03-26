@@ -19,6 +19,23 @@ async function callDuoFinish(sec: number, stars: number) { const m = await impor
 async function callCloseReplay() { const m = await import('../features/replay'); m.closeReplayModal(); }
 async function callCloseLibrary() { const m = await import('../features/teach-legacy'); m.closeLibraryOverlay(); }
 
+// ── Auto-eliminate notes from peers ─────────────────────────────────
+
+function eliminateNoteFromPeers(idx: number, digit: number): void {
+  const { rowIndices, colIndices, boxIndices } = getUnitIndices(idx);
+  const peers = new Set([...rowIndices, ...colIndices, ...boxIndices]);
+  peers.delete(idx);
+  for (const p of peers) {
+    const cell = gs.cellsData[p];
+    if (cell.value !== 0) continue;
+    const ni = cell.notes.indexOf(digit);
+    if (ni > -1) {
+      cell.notes.splice(ni, 1);
+      updateCellDisplay(gs.gridEl!.children[p] as HTMLElement, cell);
+    }
+  }
+}
+
 // ── Action recording ────────────────────────────────────────────────
 
 function recordAction(type: string, detail: string, idx: number | null = null, val: number | null = null, notes: number[] | null = null): void {
@@ -173,6 +190,8 @@ export function handleInput(num: number): void {
     gs.cellsData[gs.selectedIdx].notes = [];
     gs.cellsData[gs.selectedIdx].isError = false;
     recordAction('fill', `${cellLabel(gs.selectedIdx)} 填入 ${num}`, gs.selectedIdx, num);
+    // Auto-clear this digit from peer cells' notes
+    eliminateNoteFromPeers(gs.selectedIdx, num);
     playFillSound();
     if (navigator.vibrate) navigator.vibrate(8);
 
@@ -389,4 +408,43 @@ export function toggleTheme(): void {
 export function toggleNoteMode(): void {
   gs.isNotesMode = !gs.isNotesMode;
   document.getElementById('note-toggle')!.classList.toggle('active', gs.isNotesMode);
+}
+
+// ── Continuous Fill Mode ────────────────────────────────────────────
+
+export function toggleContinuousFill(): void {
+  if (gs.continuousFillDigit !== null) {
+    // Turn off
+    gs.continuousFillDigit = null;
+  } else {
+    // Turn on — use last selected numpad digit or default to null (wait for numpad click)
+    gs.continuousFillDigit = 0; // 0 = active but no digit chosen yet
+  }
+  updateContinuousFillUI();
+}
+
+export function setContinuousDigit(num: number): void {
+  if (gs.continuousFillDigit === null) return; // not in continuous mode
+  gs.continuousFillDigit = num;
+  updateContinuousFillUI();
+}
+
+function updateContinuousFillUI(): void {
+  const btn = document.getElementById('continuous-fill-toggle');
+  if (btn) btn.classList.toggle('active', gs.continuousFillDigit !== null);
+  // Update numpad highlight
+  gs.numButtons.forEach((b, i) => {
+    b.classList.toggle('continuous-active', gs.continuousFillDigit === i + 1);
+  });
+}
+
+export function handleContinuousCellClick(idx: number): boolean {
+  if (gs.continuousFillDigit === null || gs.continuousFillDigit === 0) return false;
+  if (gs.cellsData[idx].fixed) return false;
+  if (gs.errors >= gs.maxErrors) return false;
+
+  gs.selectedIdx = idx;
+  selectCell(idx);
+  handleInput(gs.continuousFillDigit);
+  return true;
 }

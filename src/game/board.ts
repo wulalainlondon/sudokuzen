@@ -12,7 +12,14 @@ export function renderGrid(): void {
     updateCellDisplay(cell, data);
     cell.addEventListener('pointerdown', (ev) => {
       if (ev && ev.button !== undefined && ev.button !== 0) return;
-      selectCell(i);
+      // In continuous fill mode, clicking a cell directly fills
+      if (gs.continuousFillDigit && gs.continuousFillDigit >= 1) {
+        import('./core').then(m => {
+          if (!m.handleContinuousCellClick(i)) selectCell(i);
+        });
+      } else {
+        selectCell(i);
+      }
     });
     gs.gridEl!.appendChild(cell);
   });

@@ -13,6 +13,7 @@ import { initFirebase, loadAliasToInput, saveAlias } from '../firebase/client';
 import {
   initGame, handleInput, erase, resetGame, saveGameStatus,
   pauseGame, resumeGame, toggleTheme, toggleNoteMode, updateLivesUI,
+  toggleContinuousFill, setContinuousDigit,
 } from '../game/core';
 import { updateNumpadState } from '../game/board';
 import {
@@ -55,7 +56,11 @@ export function bootLegacyRuntime(appVersion: string): void {
     b.textContent = String(i);
     b.addEventListener('pointerdown', (ev) => {
       if (ev && ev.button !== undefined && ev.button !== 0) return;
-      handleInput(i);
+      if (gs.continuousFillDigit !== null) {
+        setContinuousDigit(i);
+      } else {
+        handleInput(i);
+      }
     });
     b.addEventListener('contextmenu', (e) => e.preventDefault());
     gs.numButtons.push(b);
@@ -64,7 +69,14 @@ export function bootLegacyRuntime(appVersion: string): void {
 
   // 5. Keyboard
   window.addEventListener('keydown', (e) => {
-    if (e.key >= '1' && e.key <= '9') handleInput(parseInt(e.key));
+    if (e.key >= '1' && e.key <= '9') {
+      const num = parseInt(e.key);
+      if (gs.continuousFillDigit !== null) {
+        setContinuousDigit(num);
+      } else {
+        handleInput(num);
+      }
+    }
     if (e.key === 'Backspace') erase();
   });
 
@@ -144,7 +156,7 @@ export function bootLegacyRuntime(appVersion: string): void {
   bindLegacyFacade({
     openLibraryOverlay, openStatsModal, toggleSpeedrunMode, saveAlias,
     startPoolRandom, backToStageMap, closeLibraryOverlay, toggleDuoReady,
-    resetGame, showLevelScreen, resumeGame, pauseGame, toggleTheme,
+    resetGame, showLevelScreen, resumeGame, pauseGame, toggleTheme, toggleContinuousFill,
     toggleNoteMode, erase, sendDuoEmoji, replayReset, replayStepBack,
     replayTogglePlay, replayStepForward, replayToggleSpeed, setReplayFilter,
     closeReplayModal, switchStatsTab, closeStatsModal, closeDuoResult,

@@ -55,6 +55,7 @@ export const gs = {
   // ── Core game state ───────────────────────────────────────────────
   selectedIdx: null as number | null,
   isNotesMode: false,
+  continuousFillDigit: null as number | null,
   isSpeedrunMode: false,
   submissionCount: 0,
   errors: 0,

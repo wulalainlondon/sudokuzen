@@ -209,6 +209,24 @@ header h1 {
     box-shadow: 0 4px 10px rgba(9, 132, 227, 0.25);
 }
 
+/* Continuous fill toggle */
+#continuous-fill-toggle.active svg {
+    animation: continuousSpin 1.8s linear infinite;
+}
+@keyframes continuousSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* Numpad button locked in continuous mode */
+.num-btn.continuous-active {
+    background: var(--accent-strong);
+    color: #fff;
+    border-color: var(--accent-strong);
+    box-shadow: 0 2px 8px rgba(9, 132, 227, 0.3);
+    transform: scale(1.08);
+}
+
 /* 計時器與關卡名 (左上) */
 .grid-info-bar .stats {
     font-size: 0.75rem;
