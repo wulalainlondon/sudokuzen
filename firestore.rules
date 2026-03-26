@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /level_first_clears/{levelId}/players/{playerId} {
+      allow read: if true;
+      allow create: if request.resource.data.playerId == playerId
+                    && request.resource.data.firstTimeSec is int
+                    && request.resource.data.firstStars is int
+                    && request.resource.data.alias is string
+                    && request.resource.data.alias.size() >= 1
+                    && request.resource.data.alias.size() <= 24;
+      allow update, delete: if false;
+    }
+
+    // Duo room minimal hardening for current architecture:
+    // only the fixed room doc is writable and key fields must be typed.
+    match /duo_room/current {
+      allow read: if true;
+      allow write: if request.resource.data.levelId is int
+                   && request.resource.data.status is string
+                   && request.resource.data.hostId is string
+                   && (request.resource.data.guestId == null || request.resource.data.guestId is string);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
