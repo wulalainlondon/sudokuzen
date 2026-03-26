@@ -306,6 +306,16 @@ header h1 {
     font-weight: 600;
 }
 
+.cell.note-match {
+    background-color: var(--accent-soft);
+}
+
+.note-num.note-highlight {
+    color: var(--accent-strong) !important;
+    opacity: 1 !important;
+    font-weight: 700;
+}
+
 .cell.selected {
     background-color: var(--accent-soft);
     outline: 2px inset var(--accent-strong);

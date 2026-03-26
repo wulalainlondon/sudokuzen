@@ -49,22 +49,38 @@ export function selectCell(idx: number): void {
   gs.selectedIdx = idx;
   if (!gs.gridEl) return;
   const selectedVal = gs.cellsData[idx].value;
+  // In continuous mode, highlight the locked digit; otherwise use selected cell's value
+  const highlightDigit = (gs.continuousFillDigit && gs.continuousFillDigit >= 1)
+    ? gs.continuousFillDigit
+    : selectedVal;
   const row = Math.floor(idx / 9);
   const col = idx % 9;
   const box = Math.floor(row / 3) * 3 + Math.floor(col / 3);
 
   Array.from(gs.gridEl.children).forEach((c, i) => {
-    c.classList.remove('selected', 'related', 'match');
+    c.classList.remove('selected', 'related', 'match', 'note-match');
+    // Clear previous note highlights
+    c.querySelectorAll('.note-num.note-highlight').forEach(n => n.classList.remove('note-highlight'));
+
     const r = Math.floor(i / 9);
     const l = i % 9;
     const b = Math.floor(r / 3) * 3 + Math.floor(l / 3);
-    const val = gs.cellsData[i].value;
+    const cell = gs.cellsData[i];
 
     if (i === idx) {
       c.classList.add('selected');
     } else {
       if (r === row || l === col || b === box) c.classList.add('related');
-      if (selectedVal !== 0 && val === selectedVal) c.classList.add('match');
+      // Match filled value
+      if (highlightDigit !== 0 && cell.value === highlightDigit) {
+        c.classList.add('match');
+      }
+      // Match in notes
+      if (highlightDigit !== 0 && cell.value === 0 && cell.notes.includes(highlightDigit)) {
+        c.classList.add('note-match');
+        const noteEl = c.querySelector(`.note-num:nth-child(${highlightDigit})`);
+        if (noteEl) noteEl.classList.add('note-highlight');
+      }
     }
   });
 }
