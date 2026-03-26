@@ -8,17 +8,15 @@ if (!fs.existsSync(distDir)) {
   throw new Error('dist directory not found. Run "npm run build" first.');
 }
 
+// Files that need manual copy (NOT in public/, so Vite doesn't handle them)
 const requiredFiles = [
   'levels.js',
   'techniques.js',
   'mid_pool.js',
   'firebase-config.js',
   'sw.js',
-  'manifest.json',
-  'icon-192.png',
-  'icon-512.png',
-  'apple-touch-icon.png',
   'style.css',
+  // manifest.json, icons are in public/ → Vite copies them automatically
 ];
 
 for (const rel of requiredFiles) {
