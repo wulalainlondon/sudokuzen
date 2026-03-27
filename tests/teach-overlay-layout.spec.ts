@@ -5,7 +5,7 @@ describe('teach overlay dialog layout', () => {
   it('uses inset+margin centering to avoid transform conflicts', () => {
     const source = fs.readFileSync('src/features/teach/components/TeachOverlay.tsx', 'utf8');
 
-    expect(source).toContain("inset: 0");
+    expect(source).toContain('inset: 0');
     expect(source).toContain("margin: 'auto'");
     expect(source).toContain("maxHeight: 'calc(100dvh - 24px)'");
 

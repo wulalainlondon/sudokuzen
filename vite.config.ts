@@ -7,6 +7,9 @@ const base = deployTarget === 'github-pages' ? '/sudokuzen/' : '/';
 export default defineConfig({
   base,
   plugins: [react()],
+  test: {
+    exclude: ['e2e/**', 'node_modules/**'],
+  },
   server: {
     host: true,
     port: 5173,

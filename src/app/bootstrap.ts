@@ -4,6 +4,10 @@ import { bootLegacyRuntime } from './legacyRuntime';
 import { installLegacyTeachBridge } from '../features/teach/bridge/legacyTeachBridge';
 import { mountReactStrangler } from '../react/mountReactStrangler';
 import { createTeachSelectionMigration, runStorageMigrations } from '../shared/storage/migrations';
+import { gs } from '../game/state';
+import { initGame, handleInput, erase, saveGameStatus } from '../game/core';
+import { selectCell } from '../game/board';
+import * as replay from '../features/replay';
 
 declare global {
   interface Window {
@@ -25,4 +29,9 @@ export function bootstrapApp(): void {
   bootLegacyRuntime(APP_VERSION);
   mountReactStrangler();
   installLegacyTeachBridge();
+
+  // Expose test hooks in dev mode for E2E (Playwright)
+  if (import.meta.env.DEV) {
+    (window as any).__e2e = { gs, initGame, handleInput, erase, saveGameStatus, selectCell, replay };
+  }
 }

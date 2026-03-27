@@ -19,6 +19,10 @@
     "format": "prettier --write 'src/**/*.{ts,tsx}' 'tests/**/*.ts'",
     "format:check": "prettier --check 'src/**/*.{ts,tsx}' 'tests/**/*.ts'",
     "test": "npm run sync:version && vitest run",
+    "test:e2e": "npx playwright test",
+    "test:e2e:solo": "npx playwright test e2e/single-player-full-run.spec.ts",
+    "test:e2e:duo": "npx playwright test e2e/duo-sync.spec.ts",
+    "test:e2e:replay": "npx playwright test e2e/replay-end-to-end.spec.ts",
     "check": "npm run validate:teach && npm run typecheck && npm run lint && npm run format:check && npm test"
   },
   "lint-staged": {
@@ -33,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.58.2",
     "@types/node": "^24.5.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

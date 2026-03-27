@@ -1,0 +1,265 @@
+import { test, expect, type Page, type BrowserContext } from '@playwright/test';
+
+/**
+ * E2E: Duo sync — real Firebase
+ * Two browser contexts (host + guest) pair into the same room,
+ * see each other's progress, and produce consistent results.
+ *
+ * Requires: real Firebase project (sudokuzen-f2aa3) accessible from test env.
+ * Uses duo_room/current — tests clean up after themselves.
+ */
+
+const TEST_LEVEL_ID = 1;
+
+async function waitForE2E(page: Page) {
+  await page.waitForFunction(() => !!(window as any).__e2e, { timeout: 10_000 });
+}
+
+async function waitForFirebase(page: Page) {
+  await page.waitForFunction(() => !!(window as any).__e2e?.gs?.firebaseReady, { timeout: 10_000 });
+}
+
+async function setAlias(page: Page, alias: string) {
+  await page.evaluate((a) => {
+    localStorage.setItem('sudoku_player_alias', a);
+    // Force a unique player ID
+    localStorage.setItem('sudoku_player_id', `test_${a}_${Date.now()}`);
+  }, alias);
+}
+
+/** Clean up the duo room to idle state. */
+async function cleanupDuoRoom(page: Page) {
+  await page.evaluate(() => {
+    const e2e = (window as any).__e2e;
+    if (!e2e?.gs?.firebaseReady) return;
+    try {
+      e2e.gs.db.collection('duo_room').doc('current').set({ status: 'idle' });
+    } catch { /* ignore */ }
+  });
+}
+
+/** Enter the duo room for a given level. */
+async function enterDuoRoom(page: Page, levelId: number) {
+  await page.evaluate(async (id) => {
+    const duo = await import('/src/features/duo.ts');
+    await duo.enterDuoRoom(id);
+  }, levelId);
+}
+
+/** Toggle duo ready state. */
+async function toggleDuoReady(page: Page) {
+  await page.evaluate(async () => {
+    const duo = await import('/src/features/duo.ts');
+    await duo.toggleDuoReady();
+  });
+}
+
+/** Get duo room data from Firestore. */
+async function getDuoRoomData(page: Page): Promise<any> {
+  return page.evaluate(async () => {
+    const e2e = (window as any).__e2e;
+    if (!e2e?.gs?.firebaseReady) return null;
+    const doc = await e2e.gs.db.collection('duo_room').doc('current').get();
+    return doc.exists ? doc.data() : null;
+  });
+}
+
+/** Get the duo role for this page's session. */
+async function getDuoRole(page: Page): Promise<string | null> {
+  return page.evaluate(() => (window as any).__e2e?.gs?.duoRole ?? null);
+}
+
+/** Fill all empty cells with correct answers. */
+async function solveAllCells(page: Page) {
+  await page.evaluate(() => {
+    const e2e = (window as any).__e2e;
+    const puzzle = e2e.gs.currentLevel.puzzle;
+    const solution = e2e.gs.currentLevel.solution;
+    for (let i = 0; i < 81; i++) {
+      if (puzzle[i] === 0) {
+        e2e.selectCell(i);
+        e2e.handleInput(solution[i]);
+      }
+    }
+  });
+}
+
+test.describe('duo-sync', () => {
+  let hostContext: BrowserContext;
+  let guestContext: BrowserContext;
+  let hostPage: Page;
+  let guestPage: Page;
+
+  test.beforeAll(async ({ browser }) => {
+    hostContext = await browser.newContext();
+    guestContext = await browser.newContext();
+    hostPage = await hostContext.newPage();
+    guestPage = await guestContext.newPage();
+  });
+
+  test.afterAll(async () => {
+    // Clean up duo room
+    try { await cleanupDuoRoom(hostPage); } catch { /* ignore */ }
+    await hostContext.close();
+    await guestContext.close();
+  });
+
+  test.beforeEach(async () => {
+    // Fresh state for each test
+    await hostPage.goto('/');
+    await guestPage.goto('/');
+    await waitForE2E(hostPage);
+    await waitForE2E(guestPage);
+
+    // Set distinct aliases and player IDs
+    await setAlias(hostPage, 'host_e2e');
+    await setAlias(guestPage, 'guest_e2e');
+
+    // Clear localStorage
+    await hostPage.evaluate(() => {
+      localStorage.removeItem('sudoku_records');
+      localStorage.removeItem('sudoku_duo_records');
+    });
+    await guestPage.evaluate(() => {
+      localStorage.removeItem('sudoku_records');
+      localStorage.removeItem('sudoku_duo_records');
+    });
+  });
+
+  test('host creates room and guest joins', async () => {
+    await waitForFirebase(hostPage);
+    await waitForFirebase(guestPage);
+
+    // Clean up any stale room
+    await cleanupDuoRoom(hostPage);
+    await hostPage.waitForTimeout(1000);
+
+    // Host creates room
+    await enterDuoRoom(hostPage, TEST_LEVEL_ID);
+    const hostRole = await getDuoRole(hostPage);
+    expect(hostRole).toBe('host');
+
+    // Verify room is waiting
+    const roomAfterHost = await getDuoRoomData(hostPage);
+    expect(roomAfterHost.status).toBe('waiting');
+    expect(roomAfterHost.hostAlias).toBe('host_e2e');
+    expect(roomAfterHost.guestId).toBeNull();
+
+    // Guest joins
+    await enterDuoRoom(guestPage, TEST_LEVEL_ID);
+    const guestRole = await getDuoRole(guestPage);
+    expect(guestRole).toBe('guest');
+
+    // Verify room has both players
+    await hostPage.waitForTimeout(1000); // Wait for snapshot propagation
+    const roomAfterGuest = await getDuoRoomData(hostPage);
+    expect(roomAfterGuest.guestAlias).toBe('guest_e2e');
+    expect(roomAfterGuest.guestId).not.toBeNull();
+  });
+
+  test('both ready triggers countdown and game start', async () => {
+    await waitForFirebase(hostPage);
+    await waitForFirebase(guestPage);
+    await cleanupDuoRoom(hostPage);
+    await hostPage.waitForTimeout(1000);
+
+    // Host creates, guest joins
+    await enterDuoRoom(hostPage, TEST_LEVEL_ID);
+    await guestPage.waitForTimeout(500);
+    await enterDuoRoom(guestPage, TEST_LEVEL_ID);
+    await hostPage.waitForTimeout(1000);
+
+    // Both toggle ready
+    await toggleDuoReady(hostPage);
+    await hostPage.waitForTimeout(300);
+    await toggleDuoReady(guestPage);
+
+    // Wait for countdown to complete (4s countdown + 300ms delay)
+    await hostPage.waitForTimeout(5000);
+
+    // Verify room status is 'playing'
+    const room = await getDuoRoomData(hostPage);
+    expect(room.status).toBe('playing');
+  });
+
+  test('progress syncs between players', async () => {
+    await waitForFirebase(hostPage);
+    await waitForFirebase(guestPage);
+    await cleanupDuoRoom(hostPage);
+    await hostPage.waitForTimeout(1000);
+
+    // Setup: host creates, guest joins, both ready
+    await enterDuoRoom(hostPage, TEST_LEVEL_ID);
+    await guestPage.waitForTimeout(500);
+    await enterDuoRoom(guestPage, TEST_LEVEL_ID);
+    await hostPage.waitForTimeout(1000);
+    await toggleDuoReady(hostPage);
+    await hostPage.waitForTimeout(300);
+    await toggleDuoReady(guestPage);
+    await hostPage.waitForTimeout(5500); // Wait for game to start
+
+    // Host fills a few cells
+    await hostPage.evaluate(() => {
+      const e2e = (window as any).__e2e;
+      const puzzle = e2e.gs.currentLevel.puzzle;
+      const solution = e2e.gs.currentLevel.solution;
+      let filled = 0;
+      for (let i = 0; i < 81 && filled < 3; i++) {
+        if (puzzle[i] === 0) {
+          e2e.selectCell(i);
+          e2e.handleInput(solution[i]);
+          filled++;
+        }
+      }
+    });
+
+    // Force progress update (bypass throttle)
+    await hostPage.evaluate(async () => {
+      const duo = await import('/src/features/duo.ts');
+      (window as any).__e2e.gs.duoProgressThrottle = 0;
+      duo.updateDuoProgress();
+    });
+
+    // Wait for Firestore propagation
+    await hostPage.waitForTimeout(3000);
+
+    // Verify host progress is reflected in the room
+    const room = await getDuoRoomData(guestPage);
+    expect(room.hostProgress).toBeGreaterThanOrEqual(3);
+  });
+
+  test('both finish produces consistent result', async () => {
+    await waitForFirebase(hostPage);
+    await waitForFirebase(guestPage);
+    await cleanupDuoRoom(hostPage);
+    await hostPage.waitForTimeout(1000);
+
+    // Setup: create room, join, ready, start
+    await enterDuoRoom(hostPage, TEST_LEVEL_ID);
+    await guestPage.waitForTimeout(500);
+    await enterDuoRoom(guestPage, TEST_LEVEL_ID);
+    await hostPage.waitForTimeout(1000);
+    await toggleDuoReady(hostPage);
+    await hostPage.waitForTimeout(300);
+    await toggleDuoReady(guestPage);
+    await hostPage.waitForTimeout(5500);
+
+    // Host solves first
+    await solveAllCells(hostPage);
+    await hostPage.waitForTimeout(2000);
+
+    // Guest solves
+    await solveAllCells(guestPage);
+    await guestPage.waitForTimeout(3000);
+
+    // Both should have finish times in the room
+    const room = await getDuoRoomData(hostPage);
+    expect(room.hostFinishTime).not.toBeNull();
+    expect(room.guestFinishTime).not.toBeNull();
+    expect(room.hostStars).toBeGreaterThanOrEqual(1);
+    expect(room.guestStars).toBeGreaterThanOrEqual(1);
+
+    // Host finished first, so host time should be <= guest time
+    expect(room.hostFinishTime).toBeLessThanOrEqual(room.guestFinishTime);
+  });
+});
