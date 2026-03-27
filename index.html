@@ -337,7 +337,13 @@
     <script src="mid_pool.js"></script>
     <script src="levels.js"></script>
     <script src="techniques.js"></script>
-        <script type="module" src="/src/main.ts"></script>
+    <script>
+      // Expose script-tag globals to window for React bridge access
+      if (typeof TEACH_DATA !== 'undefined') window.TEACH_DATA = TEACH_DATA;
+      if (typeof levels !== 'undefined') window.levels = levels;
+      if (typeof midPool !== 'undefined') window.midPool = midPool;
+    </script>
+    <script type="module" src="/src/main.ts"></script>
 </body>
 
 </html>
