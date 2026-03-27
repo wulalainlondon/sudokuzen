@@ -2002,28 +2002,42 @@ header h1 {
 
 /* ===== Duo Room System ===== */
 @keyframes duoPulse {
-    0%, 100% { box-shadow: 0 0 6px rgba(108, 160, 220, 0.2); border-color: rgba(108, 160, 220, 0.4); }
-    50% { box-shadow: 0 0 16px rgba(108, 160, 220, 0.45); border-color: rgba(108, 160, 220, 0.7); }
+    0%, 100% { box-shadow: 0 0 8px var(--accent-light); border-color: var(--accent-strong); }
+    50% { box-shadow: 0 0 20px var(--accent-light); border-color: var(--accent-strong); }
+}
+@keyframes duoBadgeBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
 }
 .level-item.duo-glow {
-    animation: duoPulse 1.8s ease-in-out infinite;
+    animation: duoPulse 1.6s var(--ease-zen) infinite;
     position: relative;
+    border: 2px solid var(--accent-strong);
+    z-index: 2;
 }
 .level-item.duo-glow::after {
-    content: '⚔️';
+    content: '⚔️ 對戰';
     position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 0.65rem;
+    top: -8px;
+    right: -4px;
+    font-size: 0.6rem;
     line-height: 1;
+    background: var(--accent-strong);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    animation: duoBadgeBounce 1.6s var(--ease-zen) infinite;
+    white-space: nowrap;
 }
 .stage-node.duo-waiting {
-    animation: duoPulse 1.8s ease-in-out infinite;
+    animation: duoPulse 1.6s var(--ease-zen) infinite;
+    border: 2px solid var(--accent-strong);
 }
 .stage-node.duo-waiting .stage-name::after {
     content: ' ⚔️ 對戰邀請';
-    font-size: 0.7rem;
-    font-weight: 400;
+    font-size: 0.72rem;
+    font-weight: 600;
     color: var(--accent-strong);
 }
 
