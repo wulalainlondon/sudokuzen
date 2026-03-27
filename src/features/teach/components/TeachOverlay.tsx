@@ -101,11 +101,10 @@ export function TeachOverlay(): ReactElement {
             transition={{ duration: policy.reducedMotion ? 0 : 0.24, ease: [0.2, 0.8, 0.2, 1] }}
             style={{
               position: 'fixed',
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
+              inset: 0,
+              margin: 'auto',
               width: 'min(95vw, 760px)',
-              maxHeight: '90vh',
+              maxHeight: 'calc(100dvh - 24px)',
               overflowY: 'auto',
               zIndex: 1501,
               borderRadius: 'var(--radius-lg)',
