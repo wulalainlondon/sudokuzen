@@ -352,7 +352,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -715,7 +716,8 @@ const TEACH_DATA = {
           6,
           1,
           3
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -1179,7 +1181,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -1650,7 +1653,8 @@ const TEACH_DATA = {
           3,
           1,
           2
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -1990,7 +1994,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -2328,7 +2333,8 @@ const TEACH_DATA = {
           3,
           5,
           9
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -2759,7 +2765,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -3066,7 +3073,8 @@ const TEACH_DATA = {
           0,
           0,
           0
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -3740,7 +3748,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -4048,7 +4057,8 @@ const TEACH_DATA = {
           0,
           0,
           0
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -4563,7 +4573,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -5105,7 +5116,8 @@ const TEACH_DATA = {
           6,
           5,
           7
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -5604,7 +5616,8 @@ const TEACH_DATA = {
           2,
           8,
           1
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -6058,7 +6071,8 @@ const TEACH_DATA = {
           5,
           2,
           3
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -6602,7 +6616,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -7012,7 +7027,8 @@ const TEACH_DATA = {
           7,
           4,
           8
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -7563,7 +7579,8 @@ const TEACH_DATA = {
           5,
           2,
           9
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -8033,7 +8050,8 @@ const TEACH_DATA = {
           9,
           3,
           1
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -8580,7 +8598,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -8999,7 +9018,8 @@ const TEACH_DATA = {
           3,
           2,
           4
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -9373,7 +9393,8 @@ const TEACH_DATA = {
           4,
           1,
           8
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -9849,7 +9870,8 @@ const TEACH_DATA = {
           3,
           6,
           9
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -10392,7 +10414,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -10779,7 +10802,8 @@ const TEACH_DATA = {
           8,
           6,
           9
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -11250,7 +11274,8 @@ const TEACH_DATA = {
           3,
           6,
           2
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -11586,7 +11611,8 @@ const TEACH_DATA = {
           5,
           7,
           3
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -12135,7 +12161,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -12483,7 +12510,8 @@ const TEACH_DATA = {
           1,
           3,
           9
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -12954,7 +12982,8 @@ const TEACH_DATA = {
           6,
           7,
           2
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -13350,7 +13379,8 @@ const TEACH_DATA = {
           4,
           6,
           5
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -13790,7 +13820,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -14086,7 +14117,8 @@ const TEACH_DATA = {
           0,
           0,
           0
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -14555,7 +14587,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -14954,7 +14987,8 @@ const TEACH_DATA = {
           1,
           3,
           2
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -15349,7 +15383,8 @@ const TEACH_DATA = {
           2,
           9,
           6
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -15720,7 +15755,8 @@ const TEACH_DATA = {
           5,
           7,
           1
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -16172,7 +16208,8 @@ const TEACH_DATA = {
           "highlightDigits": {},
           "eliminateCells": []
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -16677,7 +16714,8 @@ const TEACH_DATA = {
           0,
           0,
           5
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -17172,7 +17210,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -17563,7 +17602,8 @@ const TEACH_DATA = {
           1,
           5,
           2
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -17940,7 +17980,8 @@ const TEACH_DATA = {
           5,
           9,
           6
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -18399,7 +18440,8 @@ const TEACH_DATA = {
           8,
           6,
           3
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -18881,7 +18923,8 @@ const TEACH_DATA = {
           },
           "eliminateCells": []
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -19404,7 +19447,8 @@ const TEACH_DATA = {
           0,
           5,
           0
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -19918,7 +19962,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -20413,7 +20458,8 @@ const TEACH_DATA = {
           2,
           3,
           5
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -20836,7 +20882,8 @@ const TEACH_DATA = {
           6,
           7,
           5
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -21287,7 +21334,8 @@ const TEACH_DATA = {
           3,
           9,
           7
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -21786,7 +21834,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -22097,7 +22146,8 @@ const TEACH_DATA = {
           0,
           0,
           0
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -22601,7 +22651,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -22991,7 +23042,8 @@ const TEACH_DATA = {
           6,
           9,
           1
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -23406,7 +23458,8 @@ const TEACH_DATA = {
           5,
           3,
           2
-        ]
+        ],
+        "source": "in-house-generated"
       },
       {
         "board": [
@@ -23837,7 +23890,8 @@ const TEACH_DATA = {
           2,
           4,
           7
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -24389,7 +24443,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -24720,7 +24775,8 @@ const TEACH_DATA = {
           3,
           9,
           6
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -25263,7 +25319,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -25593,7 +25650,8 @@ const TEACH_DATA = {
           1,
           6,
           2
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -26148,7 +26206,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -26478,7 +26537,8 @@ const TEACH_DATA = {
           4,
           1,
           2
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -27027,7 +27087,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -27357,7 +27418,8 @@ const TEACH_DATA = {
           3,
           4,
           5
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -27604,7 +27666,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -27960,7 +28023,8 @@ const TEACH_DATA = {
           3,
           1,
           7
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -28204,7 +28268,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -28542,7 +28607,8 @@ const TEACH_DATA = {
           1,
           3,
           8
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -29150,7 +29216,8 @@ const TEACH_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -29479,7 +29546,8 @@ const TEACH_DATA = {
           5,
           3,
           6
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -29924,7 +29992,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -30422,7 +30491,8 @@ const TEACH_DATA = {
           1,
           5,
           2
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -30961,7 +31031,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -31553,7 +31624,8 @@ const TEACH_DATA = {
           6,
           9,
           8
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -32092,7 +32164,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -32684,7 +32757,8 @@ const TEACH_DATA = {
           6,
           9,
           8
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -33183,7 +33257,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -33727,7 +33802,8 @@ const TEACH_DATA = {
           7,
           9,
           1
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -34238,7 +34314,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -34802,7 +34879,8 @@ const TEACH_DATA = {
           4,
           3,
           1
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -35313,7 +35391,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -35877,7 +35956,8 @@ const TEACH_DATA = {
           4,
           3,
           1
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -36373,7 +36453,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -36922,7 +37003,8 @@ const TEACH_DATA = {
           4,
           8,
           6
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -37418,7 +37500,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -37967,7 +38050,8 @@ const TEACH_DATA = {
           4,
           8,
           6
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -38464,7 +38548,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -39014,7 +39099,8 @@ const TEACH_DATA = {
           5,
           7,
           8
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -39511,7 +39597,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -40061,7 +40148,8 @@ const TEACH_DATA = {
           5,
           7,
           8
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -40558,7 +40646,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -41108,7 +41197,8 @@ const TEACH_DATA = {
           5,
           7,
           8
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -41610,7 +41700,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -42165,7 +42256,8 @@ const TEACH_DATA = {
           1,
           9,
           3
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -42667,7 +42759,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -43222,7 +43315,8 @@ const TEACH_DATA = {
           1,
           9,
           3
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -43731,7 +43825,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -44293,7 +44388,8 @@ const TEACH_DATA = {
           6,
           5,
           1
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   },
@@ -44854,7 +44950,8 @@ const TEACH_DATA = {
           "warnCells": [],
           "warnDigit": null
         }
-      ]
+      ],
+      "source": "in-house-generated"
     },
     "practice": [
       {
@@ -45460,7 +45557,8 @@ const TEACH_DATA = {
           2,
           5,
           9
-        ]
+        ],
+        "source": "in-house-generated"
       }
     ]
   }

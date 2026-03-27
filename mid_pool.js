@@ -1,3 +1,6 @@
+/**
+ * ⚠️  自動產生，勿手動編輯 — 修改 mid-pool-data.json 後執行 npm run build:data
+ */
 const midPool = [
   {
     "id": 10250,
@@ -173,10 +176,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 72,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10251,
@@ -352,10 +356,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 67,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10252,
@@ -531,10 +536,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 63,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10253,
@@ -710,10 +716,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 66,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10254,
@@ -889,10 +896,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 71,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10255,
@@ -1068,10 +1076,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 62,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10256,
@@ -1247,10 +1256,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 60,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10257,
@@ -1426,10 +1436,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 71,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10258,
@@ -1605,10 +1616,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 60,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10259,
@@ -1784,10 +1796,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 66,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10260,
@@ -1963,10 +1976,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 68,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10261,
@@ -2142,10 +2156,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 70,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10262,
@@ -2321,10 +2336,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 70,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10263,
@@ -2500,10 +2516,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10264,
@@ -2679,10 +2696,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10265,
@@ -2858,10 +2876,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 72,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10266,
@@ -3037,10 +3056,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 70,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10267,
@@ -3216,10 +3236,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10268,
@@ -3395,10 +3416,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 66,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10269,
@@ -3574,10 +3596,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "xy_wing",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "XY-Wing verified",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10190,
@@ -3753,10 +3776,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10191,
@@ -3932,10 +3956,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 58,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10192,
@@ -4111,10 +4136,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 75,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10193,
@@ -4290,10 +4316,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 70,
     "maxTechnique": "hidden_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10194,
@@ -4469,10 +4496,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 55,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10195,
@@ -4648,10 +4676,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 72,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10196,
@@ -4827,10 +4856,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 70,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10197,
@@ -5006,10 +5036,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 105,
     "maxTechnique": "hidden_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10198,
@@ -5185,10 +5216,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10199,
@@ -5364,10 +5396,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 63,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10200,
@@ -5543,10 +5576,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 58,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10201,
@@ -5722,10 +5756,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10202,
@@ -5901,10 +5936,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10203,
@@ -6080,10 +6116,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 55,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10204,
@@ -6259,10 +6296,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10205,
@@ -6438,10 +6476,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 60,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10206,
@@ -6617,10 +6656,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10207,
@@ -6796,10 +6836,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10208,
@@ -6975,10 +7016,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 72,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10209,
@@ -7154,10 +7196,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 60,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10210,
@@ -7333,10 +7376,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 999,
     "maxTechnique": "unknown",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10211,
@@ -7512,10 +7556,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 63,
     "maxTechnique": "hidden_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10212,
@@ -7691,10 +7736,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10213,
@@ -7870,10 +7916,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10214,
@@ -8049,10 +8096,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10215,
@@ -8228,10 +8276,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 75,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10216,
@@ -8407,10 +8456,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10217,
@@ -8586,10 +8636,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 78,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10218,
@@ -8765,10 +8816,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 60,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10219,
@@ -8944,10 +8996,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10220,
@@ -9123,10 +9176,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 60,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10221,
@@ -9302,10 +9356,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10222,
@@ -9481,10 +9536,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10223,
@@ -9660,10 +9716,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10224,
@@ -9839,10 +9896,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 89,
     "maxTechnique": "hidden_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10225,
@@ -10018,10 +10076,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10226,
@@ -10197,10 +10256,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 58,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10227,
@@ -10376,10 +10436,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10228,
@@ -10555,10 +10616,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10229,
@@ -10734,10 +10796,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 55,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10230,
@@ -10913,10 +10976,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10231,
@@ -11092,10 +11156,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10232,
@@ -11271,10 +11336,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10233,
@@ -11450,10 +11516,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10234,
@@ -11629,10 +11696,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10235,
@@ -11808,10 +11876,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 67,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10236,
@@ -11987,10 +12056,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10237,
@@ -12166,10 +12236,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 999,
     "maxTechnique": "unknown",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10238,
@@ -12345,10 +12416,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 70,
     "maxTechnique": "hidden_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10239,
@@ -12524,10 +12596,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10240,
@@ -12703,10 +12776,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10241,
@@ -12882,10 +12956,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10242,
@@ -13061,10 +13136,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 66,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10243,
@@ -13240,10 +13316,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 63,
     "maxTechnique": "locked_candidates",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10244,
@@ -13419,10 +13496,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 84,
     "maxTechnique": "hidden_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10245,
@@ -13598,10 +13676,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10246,
@@ -13777,10 +13856,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10247,
@@ -13956,10 +14036,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10248,
@@ -14135,10 +14216,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 64,
     "maxTechnique": "naked_single",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10249,
@@ -14314,10 +14396,11 @@ const midPool = [
     "logicSolvable": true,
     "difficultyScore": 58,
     "maxTechnique": "naked_pair",
-    "singleRatio": 1.0,
+    "singleRatio": 1,
     "techTier": "T4 進階+",
     "advancedTag": "",
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10270,
@@ -14490,7 +14573,8 @@ const midPool = [
       6,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10271,
@@ -14663,7 +14747,8 @@ const midPool = [
       8,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10272,
@@ -14836,7 +14921,8 @@ const midPool = [
       7,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10273,
@@ -15009,7 +15095,8 @@ const midPool = [
       7,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10274,
@@ -15182,7 +15269,8 @@ const midPool = [
       6,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10275,
@@ -15355,7 +15443,8 @@ const midPool = [
       6,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10276,
@@ -15528,7 +15617,8 @@ const midPool = [
       1,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10277,
@@ -15701,7 +15791,8 @@ const midPool = [
       9,
       8
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10278,
@@ -15874,7 +15965,8 @@ const midPool = [
       6,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10279,
@@ -16047,7 +16139,8 @@ const midPool = [
       2,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10280,
@@ -16220,7 +16313,8 @@ const midPool = [
       6,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10281,
@@ -16393,7 +16487,8 @@ const midPool = [
       6,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10282,
@@ -16566,7 +16661,8 @@ const midPool = [
       3,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10283,
@@ -16739,7 +16835,8 @@ const midPool = [
       2,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10284,
@@ -16912,7 +17009,8 @@ const midPool = [
       9,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10285,
@@ -17085,7 +17183,8 @@ const midPool = [
       3,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10286,
@@ -17258,7 +17357,8 @@ const midPool = [
       1,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10287,
@@ -17431,7 +17531,8 @@ const midPool = [
       5,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10288,
@@ -17604,7 +17705,8 @@ const midPool = [
       1,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10289,
@@ -17777,7 +17879,8 @@ const midPool = [
       4,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10290,
@@ -17950,7 +18053,8 @@ const midPool = [
       7,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10291,
@@ -18123,7 +18227,8 @@ const midPool = [
       6,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10292,
@@ -18296,7 +18401,8 @@ const midPool = [
       3,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10293,
@@ -18469,7 +18575,8 @@ const midPool = [
       6,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10294,
@@ -18642,7 +18749,8 @@ const midPool = [
       6,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10295,
@@ -18815,7 +18923,8 @@ const midPool = [
       3,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10296,
@@ -18988,7 +19097,8 @@ const midPool = [
       4,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10297,
@@ -19161,7 +19271,8 @@ const midPool = [
       1,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10298,
@@ -19334,7 +19445,8 @@ const midPool = [
       3,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10299,
@@ -19507,7 +19619,8 @@ const midPool = [
       8,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10300,
@@ -19680,7 +19793,8 @@ const midPool = [
       1,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10301,
@@ -19853,7 +19967,8 @@ const midPool = [
       7,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10302,
@@ -20026,7 +20141,8 @@ const midPool = [
       5,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10303,
@@ -20199,7 +20315,8 @@ const midPool = [
       5,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10304,
@@ -20372,7 +20489,8 @@ const midPool = [
       1,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10305,
@@ -20545,7 +20663,8 @@ const midPool = [
       8,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10306,
@@ -20718,7 +20837,8 @@ const midPool = [
       7,
       8
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10307,
@@ -20891,7 +21011,8 @@ const midPool = [
       7,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10308,
@@ -21064,7 +21185,8 @@ const midPool = [
       5,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10309,
@@ -21237,7 +21359,8 @@ const midPool = [
       5,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10310,
@@ -21410,7 +21533,8 @@ const midPool = [
       4,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10311,
@@ -21583,7 +21707,8 @@ const midPool = [
       3,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10312,
@@ -21756,7 +21881,8 @@ const midPool = [
       7,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10313,
@@ -21929,7 +22055,8 @@ const midPool = [
       7,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10314,
@@ -22102,7 +22229,8 @@ const midPool = [
       7,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10315,
@@ -22275,7 +22403,8 @@ const midPool = [
       2,
       8
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10316,
@@ -22448,7 +22577,8 @@ const midPool = [
       3,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10317,
@@ -22621,7 +22751,8 @@ const midPool = [
       5,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10318,
@@ -22794,7 +22925,8 @@ const midPool = [
       8,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10319,
@@ -22967,7 +23099,8 @@ const midPool = [
       1,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10320,
@@ -23140,7 +23273,8 @@ const midPool = [
       9,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10321,
@@ -23313,7 +23447,8 @@ const midPool = [
       3,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10322,
@@ -23486,7 +23621,8 @@ const midPool = [
       9,
       8
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10323,
@@ -23659,7 +23795,8 @@ const midPool = [
       3,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10324,
@@ -23832,7 +23969,8 @@ const midPool = [
       6,
       8
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10325,
@@ -24005,7 +24143,8 @@ const midPool = [
       1,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10326,
@@ -24178,7 +24317,8 @@ const midPool = [
       7,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10327,
@@ -24351,7 +24491,8 @@ const midPool = [
       3,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10328,
@@ -24524,7 +24665,8 @@ const midPool = [
       7,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10329,
@@ -24697,7 +24839,8 @@ const midPool = [
       6,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10330,
@@ -24870,7 +25013,8 @@ const midPool = [
       9,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10331,
@@ -25043,7 +25187,8 @@ const midPool = [
       8,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10332,
@@ -25216,7 +25361,8 @@ const midPool = [
       5,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10333,
@@ -25389,7 +25535,8 @@ const midPool = [
       2,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10334,
@@ -25562,7 +25709,8 @@ const midPool = [
       5,
       8
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10335,
@@ -25735,7 +25883,8 @@ const midPool = [
       4,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10336,
@@ -25908,7 +26057,8 @@ const midPool = [
       3,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10337,
@@ -26081,7 +26231,8 @@ const midPool = [
       3,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10338,
@@ -26254,7 +26405,8 @@ const midPool = [
       3,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10339,
@@ -26427,7 +26579,8 @@ const midPool = [
       8,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10340,
@@ -26600,7 +26753,8 @@ const midPool = [
       8,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10341,
@@ -26773,7 +26927,8 @@ const midPool = [
       1,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10342,
@@ -26946,7 +27101,8 @@ const midPool = [
       1,
       8
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10343,
@@ -27119,7 +27275,8 @@ const midPool = [
       3,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10344,
@@ -27292,7 +27449,8 @@ const midPool = [
       5,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10345,
@@ -27465,7 +27623,8 @@ const midPool = [
       3,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10346,
@@ -27638,7 +27797,8 @@ const midPool = [
       3,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10347,
@@ -27811,7 +27971,8 @@ const midPool = [
       1,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10348,
@@ -27984,7 +28145,8 @@ const midPool = [
       8,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10349,
@@ -28157,7 +28319,8 @@ const midPool = [
       5,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10350,
@@ -28330,7 +28493,8 @@ const midPool = [
       4,
       8
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10351,
@@ -28503,7 +28667,8 @@ const midPool = [
       3,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10352,
@@ -28676,7 +28841,8 @@ const midPool = [
       3,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10353,
@@ -28849,7 +29015,8 @@ const midPool = [
       1,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10354,
@@ -29022,7 +29189,8 @@ const midPool = [
       1,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10355,
@@ -29195,7 +29363,8 @@ const midPool = [
       3,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10356,
@@ -29368,7 +29537,8 @@ const midPool = [
       4,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10357,
@@ -29541,7 +29711,8 @@ const midPool = [
       3,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10358,
@@ -29714,7 +29885,8 @@ const midPool = [
       8,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10359,
@@ -29887,7 +30059,8 @@ const midPool = [
       1,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10360,
@@ -30060,7 +30233,8 @@ const midPool = [
       1,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10361,
@@ -30233,7 +30407,8 @@ const midPool = [
       2,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10362,
@@ -30406,7 +30581,8 @@ const midPool = [
       7,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10363,
@@ -30579,7 +30755,8 @@ const midPool = [
       3,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10364,
@@ -30752,7 +30929,8 @@ const midPool = [
       1,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10365,
@@ -30925,7 +31103,8 @@ const midPool = [
       6,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10366,
@@ -31098,7 +31277,8 @@ const midPool = [
       6,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10367,
@@ -31271,7 +31451,8 @@ const midPool = [
       4,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10368,
@@ -31444,7 +31625,8 @@ const midPool = [
       9,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10369,
@@ -31617,7 +31799,8 @@ const midPool = [
       1,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10370,
@@ -31790,7 +31973,8 @@ const midPool = [
       2,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10371,
@@ -31963,7 +32147,8 @@ const midPool = [
       5,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10372,
@@ -32136,7 +32321,8 @@ const midPool = [
       5,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10373,
@@ -32309,7 +32495,8 @@ const midPool = [
       1,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10374,
@@ -32482,7 +32669,8 @@ const midPool = [
       8,
       4
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10375,
@@ -32655,7 +32843,8 @@ const midPool = [
       5,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10376,
@@ -32828,7 +33017,8 @@ const midPool = [
       8,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10377,
@@ -33001,7 +33191,8 @@ const midPool = [
       6,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10378,
@@ -33174,7 +33365,8 @@ const midPool = [
       2,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10379,
@@ -33347,7 +33539,8 @@ const midPool = [
       4,
       2
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10380,
@@ -33520,7 +33713,8 @@ const midPool = [
       6,
       8
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10381,
@@ -33693,7 +33887,8 @@ const midPool = [
       8,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10382,
@@ -33866,7 +34061,8 @@ const midPool = [
       3,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10383,
@@ -34039,7 +34235,8 @@ const midPool = [
       4,
       6
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10384,
@@ -34212,7 +34409,8 @@ const midPool = [
       8,
       1
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10385,
@@ -34385,7 +34583,8 @@ const midPool = [
       4,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10386,
@@ -34558,7 +34757,8 @@ const midPool = [
       4,
       9
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10387,
@@ -34731,7 +34931,8 @@ const midPool = [
       3,
       5
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10388,
@@ -34904,7 +35105,8 @@ const midPool = [
       2,
       7
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   },
   {
     "id": 10389,
@@ -35077,10 +35279,7 @@ const midPool = [
       5,
       3
     ],
-    "hidden": true
+    "hidden": true,
+    "source": "in-house-generated"
   }
 ];
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = midPool;
-}

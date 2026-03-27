@@ -1,3 +1,6 @@
+/**
+ * ⚠️  自動產生，勿手動編輯 — 修改 levels-data.json 後執行 npm run build:data
+ */
 const levels = [
   {
     "id": 9001,
@@ -174,7 +177,8 @@ const levels = [
     "difficultyScore": 602,
     "maxTechnique": "locked_candidates",
     "singleRatio": 0.3333,
-    "techTier": "T01"
+    "techTier": "T01",
+    "source": "in-house-generated"
   },
   {
     "id": 9002,
@@ -351,7 +355,8 @@ const levels = [
     "difficultyScore": 526,
     "maxTechnique": "locked_candidates",
     "singleRatio": 0.358,
-    "techTier": "T01"
+    "techTier": "T01",
+    "source": "in-house-generated"
   },
   {
     "id": 9003,
@@ -528,7 +533,8 @@ const levels = [
     "difficultyScore": 626,
     "maxTechnique": "locked_candidates",
     "singleRatio": 0.321,
-    "techTier": "T01"
+    "techTier": "T01",
+    "source": "in-house-generated"
   },
   {
     "id": 9004,
@@ -705,7 +711,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9005,
@@ -882,7 +889,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9006,
@@ -1059,7 +1067,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9007,
@@ -1236,7 +1245,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9008,
@@ -1413,7 +1423,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9009,
@@ -1590,7 +1601,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9010,
@@ -1767,7 +1779,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9011,
@@ -1944,7 +1957,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9012,
@@ -2121,7 +2135,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9013,
@@ -2298,7 +2313,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9014,
@@ -2475,7 +2491,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9015,
@@ -2652,7 +2669,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9016,
@@ -2829,7 +2847,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9017,
@@ -3006,7 +3025,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9018,
@@ -3183,7 +3203,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9019,
@@ -3360,7 +3381,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9020,
@@ -3537,7 +3559,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9021,
@@ -3714,7 +3737,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9022,
@@ -3891,7 +3915,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9023,
@@ -4068,7 +4093,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9024,
@@ -4245,7 +4271,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9025,
@@ -4422,7 +4449,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9026,
@@ -4599,7 +4627,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9027,
@@ -4776,7 +4805,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9028,
@@ -4953,7 +4983,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9029,
@@ -5130,7 +5161,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9030,
@@ -5307,7 +5339,8 @@ const levels = [
     "difficultyScore": 626,
     "maxTechnique": "locked_candidates",
     "singleRatio": 0.321,
-    "techTier": "T01"
+    "techTier": "T01",
+    "source": "in-house-generated"
   },
   {
     "id": 9031,
@@ -5484,7 +5517,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9032,
@@ -5661,7 +5695,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9033,
@@ -5838,7 +5873,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9034,
@@ -6015,7 +6051,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9035,
@@ -6192,7 +6229,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "locked_candidates",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9036,
@@ -6370,7 +6408,8 @@ const levels = [
     "maxTechnique": "locked_candidates",
     "singleRatio": 0.358,
     "techTier": "T02",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9037,
@@ -6547,7 +6586,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "locked_candidates",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9038,
@@ -6724,7 +6764,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "locked_candidates",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9039,
@@ -6902,7 +6943,8 @@ const levels = [
     "maxTechnique": "locked_candidates",
     "singleRatio": 0.358,
     "techTier": "T02",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9040,
@@ -7079,7 +7121,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "locked_candidates",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9041,
@@ -7256,7 +7299,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9042,
@@ -7434,7 +7478,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.321,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9043,
@@ -7612,7 +7657,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.3333,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9044,
@@ -7789,7 +7835,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9045,
@@ -7966,7 +8013,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9046,
@@ -8143,7 +8191,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9047,
@@ -8321,7 +8370,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.3333,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9048,
@@ -8498,7 +8548,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9049,
@@ -8675,7 +8726,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9050,
@@ -8853,7 +8905,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.321,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9051,
@@ -9031,7 +9084,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.3333,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9052,
@@ -9209,7 +9263,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.3333,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9053,
@@ -9387,7 +9442,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.358,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9054,
@@ -9565,7 +9621,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.3333,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9055,
@@ -9743,7 +9800,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.3333,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9056,
@@ -9921,7 +9979,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.358,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9057,
@@ -10098,7 +10157,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9058,
@@ -10276,7 +10336,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.3333,
     "techTier": "T01",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9059,
@@ -10453,7 +10514,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9060,
@@ -10630,7 +10692,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9061,
@@ -10807,7 +10870,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9062,
@@ -10985,7 +11049,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.321,
     "techTier": "T02",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9063,
@@ -11162,7 +11227,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9064,
@@ -11339,7 +11405,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9065,
@@ -11517,7 +11584,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.3333,
     "techTier": "T02",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9066,
@@ -11694,7 +11762,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9067,
@@ -11871,7 +11940,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9068,
@@ -12048,7 +12118,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9069,
@@ -12225,7 +12296,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9070,
@@ -12403,7 +12475,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.358,
     "techTier": "T02",
-    "advancedTag": "XY-Wing verified"
+    "advancedTag": "XY-Wing verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9071,
@@ -12580,7 +12653,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9072,
@@ -12757,7 +12831,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9073,
@@ -12934,7 +13009,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9074,
@@ -13111,7 +13187,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9075,
@@ -13288,7 +13365,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9076,
@@ -13465,7 +13543,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9077,
@@ -13642,7 +13721,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9078,
@@ -13819,7 +13899,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9079,
@@ -13997,7 +14078,8 @@ const levels = [
     "maxTechnique": "naked_pair",
     "singleRatio": 0.358,
     "techTier": "T02",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9080,
@@ -14174,7 +14256,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "naked_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9081,
@@ -14351,7 +14434,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9082,
@@ -14529,7 +14613,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.358,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9083,
@@ -14706,7 +14791,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9084,
@@ -14883,7 +14969,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9085,
@@ -15060,7 +15147,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9086,
@@ -15237,7 +15325,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9087,
@@ -15414,7 +15503,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9088,
@@ -15591,7 +15681,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9089,
@@ -15769,7 +15860,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.358,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9090,
@@ -15947,7 +16039,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.358,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9091,
@@ -16125,7 +16218,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3333,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9092,
@@ -16303,7 +16397,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3086,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9093,
@@ -16481,7 +16576,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.358,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9094,
@@ -16658,7 +16754,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9095,
@@ -16835,7 +16932,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9096,
@@ -17013,7 +17111,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3086,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9097,
@@ -17190,7 +17289,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9098,
@@ -17368,7 +17468,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3333,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9099,
@@ -17546,7 +17647,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3086,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9100,
@@ -17723,7 +17825,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9101,
@@ -17901,7 +18004,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.358,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9102,
@@ -18079,7 +18183,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3333,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9103,
@@ -18256,7 +18361,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9104,
@@ -18433,7 +18539,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9105,
@@ -18611,7 +18718,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3333,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9106,
@@ -18788,7 +18896,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9107,
@@ -18965,7 +19074,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9108,
@@ -19142,7 +19252,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9109,
@@ -19320,7 +19431,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3333,
     "techTier": "T20",
-    "advancedTag": "Swordfish verified"
+    "advancedTag": "Swordfish verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9110,
@@ -19497,7 +19609,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9111,
@@ -19675,7 +19788,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.358,
     "techTier": "T20",
-    "advancedTag": "AIC verified"
+    "advancedTag": "AIC verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9112,
@@ -19852,7 +19966,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9113,
@@ -20030,7 +20145,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3333,
     "techTier": "T20",
-    "advancedTag": "AIC verified"
+    "advancedTag": "AIC verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9114,
@@ -20207,7 +20323,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9115,
@@ -20384,7 +20501,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9116,
@@ -20561,7 +20679,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9117,
@@ -20738,7 +20857,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "naked_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9118,
@@ -20916,7 +21036,8 @@ const levels = [
     "maxTechnique": "naked_triple",
     "singleRatio": 0.3086,
     "techTier": "T20",
-    "advancedTag": "AIC verified"
+    "advancedTag": "AIC verified",
+    "source": "in-house-generated"
   },
   {
     "id": 9119,
@@ -21093,7 +21214,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "naked_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 9120,
@@ -21270,7 +21392,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "naked_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 121,
@@ -21447,7 +21570,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 122,
@@ -21624,7 +21748,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 123,
@@ -21801,7 +21926,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 124,
@@ -21978,7 +22104,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 125,
@@ -22155,7 +22282,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 126,
@@ -22332,7 +22460,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 127,
@@ -22509,7 +22638,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 128,
@@ -22686,7 +22816,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 129,
@@ -22863,7 +22994,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 130,
@@ -23040,7 +23172,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 131,
@@ -23217,7 +23350,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 132,
@@ -23394,7 +23528,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 133,
@@ -23571,7 +23706,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 134,
@@ -23748,7 +23884,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 135,
@@ -23925,7 +24062,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 136,
@@ -24102,7 +24240,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 137,
@@ -24279,7 +24418,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 138,
@@ -24456,7 +24596,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 139,
@@ -24633,7 +24774,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 140,
@@ -24810,7 +24952,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 141,
@@ -24987,7 +25130,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 142,
@@ -25164,7 +25308,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 143,
@@ -25341,7 +25486,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 144,
@@ -25518,7 +25664,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 145,
@@ -25695,7 +25842,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 146,
@@ -25872,7 +26020,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 147,
@@ -26049,7 +26198,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 148,
@@ -26226,7 +26376,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 149,
@@ -26403,7 +26554,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 150,
@@ -26580,7 +26732,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 151,
@@ -26757,7 +26910,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 152,
@@ -26934,7 +27088,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 153,
@@ -27111,7 +27266,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 154,
@@ -27288,7 +27444,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 155,
@@ -27465,7 +27622,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 156,
@@ -27642,7 +27800,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 157,
@@ -27819,7 +27978,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 158,
@@ -27996,7 +28156,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 159,
@@ -28173,7 +28334,8 @@ const levels = [
     "difficultyScore": 59,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 160,
@@ -28350,7 +28512,8 @@ const levels = [
     "difficultyScore": 63,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 161,
@@ -28527,7 +28690,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 162,
@@ -28704,7 +28868,8 @@ const levels = [
     "difficultyScore": 89,
     "maxTechnique": "hidden_pair",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 163,
@@ -28881,7 +29046,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 164,
@@ -29058,7 +29224,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 165,
@@ -29235,7 +29402,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 166,
@@ -29412,7 +29580,8 @@ const levels = [
     "difficultyScore": 606,
     "maxTechnique": "exocet_death_blossom",
     "singleRatio": 0.3086,
-    "techTier": "T23"
+    "techTier": "T23",
+    "source": "in-house-generated"
   },
   {
     "id": 167,
@@ -29589,7 +29758,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 168,
@@ -29766,7 +29936,8 @@ const levels = [
     "difficultyScore": 999,
     "maxTechnique": "unknown",
     "singleRatio": 1,
-    "techTier": "T5 大師+"
+    "techTier": "T5 大師+",
+    "source": "in-house-generated"
   },
   {
     "id": 169,
@@ -29943,7 +30114,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 170,
@@ -30120,7 +30292,8 @@ const levels = [
     "difficultyScore": 70,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 171,
@@ -30297,7 +30470,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 172,
@@ -30474,7 +30648,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 173,
@@ -30651,7 +30826,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "naked_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 174,
@@ -30828,7 +31004,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 175,
@@ -31005,7 +31182,8 @@ const levels = [
     "difficultyScore": 70,
     "maxTechnique": "naked_pair",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 176,
@@ -31182,7 +31360,8 @@ const levels = [
     "difficultyScore": 66,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 177,
@@ -31359,7 +31538,8 @@ const levels = [
     "difficultyScore": 999,
     "maxTechnique": "unknown",
     "singleRatio": 1,
-    "techTier": "T5 大師+"
+    "techTier": "T5 大師+",
+    "source": "in-house-generated"
   },
   {
     "id": 178,
@@ -31536,7 +31716,8 @@ const levels = [
     "difficultyScore": 75,
     "maxTechnique": "naked_pair",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 179,
@@ -31713,7 +31894,8 @@ const levels = [
     "difficultyScore": 71,
     "maxTechnique": "naked_pair",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 180,
@@ -31890,7 +32072,8 @@ const levels = [
     "difficultyScore": 72,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 181,
@@ -32067,7 +32250,8 @@ const levels = [
     "difficultyScore": 999,
     "maxTechnique": "unknown",
     "singleRatio": 1,
-    "techTier": "T5 大師+"
+    "techTier": "T5 大師+",
+    "source": "in-house-generated"
   },
   {
     "id": 182,
@@ -32244,7 +32428,8 @@ const levels = [
     "difficultyScore": 68,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 183,
@@ -32421,7 +32606,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 184,
@@ -32598,7 +32784,8 @@ const levels = [
     "difficultyScore": 74,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 185,
@@ -32775,7 +32962,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 186,
@@ -32952,7 +33140,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 187,
@@ -33129,7 +33318,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 188,
@@ -33306,7 +33496,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 189,
@@ -33483,7 +33674,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 190,
@@ -33660,7 +33852,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 191,
@@ -33837,7 +34030,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 192,
@@ -34014,7 +34208,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 193,
@@ -34191,7 +34386,8 @@ const levels = [
     "difficultyScore": 105,
     "maxTechnique": "hidden_pair",
     "singleRatio": 1,
-    "techTier": "T5 大師"
+    "techTier": "T5 大師",
+    "source": "in-house-generated"
   },
   {
     "id": 194,
@@ -34368,7 +34564,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 195,
@@ -34545,7 +34742,8 @@ const levels = [
     "difficultyScore": 70,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 196,
@@ -34722,7 +34920,8 @@ const levels = [
     "difficultyScore": 78,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 197,
@@ -34899,7 +35098,8 @@ const levels = [
     "difficultyScore": 68,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 198,
@@ -35076,7 +35276,8 @@ const levels = [
     "difficultyScore": 64,
     "maxTechnique": "hidden_single",
     "singleRatio": 1,
-    "techTier": "T3 困難"
+    "techTier": "T3 困難",
+    "source": "in-house-generated"
   },
   {
     "id": 199,
@@ -35253,7 +35454,8 @@ const levels = [
     "difficultyScore": 72,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 200,
@@ -35430,7 +35632,8 @@ const levels = [
     "difficultyScore": 72,
     "maxTechnique": "locked_candidates",
     "singleRatio": 1,
-    "techTier": "T4 專家"
+    "techTier": "T4 專家",
+    "source": "in-house-generated"
   },
   {
     "id": 20001,
@@ -35607,7 +35810,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20002,
@@ -35784,7 +35988,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20003,
@@ -35961,7 +36166,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20004,
@@ -36138,7 +36344,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20005,
@@ -36315,7 +36522,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20006,
@@ -36492,7 +36700,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20007,
@@ -36669,7 +36878,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20008,
@@ -36846,7 +37056,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20009,
@@ -37023,7 +37234,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20010,
@@ -37200,7 +37412,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20011,
@@ -37377,7 +37590,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20012,
@@ -37554,7 +37768,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20013,
@@ -37731,7 +37946,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20014,
@@ -37908,7 +38124,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20015,
@@ -38085,7 +38302,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xyz_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20016,
@@ -38262,7 +38480,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20017,
@@ -38439,7 +38658,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20018,
@@ -38616,7 +38836,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20019,
@@ -38793,7 +39014,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20020,
@@ -38970,7 +39192,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20021,
@@ -39147,7 +39370,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20022,
@@ -39324,7 +39548,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20023,
@@ -39501,7 +39726,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20024,
@@ -39678,7 +39904,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20025,
@@ -39855,7 +40082,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20026,
@@ -40032,7 +40260,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20027,
@@ -40209,7 +40438,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20028,
@@ -40386,7 +40616,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20029,
@@ -40563,7 +40794,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20030,
@@ -40740,7 +40972,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20031,
@@ -40917,7 +41150,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20032,
@@ -41094,7 +41328,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20033,
@@ -41271,7 +41506,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20034,
@@ -41448,7 +41684,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20035,
@@ -41625,7 +41862,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20036,
@@ -41802,7 +42040,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20037,
@@ -41979,7 +42218,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20038,
@@ -42156,7 +42396,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20039,
@@ -42333,7 +42574,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20040,
@@ -42510,7 +42752,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "xyz_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20041,
@@ -42687,7 +42930,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20042,
@@ -42864,7 +43108,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20043,
@@ -43041,7 +43286,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20044,
@@ -43218,7 +43464,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20045,
@@ -43395,7 +43642,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20046,
@@ -43572,7 +43820,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20047,
@@ -43749,7 +43998,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20048,
@@ -43926,7 +44176,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20049,
@@ -44103,7 +44354,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20050,
@@ -44280,7 +44532,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20051,
@@ -44457,7 +44710,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20052,
@@ -44634,7 +44888,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20053,
@@ -44811,7 +45066,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20054,
@@ -44988,7 +45244,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20055,
@@ -45165,7 +45422,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20056,
@@ -45342,7 +45600,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20057,
@@ -45519,7 +45778,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20058,
@@ -45696,7 +45956,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20059,
@@ -45873,7 +46134,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20060,
@@ -46050,7 +46312,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20061,
@@ -46227,7 +46490,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20062,
@@ -46404,7 +46668,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20063,
@@ -46581,7 +46846,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20064,
@@ -46758,7 +47024,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20065,
@@ -46935,7 +47202,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20066,
@@ -47112,7 +47380,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20067,
@@ -47289,7 +47558,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20068,
@@ -47466,7 +47736,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20069,
@@ -47643,7 +47914,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20070,
@@ -47820,7 +48092,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20071,
@@ -47997,7 +48270,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20072,
@@ -48174,7 +48448,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20073,
@@ -48351,7 +48626,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20074,
@@ -48528,7 +48804,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20075,
@@ -48705,7 +48982,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20076,
@@ -48882,7 +49160,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20077,
@@ -49059,7 +49338,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20078,
@@ -49236,7 +49516,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20079,
@@ -49413,7 +49694,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20080,
@@ -49590,7 +49872,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_wing",
     "techTier": "T16",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20081,
@@ -49767,7 +50050,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20082,
@@ -49944,7 +50228,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20083,
@@ -50121,7 +50406,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20084,
@@ -50298,7 +50584,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20085,
@@ -50475,7 +50762,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20086,
@@ -50652,7 +50940,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20087,
@@ -50829,7 +51118,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20088,
@@ -51006,7 +51296,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20089,
@@ -51183,7 +51474,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20090,
@@ -51360,7 +51652,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20091,
@@ -51537,7 +51830,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20092,
@@ -51714,7 +52008,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20093,
@@ -51891,7 +52186,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20094,
@@ -52068,7 +52364,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20095,
@@ -52245,7 +52542,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20096,
@@ -52422,7 +52720,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20097,
@@ -52599,7 +52898,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20098,
@@ -52776,7 +53076,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20099,
@@ -52953,7 +53254,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20100,
@@ -53130,7 +53432,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20101,
@@ -53307,7 +53610,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20102,
@@ -53484,7 +53788,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20103,
@@ -53661,7 +53966,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20104,
@@ -53838,7 +54144,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20105,
@@ -54015,7 +54322,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20106,
@@ -54192,7 +54500,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20107,
@@ -54369,7 +54678,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20108,
@@ -54546,7 +54856,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20109,
@@ -54723,7 +55034,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T17",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20110,
@@ -54900,7 +55212,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20111,
@@ -55077,7 +55390,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20112,
@@ -55254,7 +55568,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20113,
@@ -55431,7 +55746,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20114,
@@ -55608,7 +55924,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20115,
@@ -55785,7 +56102,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20116,
@@ -55962,7 +56280,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20117,
@@ -56139,7 +56458,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20118,
@@ -56316,7 +56636,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20119,
@@ -56493,7 +56814,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20120,
@@ -56670,7 +56992,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "unique_rectangle",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20121,
@@ -56847,7 +57170,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20122,
@@ -57024,7 +57348,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20123,
@@ -57201,7 +57526,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20124,
@@ -57378,7 +57704,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20125,
@@ -57555,7 +57882,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20126,
@@ -57732,7 +58060,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20127,
@@ -57909,7 +58238,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20128,
@@ -58086,7 +58416,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20129,
@@ -58263,7 +58594,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20130,
@@ -58440,7 +58772,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20131,
@@ -58617,7 +58950,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20132,
@@ -58794,7 +59128,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20133,
@@ -58971,7 +59306,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20134,
@@ -59148,7 +59484,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20135,
@@ -59325,7 +59662,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20136,
@@ -59502,7 +59840,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20137,
@@ -59679,7 +60018,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20138,
@@ -59856,7 +60196,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20139,
@@ -60033,7 +60374,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20140,
@@ -60210,7 +60552,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20141,
@@ -60387,7 +60730,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20142,
@@ -60564,7 +60908,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20143,
@@ -60741,7 +61086,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20144,
@@ -60918,7 +61264,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20145,
@@ -61095,7 +61442,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20146,
@@ -61272,7 +61620,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20147,
@@ -61449,7 +61798,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20148,
@@ -61626,7 +61976,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20149,
@@ -61803,7 +62154,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20150,
@@ -61980,7 +62332,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20151,
@@ -62157,7 +62510,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20152,
@@ -62334,7 +62688,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20153,
@@ -62511,7 +62866,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20154,
@@ -62688,7 +63044,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20155,
@@ -62865,7 +63222,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20156,
@@ -63042,7 +63400,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20157,
@@ -63219,7 +63578,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20158,
@@ -63396,7 +63756,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20159,
@@ -63573,7 +63934,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20160,
@@ -63750,7 +64112,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "finned_swordfish",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20161,
@@ -63927,7 +64290,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20162,
@@ -64104,7 +64468,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20163,
@@ -64281,7 +64646,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20164,
@@ -64458,7 +64824,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20165,
@@ -64635,7 +65002,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20166,
@@ -64812,7 +65180,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20167,
@@ -64989,7 +65358,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20168,
@@ -65166,7 +65536,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20169,
@@ -65343,7 +65714,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20170,
@@ -65520,7 +65892,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20171,
@@ -65697,7 +66070,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20172,
@@ -65874,7 +66248,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20173,
@@ -66051,7 +66426,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20174,
@@ -66228,7 +66604,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20175,
@@ -66405,7 +66782,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20176,
@@ -66582,7 +66960,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20177,
@@ -66759,7 +67138,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20178,
@@ -66936,7 +67316,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20179,
@@ -67113,7 +67494,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20180,
@@ -67290,7 +67672,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20181,
@@ -67467,7 +67850,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20182,
@@ -67644,7 +68028,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20183,
@@ -67821,7 +68206,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20184,
@@ -67998,7 +68384,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20185,
@@ -68175,7 +68562,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20186,
@@ -68352,7 +68740,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20187,
@@ -68529,7 +68918,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20188,
@@ -68706,7 +69096,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20189,
@@ -68883,7 +69274,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20190,
@@ -69060,7 +69452,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20191,
@@ -69237,7 +69630,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20192,
@@ -69414,7 +69808,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20193,
@@ -69591,7 +69986,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20194,
@@ -69768,7 +70164,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20195,
@@ -69945,7 +70342,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20196,
@@ -70122,7 +70520,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20197,
@@ -70299,7 +70698,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20198,
@@ -70476,7 +70876,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20199,
@@ -70653,7 +71054,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20200,
@@ -70830,7 +71232,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_long_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20401,
@@ -71007,7 +71410,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20402,
@@ -71184,7 +71588,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20403,
@@ -71361,7 +71766,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20404,
@@ -71538,7 +71944,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20405,
@@ -71715,7 +72122,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20406,
@@ -71892,7 +72300,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20407,
@@ -72069,7 +72478,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20408,
@@ -72246,7 +72656,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20409,
@@ -72423,7 +72834,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20410,
@@ -72600,7 +73012,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20411,
@@ -72777,7 +73190,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20412,
@@ -72954,7 +73368,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20413,
@@ -73131,7 +73546,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20414,
@@ -73308,7 +73724,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20415,
@@ -73485,7 +73902,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20416,
@@ -73662,7 +74080,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20417,
@@ -73839,7 +74258,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20418,
@@ -74016,7 +74436,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20419,
@@ -74193,7 +74614,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20420,
@@ -74370,7 +74792,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20421,
@@ -74547,7 +74970,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20422,
@@ -74724,7 +75148,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20423,
@@ -74901,7 +75326,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20424,
@@ -75078,7 +75504,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20425,
@@ -75255,7 +75682,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20426,
@@ -75432,7 +75860,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20427,
@@ -75609,7 +76038,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20428,
@@ -75786,7 +76216,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20429,
@@ -75963,7 +76394,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20430,
@@ -76140,7 +76572,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "w_wing",
     "techTier": "T15",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20431,
@@ -76317,7 +76750,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20432,
@@ -76494,7 +76928,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20433,
@@ -76671,7 +77106,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20434,
@@ -76848,7 +77284,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20435,
@@ -77025,7 +77462,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20436,
@@ -77202,7 +77640,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20437,
@@ -77379,7 +77818,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20438,
@@ -77556,7 +77996,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20439,
@@ -77733,7 +78174,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20440,
@@ -77910,7 +78352,8 @@ const levels = [
     "singleRatio": 0.284,
     "maxTechnique": "w_wing",
     "techTier": "T06",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20241,
@@ -78087,7 +78530,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20242,
@@ -78264,7 +78708,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20243,
@@ -78441,7 +78886,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20244,
@@ -78618,7 +79064,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20245,
@@ -78795,7 +79242,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20246,
@@ -78972,7 +79420,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20247,
@@ -79149,7 +79598,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20248,
@@ -79326,7 +79776,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20249,
@@ -79503,7 +79954,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20250,
@@ -79680,7 +80132,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20251,
@@ -79857,7 +80310,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20252,
@@ -80034,7 +80488,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20253,
@@ -80211,7 +80666,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20254,
@@ -80388,7 +80844,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20255,
@@ -80565,7 +81022,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20256,
@@ -80742,7 +81200,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20257,
@@ -80919,7 +81378,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T07",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20258,
@@ -81096,7 +81556,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20259,
@@ -81273,7 +81734,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20260,
@@ -81450,7 +81912,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20261,
@@ -81627,7 +82090,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20262,
@@ -81804,7 +82268,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20263,
@@ -81981,7 +82446,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20264,
@@ -82158,7 +82624,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20265,
@@ -82335,7 +82802,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20266,
@@ -82512,7 +82980,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20267,
@@ -82689,7 +83158,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20268,
@@ -82866,7 +83336,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20269,
@@ -83043,7 +83514,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20270,
@@ -83220,7 +83692,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20271,
@@ -83397,7 +83870,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20272,
@@ -83574,7 +84048,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20273,
@@ -83751,7 +84226,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20274,
@@ -83928,7 +84404,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20275,
@@ -84105,7 +84582,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20276,
@@ -84282,7 +84760,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20277,
@@ -84459,7 +84938,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20278,
@@ -84636,7 +85116,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20279,
@@ -84813,7 +85294,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20280,
@@ -84990,7 +85472,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "xy_wing",
     "techTier": "T08",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20281,
@@ -85167,7 +85650,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20282,
@@ -85344,7 +85828,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20283,
@@ -85521,7 +86006,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20284,
@@ -85698,7 +86184,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20285,
@@ -85875,7 +86362,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20286,
@@ -86052,7 +86540,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20287,
@@ -86229,7 +86718,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20288,
@@ -86406,7 +86896,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20289,
@@ -86583,7 +87074,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20290,
@@ -86760,7 +87252,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20291,
@@ -86937,7 +87430,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20292,
@@ -87114,7 +87608,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20293,
@@ -87291,7 +87786,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20294,
@@ -87468,7 +87964,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20295,
@@ -87645,7 +88142,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20296,
@@ -87822,7 +88320,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20297,
@@ -87999,7 +88498,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20298,
@@ -88176,7 +88676,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20299,
@@ -88353,7 +88854,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20300,
@@ -88530,7 +89032,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20301,
@@ -88707,7 +89210,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20302,
@@ -88884,7 +89388,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20303,
@@ -89061,7 +89566,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20304,
@@ -89238,7 +89744,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20305,
@@ -89415,7 +89922,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20306,
@@ -89592,7 +90100,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20307,
@@ -89769,7 +90278,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20308,
@@ -89946,7 +90456,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20309,
@@ -90123,7 +90634,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20310,
@@ -90300,7 +90812,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20311,
@@ -90477,7 +90990,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20312,
@@ -90654,7 +91168,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20313,
@@ -90831,7 +91346,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20314,
@@ -91008,7 +91524,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20315,
@@ -91185,7 +91702,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20316,
@@ -91362,7 +91880,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20317,
@@ -91539,7 +92058,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20318,
@@ -91716,7 +92236,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20319,
@@ -91893,7 +92414,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20320,
@@ -92070,7 +92592,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "x_cycle_simple_coloring",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20321,
@@ -92247,7 +92770,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20322,
@@ -92424,7 +92948,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20323,
@@ -92601,7 +93126,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20324,
@@ -92778,7 +93304,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20325,
@@ -92955,7 +93482,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20326,
@@ -93132,7 +93660,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20327,
@@ -93309,7 +93838,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20328,
@@ -93486,7 +94016,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20329,
@@ -93663,7 +94194,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20330,
@@ -93840,7 +94372,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20331,
@@ -94017,7 +94550,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20332,
@@ -94194,7 +94728,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20333,
@@ -94371,7 +94906,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20334,
@@ -94548,7 +95084,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20335,
@@ -94725,7 +95262,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20336,
@@ -94902,7 +95440,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20337,
@@ -95079,7 +95618,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20338,
@@ -95256,7 +95796,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20339,
@@ -95433,7 +95974,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20340,
@@ -95610,7 +96152,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20341,
@@ -95787,7 +96330,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20342,
@@ -95964,7 +96508,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20343,
@@ -96141,7 +96686,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20344,
@@ -96318,7 +96864,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20345,
@@ -96495,7 +97042,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20346,
@@ -96672,7 +97220,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20347,
@@ -96849,7 +97398,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20348,
@@ -97026,7 +97576,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20349,
@@ -97203,7 +97754,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20350,
@@ -97380,7 +97932,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20351,
@@ -97557,7 +98110,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20352,
@@ -97734,7 +98288,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20353,
@@ -97911,7 +98466,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20354,
@@ -98088,7 +98644,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20355,
@@ -98265,7 +98822,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20356,
@@ -98442,7 +99000,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20357,
@@ -98619,7 +99178,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20358,
@@ -98796,7 +99356,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20359,
@@ -98973,7 +99534,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20360,
@@ -99150,7 +99712,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic",
     "techTier": "T18",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20361,
@@ -99327,7 +99890,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20362,
@@ -99504,7 +100068,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20363,
@@ -99681,7 +100246,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20364,
@@ -99858,7 +100424,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20365,
@@ -100035,7 +100602,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20366,
@@ -100212,7 +100780,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20367,
@@ -100389,7 +100958,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20368,
@@ -100566,7 +101136,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20369,
@@ -100743,7 +101314,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20370,
@@ -100920,7 +101492,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20371,
@@ -101097,7 +101670,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20372,
@@ -101274,7 +101848,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20373,
@@ -101451,7 +102026,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20374,
@@ -101628,7 +102204,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20375,
@@ -101805,7 +102382,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20376,
@@ -101982,7 +102560,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20377,
@@ -102159,7 +102738,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20378,
@@ -102336,7 +102916,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20379,
@@ -102513,7 +103094,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20380,
@@ -102690,7 +103272,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20381,
@@ -102867,7 +103450,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20382,
@@ -103044,7 +103628,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20383,
@@ -103221,7 +103806,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20384,
@@ -103398,7 +103984,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20385,
@@ -103575,7 +104162,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20386,
@@ -103752,7 +104340,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20387,
@@ -103929,7 +104518,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20388,
@@ -104106,7 +104696,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20389,
@@ -104283,7 +104874,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20390,
@@ -104460,7 +105052,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20391,
@@ -104637,7 +105230,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20392,
@@ -104814,7 +105408,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20393,
@@ -104991,7 +105586,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20394,
@@ -105168,7 +105764,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20395,
@@ -105345,7 +105942,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20396,
@@ -105522,7 +106120,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20397,
@@ -105699,7 +106298,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20398,
@@ -105876,7 +106476,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20399,
@@ -106053,7 +106654,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20400,
@@ -106230,7 +106832,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_xz",
     "techTier": "T19",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20201,
@@ -106407,7 +107010,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20202,
@@ -106584,7 +107188,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20203,
@@ -106761,7 +107366,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20204,
@@ -106938,7 +107544,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20205,
@@ -107115,7 +107722,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20206,
@@ -107292,7 +107900,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20207,
@@ -107469,7 +108078,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20208,
@@ -107646,7 +108256,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20209,
@@ -107823,7 +108434,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20210,
@@ -108000,7 +108612,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20211,
@@ -108177,7 +108790,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20212,
@@ -108354,7 +108968,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20213,
@@ -108531,7 +109146,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20214,
@@ -108708,7 +109324,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20215,
@@ -108885,7 +109502,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20216,
@@ -109062,7 +109680,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20217,
@@ -109239,7 +109858,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20218,
@@ -109416,7 +110036,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20219,
@@ -109593,7 +110214,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20220,
@@ -109770,7 +110392,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20221,
@@ -109947,7 +110570,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T03",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20222,
@@ -110124,7 +110748,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20223,
@@ -110301,7 +110926,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20224,
@@ -110478,7 +111104,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20225,
@@ -110655,7 +111282,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20226,
@@ -110832,7 +111460,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20227,
@@ -111009,7 +111638,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20228,
@@ -111186,7 +111816,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20229,
@@ -111363,7 +111994,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20230,
@@ -111540,7 +112172,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20231,
@@ -111717,7 +112350,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20232,
@@ -111894,7 +112528,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20233,
@@ -112071,7 +112706,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20234,
@@ -112248,7 +112884,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20235,
@@ -112425,7 +113062,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20236,
@@ -112602,7 +113240,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20237,
@@ -112779,7 +113418,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20238,
@@ -112956,7 +113596,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20239,
@@ -113133,7 +113774,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20240,
@@ -113310,7 +113952,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_triple",
     "techTier": "T20",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20441,
@@ -113487,7 +114130,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20442,
@@ -113664,7 +114308,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20443,
@@ -113841,7 +114486,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20444,
@@ -114018,7 +114664,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20445,
@@ -114195,7 +114842,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20446,
@@ -114372,7 +115020,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20447,
@@ -114549,7 +115198,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20448,
@@ -114726,7 +115376,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20449,
@@ -114903,7 +115554,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20450,
@@ -115080,7 +115732,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20451,
@@ -115257,7 +115910,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20452,
@@ -115434,7 +116088,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T01",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20453,
@@ -115611,7 +116266,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20454,
@@ -115788,7 +116444,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20455,
@@ -115965,7 +116622,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20456,
@@ -116142,7 +116800,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20457,
@@ -116319,7 +116978,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20458,
@@ -116496,7 +117156,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20459,
@@ -116673,7 +117334,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20460,
@@ -116850,7 +117512,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20461,
@@ -117027,7 +117690,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20462,
@@ -117204,7 +117868,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20463,
@@ -117381,7 +118046,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20464,
@@ -117558,7 +118224,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20465,
@@ -117735,7 +118402,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20466,
@@ -117912,7 +118580,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20467,
@@ -118089,7 +118758,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20468,
@@ -118266,7 +118936,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20469,
@@ -118443,7 +119114,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20470,
@@ -118620,7 +119292,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20471,
@@ -118797,7 +119470,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20472,
@@ -118974,7 +119648,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20473,
@@ -119151,7 +119826,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20474,
@@ -119328,7 +120004,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20475,
@@ -119505,7 +120182,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20476,
@@ -119682,7 +120360,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20477,
@@ -119859,7 +120538,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "hidden_pair",
     "techTier": "T02",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20478,
@@ -120036,7 +120716,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_pair",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20479,
@@ -120213,7 +120894,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_pair",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20480,
@@ -120390,7 +121072,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_pair",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20481,
@@ -120567,7 +121250,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20482,
@@ -120744,7 +121428,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20483,
@@ -120921,7 +121606,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20484,
@@ -121098,7 +121784,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20485,
@@ -121275,7 +121962,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20486,
@@ -121452,7 +122140,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20487,
@@ -121629,7 +122318,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20488,
@@ -121806,7 +122496,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20489,
@@ -121983,7 +122674,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20490,
@@ -122160,7 +122852,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20491,
@@ -122337,7 +123030,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20492,
@@ -122514,7 +123208,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20493,
@@ -122691,7 +123386,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20494,
@@ -122868,7 +123564,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20495,
@@ -123045,7 +123742,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20496,
@@ -123222,7 +123920,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20497,
@@ -123399,7 +124098,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20498,
@@ -123576,7 +124276,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20499,
@@ -123753,7 +124454,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T22",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20500,
@@ -123930,7 +124632,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20501,
@@ -124107,7 +124810,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20502,
@@ -124284,7 +124988,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20503,
@@ -124461,7 +125166,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20504,
@@ -124638,7 +125344,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20505,
@@ -124815,7 +125522,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20506,
@@ -124992,7 +125700,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20507,
@@ -125169,7 +125878,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20508,
@@ -125346,7 +126056,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20509,
@@ -125523,7 +126234,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20510,
@@ -125700,7 +126412,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20511,
@@ -125877,7 +126590,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20512,
@@ -126054,7 +126768,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20513,
@@ -126231,7 +126946,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20514,
@@ -126408,7 +127124,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20515,
@@ -126585,7 +127302,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20516,
@@ -126762,7 +127480,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20517,
@@ -126939,7 +127658,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20518,
@@ -127116,7 +127836,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20519,
@@ -127293,7 +128014,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20520,
@@ -127470,7 +128192,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "grouped_aic_nice_loop",
     "techTier": "T21",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20521,
@@ -127647,7 +128370,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20522,
@@ -127824,7 +128548,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20523,
@@ -128001,7 +128726,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20524,
@@ -128178,7 +128904,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20525,
@@ -128355,7 +129082,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20526,
@@ -128532,7 +129260,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20527,
@@ -128709,7 +129438,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20528,
@@ -128886,7 +129616,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20529,
@@ -129063,7 +129794,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20530,
@@ -129240,7 +129972,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20531,
@@ -129417,7 +130150,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20532,
@@ -129594,7 +130328,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20533,
@@ -129771,7 +130506,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20534,
@@ -129948,7 +130684,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20535,
@@ -130125,7 +130862,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20536,
@@ -130302,7 +131040,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20537,
@@ -130479,7 +131218,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20538,
@@ -130656,7 +131396,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20539,
@@ -130833,7 +131574,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20540,
@@ -131010,7 +131752,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20541,
@@ -131187,7 +131930,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20542,
@@ -131364,7 +132108,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20543,
@@ -131541,7 +132286,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20544,
@@ -131718,7 +132464,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20545,
@@ -131895,7 +132642,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20546,
@@ -132072,7 +132820,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20547,
@@ -132249,7 +132998,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20548,
@@ -132426,7 +133176,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20549,
@@ -132603,7 +133354,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20550,
@@ -132780,7 +133532,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20551,
@@ -132957,7 +133710,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20552,
@@ -133134,7 +133888,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20553,
@@ -133311,7 +134066,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20554,
@@ -133488,7 +134244,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20555,
@@ -133665,7 +134422,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20556,
@@ -133842,7 +134600,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20557,
@@ -134019,7 +134778,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20558,
@@ -134196,7 +134956,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20559,
@@ -134373,7 +135134,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20560,
@@ -134550,7 +135312,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "forcing_chain_net",
     "techTier": "T23",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20561,
@@ -134727,7 +135490,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20562,
@@ -134904,7 +135668,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20563,
@@ -135081,7 +135846,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20564,
@@ -135258,7 +136024,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20565,
@@ -135435,7 +136202,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20566,
@@ -135612,7 +136380,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20567,
@@ -135789,7 +136558,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20568,
@@ -135966,7 +136736,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20569,
@@ -136143,7 +136914,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20570,
@@ -136320,7 +137092,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20571,
@@ -136497,7 +137270,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20572,
@@ -136674,7 +137448,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20573,
@@ -136851,7 +137626,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20574,
@@ -137028,7 +137804,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20575,
@@ -137205,7 +137982,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20576,
@@ -137382,7 +138160,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20577,
@@ -137559,7 +138338,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20578,
@@ -137736,7 +138516,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20579,
@@ -137913,7 +138694,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20580,
@@ -138090,7 +138872,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20581,
@@ -138267,7 +139050,8 @@ const levels = [
     "singleRatio": 0.358,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20582,
@@ -138444,7 +139228,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20583,
@@ -138621,7 +139406,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20584,
@@ -138798,7 +139584,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20585,
@@ -138975,7 +139762,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20586,
@@ -139152,7 +139940,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20587,
@@ -139329,7 +140118,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20588,
@@ -139506,7 +140296,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20589,
@@ -139683,7 +140474,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20590,
@@ -139860,7 +140652,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20591,
@@ -140037,7 +140830,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20592,
@@ -140214,7 +141008,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20593,
@@ -140391,7 +141186,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "swordfish",
     "techTier": "T09",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20594,
@@ -140568,7 +141364,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20595,
@@ -140745,7 +141542,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20596,
@@ -140922,7 +141720,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "swordfish",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20597,
@@ -141099,7 +141898,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20598,
@@ -141276,7 +142076,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20599,
@@ -141453,7 +142254,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20600,
@@ -141630,7 +142432,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "swordfish",
     "techTier": "T10",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20601,
@@ -141807,7 +142610,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20602,
@@ -141984,7 +142788,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20603,
@@ -142161,7 +142966,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20604,
@@ -142338,7 +143144,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20605,
@@ -142515,7 +143322,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20606,
@@ -142692,7 +143500,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20607,
@@ -142869,7 +143678,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20608,
@@ -143046,7 +143856,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20609,
@@ -143223,7 +144034,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20610,
@@ -143400,7 +144212,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20611,
@@ -143577,7 +144390,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20612,
@@ -143754,7 +144568,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20613,
@@ -143931,7 +144746,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20614,
@@ -144108,7 +144924,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20615,
@@ -144285,7 +145102,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20616,
@@ -144462,7 +145280,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20617,
@@ -144639,7 +145458,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20618,
@@ -144816,7 +145636,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20619,
@@ -144993,7 +145814,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20620,
@@ -145170,7 +145992,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T11",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20621,
@@ -145347,7 +146170,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20622,
@@ -145524,7 +146348,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20623,
@@ -145701,7 +146526,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20624,
@@ -145878,7 +146704,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20625,
@@ -146055,7 +146882,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20626,
@@ -146232,7 +147060,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20627,
@@ -146409,7 +147238,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20628,
@@ -146586,7 +147416,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20629,
@@ -146763,7 +147594,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20630,
@@ -146940,7 +147772,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20631,
@@ -147117,7 +147950,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20632,
@@ -147294,7 +148128,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20633,
@@ -147471,7 +148306,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20634,
@@ -147648,7 +148484,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20635,
@@ -147825,7 +148662,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20636,
@@ -148002,7 +148840,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20637,
@@ -148179,7 +149018,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20638,
@@ -148356,7 +149196,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20639,
@@ -148533,7 +149374,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20640,
@@ -148710,7 +149552,8 @@ const levels = [
     "singleRatio": 0.2963,
     "maxTechnique": "aic_mid_chain",
     "techTier": "T12",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20641,
@@ -148887,7 +149730,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20642,
@@ -149064,7 +149908,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20643,
@@ -149241,7 +150086,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20644,
@@ -149418,7 +150264,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20645,
@@ -149595,7 +150442,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20646,
@@ -149772,7 +150620,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20647,
@@ -149949,7 +150798,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T13",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20648,
@@ -150126,7 +150976,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20649,
@@ -150303,7 +151154,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20650,
@@ -150480,7 +151332,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20651,
@@ -150657,7 +151510,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20652,
@@ -150834,7 +151688,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20653,
@@ -151011,7 +151866,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20654,
@@ -151188,7 +152044,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20655,
@@ -151365,7 +152222,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20656,
@@ -151542,7 +152400,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20657,
@@ -151719,7 +152578,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20658,
@@ -151896,7 +152756,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20659,
@@ -152073,7 +152934,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20660,
@@ -152250,7 +153112,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20661,
@@ -152427,7 +153290,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20662,
@@ -152604,7 +153468,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20663,
@@ -152781,7 +153646,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20664,
@@ -152958,7 +153824,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20665,
@@ -153135,7 +154002,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20666,
@@ -153312,7 +154180,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20667,
@@ -153489,7 +154358,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20668,
@@ -153666,7 +154536,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20669,
@@ -153843,7 +154714,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20670,
@@ -154020,7 +154892,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20671,
@@ -154197,7 +155070,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20672,
@@ -154374,7 +155248,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20673,
@@ -154551,7 +155426,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20674,
@@ -154728,7 +155604,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20675,
@@ -154905,7 +155782,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20676,
@@ -155082,7 +155960,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20677,
@@ -155259,7 +156138,8 @@ const levels = [
     "singleRatio": 0.321,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20678,
@@ -155436,7 +156316,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20679,
@@ -155613,7 +156494,8 @@ const levels = [
     "singleRatio": 0.3333,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20680,
@@ -155790,7 +156672,8 @@ const levels = [
     "singleRatio": 0.3457,
     "maxTechnique": "als_chain",
     "techTier": "T14",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20681,
@@ -155967,7 +156850,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20682,
@@ -156144,7 +157028,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20683,
@@ -156321,7 +157206,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20684,
@@ -156498,7 +157384,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20685,
@@ -156675,7 +157562,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20686,
@@ -156852,7 +157740,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20687,
@@ -157029,7 +157918,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20688,
@@ -157206,7 +158096,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20689,
@@ -157383,7 +158274,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20690,
@@ -157560,7 +158452,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20691,
@@ -157737,7 +158630,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20692,
@@ -157914,7 +158808,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20693,
@@ -158091,7 +158986,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20694,
@@ -158268,7 +159164,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20695,
@@ -158445,7 +159342,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20696,
@@ -158622,7 +159520,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20697,
@@ -158799,7 +159698,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20698,
@@ -158976,7 +159876,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20699,
@@ -159153,7 +160054,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20700,
@@ -159330,7 +160232,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20701,
@@ -159507,7 +160410,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20702,
@@ -159684,7 +160588,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20703,
@@ -159861,7 +160766,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20704,
@@ -160038,7 +160944,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20705,
@@ -160215,7 +161122,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20706,
@@ -160392,7 +161300,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20707,
@@ -160569,7 +161478,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20708,
@@ -160746,7 +161656,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20709,
@@ -160923,7 +161834,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20710,
@@ -161100,7 +162012,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20711,
@@ -161277,7 +162190,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20712,
@@ -161454,7 +162368,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20713,
@@ -161631,7 +162546,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20714,
@@ -161808,7 +162724,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20715,
@@ -161985,7 +162902,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20716,
@@ -162162,7 +163080,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20717,
@@ -162339,7 +163258,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20718,
@@ -162516,7 +163436,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20719,
@@ -162693,7 +163614,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20720,
@@ -162870,7 +163792,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "naked_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20721,
@@ -163047,7 +163970,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20722,
@@ -163224,7 +164148,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20723,
@@ -163401,7 +164326,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20724,
@@ -163578,7 +164504,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20725,
@@ -163755,7 +164682,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20726,
@@ -163932,7 +164860,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20727,
@@ -164109,7 +165038,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20728,
@@ -164286,7 +165216,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20729,
@@ -164463,7 +165394,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20730,
@@ -164640,7 +165572,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20731,
@@ -164817,7 +165750,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20732,
@@ -164994,7 +165928,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20733,
@@ -165171,7 +166106,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20734,
@@ -165348,7 +166284,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20735,
@@ -165525,7 +166462,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20736,
@@ -165702,7 +166640,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20737,
@@ -165879,7 +166818,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20738,
@@ -166056,7 +166996,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20739,
@@ -166233,7 +167174,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20740,
@@ -166410,7 +167352,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20741,
@@ -166587,7 +167530,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20742,
@@ -166764,7 +167708,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20743,
@@ -166941,7 +167886,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20744,
@@ -167118,7 +168064,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20745,
@@ -167295,7 +168242,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20746,
@@ -167472,7 +168420,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20747,
@@ -167649,7 +168598,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20748,
@@ -167826,7 +168776,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20749,
@@ -168003,7 +168954,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20750,
@@ -168180,7 +169132,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20751,
@@ -168357,7 +169310,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20752,
@@ -168534,7 +169488,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20753,
@@ -168711,7 +169666,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20754,
@@ -168888,7 +169844,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20755,
@@ -169065,7 +170022,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20756,
@@ -169242,7 +170200,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20757,
@@ -169419,7 +170378,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20758,
@@ -169596,7 +170556,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20759,
@@ -169773,7 +170734,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20760,
@@ -169950,7 +170912,8 @@ const levels = [
     "singleRatio": 1,
     "maxTechnique": "hidden_single",
     "techTier": "T5 大師",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20761,
@@ -170127,7 +171090,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20762,
@@ -170304,7 +171268,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20763,
@@ -170481,7 +171446,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20764,
@@ -170658,7 +171624,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20765,
@@ -170835,7 +171802,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20766,
@@ -171012,7 +171980,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20767,
@@ -171189,7 +172158,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20768,
@@ -171366,7 +172336,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20769,
@@ -171543,7 +172514,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20770,
@@ -171720,7 +172692,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20771,
@@ -171897,7 +172870,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20772,
@@ -172074,7 +173048,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20773,
@@ -172251,7 +173226,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20774,
@@ -172428,7 +173404,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20775,
@@ -172605,7 +173582,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20776,
@@ -172782,7 +173760,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20777,
@@ -172959,7 +173938,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20778,
@@ -173136,7 +174116,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20779,
@@ -173313,7 +174294,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20780,
@@ -173490,7 +174472,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20781,
@@ -173667,7 +174650,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20782,
@@ -173844,7 +174828,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20783,
@@ -174021,7 +175006,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20784,
@@ -174198,7 +175184,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20785,
@@ -174375,7 +175362,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20786,
@@ -174552,7 +175540,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20787,
@@ -174729,7 +175718,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20788,
@@ -174906,7 +175896,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20789,
@@ -175083,7 +176074,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20790,
@@ -175260,7 +176252,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20791,
@@ -175437,7 +176430,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20792,
@@ -175614,7 +176608,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20793,
@@ -175791,7 +176786,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20794,
@@ -175968,7 +176964,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20795,
@@ -176145,7 +177142,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20796,
@@ -176322,7 +177320,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20797,
@@ -176499,7 +177498,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20798,
@@ -176676,7 +177676,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T24",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20799,
@@ -176853,7 +177854,8 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   },
   {
     "id": 20800,
@@ -177030,6 +178032,7 @@ const levels = [
     "singleRatio": 0.3086,
     "maxTechnique": "exocet_death_blossom",
     "techTier": "T25",
-    "logicSolvable": true
+    "logicSolvable": true,
+    "source": "in-house-generated"
   }
 ];
