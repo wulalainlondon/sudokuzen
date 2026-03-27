@@ -8,12 +8,9 @@
  *
  * Techniques already using real boards (3, 23, 24) are skipped.
  */
-import fs from 'fs';
-import { readTeachData, writeTeachData } from './lib/writeTeachData.mjs';
+import { readTeachData, readLevelsData, writeTeachData } from './lib/writeTeachData.mjs';
 
-const levelsCode = fs.readFileSync('levels.js', 'utf8');
-const levelsFn = new Function(levelsCode + '; return levels;');
-const levels = levelsFn();
+const levels = readLevelsData();
 
 const TD = readTeachData();
 

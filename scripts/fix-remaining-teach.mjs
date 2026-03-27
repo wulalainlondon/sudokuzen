@@ -3,12 +3,9 @@
  * 1. Generate practice for techniques 1, 2, 13, 15 (currently no practice)
  * 2. Fix focusCells progression for 19-22, 25 (currently static)
  */
-import fs from 'fs';
-import { readTeachData, writeTeachData } from './lib/writeTeachData.mjs';
+import { readTeachData, readLevelsData, writeTeachData } from './lib/writeTeachData.mjs';
 
-const levelsCode = fs.readFileSync('levels.js', 'utf8');
-const levelsFn = new Function(levelsCode + '; return levels;');
-const levels = levelsFn();
+const levels = readLevelsData();
 
 const TD = readTeachData();
 

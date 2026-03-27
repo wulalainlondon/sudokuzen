@@ -6,9 +6,10 @@
   "scripts": {
     "sync:version": "node scripts/sync-version.mjs",
     "build:teach": "node scripts/build-teach.mjs",
+    "build:data": "node scripts/build-data.mjs",
     "validate:teach": "node scripts/validate-teach-data.mjs",
     "dev": "npm run sync:version && vite",
-    "build": "npm run sync:version && npm run validate:teach && npm run build:teach && vite build",
+    "build": "npm run sync:version && npm run validate:teach && npm run build:teach && npm run build:data && vite build",
     "build:firebase": "DEPLOY_TARGET=firebase npm run build && node scripts/prepare-pages-dist.mjs && node scripts/smoke-test.mjs",
     "smoke": "node scripts/smoke-test.mjs",
     "deploy:preview": "npm run build:firebase && npx firebase hosting:channel:deploy web-preview --project sudokuzen-f2aa3",
