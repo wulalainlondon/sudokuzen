@@ -881,6 +881,14 @@ header h1 {
 }
 
 /* Replay progress bar */
+.replay-technique {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--accent-strong);
+    margin-top: 2px;
+    font-weight: 500;
+}
+
 .replay-progress-bar {
     width: min(60vw, 240px);
     height: 3px;

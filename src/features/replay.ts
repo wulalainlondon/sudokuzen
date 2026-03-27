@@ -3,6 +3,7 @@
 import { gs } from '../game/state';
 import { formatSeconds } from '../game/utils';
 import { getAllLevels } from '../data/dataRegistry';
+import { detectTechnique } from '../solver/techniqueDetector';
 
 const RB_BASE_INTERVAL = 700;
 
@@ -191,9 +192,15 @@ function updateProgressBar(): void {
   bar.style.width = `${pct}%`;
 }
 
-export function replayUpdateStepInfo(): void {
+export function replayUpdateStepInfo(technique = ''): void {
   const el = document.getElementById('replay-step-info');
-  if (el) el.textContent = `步驟 ${gs.rbStepIdx} / ${gs.actionHistory.length}`;
+  if (!el) return;
+  const stepText = `步驟 ${gs.rbStepIdx} / ${gs.actionHistory.length}`;
+  if (technique) {
+    el.innerHTML = `${stepText}<span class="replay-technique">${technique}</span>`;
+  } else {
+    el.textContent = stepText;
+  }
   updateProgressBar();
 }
 
@@ -215,11 +222,23 @@ export function replayStepForward(): void {
     return;
   }
   const action = gs.actionHistory[gs.rbStepIdx];
+
+  // Detect technique BEFORE applying the action (on the pre-move state)
+  let techniqueName = '';
+  if (action.type === 'fill' && action.idx != null && action.val != null) {
+    const prevState = replayBuildStateAtStep(gs.rbStepIdx);
+    const answer = detectTechnique(
+      prevState.map((c: any) => ({ value: c.value, fixed: c.fixed, notes: c.notes || [], isError: false })),
+      { kind: 'fill', cell: action.idx, digit: action.val },
+    );
+    if (answer) techniqueName = answer.description;
+  }
+
   gs.rbState = replayBuildStateAtStep(gs.rbStepIdx + 1);
   gs.rbStepIdx++;
   const highlightIdx = action.idx !== null && action.idx !== undefined ? action.idx : -1;
   replayRenderBoard(highlightIdx, action);
-  replayUpdateStepInfo();
+  replayUpdateStepInfo(techniqueName);
   replayUpdateButtons();
   highlightReplayListItem();
 }
