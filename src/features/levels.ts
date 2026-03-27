@@ -7,7 +7,13 @@ import { formatSeconds } from '../game/utils';
 import { showFeedback } from '../ui/feedback';
 import { loadPreLevelLeaderboard } from '../firebase/client';
 import { syncLevelCardSize } from '../game/board';
-import { TECH_MAP, showTeachModal, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
+import { TECH_MAP, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
+
+// Route through window so the React bridge can intercept
+function showTeachModal(stars: number, source = 'tier') {
+  const wShow = (window as any).showTeachModal;
+  if (wShow) wShow(stars, source);
+}
 import { getPlayerIdentity } from '../firebase/client';
 
 // Lazy imports to break circular: levels ↔ duo ↔ core

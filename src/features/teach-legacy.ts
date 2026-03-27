@@ -206,7 +206,10 @@ export function closeLibraryOverlay(): void {
 }
 
 export function openTeachFromLibrary(stars: string | number): void {
-  showTeachModal(parseFloat(String(stars)), 'library');
+  // Route through window.showTeachModal so the React bridge can intercept
+  const wShow = (window as any).showTeachModal;
+  if (wShow) wShow(parseFloat(String(stars)), 'library');
+  else showTeachModal(parseFloat(String(stars)), 'library');
 }
 
 // ── Teach modal functions ─────────────────────────────────────────
