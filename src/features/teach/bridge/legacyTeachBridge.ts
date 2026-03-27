@@ -26,13 +26,23 @@ export function installLegacyTeachBridge(): void {
   };
 
   w.showTeachModal = (stars: string | number, source: 'tier' | 'library' = 'tier') => {
+    console.log('[Bridge] showTeachModal called, stars=', stars, 'source=', source);
     const handled = window.__reactTeachBridge?.openTeach(stars, source) ?? false;
-    if (!handled) w.__legacyShowTeachModal?.(stars, source);
+    console.log('[Bridge] React handled=', handled, 'store.open=', useTeachStore.getState().open);
+    if (!handled) {
+      console.log('[Bridge] Falling back to legacy');
+      w.__legacyShowTeachModal?.(stars, source);
+    }
   };
 
   w.openTeachFromLibrary = (stars: string | number) => {
+    console.log('[Bridge] openTeachFromLibrary called, stars=', stars);
     const handled = window.__reactTeachBridge?.openTeach(stars, 'library') ?? false;
-    if (!handled) w.__legacyOpenTeachFromLibrary?.(stars);
+    console.log('[Bridge] React handled=', handled);
+    if (!handled) {
+      console.log('[Bridge] Falling back to legacy');
+      w.__legacyOpenTeachFromLibrary?.(stars);
+    }
   };
 
   w.hideTeachModal = () => {
