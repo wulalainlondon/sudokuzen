@@ -208,8 +208,19 @@ export function closeLibraryOverlay(): void {
 export function openTeachFromLibrary(stars: string | number): void {
   // Route through window.showTeachModal so the React bridge can intercept
   const wShow = (window as any).showTeachModal;
-  if (wShow) wShow(parseFloat(String(stars)), 'library');
-  else showTeachModal(parseFloat(String(stars)), 'library');
+  if (wShow) {
+    wShow(parseFloat(String(stars)), 'library');
+    // Fallback: if React overlay didn't render visibly, open legacy
+    setTimeout(() => {
+      const reactOpen = document.querySelector('.react-teach-overlay[data-open="true"]');
+      const hasContent = reactOpen && reactOpen.querySelector('[role="dialog"]');
+      if (!hasContent) {
+        showTeachModal(parseFloat(String(stars)), 'library');
+      }
+    }, 100);
+  } else {
+    showTeachModal(parseFloat(String(stars)), 'library');
+  }
 }
 
 // ── Teach modal functions ─────────────────────────────────────────
