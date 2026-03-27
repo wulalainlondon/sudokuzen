@@ -885,34 +885,87 @@ header h1 {
 }
 
 /* Replay progress bar */
-/* Replay score display */
+/* ── Replay score — animated reveal ────────────────────────────── */
 .replay-score {
     text-align: center;
-    padding: 8px 0;
+    padding: 10px 0 4px;
 }
+
+/* Grade letter — slams in from large scale */
 .replay-score-grade {
-    font-size: 2rem;
+    font-size: 2.4rem;
     font-weight: 700;
-    letter-spacing: 4px;
+    letter-spacing: 6px;
     font-family: 'Outfit', sans-serif;
+    opacity: 0;
+    transform: scale(3);
 }
-.replay-score-total {
-    font-size: 1rem;
+.replay-score-grade:not(.score-grade-hidden) {
+    animation: gradeSlam 0.5s var(--ease-zen) forwards;
+}
+@keyframes gradeSlam {
+    0%   { opacity: 0; transform: scale(3); filter: blur(4px); }
+    50%  { opacity: 1; transform: scale(0.9); filter: blur(0); }
+    70%  { transform: scale(1.08); }
+    100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+.score-grade-hidden {
+    animation: gradeSlam 0.5s var(--ease-zen) forwards;
+    animation-play-state: paused;
+}
+/* Trigger animation when delay fires (CSS handles via animation-delay) */
+.replay-score .score-grade-hidden {
+    animation-play-state: running;
+}
+
+/* Score counter — counts up with number pulse */
+.replay-score-counter {
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--text-main);
-    margin-bottom: 6px;
+    margin: 4px 0 8px;
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: fadeSlideUp 0.3s var(--ease-zen) forwards;
 }
+@keyframes fadeSlideUp {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Breakdown rows — slide in one by one */
 .replay-score-breakdown {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    font-size: 0.72rem;
+    gap: 3px;
+    font-size: 0.75rem;
     color: var(--text-light);
+    max-width: 240px;
+    margin: 0 auto;
 }
 .score-row {
     display: flex;
     justify-content: space-between;
-    padding: 0 12px;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    transform: translateX(-12px);
+    animation: scoreRowIn 0.25s var(--ease-zen) forwards;
+}
+.score-row-hidden {
+    /* animation-delay set inline per row */
+}
+@keyframes scoreRowIn {
+    0%   { opacity: 0; transform: translateX(-12px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+.score-bonus {
+    color: var(--accent-strong);
+    font-weight: 600;
+}
+.score-penalty {
+    color: var(--error-color);
+    font-weight: 600;
 }
 
 .replay-technique {

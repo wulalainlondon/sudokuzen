@@ -354,7 +354,8 @@ function highlightReplayListItem(): void {
   });
 }
 
-// ── Score display at end of replay ─────────────────────────────
+// ── Animated score reveal at end of replay ──────────────────────
+
 function showReplayScore(): void {
   const errors = gs.actionHistory.filter((a: any) => a.type === 'mistake').length;
   const score = computeReplayScore(replayTechniqueLog as any, gs.seconds, errors);
@@ -371,27 +372,81 @@ function showReplayScore(): void {
   };
   const gradeColor = gradeColors[score.grade] || 'var(--text-main)';
 
-  let breakdownHtml = score.breakdown
-    .slice(0, 5)
-    .map((b) => {
-      const sign = b.points >= 0 ? '+' : '';
-      const label = b.technique === 'guess' ? '猜測' : b.technique === 'mistake' ? '失誤' : b.technique;
-      return `<span class="score-row"><span>${label} ×${b.count}</span><span>${sign}${b.points}</span></span>`;
-    })
+  // Build rows for staggered reveal
+  const rows: { label: string; points: number; penalty: boolean }[] = [];
+  for (const b of score.breakdown.slice(0, 6)) {
+    const label = b.technique === 'guess' ? '猜測' : b.technique === 'mistake' ? '失誤' : b.technique;
+    rows.push({ label: `${label} ×${b.count}`, points: b.points, penalty: b.points < 0 });
+  }
+  if (score.speedBonus > 0) rows.push({ label: '速度加成', points: score.speedBonus, penalty: false });
+  if (score.accuracyBonus > 0) rows.push({ label: '零失誤加成', points: score.accuracyBonus, penalty: false });
+
+  const rowsHtml = rows
+    .map(
+      (r, i) =>
+        `<div class="score-row score-row-hidden" style="animation-delay:${300 + i * 120}ms">` +
+        `<span>${r.label}</span>` +
+        `<span class="${r.penalty ? 'score-penalty' : 'score-bonus'}">${r.points >= 0 ? '+' : ''}${r.points}</span>` +
+        `</div>`,
+    )
     .join('');
 
-  if (score.speedBonus > 0) {
-    breakdownHtml += `<span class="score-row"><span>速度加成</span><span>+${score.speedBonus}</span></span>`;
-  }
-  if (score.accuracyBonus > 0) {
-    breakdownHtml += `<span class="score-row"><span>零失誤加成</span><span>+${score.accuracyBonus}</span></span>`;
-  }
+  const totalDelay = 300 + rows.length * 120 + 200;
+  const gradeDelay = totalDelay + 600;
 
   el.innerHTML = `
     <div class="replay-score">
-      <div class="replay-score-grade" style="color:${gradeColor}">${score.grade}</div>
-      <div class="replay-score-total">${score.total} 分</div>
-      <div class="replay-score-breakdown">${breakdownHtml}</div>
+      <div class="replay-score-grade score-grade-hidden" style="color:${gradeColor};animation-delay:${gradeDelay}ms">${score.grade}</div>
+      <div class="replay-score-counter" id="score-counter" data-target="${score.total}" style="animation-delay:${totalDelay}ms">0</div>
+      <div class="replay-score-breakdown">${rowsHtml}</div>
     </div>
   `;
+
+  // Start counting animation after rows finish appearing
+  setTimeout(() => animateCounter(score.total, totalDelay > 0 ? 800 : 400), totalDelay);
+
+  // Play grade sound
+  setTimeout(() => {
+    import('../game/audio').then((audio) => {
+      if (score.grade === 'S' || score.grade === 'A') {
+        audio.playWinSound();
+      } else {
+        audio.playUnitCompleteSound();
+      }
+    });
+    if (navigator.vibrate) {
+      navigator.vibrate(score.grade === 'S' ? [20, 40, 20, 40, 20, 60, 40] : [15, 30, 15]);
+    }
+  }, gradeDelay);
+
+  // Play tick sound for each row appearance
+  rows.forEach((r, i) => {
+    setTimeout(
+      () => {
+        import('../game/audio').then((audio) => {
+          if (r.penalty) audio.playErrorFeedback();
+          else audio.playFillSound();
+        });
+      },
+      300 + i * 120,
+    );
+  });
+}
+
+function animateCounter(target: number, duration: number): void {
+  const el = document.getElementById('score-counter');
+  if (!el) return;
+  const start = performance.now();
+  const from = 0;
+
+  function tick(now: number) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(from + (target - from) * eased);
+    el!.textContent = `${current} 分`;
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 }
