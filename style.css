@@ -2939,15 +2939,36 @@ body.library-open {
 
 /* ── Teach shared animations ───────────────────────────────────── */
 
-/* ── Demo board (technique showcase) ───────────────────────────── */
+/* ── Demo board (cinematic technique showcase) ─────────────────── */
 .demo-board-wrapper {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    transition: filter 0.6s var(--ease-zen);
 }
 
+/* Afterglow: brief pulse on entire board after eliminations */
+.demo-board-wrapper.demo-afterglow .teach-board {
+    animation: demoAfterPulse 0.6s var(--ease-zen) both;
+}
+@keyframes demoAfterPulse {
+    0%   { box-shadow: 0 0 0 0 transparent; }
+    40%  { box-shadow: 0 0 16px var(--accent-light); }
+    100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* Target cells glow before the strike — "look here" */
+.teach-cell.demo-target-glow {
+    animation: demoTargetGlow 0.8s var(--ease-zen) infinite alternate;
+}
+@keyframes demoTargetGlow {
+    0%   { box-shadow: inset 0 0 0 0 transparent; }
+    100% { box-shadow: inset 0 0 6px var(--accent-light); }
+}
+
+/* Technique name — slams in right before elimination */
 .demo-technique-name {
     position: absolute;
     top: 50%;
@@ -2960,27 +2981,29 @@ body.library-open {
     color: var(--accent-strong);
     pointer-events: none;
     z-index: 10;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    animation: demoNameFlash 1.2s var(--ease-zen) both;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+    animation: demoNameSlam 0.8s var(--ease-zen) both;
 }
-@keyframes demoNameFlash {
-    0%   { opacity: 0; transform: translate(-50%, -50%) scale(1.6); filter: blur(6px); }
-    20%  { opacity: 1; transform: translate(-50%, -50%) scale(0.95); filter: blur(0); }
-    60%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+@keyframes demoNameSlam {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(2); filter: blur(8px); }
+    25%  { opacity: 1; transform: translate(-50%, -50%) scale(0.92); filter: blur(0); }
+    45%  { opacity: 1; transform: translate(-50%, -50%) scale(1.02); }
+    65%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1); filter: blur(2px); }
 }
 
+/* Elimination count — the payoff */
 .demo-elim-count {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    color: var(--teach-elim-color);
+    color: var(--accent-strong);
     letter-spacing: 2px;
     animation: demoCountPop 0.5s var(--ease-zen) both;
 }
 @keyframes demoCountPop {
-    0%   { opacity: 0; transform: translateY(6px); }
-    50%  { opacity: 1; transform: translateY(-2px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0%   { opacity: 0; transform: translateY(8px) scale(0.8); }
+    50%  { opacity: 1; transform: translateY(-3px) scale(1.05); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Digit elimination: strike → hold → vanish (0.65s, ~200ms per phase) */

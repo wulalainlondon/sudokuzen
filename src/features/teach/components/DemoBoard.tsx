@@ -1,5 +1,4 @@
-// Cinematic technique demo — auto-plays the full technique in ~2.5s
-// Shows: board → chain lights up → technique name flash → candidates eliminated → count
+// Cinematic technique demo — anticipation → strike → reward (~3.5s)
 
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import type { TeachModuleModel } from '../../../entities/teach';
@@ -9,7 +8,7 @@ type Props = {
   module: TeachModuleModel;
 };
 
-type DemoPhase = 'idle' | 'chain' | 'name' | 'eliminate' | 'count' | 'done';
+type DemoPhase = 'idle' | 'glow' | 'chain' | 'pause' | 'name' | 'eliminate' | 'count' | 'afterglow' | 'done';
 
 function getNotes(notes: Record<string, number[]>, idx: number): number[] {
   return notes[String(idx)] ?? notes[String(Number(idx))] ?? [];
@@ -22,57 +21,88 @@ export function DemoBoard({ module }: Props): ReactElement {
 
   const example = module.example;
 
-  // Collect data from steps (computed once)
-  const { focusCells, eliminates, elimCount } = useMemo(() => {
+  const { focusCells, eliminates, elimCount, elimCellSet } = useMemo(() => {
     if (!example)
-      return { focusCells: [] as number[], eliminates: [] as { cell: number; digit: number }[], elimCount: 0 };
+      return {
+        focusCells: [] as number[],
+        eliminates: [] as { cell: number; digit: number }[],
+        elimCount: 0,
+        elimCellSet: new Set<number>(),
+      };
     const elimStep = example.steps.find((s) => s.eliminateCells.length > 0);
     const allFocus = new Set<number>();
     for (const s of example.steps) {
       for (const c of s.focusCells) allFocus.add(c);
     }
     const elims = elimStep?.eliminateCells ?? [];
-    return { focusCells: [...allFocus], eliminates: elims, elimCount: elims.length };
+    return {
+      focusCells: [...allFocus],
+      eliminates: elims,
+      elimCount: elims.length,
+      elimCellSet: new Set(elims.map((e) => e.cell)),
+    };
   }, [example]);
 
-  // Auto-play sequence
+  // ── Timeline: anticipation → strike → reward ──────────────────
   useEffect(() => {
     if (!example || elimCount === 0) return;
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    timers.push(setTimeout(() => setPhase('chain'), 300));
-    timers.push(setTimeout(() => setPhase('name'), 700));
-    timers.push(setTimeout(() => setPhase('eliminate'), 1400));
+    const t: ReturnType<typeof setTimeout>[] = [];
+
+    // Phase 1: Setup (0-800ms)
+    t.push(setTimeout(() => setPhase('glow'), 400));
+
+    // Phase 2: Tension (800-1600ms)
+    t.push(setTimeout(() => setPhase('chain'), 800));
+    t.push(setTimeout(() => setPhase('pause'), 1400)); // bow fully drawn
+
+    // Phase 3: Strike (1600ms+)
+    t.push(setTimeout(() => setPhase('name'), 1600));
     for (let i = 0; i < elimCount; i++) {
-      timers.push(setTimeout(() => setElimIdx(i), 1400 + i * 180));
+      t.push(setTimeout(() => setElimIdx(i), 1900 + i * 300));
     }
-    const totalElimTime = 1400 + elimCount * 180 + 300;
-    timers.push(setTimeout(() => setPhase('count'), totalElimTime));
-    timers.push(setTimeout(() => setPhase('done'), totalElimTime + 800));
-    return () => timers.forEach(clearTimeout);
+    t.push(
+      setTimeout(() => setPhase('eliminate'), 1900), // sync with first elim
+    );
+
+    // Phase 4: Reward
+    const elimEnd = 1900 + elimCount * 300;
+    t.push(setTimeout(() => setPhase('count'), elimEnd + 200));
+    t.push(setTimeout(() => setPhase('afterglow'), elimEnd + 600));
+    t.push(setTimeout(() => setPhase('done'), elimEnd + 1200));
+
+    return () => t.forEach(clearTimeout);
   }, [example, elimCount]);
 
   if (!example) return <div className="teach-board" />;
 
-  const showChain = phase !== 'idle';
-  const showName = phase === 'name' || phase === 'eliminate' || phase === 'count';
+  const showGlow = phase !== 'idle';
+  const showChain = phase !== 'idle' && phase !== 'glow';
+  const isStrike =
+    phase === 'name' || phase === 'eliminate' || phase === 'count' || phase === 'afterglow' || phase === 'done';
+  const showName = phase === 'name' || phase === 'eliminate';
+  const showCount = phase === 'count' || phase === 'afterglow' || phase === 'done';
+  const showAfterglow = phase === 'afterglow';
 
   return (
-    <div className="demo-board-wrapper">
+    <div className={`demo-board-wrapper ${showAfterglow ? 'demo-afterglow' : ''}`}>
       <div className="teach-board" ref={boardRef}>
         {Array.from({ length: 81 }, (_, i) => {
           const value = Number(example.board[i] ?? 0);
           const noteArr = getNotes(example.notes, i);
           const isFocus = focusCells.includes(i);
+          const isElimTarget = elimCellSet.has(i);
 
+          // Check if this cell+digit has been eliminated so far
           let elimDigit = -1;
-          if (phase === 'eliminate' || phase === 'count' || phase === 'done') {
+          if (isStrike) {
             for (let ei = 0; ei <= elimIdx && ei < eliminates.length; ei++) {
               if (eliminates[ei].cell === i) elimDigit = eliminates[ei].digit;
             }
           }
 
           let className = 'teach-cell';
-          if (isFocus && showChain) className += ' focus';
+          if (isFocus && showGlow) className += ' focus';
+          if (isElimTarget && showGlow && !isStrike) className += ' demo-target-glow';
 
           return (
             <div key={i} className={className} data-idx={i}>
@@ -102,13 +132,15 @@ export function DemoBoard({ module }: Props): ReactElement {
         )}
       </div>
 
+      {/* Technique name — appears right before elimination */}
       {showName && (
         <div className="demo-technique-name" key="name">
           {module.name}
         </div>
       )}
 
-      {(phase === 'count' || phase === 'done') && elimCount > 0 && (
+      {/* Elimination count — the reward */}
+      {showCount && elimCount > 0 && (
         <div className="demo-elim-count" key="count">
           −{elimCount} 候選
         </div>
