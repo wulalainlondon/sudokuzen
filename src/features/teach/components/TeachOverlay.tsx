@@ -71,7 +71,8 @@ export function TeachOverlay(): ReactElement {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-black/45 backdrop-blur-[2px]"
+                  className="fixed inset-0 bg-black/45 backdrop-blur-[2px]"
+                  style={{ zIndex: 1500 }}
                 />
               </Dialog.Overlay>
               <Dialog.Content asChild>
@@ -80,7 +81,8 @@ export function TeachOverlay(): ReactElement {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 12, scale: 0.98 }}
                   transition={{ duration: policy.reducedMotion ? 0 : 0.24, ease: [0.2, 0.8, 0.2, 1] }}
-                  className="absolute left-1/2 top-1/2 w-[min(95vw,760px)] -translate-x-1/2 -translate-y-1/2 rounded-card border border-white/40 bg-panel p-5 text-text shadow-zen"
+                  className="fixed left-1/2 top-1/2 w-[min(95vw,760px)] max-h-[90vh] overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-card border border-white/40 bg-panel p-5 text-text shadow-zen"
+                  style={{ zIndex: 1501 }}
                 >
                   <div className="relative overflow-hidden rounded-card bg-surface p-4">
                     {policy.allowCanvasFx ? <StepPulseCanvas active={flow === 'stepping'} /> : null}
