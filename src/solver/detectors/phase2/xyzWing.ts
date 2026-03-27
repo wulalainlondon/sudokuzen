@@ -1,6 +1,6 @@
 import { SolverBoard } from '../../board';
 import type { DetectionResult, DetectionAction } from '../../types';
-import { popcount, digitBit, bitsToDigits } from '../../helpers/bitmask';
+import { digitBit, bitsToDigits } from '../../helpers/bitmask';
 
 function cellRef(idx: number): string {
   return 'R' + (Math.floor(idx / 9) + 1) + 'C' + ((idx % 9) + 1);

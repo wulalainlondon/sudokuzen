@@ -14,7 +14,7 @@ function cellRef(idx: number): string {
  */
 export function detectTwoStringKite(board: SolverBoard): DetectionResult | null {
   for (let d = 1; d <= 9; d++) {
-    const bit = digitBit(d);
+    const _bit = digitBit(d);
 
     // 收集行共軛對
     const rowPairs: { cells: [number, number]; row: number }[] = [];

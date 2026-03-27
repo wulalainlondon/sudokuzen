@@ -1,6 +1,6 @@
 import { SolverBoard } from '../../board';
 import type { DetectionResult, DetectionAction } from '../../types';
-import { digitBit, bitsToDigits } from '../../helpers/bitmask';
+import { bitsToDigits } from '../../helpers/bitmask';
 import { findConjugatePairs } from '../../helpers/links';
 
 function cellRef(idx: number): string {

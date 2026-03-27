@@ -1,8 +1,7 @@
 import { SolverBoard } from '../../board';
 import type { DetectionResult, DetectionAction } from '../../types';
-import { digitBit } from '../../helpers/bitmask';
 
-function cellRef(idx: number): string {
+function _cellRef(idx: number): string {
   return 'R' + (Math.floor(idx / 9) + 1) + 'C' + ((idx % 9) + 1);
 }
 

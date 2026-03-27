@@ -1,7 +1,7 @@
 // Conjugate pairs and strong/weak link graph for chain-based techniques
 
 import { SolverBoard } from '../board';
-import { digitBit } from './bitmask';
+
 
 export interface ConjugatePair {
   digit: number;

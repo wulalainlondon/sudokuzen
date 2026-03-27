@@ -1,11 +1,11 @@
 // Shared fish detection — parameterized by size (2=X-Wing, 3=Swordfish, 4=Jellyfish)
 
 import { SolverBoard } from '../board';
-import { popcount, digitBit, bitsToDigits } from './bitmask';
+import { digitBit } from './bitmask';
 import { combinations } from './combinations';
 import type { DetectionAction, DetectionResult, TechniqueName } from '../types';
 
-function cellRef(idx: number): string {
+function _cellRef(idx: number): string {
   return 'R' + (Math.floor(idx / 9) + 1) + 'C' + ((idx % 9) + 1);
 }
 

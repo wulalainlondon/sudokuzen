@@ -1,7 +1,7 @@
 import { SolverBoard } from '../../board';
 import type { DetectionResult, DetectionAction } from '../../types';
 import { bitsToDigits, digitBit } from '../../helpers/bitmask';
-import { findAllALS, type AlmostLockedSet } from '../../helpers/als';
+import { findAllALS } from '../../helpers/als';
 
 function cellRef(idx: number): string {
   return 'R' + (Math.floor(idx / 9) + 1) + 'C' + ((idx % 9) + 1);

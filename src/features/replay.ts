@@ -126,7 +126,7 @@ export function replayApplyActionToState(state: any[], action: any): void {
   }
 }
 
-export function replayRenderBoard(highlightIdx: number, action: any | null): void {
+export function replayRenderBoard(highlightIdx: number, _action: any | null): void {
   const boardEl = document.getElementById('replay-board');
   if (!boardEl) return;
 

@@ -33,7 +33,7 @@ export function detectAicMidChain(board: SolverBoard): DetectionResult | null {
         const { node, depth } = queue.shift()!;
         if (depth >= MAX_DEPTH) continue;
 
-        const decoded = decodeNode(node);
+        const _decoded = decodeNode(node);
 
         // If this node is true, all weak-linked nodes are false
         const weakNeighbors = graph.weak.get(node);

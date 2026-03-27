@@ -30,13 +30,13 @@ export function detectEmptyRectangle(board: SolverBoard): DetectionResult | null
         for (let lc = 0; lc < 3; lc++) {
           const erRow = boxRowStart + lr;
           const erCol = boxColStart + lc;
-          const crossCell = erRow * 9 + erCol;
+          const _crossCell = erRow * 9 + erCol;
 
           // 交叉格不能有 d 候選（形成空矩形的空角）
           // 而且 d 的候選必須分布在這一行的其他列和這一列的其他行
           const inSameRow = dCells.filter((c) => SolverBoard.CELL_ROW[c] === erRow);
           const inSameCol = dCells.filter((c) => SolverBoard.CELL_COL[c] === erCol);
-          const atCross = dCells.filter((c) => SolverBoard.CELL_ROW[c] === erRow && SolverBoard.CELL_COL[c] === erCol);
+          const _atCross = dCells.filter((c) => SolverBoard.CELL_ROW[c] === erRow && SolverBoard.CELL_COL[c] === erCol);
 
           // 所有 d 候選必須在這一行或這一列上（ER 條件）
           const allOnRowOrCol = dCells.every(

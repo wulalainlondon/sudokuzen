@@ -18,7 +18,7 @@ export function detectRegionForcingChain(board: SolverBoard): DetectionResult | 
       if (cells.length < 2 || cells.length > 4) continue;
 
       const branchResults: Map<string, number>[] = [];
-      let hasContradiction = false;
+      const _hasContradiction = false;
 
       for (const cell of cells) {
         const result = propagate(board, cell, d);

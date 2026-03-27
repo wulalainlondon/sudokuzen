@@ -1,6 +1,6 @@
 import { SolverBoard } from '../../board';
 import type { DetectionResult, DetectionAction } from '../../types';
-import { bitsToDigits, digitBit, popcount } from '../../helpers/bitmask';
+import { bitsToDigits, digitBit } from '../../helpers/bitmask';
 
 function cellRef(idx: number): string {
   return 'R' + (Math.floor(idx / 9) + 1) + 'C' + ((idx % 9) + 1);
@@ -22,7 +22,7 @@ export function detectCellForcingChain(board: SolverBoard): DetectionResult | nu
   for (const cell of targets) {
     const digits = bitsToDigits(board.candidates[cell]);
     const branchResults: Map<string, number>[] = [];
-    let hasContradiction = false;
+    const _hasContradiction = false;
 
     for (const d of digits) {
       const result = propagate(board, cell, d);

@@ -1,6 +1,6 @@
 import { SolverBoard } from '../../board';
 import type { DetectionResult, DetectionAction } from '../../types';
-import { bitsToDigits, digitBit, popcount } from '../../helpers/bitmask';
+import { bitsToDigits, digitBit } from '../../helpers/bitmask';
 import { findAllALS, type AlmostLockedSet } from '../../helpers/als';
 
 function cellRef(idx: number): string {

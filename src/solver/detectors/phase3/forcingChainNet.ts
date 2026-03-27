@@ -26,7 +26,7 @@ export function detectForcingChainNet(board: SolverBoard): DetectionResult | nul
     // For each assumption, propagate naked singles and record conclusions
     const branchResults: Map<string, number>[] = []; // key: "cell:digit" -> value (1=filled, -1=eliminated)
 
-    let allValid = true;
+    const allValid = true;
     for (const d of digits) {
       const result = propagateAssumption(board, cell, d);
       if (result === null) {

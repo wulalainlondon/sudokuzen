@@ -1,7 +1,7 @@
 // AIC (Alternating Inference Chain) builder
 // Finds chains of alternating strong-weak links between (cell, digit) nodes.
 
-import { type LinkGraph, encodeNode, decodeNode } from './links';
+import { type LinkGraph, decodeNode } from './links';
 
 export interface ChainNode {
   cell: number;

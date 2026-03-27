@@ -45,7 +45,7 @@ function tryExocet(board: SolverBoard): DetectionResult | null {
 
         // Find target cells: same row or band, different boxes
         const baseBox = SolverBoard.CELL_BOX[base1];
-        const baseDigits = bitsToDigits(union);
+        const _baseDigits = bitsToDigits(union);
 
         // Look for two target cells in other boxes in the same band
         const bandStart = Math.floor(row / 3) * 3;

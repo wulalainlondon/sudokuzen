@@ -1,6 +1,6 @@
 import { SolverBoard } from '../../board';
 import type { DetectionResult, DetectionAction } from '../../types';
-import { bitsToDigits, digitBit, popcount } from '../../helpers/bitmask';
+import { bitsToDigits, popcount } from '../../helpers/bitmask';
 import { combinations } from '../../helpers/combinations';
 
 function cellRef(idx: number): string {

@@ -1,6 +1,6 @@
 import { SolverBoard } from '../../board';
 import type { DetectionResult, DetectionAction } from '../../types';
-import { buildLinkGraph, encodeNode, decodeNode } from '../../helpers/links';
+import { buildLinkGraph, decodeNode } from '../../helpers/links';
 
 function cellRef(idx: number): string {
   return 'R' + (Math.floor(idx / 9) + 1) + 'C' + ((idx % 9) + 1);

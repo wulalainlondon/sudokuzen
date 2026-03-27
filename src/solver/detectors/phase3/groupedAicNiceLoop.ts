@@ -33,7 +33,7 @@ export function detectGroupedAicNiceLoop(board: SolverBoard): DetectionResult | 
         if (boxes.size === 1) {
           const boxIdx = 18 + [...boxes][0];
           const boxCells = board.digitCellsInUnit(boxIdx, d);
-          const otherBoxCells = boxCells.filter((c) => !cells.includes(c));
+          const _otherBoxCells = boxCells.filter((c) => !cells.includes(c));
           // Group in row points to rest of box — already handled by standard links
         }
       } else if (unitIdx < 18) {
