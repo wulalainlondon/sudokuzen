@@ -825,6 +825,10 @@ header h1 {
 .replay-item-mistake {
     color: var(--error-color);
 }
+.replay-item-elim {
+    color: var(--accent-strong);
+    font-size: 0.78rem;
+}
 .replay-item-active {
     background: var(--accent-soft);
     font-weight: 600;

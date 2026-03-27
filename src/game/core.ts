@@ -50,6 +50,7 @@ function eliminateNoteFromPeers(idx: number, digit: number): void {
     if (ni > -1) {
       cell.notes.splice(ni, 1);
       updateCellDisplay(gs.gridEl!.children[p] as HTMLElement, cell);
+      recordAction('eliminate', `${cellLabel(p)} 消去候選 ${digit}`, p, digit, cell.notes);
     }
   }
 }

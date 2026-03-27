@@ -2,7 +2,6 @@
 
 import { SolverBoard } from '../board';
 
-
 export interface ConjugatePair {
   digit: number;
   cellA: number;

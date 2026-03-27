@@ -8,7 +8,7 @@ import { detectTechnique } from '../solver/techniqueDetector';
 const RB_BASE_INTERVAL = 700;
 
 export function isKeyReplayAction(a: any): boolean {
-  return ['fill', 'mistake', 'quick_note'].includes(a.type);
+  return ['fill', 'mistake', 'eliminate', 'quick_note'].includes(a.type);
 }
 
 export function getFilteredReplayActions(): any[] {
@@ -42,7 +42,12 @@ export function renderReplayList(): void {
   gs.replayListEl!.innerHTML = filtered
     .map((a: any, i: number) => {
       const isMistake = a.type === 'mistake';
-      const cls = isMistake ? 'replay-item replay-item-mistake' : 'replay-item';
+      const isElim = a.type === 'eliminate';
+      const cls = isMistake
+        ? 'replay-item replay-item-mistake'
+        : isElim
+          ? 'replay-item replay-item-elim'
+          : 'replay-item';
       // Find the absolute index in actionHistory for click-to-jump
       const absIdx = gs.actionHistory.indexOf(a);
       return `<div class="${cls}" data-step="${absIdx + 1}"><span class="replay-time">${formatSeconds(a.t)}</span>#${i + 1} ${a.detail}</div>`;
@@ -118,6 +123,10 @@ export function replayApplyActionToState(state: any[], action: any): void {
     state[idx].notes = [];
   } else if (type === 'note' && notes !== null) {
     state[idx].notes = notes.slice();
+  } else if (type === 'eliminate' && val != null) {
+    // Remove a specific candidate from cell's notes
+    const ni = state[idx].notes.indexOf(val);
+    if (ni > -1) state[idx].notes.splice(ni, 1);
   }
   // mistake: mark for visual but don't persist value
   if (type === 'mistake') {
@@ -225,11 +234,12 @@ export function replayStepForward(): void {
 
   // Detect technique BEFORE applying the action (on the pre-move state)
   let techniqueName = '';
-  if (action.type === 'fill' && action.idx != null && action.val != null) {
+  if ((action.type === 'fill' || action.type === 'eliminate') && action.idx != null && action.val != null) {
     const prevState = replayBuildStateAtStep(gs.rbStepIdx);
+    const kind = action.type === 'fill' ? 'fill' : 'eliminate';
     const answer = detectTechnique(
       prevState.map((c: any) => ({ value: c.value, fixed: c.fixed, notes: c.notes || [], isError: false })),
-      { kind: 'fill', cell: action.idx, digit: action.val },
+      { kind, cell: action.idx, digit: action.val },
     );
     if (answer) techniqueName = answer.description;
   }

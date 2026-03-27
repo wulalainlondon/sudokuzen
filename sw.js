@@ -1,4 +1,4 @@
-const CACHE_VERSION = '2026.03.27-V8';
+const CACHE_VERSION = '2026.03.27-V9';
 const CACHE_NAME = `sudoku-zen-${CACHE_VERSION}`;
 const ASSETS = [
   './',
