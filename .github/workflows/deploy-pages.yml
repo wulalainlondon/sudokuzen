@@ -38,6 +38,17 @@ jobs:
       - name: Prepare Dist For Pages
         run: node scripts/prepare-pages-dist.mjs
 
+      - name: Verify Build Output
+        run: |
+          BUNDLE=$(ls dist/assets/index-*.js 2>/dev/null | head -1)
+          SIZE=$(wc -c < "$BUNDLE")
+          echo "Bundle: $BUNDLE ($SIZE bytes)"
+          if [ "$SIZE" -lt 100000 ]; then
+            echo "ERROR: Bundle too small ($SIZE bytes), expected 400KB+"
+            exit 1
+          fi
+          echo "Bundle size OK"
+
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
