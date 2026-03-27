@@ -9,6 +9,7 @@
  * Techniques already using real boards (3, 23, 24) are skipped.
  */
 import fs from 'fs';
+import { writeTeachData } from './lib/writeTeachData.mjs';
 
 const levelsCode = fs.readFileSync('levels.js', 'utf8');
 const levelsFn = new Function(levelsCode + '; return levels;');
@@ -196,8 +197,5 @@ for (let k = 1; k <= 40; k++) {
 }
 
 // ── Write back ─────────────────────────────────────────────────────
-const header = `/**\n * 數獨技巧教學資料 — 秘笈 1 ~ 40\n * 每個 key 是秘笈序號（1-40），由淺入深\n */\n`;
-const output = header + 'const TEACH_DATA = ' + JSON.stringify(TD, null, 2) + ';\n';
-fs.writeFileSync('techniques.js', output, 'utf8');
+writeTeachData(TD);
 console.log(`\nDone: ${fixed}/37 techniques updated with real boards`);
-console.log(`techniques.js: ${Math.round(output.length / 1024)} KB`);

@@ -4,6 +4,7 @@
  * 2. Fix focusCells progression for 19-22, 25 (currently static)
  */
 import fs from 'fs';
+import { writeTeachData } from './lib/writeTeachData.mjs';
 
 const levelsCode = fs.readFileSync('levels.js', 'utf8');
 const levelsFn = new Function(levelsCode + '; return levels;');
@@ -273,7 +274,4 @@ for (const k of ['19', '20', '21', '22', '25']) {
 }
 
 // ── Write back ─────────────────────────────────────────────────────
-const header = `/**\n * 數獨技巧教學資料 — 秘笈 1 ~ 40\n * 每個 key 是秘笈序號（1-40），由淺入深\n */\n`;
-const output = header + 'const TEACH_DATA = ' + JSON.stringify(TD, null, 2) + ';\n';
-fs.writeFileSync('techniques.js', output, 'utf8');
-console.log('\nWrote techniques.js (' + Math.round(output.length / 1024) + ' KB)');
+writeTeachData(TD);
