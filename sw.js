@@ -1,4 +1,4 @@
-const CACHE_VERSION = '2026.03.27-V2';
+const CACHE_VERSION = '2026.03.27-V3';
 const CACHE_NAME = `sudoku-zen-${CACHE_VERSION}`;
 const ASSETS = [
   './',
@@ -35,9 +35,17 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  const isCoreAsset = url.pathname.endsWith('/') || url.pathname.endsWith('index.html');
 
-  if (isCoreAsset) {
+  // Never cache the service worker itself
+  if (url.pathname.endsWith('sw.js')) return;
+
+  // Core pages + JS/CSS bundles: network-first (ensures updates arrive)
+  const isNetworkFirst = url.pathname.endsWith('/')
+    || url.pathname.endsWith('index.html')
+    || url.pathname.endsWith('.js')
+    || url.pathname.endsWith('.css');
+
+  if (isNetworkFirst) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
@@ -48,6 +56,7 @@ self.addEventListener('fetch', (event) => {
         .catch(() => caches.match(event.request))
     );
   } else {
+    // Static assets (images, fonts, etc.): cache-first
     event.respondWith(
       caches.match(event.request).then((response) => {
         return response || fetch(event.request).then((networkResponse) => {
