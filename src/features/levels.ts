@@ -202,7 +202,7 @@ export function enterTier(tierName: string): void {
   }
   gs.currentTab = tierName;
   document.getElementById('stage-view')!.style.display = 'none';
-  document.getElementById('tier-view')!.style.display = 'flex';
+  document.getElementById('tier-view')!.classList.remove('hidden');
 
   const recordsKey = gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
   const records = readJson<Record<string, any>>(recordsKey, {});
@@ -231,7 +231,7 @@ export function enterTier(tierName: string): void {
 }
 
 export function backToStageMap(): void {
-  document.getElementById('tier-view')!.style.display = 'none';
+  document.getElementById('tier-view')!.classList.add('hidden');
   document.getElementById('stage-view')!.style.display = 'flex';
   renderStageMap();
 }
@@ -417,7 +417,7 @@ export function showLevelScreen(returnToTier = false): void {
   if (returnToTier && gs.currentTab !== null) {
     enterTier(gs.currentTab);
   } else {
-    document.getElementById('tier-view')!.style.display = 'none';
+    document.getElementById('tier-view')!.classList.add('hidden');
     document.getElementById('stage-view')!.style.display = 'flex';
     renderStageMap();
   }
@@ -435,15 +435,7 @@ export function toggleSpeedrunMode(): void {
 export function updateSpeedrunToggleUI(): void {
   const btn = document.getElementById('speedrun-toggle-btn');
   if (!btn) return;
-  if (gs.isSpeedrunMode) {
-    btn.style.filter = 'grayscale(0)';
-    btn.style.opacity = '1';
-    btn.style.textShadow = '0 0 10px rgba(255, 193, 7, 0.6)';
-  } else {
-    btn.style.filter = 'grayscale(1)';
-    btn.style.opacity = '0.4';
-    btn.style.textShadow = 'none';
-  }
+  btn.classList.toggle('active', gs.isSpeedrunMode);
 }
 
 // ── Random / Pool ───────────────────────────────────────────────────

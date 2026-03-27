@@ -78,7 +78,7 @@ export function initGame(levelId = 1, forceReset = false, playWithGhost = false,
 
   gs.isGhostMode = playWithGhost;
   gs.ghostHistory = gs.isGhostMode && ghostData ? ghostData : [];
-  document.getElementById('ghost-progress-container')!.style.display = gs.isGhostMode ? 'flex' : 'none';
+  document.getElementById('ghost-progress-container')!.classList.toggle('hidden', !gs.isGhostMode);
   Array.from(gs.gridEl!.children).forEach((c) => c.classList.remove('ghost-marked'));
 
   const saved = forceReset ? null : loadGameStatus(gs.currentLevel.id);
@@ -98,7 +98,7 @@ export function initGame(levelId = 1, forceReset = false, playWithGhost = false,
     if (saved.isGhostMode === true && saved.ghostHistory) {
       gs.isGhostMode = true;
       gs.ghostHistory = saved.ghostHistory;
-      document.getElementById('ghost-progress-container')!.style.display = 'flex';
+      document.getElementById('ghost-progress-container')!.classList.remove('hidden');
     }
   } else {
     resetGameState();

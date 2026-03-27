@@ -153,7 +153,7 @@ export function updateDuoPreLevelUI(d: any): void {
   const countdownArea = document.getElementById('duo-countdown-area');
   if (!zone) return;
 
-  zone.style.display = 'block';
+  zone.classList.remove('hidden');
 
   // Host slot
   document.getElementById('duo-host-alias')!.textContent = d.hostAlias || '--';
@@ -603,7 +603,7 @@ export function resetDuoState(): void {
     gs.duoUnsubscribe = null;
   }
   const readyZone = document.getElementById('duo-ready-zone');
-  if (readyZone) readyZone.style.display = 'none';
+  if (readyZone) readyZone.classList.add('hidden');
   const progressContainer = document.getElementById('duo-progress-container');
   if (progressContainer) progressContainer.style.display = 'none';
   const emojiBar = document.getElementById('duo-emoji-bar');

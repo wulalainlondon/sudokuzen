@@ -252,7 +252,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     }
 
     // Tier view → stage map
-    if (document.getElementById('tier-view')?.style.display === 'flex') {
+    if (!document.getElementById('tier-view')?.classList.contains('hidden')) {
       backToStageMap();
       return;
     }
