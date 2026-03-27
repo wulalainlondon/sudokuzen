@@ -753,11 +753,19 @@ header h1 {
     position: fixed;
     inset: 0;
     background: var(--modal-overlay);
-    display: none;
+    backdrop-filter: var(--modal-blur);
+    display: flex;
     align-items: center;
     justify-content: center;
     z-index: 400;
     padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-normal) var(--ease-zen);
+}
+#replay-modal.show {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .replay-panel {
@@ -765,11 +773,17 @@ header h1 {
     max-height: min(80vh, 680px);
     background: var(--grid-bg);
     border: 1px solid var(--cell-border);
-    border-radius: 14px;
+    border-radius: var(--radius-lg);
     padding: 14px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(12px);
+    transition: transform var(--duration-normal) var(--ease-zen);
+}
+#replay-modal.show .replay-panel {
+    transform: translateY(0);
 }
 
 .replay-title {
@@ -797,11 +811,23 @@ header h1 {
 
 .replay-item {
     border-bottom: 1px dashed var(--cell-border);
-    padding: 5px 0;
+    padding: 5px 4px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--duration-fast);
 }
-
+.replay-item:hover {
+    background: var(--accent-soft);
+}
 .replay-item:last-child {
     border-bottom: none;
+}
+.replay-item-mistake {
+    color: var(--error-color);
+}
+.replay-item-active {
+    background: var(--accent-soft);
+    font-weight: 600;
 }
 
 .replay-time {
@@ -848,10 +874,26 @@ header h1 {
     grid-template-rows: repeat(9, 1fr);
     width: min(60vw, 240px);
     height: min(60vw, 240px);
-    border: 2px solid var(--accent-strong);
-    border-radius: 6px;
+    border: 2px solid var(--block-border);
+    border-radius: var(--radius-md);
     overflow: hidden;
     user-select: none;
+}
+
+/* Replay progress bar */
+.replay-progress-bar {
+    width: min(60vw, 240px);
+    height: 3px;
+    background: var(--cell-border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+.replay-progress-fill {
+    height: 100%;
+    width: 0;
+    background: var(--accent-strong);
+    border-radius: var(--radius-full);
+    transition: width var(--duration-fast) linear;
 }
 
 .rb-cell {
@@ -876,13 +918,25 @@ header h1 {
     color: var(--accent-strong);
 }
 
-.rb-cell.rb-err {
+.rb-cell.rb-mistake {
     color: var(--error-color);
-    background: rgba(214, 48, 49, 0.12);
+    background: var(--teach-elim-bg);
+    font-style: italic;
 }
 
 .rb-cell.rb-active {
-    background: rgba(9, 132, 227, 0.18);
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1.5px var(--accent-strong);
+}
+
+.rb-notes {
+    font-size: clamp(0.26rem, 0.9vw, 0.38rem);
+    line-height: 1;
+    color: var(--note-color);
+    display: flex;
+    flex-wrap: wrap;
+    padding: 1px;
+    gap: 0;
 }
 
 .rb-cell.rb-box-border-right {

@@ -216,7 +216,7 @@ export function bootLegacyRuntime(appVersion: string): void {
       closeStatsModal();
       return;
     }
-    if (replayModal?.style.display === 'flex') {
+    if (replayModal?.classList.contains('show')) {
       closeReplayModal();
       return;
     }

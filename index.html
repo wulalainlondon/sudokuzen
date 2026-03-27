@@ -214,29 +214,25 @@
             <h3 class="replay-title">本局步驟回放</h3>
             <div class="replay-summary" id="replay-summary">-</div>
 
-            <!-- Visual Replay Board -->
             <div class="replay-visual-section">
                 <div class="replay-board" id="replay-board"></div>
+                <div class="replay-progress-bar"><div class="replay-progress-fill" id="rb-progress-fill"></div></div>
                 <div class="replay-controls">
-                    <button class="replay-ctrl-btn" id="rb-reset-btn" onclick="replayReset()" title="重置">↺ 重置</button>
-                    <button class="replay-ctrl-btn" id="rb-prev-btn" onclick="replayStepBack()" title="上一步">◄
-                        上一步</button>
-                    <button class="replay-ctrl-btn" id="rb-play-btn" onclick="replayTogglePlay()" title="播放/暫停">▶
-                        播放</button>
-                    <button class="replay-ctrl-btn" id="rb-next-btn" onclick="replayStepForward()" title="下一步">下一步
-                        ►</button>
+                    <button class="replay-ctrl-btn" id="rb-reset-btn" onclick="replayReset()" title="重置">↺</button>
+                    <button class="replay-ctrl-btn" id="rb-prev-btn" onclick="replayStepBack()" title="上一步">◄</button>
+                    <button class="replay-ctrl-btn rb-play" id="rb-play-btn" onclick="replayTogglePlay()" title="播放/暫停">▶ 播放</button>
+                    <button class="replay-ctrl-btn" id="rb-next-btn" onclick="replayStepForward()" title="下一步">►</button>
                     <button class="replay-ctrl-btn" id="rb-speed-btn" onclick="replayToggleSpeed()">1x</button>
                 </div>
                 <div class="replay-step-info" id="replay-step-info">步驟 0 / 0</div>
             </div>
 
-            <!-- Text Step Log -->
             <div class="replay-filters">
                 <button id="replay-filter-all" class="replay-filter-btn active"
-                    onclick="setReplayFilter('all')">&#x5168;部</button>
+                    onclick="setReplayFilter('all')">全部</button>
                 <button id="replay-filter-mistake" class="replay-filter-btn"
-                    onclick="setReplayFilter('mistake')">只看錯誤</button>
-                <button id="replay-filter-key" class="replay-filter-btn" onclick="setReplayFilter('key')">只看關鍵步</button>
+                    onclick="setReplayFilter('mistake')">錯誤</button>
+                <button id="replay-filter-key" class="replay-filter-btn" onclick="setReplayFilter('key')">關鍵步</button>
             </div>
             <div class="replay-list" id="replay-list"></div>
             <button class="resume-btn" onclick="closeReplayModal()">關閉</button>

@@ -1,11 +1,10 @@
 // Replay engine — visual replay board + text replay list
-// Extracted from legacyRuntime.ts
 
 import { gs } from '../game/state';
 import { formatSeconds } from '../game/utils';
 import { getAllLevels } from '../data/dataRegistry';
 
-const RB_BASE_INTERVAL = 700; // ms per step at 1x speed
+const RB_BASE_INTERVAL = 700;
 
 export function isKeyReplayAction(a: any): boolean {
   return ['fill', 'mistake', 'quick_note'].includes(a.type);
@@ -40,11 +39,22 @@ export function renderReplayList(): void {
     return;
   }
   gs.replayListEl!.innerHTML = filtered
-    .map(
-      (a: any, i: number) =>
-        `<div class="replay-item"><span class="replay-time">${formatSeconds(a.t)}</span>#${i + 1} ${a.detail}</div>`,
-    )
+    .map((a: any, i: number) => {
+      const isMistake = a.type === 'mistake';
+      const cls = isMistake ? 'replay-item replay-item-mistake' : 'replay-item';
+      // Find the absolute index in actionHistory for click-to-jump
+      const absIdx = gs.actionHistory.indexOf(a);
+      return `<div class="${cls}" data-step="${absIdx + 1}"><span class="replay-time">${formatSeconds(a.t)}</span>#${i + 1} ${a.detail}</div>`;
+    })
     .join('');
+
+  // Click-to-jump on replay items
+  gs.replayListEl!.querySelectorAll('.replay-item[data-step]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const step = parseInt((el as HTMLElement).dataset.step || '0');
+      if (step > 0) replayJumpToStep(step);
+    });
+  });
 }
 
 export function openReplayModal(): void {
@@ -53,18 +63,17 @@ export function openReplayModal(): void {
   syncReplayFilterButtons();
   renderReplayList();
   replayOpen();
-  gs.replayModalEl.style.display = 'flex';
+  gs.replayModalEl.classList.add('show');
 }
 
 export function openHistoricalReplay(levelId: number, savedHistory: any[]): void {
   const levels = getAllLevels();
   gs.currentLevel = levels.find((l) => l.id === levelId) || levels[0];
   gs.actionHistory = savedHistory;
-  // Clean slate for cellsData so the UI can rebuild it cleanly
   gs.cellsData = gs.currentLevel.puzzle.map((val: number) => ({
     value: val,
     fixed: val !== 0,
-    notes: [] as number[],
+    notes: [],
     isError: false,
   }));
 
@@ -75,23 +84,21 @@ export function openHistoricalReplay(levelId: number, savedHistory: any[]): void
 export function closeReplayModal(): void {
   if (!gs.replayModalEl) return;
   replayPause();
-  gs.replayModalEl.style.display = 'none';
+  gs.replayModalEl.classList.remove('show');
 }
 
 export function replayOpen(): void {
-  // Build initial state from current level puzzle
   gs.rbState = gs.currentLevel!.puzzle.map((v: number) => ({ value: v, fixed: v !== 0, notes: [] }));
   gs.rbStepIdx = 0;
   gs.rbIsPlaying = false;
   gs.rbSpeed = 1;
   document.getElementById('rb-speed-btn')!.textContent = '1x';
-  replayRenderBoard(-1);
+  replayRenderBoard(-1, null);
   replayUpdateStepInfo();
   replayUpdateButtons();
 }
 
 export function replayBuildStateAtStep(targetStep: number): any[] {
-  // Rebuild from scratch up to targetStep
   const state = gs.currentLevel!.puzzle.map((v: number) => ({ value: v, fixed: v !== 0, notes: [] }));
   for (let i = 0; i < targetStep && i < gs.actionHistory.length; i++) {
     replayApplyActionToState(state, gs.actionHistory[i]);
@@ -111,41 +118,83 @@ export function replayApplyActionToState(state: any[], action: any): void {
   } else if (type === 'note' && notes !== null) {
     state[idx].notes = notes.slice();
   }
-  // 'mistake' → show value temporarily but don't permanently fill
+  // mistake: mark for visual but don't persist value
+  if (type === 'mistake') {
+    state[idx]._mistake = true;
+    state[idx]._mistakeVal = val;
+  }
 }
 
-export function replayRenderBoard(highlightIdx: number): void {
+export function replayRenderBoard(highlightIdx: number, action: any | null): void {
   const boardEl = document.getElementById('replay-board');
   if (!boardEl) return;
-  boardEl.innerHTML = '';
+
+  // Incremental update: only re-render changed cells instead of full innerHTML rebuild
+  const needsFullRender = boardEl.children.length !== 81;
+
+  if (needsFullRender) {
+    boardEl.innerHTML = '';
+  }
+
   gs.rbState.forEach((cell: any, i: number) => {
-    const div = document.createElement('div');
-    div.className = 'rb-cell';
-    const row = Math.floor(i / 9),
-      col = i % 9;
-    if (col === 2 || col === 5) div.classList.add('rb-box-border-right');
-    if (row === 2 || row === 5) div.classList.add('rb-box-border-bottom');
+    let div: HTMLElement;
+    if (needsFullRender) {
+      div = document.createElement('div');
+      div.className = 'rb-cell';
+      const row = Math.floor(i / 9),
+        col = i % 9;
+      if (col === 2 || col === 5) div.classList.add('rb-box-border-right');
+      if (row === 2 || row === 5) div.classList.add('rb-box-border-bottom');
+      boardEl.appendChild(div);
+    } else {
+      div = boardEl.children[i] as HTMLElement;
+    }
+
+    // Reset dynamic classes
+    div.classList.remove('rb-fill', 'rb-fixed', 'rb-active', 'rb-mistake');
+
     if (cell.fixed) {
       div.classList.add('rb-fixed');
-      div.textContent = cell.value;
+      div.textContent = String(cell.value);
+    } else if (cell._mistake) {
+      // Show mistake value with error styling
+      div.classList.add('rb-mistake');
+      div.textContent = String(cell._mistakeVal || '?');
+      // Clear the transient mistake flag
+      cell._mistake = false;
+      cell._mistakeVal = null;
     } else if (cell.value !== 0) {
       div.classList.add('rb-fill');
-      div.textContent = cell.value;
-    } else if (cell.notes.length) {
-      div.style.fontSize = 'clamp(0.28rem, 1vw, 0.4rem)';
-      div.style.lineHeight = '1';
-      div.style.flexWrap = 'wrap';
-      div.style.padding = '1px';
-      div.textContent = cell.notes.join(' ');
+      div.textContent = String(cell.value);
+    } else if (cell.notes && cell.notes.length) {
+      div.innerHTML = '';
+      const ng = document.createElement('div');
+      ng.className = 'rb-notes';
+      ng.textContent = cell.notes.join(' ');
+      div.appendChild(ng);
+    } else {
+      div.textContent = '';
     }
-    if (i === highlightIdx) div.classList.add('rb-active');
-    boardEl.appendChild(div);
+
+    if (i === highlightIdx) {
+      div.classList.add('rb-active');
+    }
   });
+
+  updateProgressBar();
+}
+
+function updateProgressBar(): void {
+  const bar = document.getElementById('rb-progress-fill');
+  if (!bar) return;
+  const pct = gs.actionHistory.length > 0 ? (gs.rbStepIdx / gs.actionHistory.length) * 100 : 0;
+  bar.style.width = `${pct}%`;
 }
 
 export function replayUpdateStepInfo(): void {
   const el = document.getElementById('replay-step-info');
   if (el) el.textContent = `步驟 ${gs.rbStepIdx} / ${gs.actionHistory.length}`;
+  updateProgressBar();
 }
 
 export function replayUpdateButtons(): void {
@@ -169,9 +218,10 @@ export function replayStepForward(): void {
   gs.rbState = replayBuildStateAtStep(gs.rbStepIdx + 1);
   gs.rbStepIdx++;
   const highlightIdx = action.idx !== null && action.idx !== undefined ? action.idx : -1;
-  replayRenderBoard(highlightIdx);
+  replayRenderBoard(highlightIdx, action);
   replayUpdateStepInfo();
   replayUpdateButtons();
+  highlightReplayListItem();
 }
 
 export function replayStepBack(): void {
@@ -179,9 +229,10 @@ export function replayStepBack(): void {
   gs.rbStepIdx--;
   gs.rbState = replayBuildStateAtStep(gs.rbStepIdx);
   const highlightIdx = gs.rbStepIdx > 0 ? (gs.actionHistory[gs.rbStepIdx - 1].idx ?? -1) : -1;
-  replayRenderBoard(highlightIdx);
+  replayRenderBoard(highlightIdx, null);
   replayUpdateStepInfo();
   replayUpdateButtons();
+  highlightReplayListItem();
 }
 
 export function replayPause(): void {
@@ -218,9 +269,10 @@ export function replayReset(): void {
   replayPause();
   gs.rbStepIdx = 0;
   gs.rbState = gs.currentLevel!.puzzle.map((v: number) => ({ value: v, fixed: v !== 0, notes: [] }));
-  replayRenderBoard(-1);
+  replayRenderBoard(-1, null);
   replayUpdateStepInfo();
   replayUpdateButtons();
+  highlightReplayListItem();
 }
 
 export function replayToggleSpeed(): void {
@@ -228,9 +280,30 @@ export function replayToggleSpeed(): void {
   gs.rbSpeed = speeds[(speeds.indexOf(gs.rbSpeed) + 1) % speeds.length];
   const speedBtn = document.getElementById('rb-speed-btn');
   if (speedBtn) speedBtn.textContent = `${gs.rbSpeed}x`;
-  // Restart timer at new speed if playing
   if (gs.rbIsPlaying) {
     replayPause();
     replayPlay();
   }
+}
+
+// ── Jump to specific step (from text list click) ────────────────
+function replayJumpToStep(step: number): void {
+  replayPause();
+  gs.rbStepIdx = step;
+  gs.rbState = replayBuildStateAtStep(step);
+  const action = step > 0 ? gs.actionHistory[step - 1] : null;
+  const highlightIdx = action ? (action.idx ?? -1) : -1;
+  replayRenderBoard(highlightIdx, action);
+  replayUpdateStepInfo();
+  replayUpdateButtons();
+  highlightReplayListItem();
+}
+
+// ── Highlight active step in text list ──────────────────────────
+function highlightReplayListItem(): void {
+  if (!gs.replayListEl) return;
+  gs.replayListEl.querySelectorAll('.replay-item').forEach((el) => {
+    const step = parseInt((el as HTMLElement).dataset.step || '0');
+    el.classList.toggle('replay-item-active', step === gs.rbStepIdx);
+  });
 }
