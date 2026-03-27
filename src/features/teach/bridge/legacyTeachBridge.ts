@@ -26,23 +26,20 @@ export function installLegacyTeachBridge(): void {
   };
 
   w.showTeachModal = (stars: string | number, source: 'tier' | 'library' = 'tier') => {
-    console.log('[Bridge] showTeachModal called, stars=', stars, 'source=', source);
-    const handled = window.__reactTeachBridge?.openTeach(stars, source) ?? false;
-    console.log('[Bridge] React handled=', handled, 'store.open=', useTeachStore.getState().open);
-    if (!handled) {
-      console.log('[Bridge] Falling back to legacy');
-      w.__legacyShowTeachModal?.(stars, source);
-    }
+    // openTeach sets flow='loading' synchronously, then fetches shard async
+    window.__reactTeachBridge?.openTeach(stars, source).then((handled) => {
+      if (!handled) {
+        w.__legacyShowTeachModal?.(stars, source);
+      }
+    });
   };
 
   w.openTeachFromLibrary = (stars: string | number) => {
-    console.log('[Bridge] openTeachFromLibrary called, stars=', stars);
-    const handled = window.__reactTeachBridge?.openTeach(stars, 'library') ?? false;
-    console.log('[Bridge] React handled=', handled);
-    if (!handled) {
-      console.log('[Bridge] Falling back to legacy');
-      w.__legacyOpenTeachFromLibrary?.(stars);
-    }
+    window.__reactTeachBridge?.openTeach(stars, 'library').then((handled) => {
+      if (!handled) {
+        w.__legacyOpenTeachFromLibrary?.(stars);
+      }
+    });
   };
 
   w.hideTeachModal = () => {

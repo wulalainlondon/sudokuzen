@@ -105,6 +105,7 @@ export const gs = {
   teachCurrentStep: 0,
   teachSteps: [] as any[],
   teachData: null as any,
+  teachStarsKey: null as string | null,
   teachLaunchSource: 'tier',
 
   // ── Practice ──────────────────────────────────────────────────────

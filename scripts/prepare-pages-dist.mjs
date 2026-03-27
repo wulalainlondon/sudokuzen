@@ -11,7 +11,7 @@ if (!fs.existsSync(distDir)) {
 // Files that need manual copy (NOT in public/, so Vite doesn't handle them)
 const requiredFiles = [
   'levels.js',
-  'techniques.js',
+  // techniques.js removed — teach data now lazy-loads via public/teach/*.json shards
   'mid_pool.js',
   'firebase-config.js',
   'sw.js',

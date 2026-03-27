@@ -5,12 +5,9 @@
  * 3. Move eliminateCells to last step where missing
  * 4. Fix patternCells for practice exercises
  */
-import fs from 'fs';
-import { writeTeachData } from './lib/writeTeachData.mjs';
+import { readTeachData, writeTeachData } from './lib/writeTeachData.mjs';
 
-const code = fs.readFileSync('techniques.js', 'utf8');
-const fn = new Function(code + '; return TEACH_DATA;');
-const TD = fn();
+const TD = readTeachData();
 
 // ── Helper: collect all eliminates from all steps ──────────────────
 function collectAllEliminates(steps) {

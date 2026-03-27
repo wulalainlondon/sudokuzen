@@ -1,7 +1,7 @@
 // Level selection screen, tier/realm system, stage map, progression
 
 import { gs } from '../game/state';
-import { getAllLevels } from '../data/dataRegistry';
+import { getAllLevels, hasTeachModule } from '../data/dataRegistry';
 import { SK, readJson } from '../storage/keys';
 import { formatSeconds } from '../game/utils';
 import { showFeedback } from '../ui/feedback';
@@ -221,8 +221,7 @@ export function enterTier(tierName: string): void {
 
   const bookBtn = document.getElementById('tier-teach-btn');
   const representativeStar = getTierRepresentativeStar(tierName);
-  const TEACH_DATA = (typeof globalThis !== 'undefined' && (globalThis as any).TEACH_DATA) || {};
-  if (representativeStar !== null && TEACH_DATA[representativeStar]) {
+  if (representativeStar !== null && hasTeachModule(representativeStar)) {
     bookBtn!.style.display = '';
     bookBtn!.onclick = () => showTeachModal(representativeStar);
   } else {

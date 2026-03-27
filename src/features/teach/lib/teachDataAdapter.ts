@@ -5,6 +5,7 @@ import type {
   TeachModuleModel,
   TeachStepModel,
 } from '../../../entities/teach';
+import { getTeachData, getTeachShard } from '../../../data/dataRegistry';
 
 function normalizeIntArray(raw: any): number[] {
   return Array.isArray(raw) ? raw.map(Number).filter((x) => Number.isFinite(x)) : [];
@@ -76,13 +77,7 @@ function normalizePracticeItem(item: any): PracticeItemModel {
   };
 }
 
-export function getTeachModuleByStars(stars: string | number): TeachModuleModel | null {
-  const key = String(stars);
-  const unsafeGlobalTeachData = (globalThis as any)['TEACH_DATA'];
-  const teachData = (window as any).TEACH_DATA ?? (globalThis as any).TEACH_DATA ?? unsafeGlobalTeachData;
-  const raw = teachData?.[key];
-  if (!raw) return null;
-
+function normalizeModule(key: string, raw: any): TeachModuleModel {
   return {
     stars: Number(key),
     technique: String(raw.technique ?? ''),
@@ -92,4 +87,31 @@ export function getTeachModuleByStars(stars: string | number): TeachModuleModel 
     example: normalizeExample(raw.example),
     practice: Array.isArray(raw.practice) ? raw.practice.map(normalizePracticeItem) : [],
   };
+}
+
+/**
+ * Synchronous accessor — uses full TEACH_DATA blob (legacy compat).
+ * Prefer fetchTeachModule() for lazy loading.
+ */
+export function getTeachModuleByStars(stars: string | number): TeachModuleModel | null {
+  const key = String(stars);
+  const teachData = getTeachData();
+  const raw = teachData?.[key];
+  if (!raw) return null;
+  return normalizeModule(key, raw);
+}
+
+/**
+ * Async accessor — fetches individual shard on demand (Phase 3).
+ * Falls back to sync blob if shard fetch fails.
+ */
+export async function fetchTeachModule(stars: string | number): Promise<TeachModuleModel | null> {
+  const key = String(stars);
+
+  // Try lazy shard first
+  const shard = await getTeachShard(key);
+  if (shard) return normalizeModule(key, shard);
+
+  // Fall back to full blob (e.g. if shards aren't deployed yet)
+  return getTeachModuleByStars(stars);
 }

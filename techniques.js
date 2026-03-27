@@ -1,6 +1,6 @@
 /**
  * 數獨技巧教學資料 — 秘笈 1 ~ 40
- * 每個 key 是秘笈序號（1-40），由淺入深
+ * ⚠️  自動產生，勿手動編輯 — 修改 teach-data.json 後執行 npm run build:teach
  */
 const TEACH_DATA = {
   "1": {
@@ -45465,6 +45465,3 @@ const TEACH_DATA = {
     ]
   }
 };
-
-// Expose to window for React bridge
-if (typeof window !== 'undefined') window.TEACH_DATA = TEACH_DATA;

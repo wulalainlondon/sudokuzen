@@ -50,15 +50,15 @@ describe('teach store state machine', () => {
     };
   });
 
-  it('opens teach and enters stepping flow', () => {
-    const ok = useTeachStore.getState().openTeach(1);
+  it('opens teach and enters stepping flow', async () => {
+    const ok = await useTeachStore.getState().openTeach(1);
     expect(ok).toBe(true);
     expect(useTeachStore.getState().flow).toBe('stepping');
     expect(useTeachStore.getState().open).toBe(true);
   });
 
-  it('can finish practice and produce success result + persistence', () => {
-    useTeachStore.getState().openTeach(1);
+  it('can finish practice and produce success result + persistence', async () => {
+    await useTeachStore.getState().openTeach(1);
     useTeachStore.getState().startPractice();
     useTeachStore.getState().toggleSelection(2, 4);
     useTeachStore.getState().submitPractice();
@@ -68,8 +68,8 @@ describe('teach store state machine', () => {
     expect(localStorage.getItem('sudoku_practice_done')).toContain('1');
   });
 
-  it('hint level 3 auto reveals answer', () => {
-    useTeachStore.getState().openTeach(1);
+  it('hint level 3 auto reveals answer', async () => {
+    await useTeachStore.getState().openTeach(1);
     useTeachStore.getState().startPractice();
     useTeachStore.getState().showHint();
     useTeachStore.getState().showHint();

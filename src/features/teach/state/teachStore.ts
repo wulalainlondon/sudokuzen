@@ -6,7 +6,7 @@ import type {
   TeachLaunchSource,
   TeachModuleModel,
 } from '../../../entities/teach';
-import { getTeachModuleByStars } from '../lib/teachDataAdapter';
+import { fetchTeachModule } from '../lib/teachDataAdapter';
 
 type TeachStore = {
   flow: TeachFlowState;
@@ -17,7 +17,7 @@ type TeachStore = {
   stepIndex: number;
   practiceIndex: number;
   practice: PracticeSessionState;
-  openTeach: (stars: string | number, source?: TeachLaunchSource) => boolean;
+  openTeach: (stars: string | number, source?: TeachLaunchSource) => Promise<boolean>;
   closeTeach: () => void;
   startStepping: () => void;
   nextStep: () => void;
@@ -90,9 +90,9 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
   practiceIndex: 0,
   practice: createPracticeState(),
 
-  openTeach: (stars, source = 'tier') => {
+  openTeach: async (stars, source = 'tier') => {
     set({ flow: 'loading', open: true, stars: Number(stars), launchSource: source });
-    const module = getTeachModuleByStars(stars);
+    const module = await fetchTeachModule(stars);
     if (!module) {
       set({ flow: 'idle', open: false, stars: null, module: null, launchSource: 'tier' });
       return false;

@@ -1,12 +1,13 @@
-const CACHE_VERSION = '2026.03.27-V37';
+const CACHE_VERSION = '2026.03.27-V38';
 const CACHE_NAME = `sudoku-zen-${CACHE_VERSION}`;
 const ASSETS = [
   './',
   'index.html',
   'style.css',
   'manifest.json',
+  'mid_pool.js',
   'levels.js',
-  'techniques.js',
+  'teach/manifest.json',
   'firebase-config.js',
   'icon-192.png',
   'icon-512.png',
@@ -39,11 +40,12 @@ self.addEventListener('fetch', (event) => {
   // Never cache the service worker itself
   if (url.pathname.endsWith('sw.js')) return;
 
-  // Core pages + JS/CSS bundles: network-first (ensures updates arrive)
+  // Core pages + JS/CSS + teach manifest: network-first (ensures updates arrive)
   const isNetworkFirst = url.pathname.endsWith('/')
     || url.pathname.endsWith('index.html')
     || url.pathname.endsWith('.js')
-    || url.pathname.endsWith('.css');
+    || url.pathname.endsWith('.css')
+    || url.pathname.endsWith('teach/manifest.json');
 
   if (isNetworkFirst) {
     event.respondWith(

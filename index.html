@@ -18,6 +18,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0984E3">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Sudoku Zen">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -336,10 +337,9 @@
     <script src="firebase-config.local.js"></script>
     <script src="mid_pool.js"></script>
     <script src="levels.js"></script>
-    <script src="techniques.js"></script>
+    <!-- techniques.js removed — teach data now lazy-loads via shards (public/teach/*.json) -->
     <script>
       // Expose script-tag globals to window for React bridge access
-      if (typeof TEACH_DATA !== 'undefined') window.TEACH_DATA = TEACH_DATA;
       if (typeof levels !== 'undefined') window.levels = levels;
       if (typeof midPool !== 'undefined') window.midPool = midPool;
     </script>

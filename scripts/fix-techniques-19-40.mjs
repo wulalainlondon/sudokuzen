@@ -11,12 +11,9 @@
  * 3. For 19-25: expand notes to show relevant cells from proof chain
  * 4. For 26-40: use the example board+notes as practice base (same approach as 1-18 fix)
  */
-import fs from 'fs';
-import { writeTeachData } from './lib/writeTeachData.mjs';
+import { readTeachData, writeTeachData } from './lib/writeTeachData.mjs';
 
-const code = fs.readFileSync('techniques.js', 'utf8');
-const fn = new Function(code + '; return TEACH_DATA;');
-const TD = fn();
+const TD = readTeachData();
 
 function extractCellRefs(text) {
   const refs = [];

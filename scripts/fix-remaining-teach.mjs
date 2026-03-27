@@ -4,15 +4,13 @@
  * 2. Fix focusCells progression for 19-22, 25 (currently static)
  */
 import fs from 'fs';
-import { writeTeachData } from './lib/writeTeachData.mjs';
+import { readTeachData, writeTeachData } from './lib/writeTeachData.mjs';
 
 const levelsCode = fs.readFileSync('levels.js', 'utf8');
 const levelsFn = new Function(levelsCode + '; return levels;');
 const levels = levelsFn();
 
-const techCode = fs.readFileSync('techniques.js', 'utf8');
-const techFn = new Function(techCode + '; return TEACH_DATA;');
-const TD = techFn();
+const TD = readTeachData();
 
 function getCandidates(board, idx) {
   if (board[idx] !== 0) return [];

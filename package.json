@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "sync:version": "node scripts/sync-version.mjs",
+    "build:teach": "node scripts/build-teach.mjs",
+    "validate:teach": "node scripts/validate-teach-data.mjs",
     "dev": "npm run sync:version && vite",
-    "build": "npm run sync:version && vite build",
-    "build:firebase": "DEPLOY_TARGET=firebase npm run build && node scripts/prepare-pages-dist.mjs",
+    "build": "npm run sync:version && npm run validate:teach && npm run build:teach && vite build",
+    "build:firebase": "DEPLOY_TARGET=firebase npm run build && node scripts/prepare-pages-dist.mjs && node scripts/smoke-test.mjs",
+    "smoke": "node scripts/smoke-test.mjs",
     "deploy:preview": "npm run build:firebase && npx firebase hosting:channel:deploy web-preview --project sudokuzen-f2aa3",
     "deploy:live": "npm run build:firebase && npx firebase deploy --only hosting --project sudokuzen-f2aa3",
     "typecheck": "tsc --noEmit",
@@ -16,7 +19,7 @@
     "format": "prettier --write 'src/**/*.{ts,tsx}' 'tests/**/*.ts'",
     "format:check": "prettier --check 'src/**/*.{ts,tsx}' 'tests/**/*.ts'",
     "test": "npm run sync:version && vitest run",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm test"
+    "check": "npm run validate:teach && npm run typecheck && npm run lint && npm run format:check && npm test"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [

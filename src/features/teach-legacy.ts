@@ -3,7 +3,8 @@
 
 import { gs } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
-import { getTeachData } from '../data/dataRegistry';
+import { getTeachData, getTeachManifest, getTeachShard, hasTeachModule } from '../data/dataRegistry';
+import type { TeachModuleMeta } from '../data/dataRegistry';
 
 // ── Tech name mapping ─────────────────────────────────────────────
 
@@ -75,21 +76,40 @@ const GROUPS = [
 // ── Library functions ─────────────────────────────────────────────
 
 export function isTeachReadable(stars: number | string): boolean {
-  const td = getTeachData();
-  if (!td) return false;
-  const t = td[stars];
-  return !!(t && t.name && t.subtitle && t.example && Array.isArray(t.example.steps) && t.example.steps.length > 0);
+  return hasTeachModule(stars);
 }
 
-export function getLibraryItemsFromTeachData(): { book: number; key: string; teach: any }[] {
+export type LibraryItem = { book: number; key: string; teach: TeachModuleMeta };
+
+export function getLibraryItemsFromTeachData(): LibraryItem[] {
+  // Try manifest first (Phase 3 — no full blob needed)
+  // Falls back to full blob for backwards compat
   const td = getTeachData();
-  if (!td || Object.keys(td).length === 0) return [];
+  const entries: [string, TeachModuleMeta][] = [];
+
+  if (td && Object.keys(td).length > 0) {
+    // Full blob path (backwards compat)
+    for (const [k, v] of Object.entries(td)) {
+      entries.push([
+        k,
+        {
+          technique: (v as any).technique ?? '',
+          name: (v as any).name ?? '',
+          subtitle: (v as any).subtitle ?? '',
+          hasPractice: Array.isArray((v as any).practice) && (v as any).practice.length > 0,
+          size: 0,
+        },
+      ]);
+    }
+  }
+
+  if (entries.length === 0) return [];
 
   const orderIndex = new Map(LEARNING_ORDER.map((id, idx) => [id, idx]));
 
-  return Object.entries(td)
+  return entries
     .map(([book, teach]) => ({ book: parseFloat(book), key: String(book), teach }))
-    .filter((item) => Number.isFinite(item.book) && isTeachReadable(item.key))
+    .filter((item) => Number.isFinite(item.book))
     .sort((a, b) => {
       const ai = orderIndex.has(a.book) ? orderIndex.get(a.book)! : Number.MAX_SAFE_INTEGER;
       const bi = orderIndex.has(b.book) ? orderIndex.get(b.book)! : Number.MAX_SAFE_INTEGER;
@@ -98,16 +118,35 @@ export function getLibraryItemsFromTeachData(): { book: number; key: string; tea
     });
 }
 
-export function getLibraryLearningGroups(items: { book: number; key: string; teach: any }[]) {
+/** Async version — uses manifest for library rendering without full blob. */
+export async function getLibraryItemsAsync(): Promise<LibraryItem[]> {
+  // Try sync first (full blob already loaded)
+  const syncItems = getLibraryItemsFromTeachData();
+  if (syncItems.length > 0) return syncItems;
+
+  // Fall back to manifest
+  const manifest = await getTeachManifest();
+  if (!manifest) return [];
+
+  const orderIndex = new Map(LEARNING_ORDER.map((id, idx) => [id, idx]));
+
+  return Object.entries(manifest.modules)
+    .map(([book, teach]) => ({ book: parseFloat(book), key: String(book), teach }))
+    .filter((item) => Number.isFinite(item.book))
+    .sort((a, b) => {
+      const ai = orderIndex.has(a.book) ? orderIndex.get(a.book)! : Number.MAX_SAFE_INTEGER;
+      const bi = orderIndex.has(b.book) ? orderIndex.get(b.book)! : Number.MAX_SAFE_INTEGER;
+      if (ai !== bi) return ai - bi;
+      return a.book - b.book;
+    });
+}
+
+export function getLibraryLearningGroups(items: LibraryItem[]) {
   const byId = new Map(items.map((item) => [item.book, item]));
   const used = new Set<number>();
 
   const groups = GROUPS.map((group) => {
-    const groupItems = group.ids.map((id) => byId.get(id)).filter(Boolean) as {
-      book: number;
-      key: string;
-      teach: any;
-    }[];
+    const groupItems = group.ids.map((id) => byId.get(id)).filter(Boolean) as LibraryItem[];
     groupItems.forEach((item) => used.add(item.book));
     return { ...group, items: groupItems };
   }).filter((group) => group.items.length > 0);
@@ -138,7 +177,19 @@ export function getTeachStageLabel(stars: number | string): string {
 
 export function renderLibraryCards(): void {
   if (!gs.libraryListEl) return;
-  const items = getLibraryItemsFromTeachData();
+
+  // Try sync first, fall back to async manifest
+  const syncItems = getLibraryItemsFromTeachData();
+  if (syncItems.length > 0) {
+    renderLibraryCardsFromItems(syncItems);
+  } else {
+    gs.libraryListEl.innerHTML = '<div class="library-empty">載入秘笈目錄…</div>';
+    getLibraryItemsAsync().then((items) => renderLibraryCardsFromItems(items));
+  }
+}
+
+function renderLibraryCardsFromItems(items: LibraryItem[]): void {
+  if (!gs.libraryListEl) return;
   const read = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
 
   if (!items.length) {
@@ -154,7 +205,6 @@ export function renderLibraryCards(): void {
       const cardsHtml = group.items
         .map(({ book, key, teach }) => {
           const isRead = !!read[key];
-          const hasPractice = Array.isArray(teach.practice) && teach.practice.length > 0;
           const orderNo = orderIndex.get(book) || '-';
           const stage = getTeachStageLabel(book);
           return `
@@ -165,7 +215,7 @@ export function renderLibraryCards(): void {
                 <span class="library-star">#${orderNo} ・秘笈 ${book} ・${stage}</span>
                 <div class="library-badges">
                     ${isRead ? '<span class="library-badge read">已讀</span>' : ''}
-                    ${hasPractice ? '<span class="library-badge practice">可練習</span>' : ''}
+                    ${teach.hasPractice ? '<span class="library-badge practice">可練習</span>' : ''}
                 </div>
             </div>
             <h3 class="library-card-title">${teach.name}</h3>
@@ -215,12 +265,22 @@ export function openTeachFromLibrary(stars: string | number): void {
 // ── Teach modal functions ─────────────────────────────────────────
 
 export function showTeachModal(stars: number | string, source = 'tier'): void {
+  // Try sync blob first, then lazy shard
   const td = getTeachData();
-  if (!td) return;
-  const data = td[stars];
-  if (!data) return;
+  const syncData = td?.[stars];
+  if (syncData) {
+    renderTeachModalContent(syncData, stars, source);
+  } else {
+    // Async fallback: fetch shard on demand
+    getTeachShard(stars).then((data) => {
+      if (data) renderTeachModalContent(data, stars, source);
+    });
+  }
+}
 
+function renderTeachModalContent(data: any, stars: number | string, source: string): void {
   gs.teachData = data;
+  gs.teachStarsKey = String(stars);
   gs.teachLaunchSource = source;
   const stage = getTeachStageLabel(stars);
 
@@ -250,18 +310,13 @@ export function hideTeachModal(returnToLibrary = true): void {
   document.getElementById('teach-modal')!.classList.remove('show');
 
   // Mark as read
-  if (gs.teachData) {
-    const td = getTeachData();
+  if (gs.teachStarsKey) {
     const read = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
-    for (const [s, d] of Object.entries(td)) {
-      if (d === gs.teachData) {
-        read[s] = true;
-        break;
-      }
-    }
+    read[gs.teachStarsKey] = true;
     writeJson(SK.TEACH_READ, read);
   }
   gs.teachData = null;
+  gs.teachStarsKey = null;
 
   if (returnToLibrary && gs.teachLaunchSource === 'library') {
     renderLibraryCards();
@@ -387,8 +442,7 @@ export function applyTeachHighlights(step: any): void {
 }
 
 export function shouldShowTeach(stars: number | string): boolean {
-  const td = getTeachData();
-  if (!td || !td[stars]) return false;
+  if (!hasTeachModule(stars)) return false;
   const read = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
   return !read[String(stars)];
 }
@@ -404,18 +458,9 @@ export function startPractice(): void {
   // Practice should not keep the library overlay mounted behind modals
   closeLibraryOverlay();
 
-  // Save ref before hideTeachModal clears it
+  // Save refs before hideTeachModal clears them
   const td = gs.teachData;
-
-  // Find which stars this teachData belongs to
-  const teachDataMap = getTeachData();
-  let stars: number | null = null;
-  for (const [s, d] of Object.entries(teachDataMap)) {
-    if (d === td) {
-      stars = parseFloat(s);
-      break;
-    }
-  }
+  const stars = gs.teachStarsKey ? parseFloat(gs.teachStarsKey) : null;
   hideTeachModal(false);
 
   // Pick a random puzzle
