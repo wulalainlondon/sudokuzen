@@ -17,7 +17,7 @@ import { renderGrid, updateCellDisplay, selectCell, getUnitIndices, isUnitComple
 import { startTimer } from './timer';
 import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
 import { recalculatePlayerFilledCount, updateGhostProgressUI } from '../features/ghost';
-import { checkAllAchievements, unlockAchievement } from '../features/stats';
+import { checkAllAchievements, unlockAchievement, recordElimination } from '../features/stats';
 
 // Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
 async function callDuoProgress() {
@@ -51,6 +51,7 @@ function eliminateNoteFromPeers(idx: number, digit: number): void {
       cell.notes.splice(ni, 1);
       updateCellDisplay(gs.gridEl!.children[p] as HTMLElement, cell);
       recordAction('eliminate', `${cellLabel(p)} 消去候選 ${digit}`, p, digit, cell.notes);
+      recordElimination();
     }
   }
 }

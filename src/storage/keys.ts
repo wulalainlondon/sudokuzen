@@ -15,6 +15,12 @@ export const SK = {
   DUO_RECORDS: 'sudoku_duo_records',
   APP_VERSION: 'sudoku_app_version',
   STORAGE_VERSION: 'sudoku_storage_version',
+  TOTAL_ELIMINATIONS: 'sudoku_total_eliminations',
+  CLEAN_STREAK: 'sudoku_clean_streak',
+  S_GRADE_COUNT: 'sudoku_s_grade_count',
+  S_GRADE_STREAK: 'sudoku_s_grade_streak',
+  REPLAY_WATCH_COUNT: 'sudoku_replay_watch_count',
+  TECHNIQUES_USED: 'sudoku_techniques_used',
 
   /** Returns the save-game key for a given level id. */
   save(levelId: number, speedrun: boolean): string {

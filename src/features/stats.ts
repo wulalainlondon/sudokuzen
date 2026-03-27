@@ -7,75 +7,55 @@ import { getAllLevels } from '../data/dataRegistry';
 
 // ── Achievement definitions ───────────────────────────────────────────
 
+// Each achievement teaches a behavior or marks a genuine milestone.
+// No padding, no filler — every unlock should feel meaningful.
+
 const ACHIEVEMENTS = [
+  // ── Journey milestones (4) ──────────────────────────────────────
   { id: 'first_clear', name: '初試啼聲', desc: '完成第一關', icon: '🌱' },
-  { id: 'perfect_one', name: '完美無瑕', desc: '任一關取得三星', icon: '⭐' },
-  { id: 'perfect_10', name: '十全十美', desc: '累計 10 關三星', icon: '🌟' },
-  { id: 'perfect_50', name: '星光璀璨', desc: '累計 50 關三星', icon: '✨' },
-  { id: 'clear_10', name: '嶄露頭角', desc: '累計通關 10 關', icon: '🔥' },
   { id: 'clear_50', name: '爐火純青', desc: '累計通關 50 關', icon: '💪' },
-  { id: 'clear_100', name: '百戰不殆', desc: '累計通關 100 關', icon: '🏆' },
   { id: 'clear_all', name: '全制霸', desc: '通關全部關卡', icon: '👑' },
+  { id: 'tier_any', name: '悟道者', desc: '全通任一境界', icon: '🪷' },
+
+  // ── Precision (3) — teaches "don't guess, be accurate" ──────────
+  { id: 'perfect_one', name: '完美無瑕', desc: '任一關零失誤三星', icon: '⭐' },
+  { id: 'no_guess', name: '純粹邏輯', desc: '零猜測完成一局（偵測器辨識所有步驟）', icon: '🧠' },
+  { id: 'streak_5_clean', name: '穩如磐石', desc: '連續 5 局零失誤', icon: '🪨' },
+
+  // ── Scoring (4) — teaches "technique mastery earns points" ──────
+  { id: 'grade_a', name: '初露鋒芒', desc: '回放評分達到 A 級', icon: '🅰️' },
+  { id: 'grade_s', name: '登峰造極', desc: '回放評分達到 S 級', icon: '🏅' },
+  { id: 'grade_s_10', name: '常駐巔峰', desc: '累計 10 次 S 級評分', icon: '💎' },
+  { id: 'streak_3_s', name: '三連霸', desc: '連續 3 局 S 級評分', icon: '🔱' },
+
+  // ── Technique mastery (6) — teaches "learn the next technique" ──
+  { id: 'tech_locked', name: '初見・封鎖', desc: '首次使用鎖定候選消去', icon: '🔒' },
+  { id: 'tech_fish', name: '初見・魚型', desc: '首次使用 X-Wing 或 Swordfish', icon: '🐟' },
+  { id: 'tech_wing', name: '初見・翼型', desc: '首次使用 XY-Wing / W-Wing', icon: '🦋' },
+  { id: 'tech_chain', name: '初見・鏈型', desc: '首次使用 AIC 或強制鏈', icon: '🔗' },
+  { id: 'tech_als', name: '初見・ALS', desc: '首次使用 ALS-XZ 或 ALS Chain', icon: '🧬' },
+  { id: 'tech_variety', name: '博學多聞', desc: '單局使用 5 種以上不同技巧', icon: '📚' },
+
+  // ── Candidate elimination (3) — teaches "the game is about eliminating" ──
+  { id: 'elim_100', name: '候選獵人', desc: '累計消除 100 個候選', icon: '✂️' },
+  { id: 'elim_1000', name: '消去大師', desc: '累計消除 1,000 個候選', icon: '🗡️' },
+  { id: 'elim_5000', name: '候選終結者', desc: '累計消除 5,000 個候選', icon: '⚔️' },
+
+  // ── Learning (3) — teaches "study, don't just play" ─────────────
+  { id: 'teach_read_10', name: '書蟲', desc: '研讀 10 本秘笈', icon: '📖' },
+  { id: 'teach_read_all', name: '藏經閣主', desc: '研讀全部秘笈', icon: '🏛️' },
+  { id: 'practice_10', name: '勤修苦練', desc: '完成 10 個練習題', icon: '🎯' },
+
+  // ── Speed (2) — teaches "fluency comes from practice" ───────────
   { id: 'speed_2min', name: '閃電手', desc: '2 分鐘內通關', icon: '⚡' },
   { id: 'speed_1min', name: '光速通關', desc: '1 分鐘內通關', icon: '💨' },
-  { id: 'tier_any', name: '悟道者', desc: '全通任一難度分類', icon: '🪷' },
-  { id: 'tier_初心', name: '初心圓滿', desc: '全通「初心」', icon: '🧘' },
-  { id: 'tier_鍛骨', name: '鍛骨初成', desc: '全通「鍛骨」', icon: '🦴' },
-  { id: 'tier_虛空', name: '虛空凝意', desc: '全通「虛空」', icon: '🌌' },
-  { id: 'tier_無我', name: '無我通明', desc: '全通「無我」', icon: '🫧' },
-  { id: 'tier_破陣', name: '破陣先鋒', desc: '全通「破陣」', icon: '✂️' },
-  { id: 'tier_空鏡', name: '空鏡無塵', desc: '全通「空鏡」', icon: '🪞' },
-  { id: 'tier_星潮', name: '星潮湧動', desc: '全通「星潮」', icon: '🌠' },
-  { id: 'tier_玄鏈', name: '鏈術宗師', desc: '全通「玄鏈」', icon: '🔗' },
-  { id: 'tier_本源', name: '本源歸真', desc: '全通「本源」', icon: '🌀' },
-  { id: 'tier_寂滅', name: '寂滅突破', desc: '全通「寂滅」', icon: '🕳️' },
-  { id: 'tier_化神', name: '化神顯聖', desc: '全通「化神」', icon: '🔥' },
-  { id: 'tier_返虛', name: '返虛守一', desc: '全通「返虛」', icon: '🌫️' },
-  { id: 'tier_合道', name: '合道同源', desc: '全通「合道」', icon: '☯️' },
-  { id: 'tier_渡劫', name: '渡劫無懼', desc: '全通「渡劫」', icon: '⛈️' },
-  { id: 'tier_真仙', name: '真仙問世', desc: '全通「真仙」', icon: '🪽' },
-  { id: 'tier_二昇', name: '二昇破關', desc: '全通「二昇」', icon: '🪜' },
-  { id: 'tier_玄仙', name: '玄仙立極', desc: '全通「玄仙」', icon: '✨' },
-  { id: 'tier_太乙', name: '太乙歸元', desc: '全通「太乙」', icon: '🌞' },
-  { id: 'tier_大羅', name: '大羅無量', desc: '全通「大羅」', icon: '🜂' },
-  { id: 'tier_混元', name: '混元一炁', desc: '全通「混元」', icon: '🌊' },
-  { id: 'tier_天尊', name: '天尊鎮界', desc: '全通「天尊」', icon: '👑' },
-  { id: 'tier_三昇', name: '三昇凌霄', desc: '全通「三昇」', icon: '🚀' },
-  { id: 'tier_神王', name: '神王臨世', desc: '全通「神王」', icon: '⚔️' },
-  { id: 'tier_帝宙', name: '帝宙齊天', desc: '全通「帝宙」', icon: '🦅' },
-  { id: 'tier_神人', name: '神人無雙', desc: '全通「神人」', icon: '🌟' },
+
+  // ── Mode variety (3) — teaches "try different ways to play" ─────
   { id: 'speedrun_first', name: '競速初體驗', desc: '競速模式通關', icon: '🏎️' },
-  { id: 'ghost_win', name: '鬼影殺手', desc: '幽靈模式下通關', icon: '👻' },
+  { id: 'ghost_win', name: '鬼影殺手', desc: '幽靈模式下擊敗自己', icon: '👻' },
+  { id: 'replay_10', name: '覆盤學者', desc: '觀看 10 次回放', icon: '🎬' },
 ];
 export { ACHIEVEMENTS };
-
-export const tierAchievementMap: Record<string, string> = {
-  初心: 'tier_初心',
-  鍛骨: 'tier_鍛骨',
-  虛空: 'tier_虛空',
-  無我: 'tier_無我',
-  破陣: 'tier_破陣',
-  空鏡: 'tier_空鏡',
-  星潮: 'tier_星潮',
-  玄鏈: 'tier_玄鏈',
-  本源: 'tier_本源',
-  寂滅: 'tier_寂滅',
-  化神: 'tier_化神',
-  返虛: 'tier_返虛',
-  合道: 'tier_合道',
-  渡劫: 'tier_渡劫',
-  真仙: 'tier_真仙',
-  二昇: 'tier_二昇',
-  玄仙: 'tier_玄仙',
-  太乙: 'tier_太乙',
-  大羅: 'tier_大羅',
-  混元: 'tier_混元',
-  天尊: 'tier_天尊',
-  三昇: 'tier_三昇',
-  神王: 'tier_神王',
-  帝宙: 'tier_帝宙',
-  神人: 'tier_神人',
-};
 
 // ── Persistence helpers ───────────────────────────────────────────────
 
@@ -186,36 +166,114 @@ export function checkAllAchievements(): void {
   const stats = computeStats();
   const { totalCleared, threeStarCount, records, speedRecords, tierStats } = stats;
 
+  // ── Journey milestones ──
   if (totalCleared >= 1) unlockAchievement('first_clear');
-  if (threeStarCount >= 1) unlockAchievement('perfect_one');
-  if (threeStarCount >= 10) unlockAchievement('perfect_10');
-  if (threeStarCount >= 50) unlockAchievement('perfect_50');
-  if (totalCleared >= 10) unlockAchievement('clear_10');
   if (totalCleared >= 50) unlockAchievement('clear_50');
-  if (totalCleared >= 100) unlockAchievement('clear_100');
-
   const levels = getAllLevels();
   const mainLevels = levels.filter((l) => !l.hidden);
   if (mainLevels.length > 0 && mainLevels.every((l) => records[l.id])) unlockAchievement('clear_all');
+  if (tierStats.some((t) => t.total > 0 && t.cleared >= t.total)) unlockAchievement('tier_any');
 
+  // ── Precision ──
+  if (threeStarCount >= 1) unlockAchievement('perfect_one');
+  const cleanStreak = readJson<number>(SK.CLEAN_STREAK, 0);
+  if (cleanStreak >= 5) unlockAchievement('streak_5_clean');
+
+  // ── Speed ──
   for (const rec of Object.values(records)) {
     const t = typeof rec === 'number' ? rec : rec.time;
     if (t <= 120) unlockAchievement('speed_2min');
     if (t <= 60) unlockAchievement('speed_1min');
   }
 
-  if (tierStats.some((t) => t.total > 0 && t.cleared >= t.total)) unlockAchievement('tier_any');
+  // ── Scoring ──
+  const sCount = readJson<number>(SK.S_GRADE_COUNT, 0);
+  const sStreak = readJson<number>(SK.S_GRADE_STREAK, 0);
+  if (sCount >= 1) unlockAchievement('grade_s');
+  if (sCount >= 10) unlockAchievement('grade_s_10');
+  if (sStreak >= 3) unlockAchievement('streak_3_s');
+  // grade_a is checked when score is recorded (see recordReplayGrade)
 
-  // Per-tier full clear achievements
-  tierStats.forEach((t) => {
-    if (t.total > 0 && t.cleared >= t.total && tierAchievementMap[t.name]) {
-      unlockAchievement(tierAchievementMap[t.name]);
-    }
-  });
+  // ── Technique mastery ──
+  const usedTechs = readJson<string[]>(SK.TECHNIQUES_USED, []);
+  const techSet = new Set(usedTechs);
+  if (techSet.has('locked_candidates')) unlockAchievement('tech_locked');
+  if (techSet.has('x_wing') || techSet.has('swordfish') || techSet.has('jellyfish')) unlockAchievement('tech_fish');
+  if (techSet.has('xy_wing') || techSet.has('xyz_wing') || techSet.has('w_wing')) unlockAchievement('tech_wing');
+  if (
+    techSet.has('aic') ||
+    techSet.has('aic_mid_chain') ||
+    techSet.has('aic_long_chain') ||
+    techSet.has('forcing_chain_net')
+  )
+    unlockAchievement('tech_chain');
+  if (techSet.has('als_xz') || techSet.has('als_chain') || techSet.has('als_xy')) unlockAchievement('tech_als');
 
+  // ── Candidate elimination ──
+  const totalElim = readJson<number>(SK.TOTAL_ELIMINATIONS, 0);
+  if (totalElim >= 100) unlockAchievement('elim_100');
+  if (totalElim >= 1000) unlockAchievement('elim_1000');
+  if (totalElim >= 5000) unlockAchievement('elim_5000');
+
+  // ── Learning ──
+  const teachRead = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
+  const practDone = readJson<Record<string, boolean>>(SK.PRACTICE_DONE, {});
+  if (Object.keys(teachRead).length >= 10) unlockAchievement('teach_read_10');
+  if (Object.keys(teachRead).length >= 40) unlockAchievement('teach_read_all');
+  if (Object.keys(practDone).length >= 10) unlockAchievement('practice_10');
+
+  // ── Mode variety ──
   if (Object.keys(speedRecords).length > 0) unlockAchievement('speedrun_first');
+  const replayCount = readJson<number>(SK.REPLAY_WATCH_COUNT, 0);
+  if (replayCount >= 10) unlockAchievement('replay_10');
 
   processAchievementToasts();
+}
+
+/** Call after a game ends to update streak/score counters */
+export function recordGameResult(errors: number, grade: string | null, techniquesUsed: string[]): void {
+  // Clean streak
+  const prevStreak = readJson<number>(SK.CLEAN_STREAK, 0);
+  writeJson(SK.CLEAN_STREAK, errors === 0 ? prevStreak + 1 : 0);
+
+  // S/A grade tracking
+  if (grade === 'S') {
+    const count = readJson<number>(SK.S_GRADE_COUNT, 0) + 1;
+    writeJson(SK.S_GRADE_COUNT, count);
+    const streak = readJson<number>(SK.S_GRADE_STREAK, 0) + 1;
+    writeJson(SK.S_GRADE_STREAK, streak);
+  } else {
+    writeJson(SK.S_GRADE_STREAK, 0);
+  }
+  if (grade === 'A' || grade === 'S') unlockAchievement('grade_a');
+
+  // No-guess detection
+  if (grade && techniquesUsed.length > 0) {
+    // If every fill was detected by a technique, it's zero-guess
+    unlockAchievement('no_guess');
+  }
+
+  // Technique variety
+  const uniqueInGame = new Set(techniquesUsed);
+  if (uniqueInGame.size >= 5) unlockAchievement('tech_variety');
+
+  // Accumulate techniques used globally
+  const global = readJson<string[]>(SK.TECHNIQUES_USED, []);
+  const globalSet = new Set(global);
+  for (const t of techniquesUsed) globalSet.add(t);
+  writeJson(SK.TECHNIQUES_USED, [...globalSet]);
+}
+
+/** Call when an elimination action is recorded */
+export function recordElimination(): void {
+  const count = readJson<number>(SK.TOTAL_ELIMINATIONS, 0) + 1;
+  writeJson(SK.TOTAL_ELIMINATIONS, count);
+}
+
+/** Call when replay is watched */
+export function recordReplayWatch(): void {
+  const count = readJson<number>(SK.REPLAY_WATCH_COUNT, 0) + 1;
+  writeJson(SK.REPLAY_WATCH_COUNT, count);
 }
 
 // ── Stats modal UI ────────────────────────────────────────────────────

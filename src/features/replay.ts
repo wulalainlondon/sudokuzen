@@ -4,7 +4,8 @@ import { gs } from '../game/state';
 import { formatSeconds } from '../game/utils';
 import { getAllLevels } from '../data/dataRegistry';
 import { detectTechnique } from '../solver/techniqueDetector';
-import { computeReplayScore, type ReplayScore } from '../solver/scoring';
+import { computeReplayScore } from '../solver/scoring';
+import { recordReplayWatch } from './stats';
 
 const RB_BASE_INTERVAL = 700;
 
@@ -69,6 +70,7 @@ export function renderReplayList(): void {
 
 export function openReplayModal(): void {
   if (!gs.replayModalEl) return;
+  recordReplayWatch();
   gs.replayFilter = 'all';
   syncReplayFilterButtons();
   renderReplayList();
