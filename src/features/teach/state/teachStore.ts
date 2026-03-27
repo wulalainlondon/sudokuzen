@@ -26,6 +26,7 @@ type TeachStore = {
   submitPractice: () => void;
   revealPractice: () => void;
   showHint: () => void;
+  retryPractice: () => void;
   backToSteps: () => void;
 };
 
@@ -207,17 +208,38 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     }
 
     if (wrongCount === 0 && missingCount > 0) {
+      // Partial: tell the user which REGION to look at
+      const missingKeys = [...correctSet].filter((k) => !selectedSet.has(k));
+      const missingCells = missingKeys.map((k) => parseInt(k.split(':')[0]));
+      const regions = new Set<string>();
+      for (const c of missingCells) {
+        const r = Math.floor(c / 9);
+        const col = c % 9;
+        const box = Math.floor(r / 3) * 3 + Math.floor(col / 3);
+        regions.add(`R${r + 1}`);
+        regions.add(`C${col + 1}`);
+        regions.add(`Box${box + 1}`);
+      }
+      const hint = regions.size <= 3 ? `，留意 ${[...regions].slice(0, 2).join('、')} 附近` : '';
       set({
         flow: 'practice',
         practice: {
           ...practice,
           success: false,
           tone: 'partial',
-          message: `還有 ${missingCount} 個候選數可以消去`,
+          message: `還有 ${missingCount} 個候選數可以消去${hint}`,
         },
       });
       return;
     }
+
+    // Error: explain which selections were wrong and why
+    const wrongKeys = [...selectedSet].filter((k) => !correctSet.has(k));
+    const wrongDescs = wrongKeys.slice(0, 2).map((k) => {
+      const [c, d] = k.split(':').map(Number);
+      return `R${Math.floor(c / 9) + 1}C${(c % 9) + 1} 的 ${d}`;
+    });
+    const wrongMsg = wrongDescs.join('、') + ' 不應消去 — 該候選仍有存在的可能';
 
     const cleaned = new Set([...selectedSet].filter((k) => correctSet.has(k)));
     set({
@@ -227,7 +249,7 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
         selected: cleaned,
         success: false,
         tone: 'error',
-        message: '有些消去不正確',
+        message: wrongMsg,
       },
     });
   },
@@ -240,11 +262,15 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     const nextHint = practice.hintLevel + 1;
 
     if (nextHint === 1) {
+      // Technique-specific hint based on module name
+      const { module: mod } = get();
+      const techName = mod?.name || '技巧';
+      const techHint = mod?.subtitle || '觀察候選數之間的關係';
       set({
         practice: {
           ...practice,
           hintLevel: nextHint,
-          message: '提示：先觀察藍色關鍵格。',
+          message: `提示（${techName}）：${techHint}。留意藍色高亮的關鍵格。`,
           tone: 'neutral',
         },
       });
@@ -252,11 +278,14 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     }
 
     if (nextHint === 2) {
+      // Full explanation from answer data
+      const explanation = formatPracticeExplanation(item.answer);
+      const fallback = item.answer.description || '觀察候選的關係鏈，找到可消去的候選。';
       set({
         practice: {
           ...practice,
           hintLevel: nextHint,
-          message: formatPracticeExplanation(item.answer) || '提示：觀察候選的關係鏈。',
+          message: explanation || fallback,
           tone: 'neutral',
         },
       });
@@ -283,6 +312,17 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
         message: formatPracticeExplanation(item.answer) || '答案已顯示',
       },
     });
+  },
+
+  retryPractice: () => {
+    const { module } = get();
+    const total = module?.practice.length ?? 0;
+    if (!total) return;
+    // Pick a different random puzzle if possible
+    const currentIdx = get().practiceIndex;
+    let idx = Math.floor(Math.random() * total);
+    if (total > 1 && idx === currentIdx) idx = (idx + 1) % total;
+    set({ flow: 'practice', practiceIndex: idx, practice: createPracticeState() });
   },
 
   backToSteps: () => {

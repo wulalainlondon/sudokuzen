@@ -41,6 +41,7 @@ export function TeachOverlay(): ReactElement {
     submitPractice,
     revealPractice,
     showHint,
+    retryPractice,
     backToSteps,
   } = useTeachStore();
 
@@ -157,10 +158,15 @@ export function TeachOverlay(): ReactElement {
                     ) : null}
                     {flow === 'result' ? (
                       <>
-                        <button className="practice-confirm-btn rz-focus-ring" onClick={backToSteps}>
+                        <button className="practice-reveal-btn rz-focus-ring" onClick={backToSteps}>
                           返回步驟
                         </button>
-                        <button className="practice-confirm-btn rz-focus-ring" onClick={closeTeach}>
+                        {(module?.practice.length ?? 0) > 0 ? (
+                          <button className="practice-confirm-btn rz-focus-ring" onClick={retryPractice}>
+                            再來一題
+                          </button>
+                        ) : null}
+                        <button className="practice-reveal-btn rz-focus-ring" onClick={closeTeach}>
                           關閉
                         </button>
                       </>
