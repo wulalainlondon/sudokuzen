@@ -45465,3 +45465,6 @@ const TEACH_DATA = {
     ]
   }
 };
+
+// Expose to window for React bridge
+if (typeof window \!== 'undefined') window.TEACH_DATA = TEACH_DATA;
