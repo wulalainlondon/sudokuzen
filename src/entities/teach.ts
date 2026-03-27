@@ -48,7 +48,7 @@ export type TeachModuleModel = {
   practice: PracticeItemModel[];
 };
 
-export type TeachFlowState = 'idle' | 'loading' | 'stepping' | 'practice' | 'result';
+export type TeachFlowState = 'idle' | 'loading' | 'demo' | 'stepping' | 'practice' | 'result';
 
 export type PracticeResultTone = 'success' | 'partial' | 'error' | 'neutral';
 

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, type ReactElement } from 'react';
 
 import { buildMotionPolicy } from '../../../shared/motion/policy';
 import { StepPulseCanvas } from '../../../shared/fx/StepPulseCanvas';
+import { DemoBoard } from './DemoBoard';
 import { PracticeBoard } from './PracticeBoard';
 import { TeachBoard } from './TeachBoard';
 import { useTeachStore } from '../state/teachStore';
@@ -34,6 +35,7 @@ export function TeachOverlay(): ReactElement {
     practiceIndex,
     practice,
     closeTeach,
+    startStepping,
     nextStep,
     prevStep,
     startPractice,
@@ -95,7 +97,9 @@ export function TeachOverlay(): ReactElement {
                       ))}
                     </div>
 
-                    {flow !== 'practice' ? (
+                    {flow === 'demo' && module ? <DemoBoard module={module} /> : null}
+
+                    {flow === 'stepping' ? (
                       <>
                         <TeachBoard example={module?.example ?? null} step={step} />
                         <p ref={stepTextRef} className="teach-step-text whitespace-pre-line">
@@ -136,6 +140,16 @@ export function TeachOverlay(): ReactElement {
                   </div>
 
                   <div className="mt-4 flex flex-wrap justify-end gap-2">
+                    {flow === 'demo' ? (
+                      <>
+                        <button className="teach-done-btn rz-focus-ring" onClick={closeTeach}>
+                          跳過
+                        </button>
+                        <button className="practice-confirm-btn rz-focus-ring" onClick={startStepping}>
+                          分解動作 →
+                        </button>
+                      </>
+                    ) : null}
                     {flow === 'stepping' ? (
                       <>
                         <button className="teach-done-btn rz-focus-ring" onClick={closeTeach}>

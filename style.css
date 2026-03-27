@@ -2939,6 +2939,50 @@ body.library-open {
 
 /* ── Teach shared animations ───────────────────────────────────── */
 
+/* ── Demo board (technique showcase) ───────────────────────────── */
+.demo-board-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.demo-technique-name {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 8px;
+    color: var(--accent-strong);
+    pointer-events: none;
+    z-index: 10;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    animation: demoNameFlash 1.2s var(--ease-zen) both;
+}
+@keyframes demoNameFlash {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(1.6); filter: blur(6px); }
+    20%  { opacity: 1; transform: translate(-50%, -50%) scale(0.95); filter: blur(0); }
+    60%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+
+.demo-elim-count {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--teach-elim-color);
+    letter-spacing: 2px;
+    animation: demoCountPop 0.5s var(--ease-zen) both;
+}
+@keyframes demoCountPop {
+    0%   { opacity: 0; transform: translateY(6px); }
+    50%  { opacity: 1; transform: translateY(-2px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
 /* Digit elimination: strike → hold → vanish (0.65s, ~200ms per phase) */
 @keyframes teach-elim-digit {
     0%   { opacity: 1; transform: scale(1); text-decoration: none; }

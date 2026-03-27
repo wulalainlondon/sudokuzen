@@ -19,6 +19,7 @@ type TeachStore = {
   practice: PracticeSessionState;
   openTeach: (stars: string | number, source?: TeachLaunchSource) => boolean;
   closeTeach: () => void;
+  startStepping: () => void;
   nextStep: () => void;
   prevStep: () => void;
   startPractice: () => void;
@@ -97,8 +98,10 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
       return false;
     }
 
+    // Start with demo if the technique has elimination steps
+    const hasElim = module.example?.steps.some((s) => s.eliminateCells.length > 0) ?? false;
     set({
-      flow: 'stepping',
+      flow: hasElim ? 'demo' : 'stepping',
       open: true,
       stars: Number(stars),
       launchSource: source,
@@ -108,6 +111,10 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
       practice: createPracticeState(),
     });
     return true;
+  },
+
+  startStepping: () => {
+    set({ flow: 'stepping', stepIndex: 0 });
   },
 
   closeTeach: () => {
