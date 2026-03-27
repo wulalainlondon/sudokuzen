@@ -885,6 +885,36 @@ header h1 {
 }
 
 /* Replay progress bar */
+/* Replay score display */
+.replay-score {
+    text-align: center;
+    padding: 8px 0;
+}
+.replay-score-grade {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    font-family: 'Outfit', sans-serif;
+}
+.replay-score-total {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 6px;
+}
+.replay-score-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.72rem;
+    color: var(--text-light);
+}
+.score-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 12px;
+}
+
 .replay-technique {
     display: block;
     font-size: 0.72rem;
