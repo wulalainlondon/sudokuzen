@@ -1,4 +1,5 @@
-// Cinematic technique demo — anticipation → strike → reward (~3.5s)
+// Cinematic technique demo — auto-plays: anticipation → strike → reward (~3.5s)
+// No user interaction needed. After completion, user can replay or proceed to stepping.
 
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import type { TeachModuleModel } from '../../../entities/teach';
@@ -24,7 +25,6 @@ export function DemoBoard({ module }: Props): ReactElement {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [phase, setPhase] = useState<DemoPhase>('idle');
   const [elimIdx, setElimIdx] = useState(-1);
-  const [awaitContinue, setAwaitContinue] = useState(false);
 
   const example = module.example;
 
@@ -81,7 +81,6 @@ export function DemoBoard({ module }: Props): ReactElement {
       .map((b) => ({ ...b, cells: b.cells.sort((a, b) => (a % 9) - (b % 9)) }))
       .filter((b) => b.cells.length >= 2)
       .sort((a, b) => {
-        // Prefer middle box (#4), then cells nearer board center.
         const centerBias = (bucket: RowBucket) =>
           Math.abs(Math.floor(bucket.row / 3) - 1) + Math.abs((bucket.box % 3) - 1);
         const aMid = a.box === 4 ? -2 : 0;
@@ -99,33 +98,30 @@ export function DemoBoard({ module }: Props): ReactElement {
       .sort((a, b) => (a % 9) - (b % 9));
 
     if (sourcePair.length < 2 || targetCells.length === 0) return null;
-    return {
-      digit,
-      sourcePair,
-      targetCells,
-      row: chosen.row,
-    };
+    return { digit, sourcePair, targetCells, row: chosen.row };
   }, [example, module.technique, eliminates]);
 
-  // ── Guided timeline: cinematic + reading checkpoints ──────────
+  // ── Auto-play timeline: ~3.5s total, no user interaction ──────
   useEffect(() => {
-    if (!example || elimCount === 0 || awaitContinue) return;
+    if (!example || elimCount === 0) return;
 
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
+    // Timeline: idle(0) → glow(200ms) → chain(600ms) → pause(1200ms) → name(1500ms) → eliminate(1700ms) → count → afterglow → done
     if (phase === 'idle') {
       timeoutId = setTimeout(() => setPhase('glow'), 200);
     } else if (phase === 'glow') {
-      timeoutId = setTimeout(() => {
-        setPhase('chain');
-        setAwaitContinue(true);
-      }, 360);
+      timeoutId = setTimeout(() => setPhase('chain'), 400);
+    } else if (phase === 'chain') {
+      timeoutId = setTimeout(() => setPhase('pause'), 600);
     } else if (phase === 'pause') {
+      timeoutId = setTimeout(() => setPhase('name'), 300);
+    } else if (phase === 'name') {
       timeoutId = setTimeout(() => {
-        setPhase('name');
-        setAwaitContinue(true);
-      }, 180);
+        setElimIdx(-1);
+        setPhase('eliminate');
+      }, 500);
     } else if (phase === 'eliminate') {
       let idx = 0;
       intervalId = setInterval(() => {
@@ -135,18 +131,24 @@ export function DemoBoard({ module }: Props): ReactElement {
           if (intervalId) clearInterval(intervalId);
           setTimeout(() => setPhase('count'), 120);
         }
-      }, 220);
+      }, 180);
     } else if (phase === 'count') {
-      timeoutId = setTimeout(() => setPhase('afterglow'), 420);
+      timeoutId = setTimeout(() => setPhase('afterglow'), 400);
     } else if (phase === 'afterglow') {
-      timeoutId = setTimeout(() => setPhase('done'), 520);
+      timeoutId = setTimeout(() => setPhase('done'), 500);
     }
 
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
       if (intervalId) clearInterval(intervalId);
     };
-  }, [example, elimCount, phase, awaitContinue]);
+  }, [example, elimCount, phase]);
+
+  // Reset for replay
+  const handleReplay = () => {
+    setPhase('idle');
+    setElimIdx(-1);
+  };
 
   if (!example) return <div className="teach-board" />;
 
@@ -197,19 +199,6 @@ export function DemoBoard({ module }: Props): ReactElement {
     return '';
   })();
 
-  const handleContinue = () => {
-    if (phase === 'chain') {
-      setAwaitContinue(false);
-      setPhase('pause');
-      return;
-    }
-    if (phase === 'name') {
-      setElimIdx(-1);
-      setAwaitContinue(false);
-      setPhase('eliminate');
-    }
-  };
-
   return (
     <div className={`demo-board-wrapper ${showAfterglow ? 'demo-afterglow' : ''} ${cameraClass}`}>
       <div className="demo-camera-frame">
@@ -221,7 +210,6 @@ export function DemoBoard({ module }: Props): ReactElement {
             const isElimTarget = elimCellSet.has(i);
             const isStorySourceCell = lockedStoryboard?.sourcePair.includes(i) ?? false;
 
-            // Check if this cell+digit has been eliminated so far
             let elimDigit = -1;
             if (isStrike) {
               for (let ei = 0; ei <= elimIdx && ei < eliminates.length; ei++) {
@@ -311,9 +299,11 @@ export function DemoBoard({ module }: Props): ReactElement {
       <div className="demo-live-caption" aria-live="polite">
         {liveCaption}
       </div>
-      {awaitContinue && (phase === 'chain' || phase === 'name') && (
-        <button className="demo-continue-btn" onClick={handleContinue}>
-          已理解，繼續推理 →
+
+      {/* Replay button after animation completes */}
+      {phase === 'done' && (
+        <button className="demo-continue-btn" onClick={handleReplay}>
+          🔄 再看一次
         </button>
       )}
     </div>
