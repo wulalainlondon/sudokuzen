@@ -1,6 +1,6 @@
 {
-  "version": "e17391d647a6",
-  "generatedAt": "2026-03-28T14:09:23.219Z",
+  "version": "8106c636beb7",
+  "generatedAt": "2026-03-28T14:16:41.185Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -78,7 +78,7 @@
       "name": "雙翼",
       "subtitle": "樞紐雙翼，交點清除",
       "hasPractice": true,
-      "size": 2319
+      "size": 3846
     },
     "12": {
       "technique": "xyz_wing",
