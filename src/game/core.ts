@@ -70,6 +70,14 @@ function recordAction(
   if (gs.actionHistory.length > 1200) gs.actionHistory.shift();
 }
 
+function solutionDigitAt(idx: number): number {
+  const raw = gs.currentLevel?.solution?.[idx];
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return 0;
+  const d = Math.round(n);
+  return d >= 1 && d <= 9 ? d : 0;
+}
+
 function ensureSkillModeState() {
   if ((gs as any).skillMode && (gs as any).skillMode.litCandidates) {
     return (gs as any).skillMode;
@@ -402,7 +410,7 @@ export function handleInput(num: number): void {
       return;
     }
 
-    if (num !== gs.currentLevel!.solution[gs.selectedIdx]) {
+    if (num !== solutionDigitAt(gs.selectedIdx)) {
       gs.errors++;
       data.isError = true;
       cellEl.classList.add('error');
@@ -513,7 +521,7 @@ export function erase(): void {
 // ── Win / Game Over ─────────────────────────────────────────────────
 
 function checkWin(): void {
-  const isComplete = gs.cellsData.every((data, i) => data.value === gs.currentLevel!.solution[i]);
+  const isComplete = gs.cellsData.every((data, i) => data.value === solutionDigitAt(i));
   if (!isComplete) return;
   clearInterval(gs.timerInterval!);
   // Clear duo cooldown if active
@@ -542,7 +550,7 @@ function checkSpeedrunComplete(lastIdx: number): void {
   if (!isFull) return;
   let isCorrect = true;
   for (let i = 0; i < 81; i++) {
-    if (gs.cellsData[i].value !== gs.currentLevel!.solution[i]) {
+    if (gs.cellsData[i].value !== solutionDigitAt(i)) {
       isCorrect = false;
       break;
     }

@@ -66,6 +66,25 @@ test.describe('single-player-full-run', () => {
     expect(record.replayHistory.length).toBeGreaterThan(0);
   });
 
+  test('legacy string solution format still settles correctly', async ({ page }) => {
+    await page.evaluate(() => (window as any).__e2e.initGame(1, true));
+    await page.locator('.game-container').waitFor({ state: 'visible' });
+
+    await page.evaluate(() => {
+      const e2e = (window as any).__e2e;
+      e2e.gs.currentLevel.solution = e2e.gs.currentLevel.solution.map((n: number) => String(n));
+      const { puzzle, solution } = e2e.gs.currentLevel;
+      for (let i = 0; i < 81; i++) {
+        if (puzzle[i] === 0) {
+          e2e.selectCell(i);
+          e2e.handleInput(Number(solution[i]));
+        }
+      }
+    });
+
+    await expect(page.locator('#win-celebration')).toBeVisible({ timeout: 5000 });
+  });
+
   test('3 wrong inputs trigger game over', async ({ page }) => {
     await page.evaluate(() => (window as any).__e2e.initGame(1, true));
     await page.locator('.game-container').waitFor({ state: 'visible' });
