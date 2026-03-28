@@ -1,6 +1,6 @@
 {
-  "version": "cbcb2596e05e",
-  "generatedAt": "2026-03-28T12:15:13.447Z",
+  "version": "99b744a5aec0",
+  "generatedAt": "2026-03-28T12:21:03.884Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -36,7 +36,7 @@
       "name": "藏雙",
       "subtitle": "先找座位，再清雜訊",
       "hasPractice": true,
-      "size": 2812
+      "size": 3335
     },
     "6": {
       "technique": "naked_triple",
