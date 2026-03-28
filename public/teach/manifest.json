@@ -1,6 +1,6 @@
 {
-  "version": "99b744a5aec0",
-  "generatedAt": "2026-03-28T12:21:03.884Z",
+  "version": "36b7bd08b2f7",
+  "generatedAt": "2026-03-28T13:52:56.266Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -43,7 +43,7 @@
       "name": "編織",
       "subtitle": "三格三數，批次刪減",
       "hasPractice": true,
-      "size": 5677
+      "size": 6777
     },
     "7": {
       "technique": "hidden_triple",
