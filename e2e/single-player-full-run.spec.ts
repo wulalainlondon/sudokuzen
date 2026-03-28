@@ -195,4 +195,33 @@ test.describe('single-player-full-run', () => {
     }, info.emptyIdx);
     expect(restoreResult.restoredValue, 'restored value matches').toBe(info.correctDigit);
   });
+
+  test('restoring an already-solved save settles immediately', async ({ page }) => {
+    await page.evaluate(() => {
+      const e2e = (window as any).__e2e;
+      e2e.initGame(1, true);
+      const { puzzle, solution } = e2e.gs.currentLevel;
+      for (let i = 0; i < 81; i++) {
+        if (puzzle[i] === 0) {
+          e2e.selectCell(i);
+          e2e.handleInput(Number(solution[i]));
+        }
+      }
+      const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
+      const savePayload = {
+        levelId: e2e.gs.currentLevel.id,
+        cellsData: e2e.gs.cellsData,
+        seconds: 321,
+        errors: 0,
+        submissionCount: 0,
+        actionHistory: (records[e2e.gs.currentLevel.id] || records[String(e2e.gs.currentLevel.id)] || {}).replayHistory || [],
+        isGhostMode: false,
+        ghostHistory: null,
+      };
+      localStorage.setItem(`sudoku_save_${e2e.gs.currentLevel.id}`, JSON.stringify(savePayload));
+      e2e.initGame(1, false);
+    });
+
+    await expect(page.locator('#win-celebration')).toBeVisible({ timeout: 5000 });
+  });
 });

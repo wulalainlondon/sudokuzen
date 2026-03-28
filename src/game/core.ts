@@ -323,10 +323,19 @@ export function initGame(levelId = 1, forceReset = false, playWithGhost = false,
   renderGrid();
   setGridSkillClass();
   evaluateLockedSkill();
-  startTimer(false);
-  loadLevelLeaderboard(gs.currentLevel.id);
   document.getElementById('level-screen')!.style.display = 'none';
   (document.querySelector('.game-container') as HTMLElement).style.display = 'flex';
+  loadLevelLeaderboard(gs.currentLevel.id);
+
+  // If a restored save is already solved (common after interrupted updates),
+  // settle immediately instead of leaving users on an unfinishable full board.
+  const solvedOnLoad = gs.cellsData.every((data, i) => data.value === solutionDigitAt(i));
+  if (solvedOnLoad) {
+    checkWin();
+    return;
+  }
+
+  startTimer(false);
 }
 
 function resetGameState(): void {
