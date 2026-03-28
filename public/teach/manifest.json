@@ -1,6 +1,6 @@
 {
-  "version": "b3f958a0bf7b",
-  "generatedAt": "2026-03-28T13:55:58.069Z",
+  "version": "86d2eea67286",
+  "generatedAt": "2026-03-28T13:59:20.820Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -57,7 +57,7 @@
       "name": "破陣",
       "subtitle": "雙線成矩，交叉清除",
       "hasPractice": true,
-      "size": 5218
+      "size": 6153
     },
     "9": {
       "technique": "finned_x_wing",
