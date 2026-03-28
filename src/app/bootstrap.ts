@@ -3,7 +3,11 @@ import { enforceAppVersion, registerServiceWorkerUpdateFlow } from '../pwa/swUpd
 import { bootLegacyRuntime } from './legacyRuntime';
 import { installLegacyTeachBridge } from '../features/teach/bridge/legacyTeachBridge';
 import { mountReactStrangler } from '../react/mountReactStrangler';
-import { createTeachSelectionMigration, runStorageMigrations } from '../shared/storage/migrations';
+import {
+  createLegacySaveSanitizationMigration,
+  createTeachSelectionMigration,
+  runStorageMigrations,
+} from '../shared/storage/migrations';
 import { gs } from '../game/state';
 import { initGame, handleInput, erase, saveGameStatus } from '../game/core';
 import { selectCell } from '../game/board';
@@ -19,7 +23,7 @@ declare global {
 }
 
 export function bootstrapApp(): void {
-  runStorageMigrations([createTeachSelectionMigration()]);
+  runStorageMigrations([createTeachSelectionMigration(), createLegacySaveSanitizationMigration()]);
 
   window.__pwaRuntime = {
     enforceAppVersion,
