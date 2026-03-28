@@ -2336,7 +2336,92 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "觀察中宮（Box 5）：數字 9 只出現在第 6 行的兩格",
+          "durationMs": 1800,
+          "highlight": {
+            "cells": [
+              49,
+              50
+            ],
+            "digits": {
+              "49": [
+                9
+              ],
+              "50": [
+                9
+              ]
+            },
+            "units": [
+              22
+            ],
+            "camera": "in"
+          }
+        },
+        {
+          "caption": "9 鎖定在第 6 行 → 同行右宮（Box 6）不可能再有 9",
+          "durationMs": 1800,
+          "highlight": {
+            "cells": [
+              49,
+              50,
+              51,
+              53
+            ],
+            "digits": {
+              "49": [
+                9
+              ],
+              "50": [
+                9
+              ],
+              "51": [
+                9
+              ],
+              "53": [
+                9
+              ]
+            },
+            "units": [
+              5
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "清掉右宮第 6 行的 2 個多餘 9",
+          "durationMs": 1200,
+          "highlight": {
+            "cells": [
+              49,
+              50
+            ],
+            "digits": {
+              "49": [
+                9
+              ],
+              "50": [
+                9
+              ]
+            },
+            "eliminates": [
+              {
+                "cell": 51,
+                "digit": 9
+              },
+              {
+                "cell": 53,
+                "digit": 9
+              }
+            ],
+            "camera": "none"
+          }
+        }
+      ]
+    }
   },
   "4": {
     "technique": "naked_pair",

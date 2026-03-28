@@ -1680,10 +1680,12 @@ header h1 {
 
 .controls {
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 35px;
-    margin-top: 0;
+    gap: 12px;
+    margin-top: 6px;
     padding-bottom: 0;
+    flex-wrap: wrap;
 }
 
 .ctrl-btn {
@@ -1699,6 +1701,68 @@ header h1 {
 
 .ctrl-btn.active {
     color: var(--accent-strong);
+}
+
+.skill-mode-toggle {
+    border: 1px solid color-mix(in srgb, var(--cell-border) 76%, transparent);
+    background: var(--btn-bg);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.skill-mode-toggle.active {
+    border-color: color-mix(in srgb, var(--accent-strong) 45%, var(--cell-border));
+    color: var(--accent-strong);
+}
+
+.skill-panel {
+    width: min(88vw, 300px);
+    border: 1px solid color-mix(in srgb, var(--cell-border) 84%, transparent);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: color-mix(in srgb, var(--btn-bg) 86%, var(--grid-bg));
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.skill-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: var(--text-main);
+}
+
+.skill-subtitle {
+    font-size: 0.68rem;
+    color: var(--text-light);
+}
+
+.skill-status {
+    font-size: 0.7rem;
+    color: var(--text-main);
+    line-height: 1.4;
+    min-height: 20px;
+}
+
+.skill-cast-btn {
+    margin-top: 2px;
+    border: 1px solid color-mix(in srgb, var(--accent-strong) 30%, var(--cell-border));
+    background: color-mix(in srgb, var(--accent-strong) 84%, #ffffff 16%);
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.skill-cast-btn:disabled {
+    opacity: 0.55;
+    cursor: default;
 }
 
 .ctrl-btn svg {
@@ -1717,6 +1781,10 @@ header h1 {
     pointer-events: none;
 }
 
+.sudoku-grid.skill-mode .notes-grid {
+    pointer-events: auto;
+}
+
 .note-num {
     display: flex;
     justify-content: center;
@@ -1729,6 +1797,17 @@ header h1 {
 
 .note-num.active {
     opacity: 1;
+}
+
+.sudoku-grid.skill-mode .note-num.active {
+    cursor: pointer;
+}
+
+.note-num.note-lit {
+    color: var(--accent-strong);
+    font-weight: 700;
+    text-shadow: 0 0 6px color-mix(in srgb, var(--accent-light) 55%, transparent);
+    transform: scale(1.06);
 }
 
 /* ===== Stats & Achievements Modal ===== */
@@ -2948,6 +3027,68 @@ body.library-open {
     gap: 8px;
     transition: filter 0.6s var(--ease-zen);
 }
+.demo-camera-frame {
+    position: relative;
+    width: 100%;
+    max-width: 306px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+.demo-camera-frame .teach-board {
+    transition: transform 0.46s var(--ease-zen), filter 0.42s var(--ease-zen);
+    will-change: transform;
+}
+.demo-board-wrapper.camera-zoom-in .demo-camera-frame .teach-board {
+    transform: scale(1.36);
+    filter: saturate(1.06);
+}
+.demo-story-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 8;
+}
+.demo-source-ring {
+    fill: none;
+    stroke: var(--accent-strong);
+    stroke-width: 1.1;
+    opacity: 0.92;
+    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent-strong) 36%, transparent));
+    animation: demoSourceRing 0.68s ease-out both;
+}
+@keyframes demoSourceRing {
+    0%   { opacity: 0; transform: scale(0.72); transform-origin: center; }
+    45%  { opacity: 1; transform: scale(1.06); }
+    100% { opacity: 0.92; transform: scale(1); }
+}
+.demo-story-arrow path {
+    fill: none;
+    stroke: color-mix(in srgb, var(--accent-strong) 72%, #ffffff 8%);
+    stroke-width: 0.78;
+    stroke-linecap: round;
+    stroke-dasharray: 22;
+    stroke-dashoffset: 22;
+    animation: demoArrowDraw 0.44s ease-out forwards;
+}
+.demo-story-arrow circle {
+    fill: var(--teach-elim-color);
+    opacity: 0;
+    animation: demoArrowTarget 0.28s 0.32s ease-out forwards;
+}
+@keyframes demoArrowDraw {
+    to { stroke-dashoffset: 0; }
+}
+@keyframes demoArrowTarget {
+    0%   { opacity: 0; transform: scale(0.7); transform-origin: center; }
+    75%  { opacity: 0.9; transform: scale(1.12); }
+    100% { opacity: 0.85; transform: scale(1); }
+}
+.tc-note.demo-source-digit {
+    color: var(--accent-strong);
+    font-weight: 700;
+}
 
 /* Afterglow: brief pulse on entire board after eliminations */
 .demo-board-wrapper.demo-afterglow .teach-board {
@@ -2966,6 +3107,12 @@ body.library-open {
 @keyframes demoTargetGlow {
     0%   { box-shadow: inset 0 0 0 0 transparent; }
     100% { box-shadow: inset 0 0 6px var(--accent-light); }
+}
+
+/* Unit highlight band — soft tint for row/col/box context */
+.teach-cell.demo-unit-highlight {
+    background: color-mix(in srgb, var(--accent-light) 18%, transparent);
+    transition: background 0.4s var(--ease-zen);
 }
 
 /* Technique name — slams in right before elimination */
@@ -2999,6 +3146,34 @@ body.library-open {
     color: var(--accent-strong);
     letter-spacing: 2px;
     animation: demoCountPop 0.5s var(--ease-zen) both;
+}
+.demo-live-caption {
+    width: min(100%, 520px);
+    min-height: 26px;
+    margin-top: 2px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 0.79rem;
+    line-height: 1.45;
+    letter-spacing: 0.2px;
+    color: color-mix(in srgb, var(--text-main) 90%, var(--accent-strong) 10%);
+    background: color-mix(in srgb, var(--grid-bg) 86%, var(--btn-bg));
+    border: 1px solid color-mix(in srgb, var(--cell-border) 82%, transparent);
+}
+.demo-continue-btn {
+    margin-top: 2px;
+    border: 1px solid color-mix(in srgb, var(--accent-strong) 35%, var(--cell-border));
+    background: color-mix(in srgb, var(--grid-bg) 84%, var(--accent-strong) 16%);
+    color: var(--text-main);
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+}
+.demo-continue-btn:active {
+    transform: scale(0.98);
 }
 @keyframes demoCountPop {
     0%   { opacity: 0; transform: translateY(8px) scale(0.8); }

@@ -38,6 +38,35 @@ export type PracticeItemModel = {
   solution: number[];
 };
 
+// ── Demo story — cinematic technique showcase ────────────────────
+
+export type DemoActHighlight = {
+  /** Cells to glow/focus */
+  cells?: number[];
+  /** Specific digits to ring within cells: { "49": [9], "50": [9] } */
+  digits?: Record<string, number[]>;
+  /** Highlight an entire row (0-8), column (9-17), or box (18-26) as a color band */
+  units?: number[];
+  /** Cells + digits to strike through (elimination) */
+  eliminates?: TeachEliminateTarget[];
+  /** Camera zoom: 'in' | 'out' | 'none' */
+  camera?: 'in' | 'out' | 'none';
+};
+
+export type DemoAct = {
+  /** Caption shown below the board */
+  caption: string;
+  /** Duration in ms (auto-advance after this) */
+  durationMs: number;
+  /** Visual highlights for this act */
+  highlight: DemoActHighlight;
+};
+
+export type DemoStory = {
+  /** Ordered acts — played sequentially, no user interaction */
+  acts: DemoAct[];
+};
+
 export type TeachModuleModel = {
   stars: number;
   technique: string;
@@ -45,6 +74,8 @@ export type TeachModuleModel = {
   subtitle: string;
   explanation: string[];
   example: TeachExampleModel | null;
+  /** Custom cinematic demo story (overrides default auto-generated demo) */
+  demoStory?: DemoStory;
   practice: PracticeItemModel[];
 };
 

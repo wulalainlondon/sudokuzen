@@ -85,6 +85,7 @@ function normalizeModule(key: string, raw: any): TeachModuleModel {
     subtitle: String(raw.subtitle ?? ''),
     explanation: Array.isArray(raw.explanation) ? raw.explanation.map(String) : [],
     example: normalizeExample(raw.example),
+    demoStory: raw.demoStory ?? undefined,
     practice: Array.isArray(raw.practice) ? raw.practice.map(normalizePracticeItem) : [],
   };
 }
