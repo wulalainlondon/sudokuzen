@@ -781,6 +781,9 @@ header h1 {
     box-shadow: var(--shadow-lg);
     transform: translateY(12px);
     transition: transform var(--duration-normal) var(--ease-zen);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 #replay-modal.show .replay-panel {
     transform: translateY(0);
@@ -1079,6 +1082,67 @@ header h1 {
     color: var(--text-light);
     min-width: 70px;
     text-align: center;
+}
+
+@media (max-width: 480px), (max-height: 760px) {
+    #replay-modal {
+        align-items: flex-start;
+        justify-content: center;
+        padding:
+            calc(env(safe-area-inset-top) + 10px)
+            10px
+            calc(env(safe-area-inset-bottom) + 10px);
+    }
+
+    .replay-panel {
+        width: min(96vw, 420px);
+        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px);
+        padding: 12px 10px;
+        border-radius: 14px;
+        gap: 8px;
+    }
+
+    .replay-visual-section {
+        gap: 8px;
+        padding: 8px 0;
+    }
+
+    .replay-board,
+    .replay-progress-bar {
+        width: min(62vw, 230px);
+    }
+
+    .replay-board {
+        height: min(62vw, 230px);
+    }
+
+    .replay-controls {
+        gap: 4px;
+    }
+
+    .replay-ctrl-btn {
+        font-size: 0.74rem;
+        padding: 5px 8px;
+    }
+
+    .replay-score {
+        padding: 8px 0 2px;
+    }
+
+    .replay-score-grade {
+        font-size: 2rem;
+        letter-spacing: 4px;
+    }
+
+    .replay-score-counter {
+        font-size: 1.02rem;
+        margin: 2px 0 6px;
+    }
+
+    .replay-score-breakdown {
+        font-size: 0.72rem;
+        max-width: 220px;
+    }
 }
 
 #win-celebration {
