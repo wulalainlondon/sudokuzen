@@ -1,6 +1,6 @@
 {
-  "version": "6ec2c16ee897",
-  "generatedAt": "2026-03-28T12:10:19.963Z",
+  "version": "cbcb2596e05e",
+  "generatedAt": "2026-03-28T12:15:13.447Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -29,7 +29,7 @@
       "name": "雙契",
       "subtitle": "同對成形，旁格排除",
       "hasPractice": true,
-      "size": 2253
+      "size": 3309
     },
     "5": {
       "technique": "hidden_pair",
