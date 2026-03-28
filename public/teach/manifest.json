@@ -1,6 +1,6 @@
 {
-  "version": "36b7bd08b2f7",
-  "generatedAt": "2026-03-28T13:52:56.266Z",
+  "version": "b3f958a0bf7b",
+  "generatedAt": "2026-03-28T13:55:58.069Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -50,7 +50,7 @@
       "name": "隱流",
       "subtitle": "三數隱伏，反向清候選",
       "hasPractice": true,
-      "size": 5614
+      "size": 6521
     },
     "8": {
       "technique": "x_wing",
