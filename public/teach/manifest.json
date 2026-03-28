@@ -1,6 +1,6 @@
 {
-  "version": "86d2eea67286",
-  "generatedAt": "2026-03-28T13:59:20.820Z",
+  "version": "1ae1400a23cb",
+  "generatedAt": "2026-03-28T14:02:41.295Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -64,7 +64,7 @@
       "name": "天望",
       "subtitle": "鰭位約束，局部清除",
       "hasPractice": true,
-      "size": 4885
+      "size": 5775
     },
     "10": {
       "technique": "skyscraper",
