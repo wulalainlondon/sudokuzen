@@ -70,12 +70,39 @@ function recordAction(
   if (gs.actionHistory.length > 1200) gs.actionHistory.shift();
 }
 
+function ensureSkillModeState() {
+  if ((gs as any).skillMode && (gs as any).skillMode.litCandidates) {
+    return (gs as any).skillMode;
+  }
+  const fallback = {
+    enabled: false,
+    litCandidates: new Set<string>(),
+    preview: {
+      valid: false,
+      reason: '先在同宮點亮兩個相同候選',
+      digit: undefined as number | undefined,
+      lineType: undefined as 'row' | 'col' | undefined,
+      lineIndex: undefined as number | undefined,
+      sourcePair: null as [number, number] | null,
+      targets: [] as Array<{ cell: number; digit: number }>,
+    },
+    castMessage: '',
+    casting: false,
+    lastTapKey: '',
+    lastTapAt: 0,
+  };
+  (gs as any).skillMode = fallback;
+  return fallback;
+}
+
 function setGridSkillClass(): void {
   if (!gs.gridEl) return;
-  gs.gridEl.classList.toggle('skill-mode', gs.skillMode.enabled);
+  const sm = ensureSkillModeState();
+  gs.gridEl.classList.toggle('skill-mode', sm.enabled);
 }
 
 function updateSkillPanelUI(): void {
+  const sm = ensureSkillModeState();
   const panel = document.getElementById('skill-panel');
   const castBtn = document.getElementById('skill-cast-btn') as HTMLButtonElement | null;
   const subtitle = document.getElementById('skill-subtitle');
@@ -83,11 +110,11 @@ function updateSkillPanelUI(): void {
   const toggleBtn = document.getElementById('skill-mode-toggle-btn') as HTMLButtonElement | null;
   if (!panel || !castBtn || !subtitle || !status || !toggleBtn) return;
 
-  panel.classList.toggle('hidden', !gs.skillMode.enabled);
-  toggleBtn.classList.toggle('active', gs.skillMode.enabled);
-  toggleBtn.textContent = gs.skillMode.enabled ? '技能 ON' : '技能 OFF';
+  panel.classList.toggle('hidden', !sm.enabled);
+  toggleBtn.classList.toggle('active', sm.enabled);
+  toggleBtn.textContent = sm.enabled ? '技能 ON' : '技能 OFF';
 
-  if (!gs.skillMode.enabled) {
+  if (!sm.enabled) {
     subtitle.textContent = 'Locked Candidates';
     status.textContent = '技能模式關閉';
     castBtn.disabled = true;
@@ -95,10 +122,10 @@ function updateSkillPanelUI(): void {
     return;
   }
 
-  const p = gs.skillMode.preview;
-  if (gs.skillMode.casting) {
+  const p = sm.preview;
+  if (sm.casting) {
     subtitle.textContent = `Locked Candidates · 候選 ${p.digit ?? '-'}`;
-    status.textContent = gs.skillMode.castMessage || '封鎖脈衝演算中...';
+    status.textContent = sm.castMessage || '封鎖脈衝演算中...';
     castBtn.disabled = true;
     castBtn.textContent = '施放中...';
     return;
@@ -119,10 +146,11 @@ function updateSkillPanelUI(): void {
 }
 
 function clearSkillState(): void {
-  gs.skillMode.litCandidates.clear();
-  gs.skillMode.casting = false;
-  gs.skillMode.castMessage = '';
-  gs.skillMode.preview = {
+  const sm = ensureSkillModeState();
+  sm.litCandidates.clear();
+  sm.casting = false;
+  sm.castMessage = '';
+  sm.preview = {
     valid: false,
     reason: '先在同宮點亮兩個相同候選',
     digit: undefined,
@@ -134,6 +162,7 @@ function clearSkillState(): void {
 }
 
 function refreshLitCandidatesVisuals(): void {
+  const sm = ensureSkillModeState();
   if (!gs.gridEl) return;
   Array.from(gs.gridEl.querySelectorAll('.note-num')).forEach((el) => {
     const note = el as HTMLElement;
@@ -141,25 +170,27 @@ function refreshLitCandidatesVisuals(): void {
     const digit = Number(note.dataset.digit ?? '-1');
     if (!Number.isInteger(cell) || !Number.isInteger(digit)) return;
     const key = `${cell}:${digit}`;
-    note.classList.toggle('note-lit', gs.skillMode.enabled && gs.skillMode.litCandidates.has(key));
+    note.classList.toggle('note-lit', sm.enabled && sm.litCandidates.has(key));
   });
 }
 
 export function evaluateLockedSkill(): void {
-  if (!gs.skillMode.enabled) {
+  const sm = ensureSkillModeState();
+  if (!sm.enabled) {
     clearSkillState();
     updateSkillPanelUI();
     refreshLitCandidatesVisuals();
     return;
   }
-  gs.skillMode.preview = evaluateLockedCandidatesSkill(gs.skillMode.litCandidates, gs.cellsData);
+  sm.preview = evaluateLockedCandidatesSkill(sm.litCandidates, gs.cellsData);
   updateSkillPanelUI();
   refreshLitCandidatesVisuals();
 }
 
 export function toggleSkillMode(forceEnabled?: boolean): void {
-  const enabled = typeof forceEnabled === 'boolean' ? forceEnabled : !gs.skillMode.enabled;
-  gs.skillMode.enabled = enabled;
+  const sm = ensureSkillModeState();
+  const enabled = typeof forceEnabled === 'boolean' ? forceEnabled : !sm.enabled;
+  sm.enabled = enabled;
   localStorage.setItem(SK.SKILL_MODE, String(enabled));
   if (!enabled) clearSkillState();
   setGridSkillClass();
