@@ -71,6 +71,7 @@ for (const file of files) {
       solution: p.solution,
       maxTechnique: technique,
       techTier,
+      hidden: true,
       source: 'in-house-generated',
     });
     added++;

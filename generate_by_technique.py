@@ -52,19 +52,27 @@ BASE_TECHNIQUES = [
 ]
 
 def techniques_upto(target: str) -> List[str]:
-    """Return base techniques + target technique.
+    """Return techniques up to and including target.
 
-    This forces the solver to use the target technique specifically,
-    rather than solving via an intermediate technique that happens to
-    appear earlier in DEFAULT_TECHNIQUES.
+    For base techniques: cumulative (naked_single only, then +hidden_single, etc.)
+    For advanced techniques: all base + target only.
     """
+    if target in BASE_TECHNIQUES:
+        idx = BASE_TECHNIQUES.index(target)
+        return BASE_TECHNIQUES[:idx + 1]
     allowed = list(BASE_TECHNIQUES)
-    if target not in allowed:
-        allowed.append(target)
+    allowed.append(target)
     return allowed
 
 def techniques_below(target: str) -> List[str]:
-    """Return base techniques only (without target)."""
+    """Return techniques strictly below target.
+
+    For base techniques: all base techniques before it.
+    For advanced techniques: all base techniques.
+    """
+    if target in BASE_TECHNIQUES:
+        idx = BASE_TECHNIQUES.index(target)
+        return BASE_TECHNIQUES[:idx]
     return list(BASE_TECHNIQUES)
 
 
@@ -102,9 +110,25 @@ def generate_filled_grid() -> List[int]:
     return grid
 
 
+# Per-technique clue range overrides (basic techniques need more clues)
+CLUE_RANGE = {
+    "naked_single": (28, 40),
+    "hidden_single": (26, 36),
+    "locked_candidates": (22, 32),
+    "naked_pair": (21, 30),
+    "hidden_pair": (21, 30),
+    "naked_triple": (20, 30),
+    "hidden_triple": (20, 30),
+    "naked_quad": (19, 30),
+    "hidden_quad": (19, 30),
+}
+
 def make_puzzle(target_technique: str, allowed: List[str], below: List[str],
                 min_clues: int = 17, max_clues: int = 30,
                 max_dig_attempts: int = 3) -> Optional[dict]:
+    clue_range = CLUE_RANGE.get(target_technique)
+    if clue_range:
+        min_clues, max_clues = clue_range
     """Try to create a puzzle that requires target_technique."""
     solution = generate_filled_grid()
     indices = list(range(81))

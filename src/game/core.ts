@@ -18,6 +18,7 @@ import { startTimer } from './timer';
 import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
 import { recalculatePlayerFilledCount, updateGhostProgressUI } from '../features/ghost';
 import { checkAllAchievements, unlockAchievement, recordElimination } from '../features/stats';
+import { evaluateLockedCandidatesSkill, executeLockedCandidatesSkill } from '../features/skills/lockedCandidates';
 
 // Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
 async function callDuoProgress() {
@@ -69,6 +70,176 @@ function recordAction(
   if (gs.actionHistory.length > 1200) gs.actionHistory.shift();
 }
 
+function setGridSkillClass(): void {
+  if (!gs.gridEl) return;
+  gs.gridEl.classList.toggle('skill-mode', gs.skillMode.enabled);
+}
+
+function updateSkillPanelUI(): void {
+  const panel = document.getElementById('skill-panel');
+  const castBtn = document.getElementById('skill-cast-btn') as HTMLButtonElement | null;
+  const subtitle = document.getElementById('skill-subtitle');
+  const status = document.getElementById('skill-status');
+  const toggleBtn = document.getElementById('skill-mode-toggle-btn') as HTMLButtonElement | null;
+  if (!panel || !castBtn || !subtitle || !status || !toggleBtn) return;
+
+  panel.classList.toggle('hidden', !gs.skillMode.enabled);
+  toggleBtn.classList.toggle('active', gs.skillMode.enabled);
+  toggleBtn.textContent = gs.skillMode.enabled ? '技能 ON' : '技能 OFF';
+
+  if (!gs.skillMode.enabled) {
+    subtitle.textContent = 'Locked Candidates';
+    status.textContent = '技能模式關閉';
+    castBtn.disabled = true;
+    castBtn.textContent = '封鎖脈衝';
+    return;
+  }
+
+  const p = gs.skillMode.preview;
+  if (gs.skillMode.casting) {
+    subtitle.textContent = `Locked Candidates · 候選 ${p.digit ?? '-'}`;
+    status.textContent = gs.skillMode.castMessage || '封鎖脈衝演算中...';
+    castBtn.disabled = true;
+    castBtn.textContent = '施放中...';
+    return;
+  }
+
+  if (p.valid) {
+    const line = p.lineType === 'row' ? `第 ${Number(p.lineIndex) + 1} 列` : `第 ${Number(p.lineIndex) + 1} 欄`;
+    subtitle.textContent = `Locked Candidates · 候選 ${p.digit}`;
+    status.textContent = `可施放：${line} 可消去 ${p.targets.length} 個`;
+    castBtn.disabled = false;
+    castBtn.textContent = `封鎖脈衝（-${p.targets.length}）`;
+  } else {
+    subtitle.textContent = 'Locked Candidates';
+    status.textContent = p.reason || '先在同宮點亮兩個相同候選';
+    castBtn.disabled = true;
+    castBtn.textContent = '封鎖脈衝';
+  }
+}
+
+function clearSkillState(): void {
+  gs.skillMode.litCandidates.clear();
+  gs.skillMode.casting = false;
+  gs.skillMode.castMessage = '';
+  gs.skillMode.preview = {
+    valid: false,
+    reason: '先在同宮點亮兩個相同候選',
+    digit: undefined,
+    lineType: undefined,
+    lineIndex: undefined,
+    sourcePair: null,
+    targets: [],
+  };
+}
+
+function refreshLitCandidatesVisuals(): void {
+  if (!gs.gridEl) return;
+  Array.from(gs.gridEl.querySelectorAll('.note-num')).forEach((el) => {
+    const note = el as HTMLElement;
+    const cell = Number(note.dataset.cell ?? '-1');
+    const digit = Number(note.dataset.digit ?? '-1');
+    if (!Number.isInteger(cell) || !Number.isInteger(digit)) return;
+    const key = `${cell}:${digit}`;
+    note.classList.toggle('note-lit', gs.skillMode.enabled && gs.skillMode.litCandidates.has(key));
+  });
+}
+
+export function evaluateLockedSkill(): void {
+  if (!gs.skillMode.enabled) {
+    clearSkillState();
+    updateSkillPanelUI();
+    refreshLitCandidatesVisuals();
+    return;
+  }
+  gs.skillMode.preview = evaluateLockedCandidatesSkill(gs.skillMode.litCandidates, gs.cellsData);
+  updateSkillPanelUI();
+  refreshLitCandidatesVisuals();
+}
+
+export function toggleSkillMode(forceEnabled?: boolean): void {
+  const enabled = typeof forceEnabled === 'boolean' ? forceEnabled : !gs.skillMode.enabled;
+  gs.skillMode.enabled = enabled;
+  localStorage.setItem(SK.SKILL_MODE, String(enabled));
+  if (!enabled) clearSkillState();
+  setGridSkillClass();
+  evaluateLockedSkill();
+}
+
+export function toggleLitCandidate(cell: number, digit: number): void {
+  if (!gs.skillMode.enabled) return;
+  if (!Number.isInteger(cell) || !Number.isInteger(digit)) return;
+  if (cell < 0 || cell >= 81 || digit < 1 || digit > 9) return;
+  const data = gs.cellsData[cell];
+  if (!data || data.value !== 0 || !data.notes.includes(digit)) return;
+  const key = `${cell}:${digit}`;
+  if (gs.skillMode.litCandidates.has(key)) gs.skillMode.litCandidates.delete(key);
+  else gs.skillMode.litCandidates.add(key);
+  evaluateLockedSkill();
+}
+
+export function handleCandidateProbeTap(cell: number, digit: number): void {
+  if (!gs.skillMode.enabled) return;
+  const key = `${cell}:${digit}`;
+  const now = Date.now();
+  if (gs.skillMode.lastTapKey === key && now - gs.skillMode.lastTapAt <= 320) {
+    gs.skillMode.lastTapKey = '';
+    gs.skillMode.lastTapAt = 0;
+    toggleLitCandidate(cell, digit);
+    return;
+  }
+  gs.skillMode.lastTapKey = key;
+  gs.skillMode.lastTapAt = now;
+}
+
+export async function castLockedSkill(): Promise<void> {
+  if (!gs.skillMode.enabled) return;
+  if (gs.skillMode.casting) return;
+  const preview = gs.skillMode.preview;
+  if (!preview.valid) {
+    showFeedback(preview.reason || '條件未成立', 'error');
+    updateSkillPanelUI();
+    return;
+  }
+  const result = executeLockedCandidatesSkill(gs.cellsData, preview);
+  if (!result.valid || !result.targets.length) {
+    showFeedback(result.reason || '沒有可消去候選', 'error');
+    clearSkillState();
+    evaluateLockedSkill();
+    return;
+  }
+
+  gs.skillMode.casting = true;
+  gs.skillMode.castMessage = '封鎖脈衝啟動：鎖定推理線';
+  updateSkillPanelUI();
+  const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+  for (let i = 0; i < result.targets.length; i++) {
+    const t = result.targets[i];
+    const cellEl = gs.gridEl!.children[t.cell] as HTMLElement;
+    updateCellDisplay(cellEl, gs.cellsData[t.cell]);
+    gs.skillMode.castMessage = `封鎖脈衝施放中：${i + 1}/${result.targets.length}`;
+    updateSkillPanelUI();
+    recordAction(
+      'skill_eliminate',
+      `${cellLabel(t.cell)} 封鎖脈衝消去候選 ${t.digit}`,
+      t.cell,
+      t.digit,
+      gs.cellsData[t.cell].notes,
+    );
+    recordElimination();
+    if (i < result.targets.length - 1) {
+      // Keep each elimination readable so the reasoning remains legible.
+      await wait(120);
+    }
+  }
+  gs.skillMode.castMessage = `封鎖脈衝成功：消去 ${result.targets.length} 個候選`;
+  gs.skillMode.casting = false;
+  showFeedback(gs.skillMode.castMessage, 'success');
+  gs.skillMode.litCandidates.clear();
+  evaluateLockedSkill();
+  saveGameStatus();
+}
+
 // ── Game lifecycle ──────────────────────────────────────────────────
 
 export function initGame(levelId = 1, forceReset = false, playWithGhost = false, ghostData: any = null): void {
@@ -111,6 +282,8 @@ export function initGame(levelId = 1, forceReset = false, playWithGhost = false,
   document.getElementById('pause-screen')!.style.display = 'none';
   gs.winCelebrationEl!.style.display = 'none';
   renderGrid();
+  setGridSkillClass();
+  evaluateLockedSkill();
   startTimer(false);
   loadLevelLeaderboard(gs.currentLevel.id);
   document.getElementById('level-screen')!.style.display = 'none';
@@ -128,6 +301,7 @@ function resetGameState(): void {
     notes: [],
     isError: false,
   }));
+  clearSkillState();
 }
 
 // ── Save / Load ─────────────────────────────────────────────────────
@@ -193,6 +367,7 @@ export function handleInput(num: number): void {
       updateNumpadState();
       if (gs.isDuoMode) callDuoProgress();
       checkSpeedrunComplete(gs.selectedIdx);
+      evaluateLockedSkill();
       return;
     }
 
@@ -250,6 +425,7 @@ export function handleInput(num: number): void {
         updateCellDisplay(cellEl, data);
       }, 400);
       saveGameStatus();
+      evaluateLockedSkill();
       if (!gs.isDuoMode && gs.errors >= gs.maxErrors) showGameOver();
       return;
     }
@@ -281,6 +457,7 @@ export function handleInput(num: number): void {
   saveGameStatus();
   updateNumpadState();
   selectCell(gs.selectedIdx);
+  evaluateLockedSkill();
 }
 
 export function erase(): void {
@@ -298,6 +475,7 @@ export function erase(): void {
     }
     saveGameStatus();
     updateNumpadState();
+    evaluateLockedSkill();
   }
 }
 
