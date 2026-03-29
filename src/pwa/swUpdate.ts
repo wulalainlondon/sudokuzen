@@ -102,7 +102,7 @@ export function registerServiceWorkerUpdateFlow(): void {
   window.addEventListener('focus', tryRefresh);
 
   navigator.serviceWorker
-    .register('sw.js')
+    .register('sw.js', { updateViaCache: 'none' })
     .then((reg) => {
       if (reg.waiting) applyUpdateImmediately(reg.waiting);
 

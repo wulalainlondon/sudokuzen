@@ -345,6 +345,35 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script src="firebase-config.local.js"></script>
+    <script>
+      // iOS PWA hard-update: bypass stale SW by checking inline version marker.
+      // When index.html arrives (network-first), this runs BEFORE the app bundle.
+      (function() {
+        var INLINE_VER = '2026.03.29-V20';
+        var KEY = 'sudoku_inline_ver';
+        try {
+          var stored = localStorage.getItem(KEY);
+          if (stored && stored !== INLINE_VER) {
+            localStorage.setItem(KEY, INLINE_VER);
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                return Promise.all(regs.map(function(r) { return r.unregister(); }));
+              }).then(function() {
+                if ('caches' in window) {
+                  return caches.keys().then(function(ks) {
+                    return Promise.all(ks.map(function(k) { return caches.delete(k); }));
+                  });
+                }
+              }).then(function() { window.location.reload(); });
+              return;
+            }
+            window.location.reload();
+            return;
+          }
+          if (!stored) localStorage.setItem(KEY, INLINE_VER);
+        } catch(e) {}
+      })();
+    </script>
     <script src="mid_pool.js"></script>
     <script src="levels.js"></script>
     <!-- techniques.js removed — teach data now lazy-loads via shards (public/teach/*.json) -->
