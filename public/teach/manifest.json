@@ -1,6 +1,6 @@
 {
-  "version": "694ccb414baa",
-  "generatedAt": "2026-03-29T12:18:42.548Z",
+  "version": "661f55334d95",
+  "generatedAt": "2026-03-29T16:49:18.031Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -202,9 +202,9 @@
     "29": {
       "technique": "bug_plus_one",
       "name": "唯一缺口",
-      "subtitle": "例外一格，唯一落點",
+      "subtitle": "全盤雙值，一格例外",
       "hasPractice": true,
-      "size": 4973
+      "size": 6172
     },
     "30": {
       "technique": "jellyfish",
