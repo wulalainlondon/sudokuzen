@@ -7,6 +7,47 @@ import { showFeedback } from '../ui/feedback';
 import { getAllLevels } from '../data/dataRegistry';
 
 declare const firebase: any;
+type AchievementMap = Record<string, { date: string }>;
+
+function isIsoDay(value: unknown): value is string {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function sanitizeAchievementMap(raw: unknown): AchievementMap {
+  if (!raw || typeof raw !== 'object') return {};
+  const out: AchievementMap = {};
+  for (const [id, meta] of Object.entries(raw as Record<string, any>)) {
+    if (!meta || typeof meta !== 'object') continue;
+    const date = (meta as any).date;
+    if (!isIsoDay(date)) continue;
+    out[id] = { date };
+  }
+  return out;
+}
+
+function mergeAchievementMaps(local: AchievementMap, remote: AchievementMap): AchievementMap {
+  const merged: AchievementMap = { ...remote };
+  for (const [id, meta] of Object.entries(local)) {
+    const r = merged[id];
+    if (!r) {
+      merged[id] = { date: meta.date };
+      continue;
+    }
+    // Keep the earlier unlock date for timeline consistency.
+    merged[id] = { date: meta.date < r.date ? meta.date : r.date };
+  }
+  return merged;
+}
+
+function sameAchievementMaps(a: AchievementMap, b: AchievementMap): boolean {
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (aKeys.length !== bKeys.length) return false;
+  for (const key of aKeys) {
+    if (!b[key] || b[key].date !== a[key].date) return false;
+  }
+  return true;
+}
 
 // ── Init ────────────────────────────────────────────────────────────
 
@@ -54,6 +95,53 @@ export function saveAlias(): void {
   localStorage.setItem(SK.PLAYER_ALIAS, alias);
   if (gs.aliasInputEl) gs.aliasInputEl.value = alias;
   showFeedback(`暱稱已更新：${alias}`);
+}
+
+export async function mergeCloudAchievements(localAchievements: AchievementMap): Promise<AchievementMap | null> {
+  if (!gs.firebaseReady || !gs.db) return null;
+  const { playerId, alias } = getPlayerIdentity();
+  const docRef = gs.db.collection('player_profiles').doc(playerId);
+
+  try {
+    const doc = await docRef.get();
+    const remoteAchievements = sanitizeAchievementMap(doc.exists ? doc.data()?.achievements : null);
+    const merged = mergeAchievementMaps(localAchievements, remoteAchievements);
+    if (!sameAchievementMaps(merged, remoteAchievements)) {
+      await docRef.set(
+        {
+          playerId,
+          alias,
+          achievements: merged,
+          achievementsUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+    }
+    return merged;
+  } catch (e) {
+    console.warn('merge cloud achievements failed:', e);
+    return null;
+  }
+}
+
+export async function syncAchievementsToCloud(achievements: AchievementMap): Promise<void> {
+  if (!gs.firebaseReady || !gs.db) return;
+  const { playerId, alias } = getPlayerIdentity();
+  const sanitized = sanitizeAchievementMap(achievements);
+  const docRef = gs.db.collection('player_profiles').doc(playerId);
+  try {
+    await docRef.set(
+      {
+        playerId,
+        alias,
+        achievements: sanitized,
+        achievementsUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+  } catch (e) {
+    console.warn('sync achievements failed:', e);
+  }
 }
 
 // ── Leaderboard ─────────────────────────────────────────────────────

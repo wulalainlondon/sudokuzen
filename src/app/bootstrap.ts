@@ -12,6 +12,7 @@ import { gs } from '../game/state';
 import { initGame, handleInput, erase, saveGameStatus } from '../game/core';
 import { selectCell } from '../game/board';
 import * as replay from '../features/replay';
+import { hydrateAchievementsFromCloud } from '../features/stats';
 
 declare global {
   interface Window {
@@ -31,6 +32,7 @@ export function bootstrapApp(): void {
   };
 
   bootLegacyRuntime(APP_VERSION);
+  if (gs.firebaseReady) void hydrateAchievementsFromCloud();
   mountReactStrangler();
   installLegacyTeachBridge();
 

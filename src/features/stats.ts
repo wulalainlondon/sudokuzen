@@ -4,6 +4,7 @@ import { gs } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds } from '../game/utils';
 import { getAllLevels } from '../data/dataRegistry';
+import { mergeCloudAchievements, syncAchievementsToCloud } from '../firebase/client';
 
 // ── Achievement definitions ───────────────────────────────────────────
 
@@ -74,9 +75,18 @@ export function unlockAchievement(id: string): boolean {
   if (data[id]) return false;
   data[id] = { date: new Date().toISOString().slice(0, 10) };
   saveAchievementsData(data);
+  void syncAchievementsToCloud(data);
   const a = ACHIEVEMENTS.find((x) => x.id === id);
   if (a) gs.achievementToastQueue.push(a);
   return true;
+}
+
+export async function hydrateAchievementsFromCloud(): Promise<void> {
+  const local = loadAchievements();
+  const merged = await mergeCloudAchievements(local);
+  if (!merged) return;
+  if (JSON.stringify(local) === JSON.stringify(merged)) return;
+  saveAchievementsData(merged);
 }
 
 export function processAchievementToasts(): void {
