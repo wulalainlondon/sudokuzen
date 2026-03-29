@@ -9,6 +9,20 @@ function sameBox(a: number, b: number): boolean {
       && Math.floor((a % 9) / 3) === Math.floor((b % 9) / 3);
 }
 
+function getBoxCellsWithDigit(cells: CellData[], boxIndex: number, digit: number): number[] {
+  const br = Math.floor(boxIndex / 3) * 3;
+  const bc = (boxIndex % 3) * 3;
+  const out: number[] = [];
+  for (let r = br; r < br + 3; r++) {
+    for (let c = bc; c < bc + 3; c++) {
+      const idx = r * 9 + c;
+      const d = cells[idx];
+      if (d && d.value === 0 && d.notes.includes(digit)) out.push(idx);
+    }
+  }
+  return out;
+}
+
 function findTargets(cells: CellData[], lineType: 'row' | 'col', lineIndex: number, srcA: number, srcB: number, digit: number): LitCandidate[] {
   const srcSet = new Set([srcA, srcB]);
   const targets: LitCandidate[] = [];
@@ -37,9 +51,16 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
 
       const rowA = Math.floor(a / 9), rowB = Math.floor(b / 9);
       const colA = a % 9, colB = b % 9;
+      const boxIndex = Math.floor(rowA / 3) * 3 + Math.floor(colA / 3);
 
       for (const digit of common) {
+        const boxCellsWithDigit = getBoxCellsWithDigit(cells, boxIndex, digit);
+        if (boxCellsWithDigit.length < 2) continue;
+
         if (rowA === rowB) {
+          // Locked candidates (pointing): in this box, all candidate "digit" cells
+          // must lie on the same row before row eliminations are legal.
+          if (!boxCellsWithDigit.every((idx) => Math.floor(idx / 9) === rowA)) continue;
           const targets = findTargets(cells, 'row', rowA, a, b, digit);
           if (targets.length > 0) {
             return { valid: true, skillId: META.id, skillName: META.name, skillSubtitle: META.subtitle,
@@ -48,6 +69,9 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
           }
         }
         if (colA === colB) {
+          // Locked candidates (pointing): in this box, all candidate "digit" cells
+          // must lie on the same column before column eliminations are legal.
+          if (!boxCellsWithDigit.every((idx) => (idx % 9) === colA)) continue;
           const targets = findTargets(cells, 'col', colA, a, b, digit);
           if (targets.length > 0) {
             return { valid: true, skillId: META.id, skillName: META.name, skillSubtitle: META.subtitle,

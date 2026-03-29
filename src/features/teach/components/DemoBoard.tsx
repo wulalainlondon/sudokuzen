@@ -169,6 +169,7 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
   // Compute visual state from current act
   const currentHighlight = done ? story.acts[story.acts.length - 1]?.highlight : act?.highlight;
   const focusCells = new Set(currentHighlight?.cells ?? []);
+  const warnCells = new Set(currentHighlight?.warnCells ?? []);
   const ringDigits = currentHighlight?.digits ?? {};
   const unitHighlights = new Set(currentHighlight?.units ?? []);
   const camera = currentHighlight?.camera ?? 'none';
@@ -221,12 +222,14 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
               unitHighlights.has(row) || unitHighlights.has(9 + col) || unitHighlights.has(18 + box);
 
             const isFlashing = elimFlash.has(i);
+            const isWarn = warnCells.has(i);
             // Dim non-focus cells when camera='in'
-            const isDimmed = dimNonFocus && !isFocus && !inHighlightedUnit;
+            const isDimmed = dimNonFocus && !isFocus && !isWarn && !inHighlightedUnit;
 
             let className = 'teach-cell';
             if (isFocus) className += ' focus';
-            if (inHighlightedUnit && !isFocus) className += ' demo-unit-highlight';
+            if (isWarn) className += ' demo-warn';
+            if (inHighlightedUnit && !isFocus && !isWarn) className += ' demo-unit-highlight';
             if (isFlashing) className += ' demo-ripple-hit';
             if (isDimmed) className += ' demo-dimmed';
 
@@ -240,7 +243,9 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
                       const d = offset + 1;
                       const hasDigit = noteArr.includes(d);
                       let noteClass = 'tc-note';
-                      if (elimDigits?.has(d)) noteClass += ' strike';
+                      const isEliminated = elimDigits?.has(d);
+                      const usesCrossMark = currentHighlight?.elimStyle === 'cross-mark';
+                      if (isEliminated) noteClass += usesCrossMark ? ' cross-mark' : ' strike';
                       if (isFlashing && hasDigit && cellRingDigits.includes(d)) noteClass += ' demo-flash-digit';
                       if (cellRingDigits.includes(d)) noteClass += ' demo-source-digit';
                       return (
@@ -255,6 +260,35 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
             );
           })}
         </div>
+
+        {/* Story chain overlay (pivot -> wings, chain segments, etc.) */}
+        {(() => {
+          const chainCells = (!done && act?.highlight.chainCells) || [];
+          const chainMode = (!done && act?.highlight.chainMode) || 'sequential';
+          if (chainCells.length < 2) return null;
+          return <ChainOverlay boardRef={boardRef} cells={chainCells} eliminateCells={[]} animate mode={chainMode} />;
+        })()}
+
+        {/* Cross lines overlay (X-Wing etc.) */}
+        {(() => {
+          const crossCells = (!done && act?.highlight.crossLines) || [];
+          if (crossCells.length !== 4) return null;
+          const positions = crossCells.map((c) => ({
+            x: (((c % 9) + 0.5) / 9) * 100,
+            y: ((Math.floor(c / 9) + 0.5) / 9) * 100,
+          }));
+          return (
+            <svg
+              className="demo-cross-overlay"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              key={`cross-${actIndex}`}
+            >
+              <line className="demo-cross-line" x1={positions[0].x} y1={positions[0].y} x2={positions[3].x} y2={positions[3].y} />
+              <line className="demo-cross-line demo-cross-line-2" x1={positions[1].x} y1={positions[1].y} x2={positions[2].x} y2={positions[2].y} />
+            </svg>
+          );
+        })()}
 
         {/* Ripple wave overlay */}
         {rippleStyle && (

@@ -32,11 +32,13 @@ function normalizeStep(step: any): TeachStepModel {
   return {
     text: String(step?.text ?? ''),
     focusCells: normalizeIntArray(step?.focusCells),
+    chainCells: normalizeIntArray(step?.chainCells),
     visibleCells: visibleCells.length ? visibleCells : undefined,
     highlightDigits: normalizeHighlightDigits(step?.highlightDigits),
     eliminateCells: normalizeEliminateCells(step?.eliminateCells),
     removedCandidates: step?.removedCandidates ? normalizeEliminateCells(step.removedCandidates) : undefined,
     showChain: step?.showChain ?? undefined,
+    chainMode: step?.chainMode ?? undefined,
     warnCells: normalizeIntArray(step?.warnCells),
     warnDigit: Number.isFinite(Number(step?.warnDigit)) ? Number(step.warnDigit) : null,
   };

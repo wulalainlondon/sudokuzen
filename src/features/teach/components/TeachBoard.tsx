@@ -20,6 +20,7 @@ export function TeachBoard({ example, step }: Props): ReactElement {
   }
 
   const focusCells = step?.focusCells ?? [];
+  const chainCells = step?.chainCells?.length ? step.chainCells : focusCells;
   const focusSet = new Set(focusCells);
   const visibleSet = new Set(step?.visibleCells ?? []);
   const hasVisibleMask = visibleSet.size > 0;
@@ -84,8 +85,8 @@ export function TeachBoard({ example, step }: Props): ReactElement {
         );
       })}
 
-      {focusCells.length >= 2 && step?.showChain !== false && (
-        <ChainOverlay boardRef={boardRef} cells={focusCells} eliminateCells={eliminateIndices} animate />
+      {chainCells.length >= 2 && step?.showChain !== false && (
+        <ChainOverlay boardRef={boardRef} cells={chainCells} eliminateCells={eliminateIndices} animate mode={step?.chainMode} />
       )}
     </div>
   );

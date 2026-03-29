@@ -81,6 +81,50 @@ try {
 
 console.log(`Starting verification of ${levels.length} levels...\n`);
 
+// --- Structural consistency checks (gating) ---
+const LEVELS_PER_DIFFICULTY = 40;
+const byDifficulty = new Map();
+
+for (const level of levels) {
+    const name = level.difficultyName || '(missing)';
+    if (!byDifficulty.has(name)) {
+        byDifficulty.set(name, { count: 0, stars: new Set(), ids: [] });
+    }
+    const item = byDifficulty.get(name);
+    item.count += 1;
+    item.stars.add(level.stars);
+    item.ids.push(level.id);
+}
+
+let structuralFailCount = 0;
+
+for (const [name, info] of byDifficulty.entries()) {
+    if (info.count !== LEVELS_PER_DIFFICULTY) {
+        console.log(
+            `[FAILED] Difficulty "${name}" has ${info.count} levels (expected ${LEVELS_PER_DIFFICULTY}).`
+        );
+        structuralFailCount++;
+    }
+    if (info.stars.size > 1) {
+        const starsList = [...info.stars].sort((a, b) => a - b).join(', ');
+        console.log(
+            `[FAILED] Difficulty "${name}" maps to multiple stars: ${starsList}.`
+        );
+        structuralFailCount++;
+    }
+}
+
+if (structuralFailCount > 0) {
+    console.log('\n--- Structural Summary ---');
+    console.log(`Difficulties found: ${byDifficulty.size}`);
+    console.log(`Structural failures: ${structuralFailCount}`);
+    process.exit(1);
+}
+
+console.log(
+    `Structural checks passed: ${byDifficulty.size} difficulties, each ${LEVELS_PER_DIFFICULTY} levels, one stars value per difficulty.\n`
+);
+
 let multiSolutionCount = 0;
 let zeroSolutionCount = 0;
 let singleSolutionCount = 0;

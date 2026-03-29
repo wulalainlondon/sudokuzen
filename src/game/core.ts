@@ -640,6 +640,116 @@ export function toggleNoteMode(): void {
   }
 }
 
+// ── Highlight digit across board (for continuous fill) ──────────────
+
+function highlightDigitOnBoard(digit: number): void {
+  if (!gs.gridEl || digit < 1 || digit > 9) return;
+  Array.from(gs.gridEl.children).forEach((c, i) => {
+    c.classList.remove('selected', 'related', 'match', 'note-match');
+    c.querySelectorAll('.note-num.note-highlight').forEach((n) => n.classList.remove('note-highlight'));
+
+    const cell = gs.cellsData[i];
+    if (cell.value === digit) {
+      c.classList.add('match');
+    } else if (cell.value === 0 && cell.notes.includes(digit)) {
+      c.classList.add('note-match');
+      const noteEl = c.querySelector(`.note-num:nth-child(${digit})`);
+      if (noteEl) noteEl.classList.add('note-highlight');
+    }
+  });
+}
+
+// ── Fill All Candidates ─────────────────────────────────────────────
+
+export async function fillAllCandidates(): Promise<void> {
+  if (!gs.gridEl || !gs.cellsData.length) return;
+
+  // Calculate all legal candidates for every empty cell
+  let totalFilled = 0;
+  for (let i = 0; i < 81; i++) {
+    const cell = gs.cellsData[i];
+    if (cell.value !== 0 || cell.fixed) continue;
+
+    const row = Math.floor(i / 9);
+    const col = i % 9;
+    const boxRow = Math.floor(row / 3) * 3;
+    const boxCol = Math.floor(col / 3) * 3;
+
+    // Collect used digits in row, col, box
+    const used = new Set<number>();
+    for (let c = 0; c < 9; c++) {
+      const rv = gs.cellsData[row * 9 + c].value;
+      if (rv) used.add(rv);
+      const cv = gs.cellsData[c * 9 + col].value;
+      if (cv) used.add(cv);
+    }
+    for (let r = boxRow; r < boxRow + 3; r++) {
+      for (let c = boxCol; c < boxCol + 3; c++) {
+        const bv = gs.cellsData[r * 9 + c].value;
+        if (bv) used.add(bv);
+      }
+    }
+
+    const candidates: number[] = [];
+    for (let d = 1; d <= 9; d++) {
+      if (!used.has(d)) candidates.push(d);
+    }
+    cell.notes = candidates;
+    totalFilled += candidates.length;
+  }
+
+  // Phase 1: Show ripple from center FIRST
+  gs.gridEl.style.position = 'relative';
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:5;overflow:visible';
+
+  const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  ring.setAttribute('cx', '50');
+  ring.setAttribute('cy', '50');
+  ring.setAttribute('r', '2');
+  ring.setAttribute('fill', 'none');
+  ring.setAttribute('stroke', 'var(--accent-strong)');
+  ring.setAttribute('stroke-width', '1');
+  ring.style.animation = 'skill-ripple-expand 1s ease-out forwards';
+  svg.appendChild(ring);
+  gs.gridEl.appendChild(svg);
+
+  // Phase 2: Wait for ripple to expand, then reveal candidates per cell by distance from center
+  const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+  await wait(250);
+
+  // Reveal cells in distance-based order from center (4,4)
+  const cellOrder = Array.from({ length: 81 }, (_, i) => {
+    const row = Math.floor(i / 9), col = i % 9;
+    const dist = Math.sqrt((row - 4) ** 2 + (col - 4) ** 2);
+    return { i, dist };
+  }).sort((a, b) => a.dist - b.dist);
+
+  const TOTAL_REVEAL = 600; // ms to reveal all cells
+  const maxDist = cellOrder[cellOrder.length - 1].dist;
+
+  for (const { i, dist } of cellOrder) {
+    const cell = gs.cellsData[i];
+    if (cell.value !== 0 || cell.fixed || cell.notes.length === 0) continue;
+    const delay = (dist / maxDist) * TOTAL_REVEAL;
+    setTimeout(() => {
+      const cellEl = gs.gridEl?.children[i] as HTMLElement | undefined;
+      if (cellEl) {
+        updateCellDisplay(cellEl, cell);
+        cellEl.classList.add('candidate-reveal');
+        setTimeout(() => cellEl.classList.remove('candidate-reveal'), 300);
+      }
+    }, delay);
+  }
+
+  await wait(TOTAL_REVEAL + 300);
+  svg.remove();
+  showFeedback(`已填入 ${totalFilled} 個候選`, 'success');
+  saveGameStatus();
+}
+
 // ── Continuous Fill Mode ────────────────────────────────────────────
 
 export function toggleContinuousFill(): void {
@@ -657,6 +767,8 @@ export function setContinuousDigit(num: number): void {
   if (gs.continuousFillDigit === null) return; // not in continuous mode
   gs.continuousFillDigit = num;
   updateContinuousFillUI();
+  // Highlight all matching cells on the board immediately
+  highlightDigitOnBoard(num);
 }
 
 function updateContinuousFillUI(): void {

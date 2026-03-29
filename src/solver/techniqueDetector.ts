@@ -16,9 +16,25 @@ export interface TechniqueAnswer {
   description: string;
 }
 
+// Phase 1 techniques — reasonable attribution for manual fills.
+// Anything beyond these for a 'fill' action is likely player intuition, not technique usage.
+const FILL_REASONABLE_TECHNIQUES = new Set<TechniqueName>([
+  'naked_single',
+  'hidden_single',
+  'locked_candidates',
+  'naked_pair',
+  'hidden_pair',
+  'naked_triple',
+  'hidden_triple',
+]);
+
 /**
  * Determine which technique justifies a specific action on the given board.
  * Detectors are tried simplest-first; returns the first match.
+ *
+ * For 'fill' actions, caps attribution at Phase 1 techniques — a beginner
+ * filling a number by intuition shouldn't be labeled as "Template".
+ * For 'eliminate' actions, no cap — eliminations genuinely require techniques.
  */
 export function detectTechnique(
   cells: { value: number; fixed: boolean; notes: number[] }[],
@@ -34,6 +50,10 @@ export function detectTechnique(
         result &&
         result.actions.some((a) => a.kind === target.kind && a.cell === target.cell && a.digit === target.digit)
       ) {
+        // For fills: reject attribution if technique is beyond Phase 1
+        if (query.kind === 'fill' && !FILL_REASONABLE_TECHNIQUES.has(result.technique)) {
+          continue;
+        }
         return {
           technique: result.technique,
           patternCells: result.patternCells,

@@ -1,0 +1,188 @@
+{
+  "scannedLevels": 1000,
+  "scanErrors": 0,
+  "errorSamples": [],
+  "mm": {
+    "alias": "mm",
+    "clears": 95,
+    "highest": {
+      "stars": 5,
+      "levelId": 161,
+      "difficultyName": "NIRVANA 寂滅",
+      "displayName": "不可阻擋",
+      "technique": "naked_single"
+    },
+    "sampleFirst10": [
+      {
+        "levelId": 9001,
+        "stars": 0,
+        "difficultyName": "鏈啟",
+        "displayName": "鏈啟-1",
+        "clearMs": null,
+        "createdAt": "2026-02-07T09:46:06.105Z"
+      },
+      {
+        "levelId": 9030,
+        "stars": 0,
+        "difficultyName": "鏈啟",
+        "displayName": "鏈啟-30",
+        "clearMs": null,
+        "createdAt": "2026-03-22T01:25:02.627Z"
+      },
+      {
+        "levelId": 9036,
+        "stars": 0,
+        "difficultyName": "鏈啟",
+        "displayName": "鏈啟-36",
+        "clearMs": null,
+        "createdAt": "2026-02-28T14:54:48.852Z"
+      },
+      {
+        "levelId": 9039,
+        "stars": 0,
+        "difficultyName": "鏈啟",
+        "displayName": "鏈啟-39",
+        "clearMs": null,
+        "createdAt": "2026-03-22T01:30:25.663Z"
+      },
+      {
+        "levelId": 9042,
+        "stars": 0.5,
+        "difficultyName": "鏈序",
+        "displayName": "鏈序-2",
+        "clearMs": null,
+        "createdAt": "2026-03-03T12:31:13.418Z"
+      },
+      {
+        "levelId": 9047,
+        "stars": 0.5,
+        "difficultyName": "鏈序",
+        "displayName": "鏈序-7",
+        "clearMs": null,
+        "createdAt": "2026-02-24T13:17:28.506Z"
+      },
+      {
+        "levelId": 9051,
+        "stars": 0.5,
+        "difficultyName": "鏈序",
+        "displayName": "鏈序-11",
+        "clearMs": null,
+        "createdAt": "2026-02-24T13:56:20.086Z"
+      },
+      {
+        "levelId": 9052,
+        "stars": 0.5,
+        "difficultyName": "鏈序",
+        "displayName": "鏈序-12",
+        "clearMs": null,
+        "createdAt": "2026-02-09T14:43:52.472Z"
+      },
+      {
+        "levelId": 9053,
+        "stars": 0.5,
+        "difficultyName": "鏈序",
+        "displayName": "鏈序-13",
+        "clearMs": null,
+        "createdAt": "2026-02-08T13:43:05.986Z"
+      },
+      {
+        "levelId": 9054,
+        "stars": 0.5,
+        "difficultyName": "鏈序",
+        "displayName": "鏈序-14",
+        "clearMs": null,
+        "createdAt": "2026-02-10T13:37:02.295Z"
+      }
+    ],
+    "sampleLast10": [
+      {
+        "levelId": 190,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "不可忘卻",
+        "clearMs": null,
+        "createdAt": "2026-03-06T10:43:36.749Z"
+      },
+      {
+        "levelId": 191,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "物質解體",
+        "clearMs": null,
+        "createdAt": "2026-03-20T04:43:20.669Z"
+      },
+      {
+        "levelId": 192,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "諸法空相",
+        "clearMs": null,
+        "createdAt": "2026-03-07T09:58:46.882Z"
+      },
+      {
+        "levelId": 194,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "主腦核心",
+        "clearMs": null,
+        "createdAt": "2026-03-07T10:06:14.703Z"
+      },
+      {
+        "levelId": 195,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "寂滅之終",
+        "clearMs": null,
+        "createdAt": "2026-03-02T14:27:07.579Z"
+      },
+      {
+        "levelId": 196,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "無智亦得",
+        "clearMs": null,
+        "createdAt": "2026-03-10T12:43:32.388Z"
+      },
+      {
+        "levelId": 197,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "空即是色",
+        "clearMs": null,
+        "createdAt": "2026-03-08T05:33:47.790Z"
+      },
+      {
+        "levelId": 198,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "無盡之始",
+        "clearMs": null,
+        "createdAt": "2026-03-10T12:57:20.812Z"
+      },
+      {
+        "levelId": 199,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "無眼耳鼻",
+        "clearMs": null,
+        "createdAt": "2026-03-02T16:46:28.540Z"
+      },
+      {
+        "levelId": 200,
+        "stars": 5,
+        "difficultyName": "NIRVANA 寂滅",
+        "displayName": "矩陣中心",
+        "clearMs": null,
+        "createdAt": "2026-03-08T08:40:27.877Z"
+      }
+    ]
+  },
+  "steven": {
+    "alias": "steven",
+    "clears": 0,
+    "highest": null,
+    "sampleFirst10": [],
+    "sampleLast10": []
+  },
+  "generatedAt": "2026-03-23T08:46:46.496Z"
+}

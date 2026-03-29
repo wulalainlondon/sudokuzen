@@ -2340,8 +2340,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "觀察中宮（Box 5）：數字 9 只出現在第 6 行的兩格",
-          "durationMs": 1800,
+          "caption": "定錨：中宮（Box 5）裡，候選 9 只落在第 6 行兩格",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
               49,
@@ -2358,42 +2358,13 @@ const TEACH_DATA = {
             "units": [
               22
             ],
-            "camera": "in"
+            "camera": "in",
+            "cameraFocus": 49
           }
         },
         {
-          "caption": "9 鎖定在第 6 行 → 同行右宮（Box 6）不可能再有 9",
-          "durationMs": 2000,
-          "highlight": {
-            "cells": [
-              49,
-              50,
-              51,
-              53
-            ],
-            "digits": {
-              "49": [
-                9
-              ],
-              "50": [
-                9
-              ],
-              "51": [
-                9
-              ],
-              "53": [
-                9
-              ]
-            },
-            "units": [
-              5
-            ],
-            "camera": "out"
-          }
-        },
-        {
-          "caption": "波紋掃過，清掉右宮第 6 行的多餘 9",
-          "durationMs": 2200,
+          "caption": "成形：9 被鎖在第 6 行，該行右宮的 9 失去合法性",
+          "durationMs": 1800,
           "highlight": {
             "cells": [
               49,
@@ -2407,6 +2378,55 @@ const TEACH_DATA = {
                 9
               ]
             },
+            "units": [
+              5
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "鎖定目標：右宮第 6 行的候選 9（R6C7、R6C9）準備清除",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              49,
+              50
+            ],
+            "digits": {
+              "49": [
+                9
+              ],
+              "50": [
+                9
+              ]
+            },
+            "warnCells": [
+              51,
+              53
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "封鎖完成：消去 2 個候選 9",
+          "durationMs": 2400,
+          "highlight": {
+            "cells": [
+              49,
+              50
+            ],
+            "digits": {
+              "49": [
+                9
+              ],
+              "50": [
+                9
+              ]
+            },
+            "warnCells": [
+              51,
+              53
+            ],
             "eliminates": [
               {
                 "cell": 51,
@@ -2421,6 +2441,7 @@ const TEACH_DATA = {
               49,
               50
             ],
+            "elimStyle": "cross-mark",
             "camera": "none"
           }
         }
@@ -3382,8 +3403,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "觀察第 7 列：哪些格的候選完全相同？",
-          "durationMs": 1800,
+          "caption": "定錨：R7C7 與 R9C7 同為 {2,9}，形成裸對核心",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
               60,
@@ -3407,53 +3428,8 @@ const TEACH_DATA = {
           }
         },
         {
-          "caption": "R7C7 和 R9C7 都是 {2, 9} → 同列同宮的 2、9 一定在這兩格",
+          "caption": "成形：第 7 列的 2、9 被兩格壟斷，其他同列同宮格不可再留",
           "durationMs": 1800,
-          "highlight": {
-            "cells": [
-              60,
-              78,
-              6,
-              42,
-              51,
-              61,
-              70
-            ],
-            "digits": {
-              "6": [
-                2,
-                9
-              ],
-              "42": [
-                9
-              ],
-              "51": [
-                9
-              ],
-              "60": [
-                2,
-                9
-              ],
-              "61": [
-                9
-              ],
-              "70": [
-                9
-              ],
-              "78": [
-                2,
-                9
-              ]
-            },
-            "units": [
-              15
-            ],
-            "camera": "out"
-          }
-        },
-        {
-          "caption": "波紋掃過，同列同宮的 2、9 全部消去",
-          "durationMs": 2800,
           "highlight": {
             "cells": [
               60,
@@ -3469,6 +3445,65 @@ const TEACH_DATA = {
                 9
               ]
             },
+            "units": [
+              15
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "鎖定目標：同列同宮受影響格的 2/9 候選全部待刪",
+          "durationMs": 1800,
+          "highlight": {
+            "cells": [
+              60,
+              78
+            ],
+            "digits": {
+              "60": [
+                2,
+                9
+              ],
+              "78": [
+                2,
+                9
+              ]
+            },
+            "warnCells": [
+              6,
+              42,
+              51,
+              61,
+              70
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "雙契完成：消去 6 個候選（2、9）",
+          "durationMs": 2600,
+          "highlight": {
+            "cells": [
+              60,
+              78
+            ],
+            "digits": {
+              "60": [
+                2,
+                9
+              ],
+              "78": [
+                2,
+                9
+              ]
+            },
+            "warnCells": [
+              6,
+              42,
+              51,
+              61,
+              70
+            ],
             "eliminates": [
               {
                 "cell": 6,
@@ -3499,6 +3534,7 @@ const TEACH_DATA = {
               60,
               78
             ],
+            "elimStyle": "cross-mark",
             "camera": "none"
           }
         }
@@ -4515,8 +4551,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "觀察第 7 列：2 和 4 只出現在哪兩格？",
-          "durationMs": 1800,
+          "caption": "定錨：第 7 列中，數字 2 與 4 只出現在 R4C7、R5C7",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
               33,
@@ -4540,7 +4576,7 @@ const TEACH_DATA = {
           }
         },
         {
-          "caption": "2 和 4 只在 R4C7、R5C7 → 隱藏數對成立，其餘候選是雜訊",
+          "caption": "成形：隱藏數對成立，兩格中的其他候選都屬雜訊",
           "durationMs": 1800,
           "highlight": {
             "cells": [
@@ -4568,8 +4604,8 @@ const TEACH_DATA = {
           }
         },
         {
-          "caption": "波紋掃過，清除雜訊：兩格只留 {2, 4}",
-          "durationMs": 2200,
+          "caption": "鎖定目標：R4C7、R5C7 的雜訊候選（5/6/9）準備剔除",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
               33,
@@ -4585,6 +4621,35 @@ const TEACH_DATA = {
                 4
               ]
             },
+            "warnCells": [
+              33,
+              42
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "藏雙完成：清除 4 個雜訊候選，只留 {2,4}",
+          "durationMs": 2400,
+          "highlight": {
+            "cells": [
+              33,
+              42
+            ],
+            "digits": {
+              "33": [
+                2,
+                4
+              ],
+              "42": [
+                2,
+                4
+              ]
+            },
+            "warnCells": [
+              33,
+              42
+            ],
             "eliminates": [
               {
                 "cell": 33,
@@ -4607,6 +4672,7 @@ const TEACH_DATA = {
               33,
               42
             ],
+            "elimStyle": "cross-mark",
             "camera": "none"
           }
         }
@@ -6754,8 +6820,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "第 4 行：{8,9}、{4,8}、{4,9} — 每格兩數，聯集剛好三數",
-          "durationMs": 2000,
+          "caption": "定錨：第 4 行三格 {8,9}、{4,8}、{4,9}，聯集正好是 {4,8,9}",
+          "durationMs": 1800,
           "highlight": {
             "cells": [
               33,
@@ -6784,17 +6850,13 @@ const TEACH_DATA = {
           }
         },
         {
-          "caption": "三格聯集 = {4,8,9} → 不完整三數組，一樣鎖定成立",
+          "caption": "成形：裸三組鎖定後，第 4 行其他格不可再保留 4/8/9",
           "durationMs": 1800,
           "highlight": {
             "cells": [
               33,
               34,
-              35,
-              28,
-              28,
-              30,
-              32
+              35
             ],
             "digits": {
               "33": [
@@ -6817,8 +6879,8 @@ const TEACH_DATA = {
           }
         },
         {
-          "caption": "波紋掃過，同行的 4、8、9 全部消去",
-          "durationMs": 2800,
+          "caption": "鎖定目標：同列其餘格的候選 4/8/9 進入刪除區",
+          "durationMs": 1800,
           "highlight": {
             "cells": [
               33,
@@ -6839,6 +6901,42 @@ const TEACH_DATA = {
                 9
               ]
             },
+            "warnCells": [
+              28,
+              30,
+              32
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "編織完成：消去 4 個候選（4、9）",
+          "durationMs": 2500,
+          "highlight": {
+            "cells": [
+              33,
+              34,
+              35
+            ],
+            "digits": {
+              "33": [
+                8,
+                9
+              ],
+              "34": [
+                4,
+                8
+              ],
+              "35": [
+                4,
+                9
+              ]
+            },
+            "warnCells": [
+              28,
+              30,
+              32
+            ],
             "eliminates": [
               {
                 "cell": 28,
@@ -6862,6 +6960,7 @@ const TEACH_DATA = {
               34,
               35
             ],
+            "elimStyle": "cross-mark",
             "camera": "none"
           }
         }
@@ -8974,8 +9073,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "第 8 行：2、3、8 只出現在哪三格？",
-          "durationMs": 1800,
+          "caption": "定錨：第 8 行的 2、3、8 只出現在 R8C7、R8C8、R8C9",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
               69,
@@ -9005,7 +9104,7 @@ const TEACH_DATA = {
           }
         },
         {
-          "caption": "三數只在三格 → 隱藏三數組成立，其餘候選是雜訊",
+          "caption": "成形：隱藏三數組成立，三格中的其他候選皆為雜訊",
           "durationMs": 1800,
           "highlight": {
             "cells": [
@@ -9042,8 +9141,8 @@ const TEACH_DATA = {
           }
         },
         {
-          "caption": "波紋掃過，清除雜訊：三格只留 {2,3,8}",
-          "durationMs": 2200,
+          "caption": "鎖定目標：三格雜訊候選（5/6/9）進入刪除區",
+          "durationMs": 1800,
           "highlight": {
             "cells": [
               69,
@@ -9065,6 +9164,43 @@ const TEACH_DATA = {
                 8
               ]
             },
+            "warnCells": [
+              69,
+              70,
+              71
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "隱流完成：清除 7 個雜訊候選，只留 {2,3,8}",
+          "durationMs": 2500,
+          "highlight": {
+            "cells": [
+              69,
+              70,
+              71
+            ],
+            "digits": {
+              "69": [
+                2,
+                3,
+                8
+              ],
+              "70": [
+                2,
+                3
+              ],
+              "71": [
+                3,
+                8
+              ]
+            },
+            "warnCells": [
+              69,
+              70,
+              71
+            ],
             "eliminates": [
               {
                 "cell": 69,
@@ -9100,6 +9236,7 @@ const TEACH_DATA = {
               70,
               71
             ],
+            "elimStyle": "cross-mark",
             "camera": "none"
           }
         }
@@ -9631,6 +9768,7 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         },
@@ -9657,11 +9795,38 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "cross",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "第 8、9 列其他行的 6 可以消去（被矩形獨佔）。",
+          "text": "以 R5C8 為例：假設 R5C8 = 6 → 同列的 R4C8 就不能是 6 → 第 4 行的 6 只能在 R4C9 → 同列的 R8C9 也不能是 6 → 第 8 行的 6 只能在 R8C8 → 但這樣第 8 列就有兩個 6（R5C8 和 R8C8），矛盾！所以 R5C8 的 6 可以消去。",
+          "focusCells": [
+            34,
+            70,
+            43
+          ],
+          "highlightDigits": {
+            "34": [
+              6
+            ],
+            "43": [
+              6
+            ],
+            "70": [
+              6
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": false,
+          "warnCells": [
+            43
+          ],
+          "warnDigit": 6
+        },
+        {
+          "text": "消去第 8、9 列其他行的 5 個候選 6。",
           "focusCells": [
             34,
             35,
@@ -9709,6 +9874,56 @@ const TEACH_DATA = {
               "digit": 6
             }
           ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "消除完成：X-Wing 矩形鎖定數字 6，兩列清掉 5 個候選。",
+          "focusCells": [
+            34,
+            35,
+            70,
+            71
+          ],
+          "highlightDigits": {
+            "34": [
+              6
+            ],
+            "35": [
+              6
+            ],
+            "70": [
+              6
+            ],
+            "71": [
+              6
+            ]
+          },
+          "eliminateCells": [],
+          "removedCandidates": [
+            {
+              "cell": 7,
+              "digit": 6
+            },
+            {
+              "cell": 8,
+              "digit": 6
+            },
+            {
+              "cell": 17,
+              "digit": 6
+            },
+            {
+              "cell": 43,
+              "digit": 6
+            },
+            {
+              "cell": 44,
+              "digit": 6
+            }
+          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -10992,7 +11207,7 @@ const TEACH_DATA = {
       "acts": [
         {
           "caption": "數字 6：第 4 行只在 C8、C9；第 8 行也只在 C8、C9",
-          "durationMs": 2000,
+          "durationMs": 1800,
           "highlight": {
             "cells": [
               34,
@@ -11018,23 +11233,52 @@ const TEACH_DATA = {
               3,
               7
             ],
-            "camera": "in"
+            "camera": "in",
+            "cameraFocus": 52
           }
         },
         {
-          "caption": "2×2 矩形鎖定 → X-Wing 成立，同列其他行的 6 不可能存在",
+          "caption": "X-Wing 成形：四角的 6 交叉鎖定",
+          "durationMs": 2200,
+          "highlight": {
+            "cells": [
+              34,
+              35,
+              70,
+              71
+            ],
+            "digits": {
+              "34": [
+                6
+              ],
+              "35": [
+                6
+              ],
+              "70": [
+                6
+              ],
+              "71": [
+                6
+              ]
+            },
+            "crossLines": [
+              34,
+              35,
+              70,
+              71
+            ],
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "同列其他行的 6 不可能存在",
           "durationMs": 1800,
           "highlight": {
             "cells": [
               34,
               35,
               70,
-              71,
-              7,
-              8,
-              17,
-              43,
-              44
+              71
             ],
             "digits": {
               "7": [
@@ -11069,12 +11313,19 @@ const TEACH_DATA = {
               16,
               17
             ],
-            "camera": "out"
+            "camera": "out",
+            "warnCells": [
+              7,
+              8,
+              17,
+              43,
+              44
+            ]
           }
         },
         {
-          "caption": "消去第 8、9 列其他行的 5 個候選 6",
-          "durationMs": 1200,
+          "caption": "消去 5 個候選 6",
+          "durationMs": 2800,
           "highlight": {
             "cells": [
               34,
@@ -11118,7 +11369,15 @@ const TEACH_DATA = {
                 "digit": 6
               }
             ],
-            "camera": "none"
+            "elimStyle": "cross-mark",
+            "camera": "none",
+            "warnCells": [
+              7,
+              8,
+              17,
+              43,
+              44
+            ]
           }
         }
       ]
@@ -11129,9 +11388,9 @@ const TEACH_DATA = {
     "name": "天望",
     "subtitle": "鰭位約束，局部清除",
     "explanation": [
-      "Finned X-Wing 是 X-Wing 的變形：主矩形成立，但其中一側多出鰭位。",
-      "鰭位會限制刪除範圍，通常只能在鰭所在宮與目標列交集做局部消去。",
-      "關鍵是先確認主體，再用鰭位縮小可刪區。"
+      "Finned X-Wing 先找到接近 X-Wing 的四角，再辨識多出來的鰭。",
+      "鰭會把消去範圍收窄到「同鰭宮、且落在魚骨列」的格子。",
+      "因此用先示範一格、再全刪的節奏最容易理解。"
     ],
     "example": {
       "board": [
@@ -11627,13 +11886,19 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察數字 9：第 2 行只在 C7、C8；第 7 行在 C7、C8 加上 C9（多一個鰭）。",
+          "text": "先定錨：數字 9 在第 2 行落在 C7/C8；第 7 行落在 C7/C8/C9，其中 R7C9 是鰭。",
           "focusCells": [
             15,
             16,
             60,
             61,
             62
+          ],
+          "chainCells": [
+            15,
+            16,
+            61,
+            60
           ],
           "highlightDigits": {
             "15": [
@@ -11653,19 +11918,26 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "cross",
           "warnCells": [
             62
           ],
           "warnDigit": 9
         },
         {
-          "text": "Finned X-Wing：若忽略鰭，X-Wing 成立。鰭的存在只影響「看得到鰭的格子」。",
+          "text": "先看骨架：先忽略鰭 R7C9，四角 R2C7、R2C8、R7C7、R7C8 形成 X-Wing 骨架。",
           "focusCells": [
             15,
             16,
             60,
+            61
+          ],
+          "chainCells": [
+            15,
+            16,
             61,
-            62
+            60
           ],
           "highlightDigits": {
             "15": [
@@ -11679,17 +11951,136 @@ const TEACH_DATA = {
             ],
             "61": [
               9
-            ],
-            "62": [
-              9
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "cross",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "與鰭同宮且在 X-Wing 列上的格子，可以消去候選 9。",
+          "text": "加入鰭修正：因為 R7C9 在 Box 9，消去只允許發生在同宮且受骨架壓制的格子。",
+          "focusCells": [
+            60,
+            61,
+            62,
+            69,
+            70
+          ],
+          "chainCells": [
+            62,
+            60,
+            61
+          ],
+          "highlightDigits": {
+            "60": [
+              9
+            ],
+            "61": [
+              9
+            ],
+            "62": [
+              9
+            ],
+            "69": [
+              9
+            ],
+            "70": [
+              9
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            69,
+            70
+          ],
+          "warnDigit": 9
+        },
+        {
+          "text": "先做一格示範：若 R8C7 仍保留 9，會與鰭修正後的骨架衝突，所以 R8C7≠9。",
+          "focusCells": [
+            60,
+            61,
+            62,
+            69
+          ],
+          "chainCells": [
+            62,
+            60,
+            61
+          ],
+          "highlightDigits": {
+            "60": [
+              9
+            ],
+            "61": [
+              9
+            ],
+            "62": [
+              9
+            ],
+            "69": [
+              9
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 69,
+              "digit": 9
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            69
+          ],
+          "warnDigit": 9
+        },
+        {
+          "text": "同理套用到另一格：R8C8 的候選 9 也不能留。",
+          "focusCells": [
+            60,
+            61,
+            62,
+            70
+          ],
+          "chainCells": [
+            62,
+            60,
+            61
+          ],
+          "highlightDigits": {
+            "60": [
+              9
+            ],
+            "61": [
+              9
+            ],
+            "62": [
+              9
+            ],
+            "70": [
+              9
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 70,
+              "digit": 9
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            70
+          ],
+          "warnDigit": 9
+        },
+        {
+          "text": "完成消除清單：R8C7≠9、R8C8≠9。",
           "focusCells": [
             15,
             16,
@@ -11699,6 +12090,12 @@ const TEACH_DATA = {
             69,
             70
           ],
+          "chainCells": [
+            15,
+            16,
+            61,
+            60
+          ],
           "highlightDigits": {
             "15": [
               9
@@ -11713,6 +12110,12 @@ const TEACH_DATA = {
               9
             ],
             "62": [
+              9
+            ],
+            "69": [
+              9
+            ],
+            "70": [
               9
             ]
           },
@@ -11726,6 +12129,7 @@ const TEACH_DATA = {
               "digit": 9
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -12933,8 +13337,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "數字 9：第 2 行在 C7、C8；第 7 行多了 C9（鰭）",
-          "durationMs": 2000,
+          "caption": "定錨：第 7 行多出 R7C9（鰭）",
+          "durationMs": 1600,
           "highlight": {
             "cells": [
               15,
@@ -12960,25 +13364,29 @@ const TEACH_DATA = {
                 9
               ]
             },
-            "units": [
-              1,
-              6
+            "warnCells": [
+              62
             ],
-            "camera": "in"
+            "chainCells": [
+              15,
+              16,
+              61,
+              60
+            ],
+            "chainMode": "cross",
+            "camera": "in",
+            "cameraFocus": 62
           }
         },
         {
-          "caption": "忽略鰭就是 X-Wing → 鰭只影響同宮且同列的格子",
-          "durationMs": 1800,
+          "caption": "骨架：先忽略鰭，X-Wing 四角成立",
+          "durationMs": 1500,
           "highlight": {
             "cells": [
               15,
               16,
               60,
-              61,
-              62,
-              69,
-              70
+              61
             ],
             "digits": {
               "15": [
@@ -12987,6 +13395,35 @@ const TEACH_DATA = {
               "16": [
                 9
               ],
+              "60": [
+                9
+              ],
+              "61": [
+                9
+              ]
+            },
+            "chainCells": [
+              15,
+              16,
+              61,
+              60
+            ],
+            "chainMode": "cross",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "鰭修正：消去範圍縮到同鰭宮的候選",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              60,
+              61,
+              62,
+              69,
+              70
+            ],
+            "digits": {
               "60": [
                 9
               ],
@@ -13003,16 +13440,96 @@ const TEACH_DATA = {
                 9
               ]
             },
-            "units": [
-              15,
-              16
+            "warnCells": [
+              69,
+              70
             ],
-            "camera": "out"
+            "chainCells": [
+              62,
+              60,
+              61
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
           }
         },
         {
-          "caption": "消去與鰭同宮的列上候選 9",
-          "durationMs": 1200,
+          "caption": "示範刪除：R8C7≠9",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              60,
+              61,
+              62,
+              69
+            ],
+            "digits": {
+              "60": [
+                9
+              ],
+              "61": [
+                9
+              ],
+              "62": [
+                9
+              ],
+              "69": [
+                9
+              ]
+            },
+            "warnCells": [
+              69
+            ],
+            "eliminates": [
+              {
+                "cell": 69,
+                "digit": 9
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "同理：R8C8≠9",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              60,
+              61,
+              62,
+              70
+            ],
+            "digits": {
+              "60": [
+                9
+              ],
+              "61": [
+                9
+              ],
+              "62": [
+                9
+              ],
+              "70": [
+                9
+              ]
+            },
+            "warnCells": [
+              70
+            ],
+            "eliminates": [
+              {
+                "cell": 70,
+                "digit": 9
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Finned X-Wing 消去 2 個候選 9",
+          "durationMs": 2200,
           "highlight": {
             "cells": [
               15,
@@ -13038,6 +13555,10 @@ const TEACH_DATA = {
                 9
               ]
             },
+            "warnCells": [
+              69,
+              70
+            ],
             "eliminates": [
               {
                 "cell": 69,
@@ -13048,7 +13569,8 @@ const TEACH_DATA = {
                 "digit": 9
               }
             ],
-            "camera": "none"
+            "elimStyle": "cross-mark",
+            "camera": "out"
           }
         }
       ]
@@ -13562,7 +14084,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察數字 3：第 1 列只在 R5、R8；第 7 列只在 R5、R9。兩列共享 R5 為底。",
+          "text": "觀察數字 3：第 1 列只在 R5、R8 出現；第 7 列只在 R5、R9 出現。兩列共享第 5 行為底座。",
           "focusCells": [
             36,
             42,
@@ -13584,11 +14106,12 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "Skyscraper（摩天樓）：兩列的底座相連，頂端錯開。頂端的共同可見格可消去 3。",
+          "text": "Skyscraper 成形：底座 R5 連接兩柱，頂端分別在 R8C1 和 R9C7，像兩棟高度不同的大樓。",
           "focusCells": [
             36,
             42,
@@ -13610,11 +14133,120 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "cross",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "R8C1 和 R9C7 的共同可見格：R8C7、R9C1、R9C2 消去候選 3。",
+          "text": "假設 R8C8 = 3，開始沿著推理鏈檢驗…",
+          "focusCells": [
+            70
+          ],
+          "highlightDigits": {
+            "70": [
+              3
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": false,
+          "warnCells": [
+            70
+          ],
+          "warnDigit": 3
+        },
+        {
+          "text": "→ 同行 R8C1 不能是 3（一行不能有兩個 3）。第 1 列的 3 只能在 R5C1。",
+          "focusCells": [
+            70,
+            63,
+            36
+          ],
+          "highlightDigits": {
+            "36": [
+              3
+            ],
+            "70": [
+              3
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 63,
+              "digit": 3
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            70
+          ],
+          "warnDigit": null
+        },
+        {
+          "text": "→ R5C1 = 3 → 同行 R5C7 不能是 3。第 7 列的 3 只能在 R9C7。",
+          "focusCells": [
+            70,
+            63,
+            36,
+            42,
+            78
+          ],
+          "highlightDigits": {
+            "36": [
+              3
+            ],
+            "70": [
+              3
+            ],
+            "78": [
+              3
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 42,
+              "digit": 3
+            }
+          ],
+          "removedCandidates": [
+            {
+              "cell": 63,
+              "digit": 3
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            70
+          ],
+          "warnDigit": null
+        },
+        {
+          "text": "→ R9C7 = 3，但 R8C8 和 R9C7 同在 Box 9 → 一宮兩個 3，矛盾！所以 R8C8 不可能是 3。",
+          "focusCells": [
+            70,
+            78
+          ],
+          "highlightDigits": {
+            "70": [
+              3
+            ],
+            "78": [
+              3
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            70,
+            78
+          ],
+          "warnDigit": 3
+        },
+        {
+          "text": "同理可推：所有「同時看到兩個頂端」的格子都不能是 3。消去 3 個候選。",
           "focusCells": [
             36,
             42,
@@ -13652,6 +14284,48 @@ const TEACH_DATA = {
               "digit": 3
             }
           ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "消除完成：Skyscraper 利用兩柱的錯位，沿推理鏈導出矛盾，清掉共同可見區的候選。",
+          "focusCells": [
+            36,
+            42,
+            63,
+            78
+          ],
+          "highlightDigits": {
+            "36": [
+              3
+            ],
+            "42": [
+              3
+            ],
+            "63": [
+              3
+            ],
+            "78": [
+              3
+            ]
+          },
+          "eliminateCells": [],
+          "removedCandidates": [
+            {
+              "cell": 70,
+              "digit": 3
+            },
+            {
+              "cell": 73,
+              "digit": 3
+            },
+            {
+              "cell": 74,
+              "digit": 3
+            }
+          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -14881,7 +15555,7 @@ const TEACH_DATA = {
       "acts": [
         {
           "caption": "數字 3：第 1 列在 R5、R8；第 7 列在 R5、R9 — 共享 R5 為底",
-          "durationMs": 2000,
+          "durationMs": 1800,
           "highlight": {
             "cells": [
               36,
@@ -14907,54 +15581,13 @@ const TEACH_DATA = {
               9,
               15
             ],
-            "camera": "in"
+            "camera": "in",
+            "cameraFocus": 50
           }
         },
         {
-          "caption": "摩天樓：底座相連、頂端錯開 → 兩頂的共同可見格可消去",
-          "durationMs": 1800,
-          "highlight": {
-            "cells": [
-              36,
-              42,
-              63,
-              78,
-              70,
-              73,
-              74
-            ],
-            "digits": {
-              "36": [
-                3
-              ],
-              "42": [
-                3
-              ],
-              "63": [
-                3
-              ],
-              "70": [
-                3
-              ],
-              "73": [
-                3
-              ],
-              "74": [
-                3
-              ],
-              "78": [
-                3
-              ]
-            },
-            "units": [
-              4
-            ],
-            "camera": "out"
-          }
-        },
-        {
-          "caption": "消去兩頂共同可見的 3 個候選 3",
-          "durationMs": 1200,
+          "caption": "摩天樓：底座相連（R5），頂端錯開（R8 vs R9）",
+          "durationMs": 2200,
           "highlight": {
             "cells": [
               36,
@@ -14976,6 +15609,76 @@ const TEACH_DATA = {
                 3
               ]
             },
+            "crossLines": [
+              36,
+              42,
+              63,
+              78
+            ],
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "頂端 R8C1 和 R9C7 的共同可見格不可能是 3",
+          "durationMs": 1800,
+          "highlight": {
+            "cells": [
+              36,
+              42,
+              63,
+              78
+            ],
+            "digits": {
+              "36": [
+                3
+              ],
+              "42": [
+                3
+              ],
+              "63": [
+                3
+              ],
+              "78": [
+                3
+              ]
+            },
+            "warnCells": [
+              70,
+              73,
+              74
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "消去 3 個候選 3",
+          "durationMs": 2200,
+          "highlight": {
+            "cells": [
+              36,
+              42,
+              63,
+              78
+            ],
+            "digits": {
+              "36": [
+                3
+              ],
+              "42": [
+                3
+              ],
+              "63": [
+                3
+              ],
+              "78": [
+                3
+              ]
+            },
+            "warnCells": [
+              70,
+              73,
+              74
+            ],
             "eliminates": [
               {
                 "cell": 70,
@@ -14990,6 +15693,7 @@ const TEACH_DATA = {
                 "digit": 3
               }
             ],
+            "elimStyle": "cross-mark",
             "camera": "none"
           }
         }
@@ -15007,626 +15711,753 @@ const TEACH_DATA = {
     ],
     "example": {
       "board": [
+        7,
+        0,
+        2,
+        3,
+        1,
         0,
         0,
         0,
         8,
-        7,
-        0,
-        4,
-        2,
-        0,
         0,
         1,
-        7,
+        6,
         5,
         0,
-        4,
+        2,
         0,
-        0,
-        0,
-        4,
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        8,
-        0,
-        7,
-        0,
-        0,
+        3,
         0,
         0,
         0,
         3,
         0,
         0,
-        6,
-        6,
+        0,
         2,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        3,
+        8,
+        0,
+        0,
+        3,
         8,
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        7,
-        0,
-        0,
-        0,
-        0,
-        1,
+        6,
         9,
+        4,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        9,
+        8,
         0,
         3,
         0,
-        8,
+        1,
+        0,
+        1,
+        0,
         5,
         0,
         0,
+        8,
+        4,
         0,
-        6,
         0,
         0,
+        0,
+        4,
+        0,
+        0,
+        5,
+        1,
+        0,
+        0,
+        3,
+        9,
+        7,
+        0,
+        2,
+        0,
+        8,
         0,
         0
       ],
       "given": [
+        7,
+        0,
+        2,
+        3,
+        1,
         0,
         0,
         0,
         8,
-        7,
-        0,
-        4,
-        2,
-        0,
         0,
         1,
-        7,
+        6,
         5,
         0,
-        4,
+        2,
         0,
-        0,
-        0,
-        4,
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        8,
-        0,
-        7,
-        0,
-        0,
+        3,
         0,
         0,
         0,
         3,
         0,
         0,
-        6,
-        6,
+        0,
         2,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        3,
+        8,
+        0,
+        0,
+        3,
         8,
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        7,
-        0,
-        0,
-        0,
-        0,
-        1,
+        6,
         9,
+        4,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        9,
+        8,
         0,
         3,
         0,
-        8,
+        1,
+        0,
+        1,
+        0,
         5,
         0,
         0,
+        8,
+        4,
         0,
-        6,
         0,
         0,
+        0,
+        4,
+        0,
+        0,
+        5,
+        1,
+        0,
+        0,
+        3,
+        9,
+        7,
+        0,
+        2,
+        0,
+        8,
         0,
         0
       ],
       "notes": {
-        "0": [
-          3,
-          9
-        ],
         "1": [
-          3,
-          5,
-          6,
-          9
-        ],
-        "2": [
-          3,
-          5,
-          6,
-          9
+          4,
+          5
         ],
         "5": [
-          1,
+          4,
+          6,
           9
         ],
-        "8": [
-          1,
-          3,
+        "6": [
           5,
           9
         ],
+        "7": [
+          4,
+          5,
+          6
+        ],
         "9": [
-          2,
-          3,
+          4,
           8,
           9
         ],
         "13": [
-          2,
-          3,
+          4,
+          7,
+          8,
           9
         ],
         "15": [
-          6,
+          7,
           9
-        ],
-        "16": [
-          3,
-          6,
-          8
         ],
         "17": [
-          3,
+          7,
           9
         ],
-        "19": [
-          3,
+        "18": [
+          4,
           5,
           8,
           9
         ],
-        "20": [
-          2,
-          3,
+        "19": [
+          4,
           5,
-          9
+          8
         ],
         "21": [
-          1,
-          2,
-          3,
+          4,
+          6,
+          7,
           9
         ],
         "22": [
-          1,
-          2,
-          3,
+          4,
+          6,
+          7,
+          8,
           9
         ],
-        "24": [
-          5,
+        "23": [
+          4,
+          6,
           7,
           9
         ],
         "25": [
-          1,
-          3,
+          4,
           5,
-          7,
-          8
-        ],
-        "26": [
-          1,
-          3,
-          5,
-          9
+          6,
+          7
         ],
         "27": [
-          1,
-          3,
-          9
+          2,
+          4,
+          5,
+          6
         ],
         "28": [
-          3,
+          2,
           4,
           5,
-          9
-        ],
-        "29": [
-          1,
-          3,
-          4,
-          5,
-          9
+          6,
+          7
         ],
         "30": [
-          1,
           2,
           4,
           6,
-          9
-        ],
-        "31": [
-          1,
-          2,
-          4,
-          5,
-          9
-        ],
-        "32": [
-          1,
-          2,
-          5,
-          9
-        ],
-        "34": [
-          1,
-          3,
-          4,
-          5
-        ],
-        "36": [
-          1,
           7,
           9
         ],
-        "37": [
+        "31": [
           4,
           5,
+          6,
+          7,
           9
         ],
-        "38": [
-          1,
+        "32": [
           4,
-          5,
+          6,
+          7,
           9
+        ],
+        "35": [
+          2,
+          5,
+          7
+        ],
+        "36": [
+          2,
+          5
         ],
         "39": [
           1,
           2,
-          4,
-          7,
-          9
+          7
         ],
         "40": [
+          5,
+          7
+        ],
+        "41": [
           1,
+          7
+        ],
+        "45": [
           2,
           4,
           5,
-          8,
-          9
+          6
         ],
-        "42": [
+        "46": [
           2,
+          4,
           5,
-          9
-        ],
-        "43": [
-          1,
-          4,
-          5
-        ],
-        "48": [
-          1,
-          4,
-          7,
-          9
+          6,
+          7
         ],
         "49": [
-          1,
           4,
           5,
-          9
-        ],
-        "50": [
-          1,
-          5,
-          7,
-          9
+          6,
+          7
         ],
         "51": [
           5,
-          9
-        ],
-        "52": [
-          1,
-          3,
-          4,
-          5
+          7
         ],
         "53": [
-          1,
-          3,
-          4,
+          2,
           5,
-          9
+          7
         ],
-        "54": [
+        "55": [
           2,
-          3,
-          8
-        ],
-        "56": [
-          2,
-          3,
-          4,
           6
         ],
         "57": [
-          2,
-          3,
-          4
+          6,
+          7,
+          9
         ],
         "58": [
-          2,
           3,
-          4,
-          5,
-          8
+          6,
+          7,
+          9
         ],
-        "59": [
+        "61": [
           2,
-          5,
-          8
+          6,
+          7
         ],
         "62": [
           2,
-          4,
-          5
+          3,
+          6,
+          7,
+          9
         ],
         "63": [
-          1,
           2,
-          9
+          6,
+          8
         ],
         "64": [
-          4,
-          6,
-          9
-        ],
-        "65": [
-          1,
           2,
-          4,
           6,
-          9
+          8
         ],
         "66": [
-          1,
-          2,
-          4,
+          6,
           7,
           9
         ],
         "67": [
-          1,
-          2,
-          4,
-          5,
-          9
-        ],
-        "68": [
-          1,
-          2,
-          5,
+          3,
+          6,
           7,
           9
         ],
         "70": [
-          4,
-          5,
+          2,
           6,
           7
         ],
-        "73": [
-          3,
-          4,
-          8,
-          9
-        ],
-        "74": [
-          1,
+        "71": [
           2,
           3,
-          4,
+          6,
+          7,
           9
         ],
         "75": [
           1,
-          2,
-          3,
           4,
-          7,
-          9
+          6
         ],
         "77": [
           1,
-          2,
-          7,
-          8,
-          9
-        ],
-        "78": [
-          2,
-          7
+          4,
+          6
         ],
         "79": [
-          4,
-          7
+          5,
+          6
         ],
         "80": [
-          2,
-          4
+          5,
+          6
         ]
       },
       "steps": [
         {
-          "text": "找到三個雙值格：R9C7={2,7}（軸心）、R9C9={2,4}（翼1）、R9C8={7,4}（翼2）。",
+          "text": "先定錨三個雙值格：R1C7={5,9} 為軸心，R6C7={5,7} 與 R2C9={7,9} 為兩翼（L 型）。",
           "focusCells": [
-            78,
-            80,
-            79
+            6,
+            51,
+            17
           ],
           "highlightDigits": {
-            "78": [
-              2,
+            "6": [
+              5,
+              9
+            ],
+            "17": [
+              9,
               7
             ],
-            "79": [
-              7,
-              4
-            ],
-            "80": [
-              2,
-              4
+            "51": [
+              5,
+              7
             ]
           },
           "eliminateCells": [],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "軸心分享 2 給翼1、分享 7 給翼2。兩翼的共同數字是 4。",
+          "text": "確認結構：軸心與 R6C7 共享 5，軸心與 R2C9 共享 9，兩翼共同數字是 7。",
           "focusCells": [
-            78,
-            80,
-            79
+            6,
+            51,
+            17
           ],
           "highlightDigits": {
-            "78": [
-              2,
+            "6": [
+              5,
+              9
+            ],
+            "17": [
+              9,
               7
             ],
-            "79": [
-              7,
-              4
-            ],
-            "80": [
-              2,
-              4
+            "51": [
+              5,
+              7
             ]
           },
           "eliminateCells": [],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "無論軸心填 2 或 7，翼1 或翼2 必有一個填 4 → 同時看到兩翼的格子不可能是 4。",
+          "text": "分支 A：若 R1C7=5，則 R6C7 不能是 5，只能是 7。",
           "focusCells": [
-            78,
-            80,
-            79
+            6,
+            51
           ],
           "highlightDigits": {
-            "78": [
-              2,
+            "6": [
+              5
+            ],
+            "51": [
               7
-            ],
-            "79": [
-              7,
-              4
-            ],
-            "80": [
-              2,
-              4
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "消去同時看到兩翼的 5 個候選 4。",
+          "text": "分支 B：若 R1C7=9，則 R2C9 不能是 9，只能是 7。",
           "focusCells": [
-            78,
-            80,
-            79,
-            62,
-            70,
-            73,
-            74,
-            75
+            6,
+            17
           ],
           "highlightDigits": {
-            "78": [
-              2,
+            "6": [
+              9
+            ],
+            "17": [
+              7
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "兩條分支合流：不論軸心取值，兩翼至少一格必為 7。",
+          "focusCells": [
+            6,
+            51,
+            17,
+            15,
+            35,
+            53
+          ],
+          "highlightDigits": {
+            "6": [
+              5,
+              9
+            ],
+            "17": [
+              9,
               7
             ],
-            "79": [
-              7,
-              4
+            "51": [
+              5,
+              7
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": false,
+          "warnCells": [
+            15,
+            35,
+            53
+          ],
+          "warnDigit": 7
+        },
+        {
+          "text": "因此同時看見兩翼的格子，候選 7 可安全刪除（本例 3 格）。",
+          "focusCells": [
+            6,
+            51,
+            17,
+            15,
+            35,
+            53
+          ],
+          "highlightDigits": {
+            "6": [
+              5,
+              9
             ],
-            "80": [
-              2,
-              4
+            "17": [
+              9,
+              7
+            ],
+            "51": [
+              5,
+              7
             ]
           },
           "eliminateCells": [
             {
-              "cell": 62,
-              "digit": 4
+              "cell": 15,
+              "digit": 7
             },
             {
-              "cell": 70,
-              "digit": 4
+              "cell": 35,
+              "digit": 7
             },
             {
-              "cell": 73,
-              "digit": 4
-            },
-            {
-              "cell": 74,
-              "digit": 4
-            },
-            {
-              "cell": 75,
-              "digit": 4
+              "cell": 53,
+              "digit": 7
             }
           ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "收束口訣：先找軸心雙值，再看兩翼共享數；共享數落翼，交集即可消去。",
+          "focusCells": [
+            6,
+            51,
+            17
+          ],
+          "highlightDigits": {
+            "6": [
+              5,
+              9
+            ],
+            "17": [
+              9,
+              7
+            ],
+            "51": [
+              5,
+              7
+            ]
+          },
+          "eliminateCells": [],
+          "removedCandidates": [
+            {
+              "cell": 15,
+              "digit": 7
+            },
+            {
+              "cell": 35,
+              "digit": 7
+            },
+            {
+              "cell": 53,
+              "digit": 7
+            }
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "後續連鎖 1：套用 XY-Wing 後，R2C7 的候選只剩 9，可直接填入。",
+          "focusCells": [
+            15,
+            6,
+            17,
+            51
+          ],
+          "highlightDigits": {
+            "6": [
+              5,
+              9
+            ],
+            "15": [
+              9
+            ],
+            "17": [
+              7,
+              9
+            ],
+            "51": [
+              5,
+              7
+            ]
+          },
+          "eliminateCells": [],
+          "removedCandidates": [
+            {
+              "cell": 15,
+              "digit": 7
+            },
+            {
+              "cell": 35,
+              "digit": 7
+            },
+            {
+              "cell": 53,
+              "digit": 7
+            }
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "後續連鎖 2：填入 R2C7=9 後，R1C7 只剩 5，R2C9 只剩 7，形成雙單。",
+          "focusCells": [
+            15,
+            6,
+            17
+          ],
+          "highlightDigits": {
+            "6": [
+              5
+            ],
+            "15": [
+              9
+            ],
+            "17": [
+              7
+            ]
+          },
+          "eliminateCells": [],
+          "removedCandidates": [
+            {
+              "cell": 15,
+              "digit": 7
+            },
+            {
+              "cell": 35,
+              "digit": 7
+            },
+            {
+              "cell": 53,
+              "digit": 7
+            },
+            {
+              "cell": 6,
+              "digit": 9
+            },
+            {
+              "cell": 17,
+              "digit": 9
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "後續連鎖 3：再往前推，R1C2 可收束為 4。到這裡先停，剩下交給你收割。",
+          "focusCells": [
+            1,
+            6,
+            7
+          ],
+          "highlightDigits": {
+            "1": [
+              4
+            ],
+            "6": [
+              5
+            ],
+            "7": [
+              4,
+              5,
+              6
+            ]
+          },
+          "eliminateCells": [],
+          "removedCandidates": [
+            {
+              "cell": 15,
+              "digit": 7
+            },
+            {
+              "cell": 35,
+              "digit": 7
+            },
+            {
+              "cell": 53,
+              "digit": 7
+            },
+            {
+              "cell": 6,
+              "digit": 9
+            },
+            {
+              "cell": 17,
+              "digit": 9
+            },
+            {
+              "cell": 1,
+              "digit": 5
+            }
+          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -15823,6 +16654,11 @@ const TEACH_DATA = {
             3,
             6,
             9
+          ],
+          "48": [
+            1,
+            3,
+            4
           ]
         },
         "answer": {
@@ -15841,8 +16677,645 @@ const TEACH_DATA = {
             12,
             28
           ],
-          "description": "操作：刪除同時看見兩翼的候選 9，例如 R4C4 與 R5C4。",
-          "proof": [],
+          "description": "XY-Wing：軸心 R2C2={2,7}，兩翼 R2C4={2,9}、R4C2={7,9}。同時看見兩翼的格可消去 9。",
+          "proof": [
+            "若 R2C2=2，則 R2C4 必為 9；若 R2C2=7，則 R4C2 必為 9。",
+            "因此 R4C4、R5C4 這類同時看見兩翼的格，不可能再保留候選 9。"
+          ],
+          "aicChain": []
+        },
+        "solution": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source": "in-house-generated"
+      },
+      {
+        "board": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "given": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "notes": {
+          "3": [
+            1,
+            9
+          ],
+          "12": [
+            3,
+            7
+          ],
+          "13": [
+            3,
+            9
+          ],
+          "14": [
+            5,
+            9
+          ],
+          "21": [
+            7,
+            9
+          ],
+          "22": [
+            2,
+            9
+          ],
+          "23": [
+            4,
+            9
+          ],
+          "31": [
+            1,
+            6
+          ]
+        },
+        "answer": {
+          "eliminates": [
+            [
+              3,
+              9
+            ],
+            [
+              14,
+              9
+            ],
+            [
+              22,
+              9
+            ],
+            [
+              23,
+              9
+            ]
+          ],
+          "patternCells": [
+            12,
+            13,
+            21
+          ],
+          "description": "XY-Wing：軸心 R2C4={3,7}，兩翼 R2C5={3,9}、R3C4={7,9}。因兩翼共享 9，故其共同可見區可消去 9。",
+          "proof": [
+            "軸心只能是 3 或 7：取 3 時 R3C4=9；取 7 時 R2C5=9。",
+            "不論哪條分支，候選 9 都會落在某一翼，所以 Box2 內同時看見兩翼的其他格不可為 9。"
+          ],
+          "aicChain": []
+        },
+        "solution": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source": "in-house-generated"
+      },
+      {
+        "board": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "given": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "notes": {
+          "30": [
+            1,
+            9
+          ],
+          "31": [
+            3,
+            9
+          ],
+          "39": [
+            4,
+            9
+          ],
+          "40": [
+            2,
+            8
+          ],
+          "41": [
+            2,
+            9
+          ],
+          "48": [
+            5,
+            9
+          ],
+          "49": [
+            8,
+            9
+          ],
+          "50": [
+            1,
+            3
+          ]
+        },
+        "answer": {
+          "eliminates": [
+            [
+              30,
+              9
+            ],
+            [
+              31,
+              9
+            ],
+            [
+              39,
+              9
+            ],
+            [
+              48,
+              9
+            ]
+          ],
+          "patternCells": [
+            40,
+            41,
+            49
+          ],
+          "description": "XY-Wing：軸心 R5C5={2,8}，兩翼 R5C6={2,9}、R6C5={8,9}。同宮共同視野中的候選 9 可一次清除。",
+          "proof": [
+            "若軸心取 2，則 R6C5=9；若軸心取 8，則 R5C6=9。",
+            "因此 Box5 內同時看見兩翼的格（如 R4C4、R4C5、R5C4、R6C4）都不能是 9。"
+          ],
           "aicChain": []
         },
         "solution": [
@@ -15934,149 +17407,151 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "三個雙值格：軸心 {2,7}、翼1 {2,4}、翼2 {7,4}",
-          "durationMs": 2000,
-          "highlight": {
-            "cells": [
-              78,
-              80,
-              79
-            ],
-            "digits": {
-              "78": [
-                2,
-                7
-              ],
-              "79": [
-                7,
-                4
-              ],
-              "80": [
-                2,
-                4
-              ]
-            },
-            "units": [
-              8
-            ],
-            "camera": "in"
-          }
-        },
-        {
-          "caption": "軸心分享 2 和 7 給兩翼 → 兩翼共同數字是 4",
-          "durationMs": 1500,
-          "highlight": {
-            "cells": [
-              78,
-              80,
-              79
-            ],
-            "digits": {
-              "78": [
-                2,
-                7
-              ],
-              "79": [
-                4
-              ],
-              "80": [
-                4
-              ]
-            },
-            "camera": "none"
-          }
-        },
-        {
-          "caption": "無論軸心填什麼，某一翼必填 4 → 同時看到兩翼的格不可能是 4",
+          "caption": "定錨：軸心 R1C7={5,9}，兩翼 R6C7={5,7}、R2C9={7,9}（L 型）",
           "durationMs": 1800,
           "highlight": {
             "cells": [
-              78,
-              80,
-              79,
-              62,
-              70,
-              73,
-              74,
-              75
+              6,
+              51,
+              17
             ],
             "digits": {
-              "62": [
-                4
+              "6": [
+                5,
+                9
               ],
-              "70": [
-                4
-              ],
-              "73": [
-                4
-              ],
-              "74": [
-                4
-              ],
-              "75": [
-                4
-              ],
-              "78": [
-                2,
+              "17": [
+                9,
                 7
               ],
-              "79": [
-                7,
-                4
-              ],
-              "80": [
-                2,
-                4
+              "51": [
+                5,
+                7
               ]
             },
-            "camera": "out"
+            "camera": "in",
+            "cameraFocus": 6,
+            "chainCells": [
+              51,
+              6,
+              17
+            ],
+            "chainMode": "sequential"
           }
         },
         {
-          "caption": "消去 5 個候選 4",
-          "durationMs": 1200,
+          "caption": "分支合流：軸心不論取 5 或 9，共享數 7 都會落在某一翼",
+          "durationMs": 1800,
           "highlight": {
             "cells": [
-              78,
-              80,
-              79
+              6,
+              51,
+              17
             ],
             "digits": {
-              "78": [
-                2,
+              "6": [
+                5,
+                9
+              ],
+              "17": [
                 7
               ],
-              "79": [
-                7,
-                4
-              ],
-              "80": [
-                2,
-                4
+              "51": [
+                7
               ]
             },
+            "rippleFrom": [
+              6
+            ],
+            "camera": "none",
+            "chainCells": [
+              51,
+              6,
+              17
+            ],
+            "chainMode": "sequential"
+          }
+        },
+        {
+          "caption": "鎖定目標：同時看見兩翼的格子，不可能再保留候選 7",
+          "durationMs": 1800,
+          "highlight": {
+            "cells": [
+              6,
+              51,
+              17
+            ],
+            "digits": {
+              "6": [
+                5,
+                9
+              ],
+              "17": [
+                9,
+                7
+              ],
+              "51": [
+                5,
+                7
+              ]
+            },
+            "warnCells": [
+              15,
+              35,
+              53
+            ],
+            "camera": "out",
+            "chainCells": [
+              51,
+              6,
+              17
+            ],
+            "chainMode": "sequential"
+          }
+        },
+        {
+          "caption": "雙翼完成：消去 3 個候選 7",
+          "durationMs": 2400,
+          "highlight": {
+            "cells": [
+              6,
+              51,
+              17
+            ],
+            "digits": {
+              "6": [
+                5,
+                9
+              ],
+              "17": [
+                9,
+                7
+              ],
+              "51": [
+                5,
+                7
+              ]
+            },
+            "warnCells": [
+              15,
+              35,
+              53
+            ],
             "eliminates": [
               {
-                "cell": 62,
-                "digit": 4
+                "cell": 15,
+                "digit": 7
               },
               {
-                "cell": 70,
-                "digit": 4
+                "cell": 35,
+                "digit": 7
               },
               {
-                "cell": 73,
-                "digit": 4
-              },
-              {
-                "cell": 74,
-                "digit": 4
-              },
-              {
-                "cell": 75,
-                "digit": 4
+                "cell": 53,
+                "digit": 7
               }
             ],
+            "elimStyle": "cross-mark",
             "camera": "none"
           }
         }
@@ -16088,9 +17563,9 @@ const TEACH_DATA = {
     "name": "三翼",
     "subtitle": "三點共視，集中刪減",
     "explanation": [
-      "XYZ-Wing 是 XY-Wing 延伸：pivot 為 {x,y,z}，兩翼為 {x,z} 與 {y,z}。",
-      "不論 pivot 取值，三格中必有一格為 z，但消去條件比 XY-Wing 更嚴格。",
-      "只有同時看見 pivot 與兩翼的格子，才能安全刪除 z。"
+      "XYZ-Wing 可把它當成三分支推理：軸心是三值 {x,y,z}，兩翼分別是 {x,z} 與 {y,z}。",
+      "不管軸心最後取哪個值，三格裡一定會有一格被迫是 z。",
+      "因此同時看見「軸心+兩翼」的格子，候選 z 都可以刪除。"
     ],
     "example": {
       "board": [
@@ -16587,10 +18062,15 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "找到三值格 R9C4={4,6,8}（軸心），旁邊兩個雙值格 R9C5={4,6}、R9C6={4,8}。",
+          "text": "先定錨結構：軸心 R9C4={4,6,8}，兩翼為 R9C5={4,6}、R9C6={4,8}。",
           "focusCells": [
             75,
             76,
+            77
+          ],
+          "chainCells": [
+            76,
+            75,
             77
           ],
           "highlightDigits": {
@@ -16609,14 +18089,21 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "軸心比 XY-Wing 多一個候選（三值），但邏輯相同：三格聯集 = {4,6,8}，共同數字是 4。",
+          "text": "先鎖要追的數字：這題的關鍵是 4（可把它視為 z）。接下來只要證明三格中必有一格是 4。",
           "focusCells": [
             75,
             76,
+            77
+          ],
+          "chainCells": [
+            76,
+            75,
             77
           ],
           "highlightDigits": {
@@ -16631,23 +18118,94 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "無論三格怎麼分配，4 一定被其中一格佔據 → 同時看到三格的位置不可能是 4。",
+          "text": "分支 A：若軸心 R9C4 直接取 4，那三格中已經有 4。",
+          "focusCells": [
+            75
+          ],
+          "chainCells": [
+            75
+          ],
+          "highlightDigits": {
+            "75": [
+              4,
+              6,
+              8
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "分支 B：若軸心 R9C4=6，則 R9C5 不能再是 6，只能變成 4。",
+          "focusCells": [
+            75,
+            76
+          ],
+          "chainCells": [
+            75,
+            76
+          ],
+          "highlightDigits": {
+            "75": [
+              6
+            ],
+            "76": [
+              4,
+              6
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "分支 C：若軸心 R9C4=8，則 R9C6 不能再是 8，只能變成 4。",
+          "focusCells": [
+            75,
+            77
+          ],
+          "chainCells": [
+            75,
+            77
+          ],
+          "highlightDigits": {
+            "75": [
+              8
+            ],
+            "77": [
+              4,
+              8
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "三分支合流：不論 A/B/C 哪一支成立，R9C4、R9C5、R9C6 之中必有一格為 4。",
           "focusCells": [
             75,
             76,
-            77,
-            58,
-            66,
-            72,
-            74,
-            78,
-            80
+            77
           ],
-          "digits": {
+          "chainCells": [
+            76,
+            75,
+            77
+          ],
+          "highlightDigits": {
             "75": [
               4,
               6,
@@ -16663,11 +18221,50 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            72
+          ],
+          "warnDigit": 4
         },
         {
-          "text": "消去同時看到三格的 6 個候選 4。",
+          "text": "先做一格示範：R9C1 同時看見三格。若 R9C1=4，等於否定「三格中必有一格是 4」，矛盾，所以 R9C1 的候選 4 可刪。",
+          "focusCells": [
+            75,
+            76,
+            77,
+            72
+          ],
+          "chainCells": [
+            76,
+            75,
+            77
+          ],
+          "highlightDigits": {
+            "72": [
+              4
+            ],
+            "75": [
+              4
+            ],
+            "76": [
+              4
+            ],
+            "77": [
+              4
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            72
+          ],
+          "warnDigit": 4
+        },
+        {
+          "text": "套用同理到所有共同可見格，刪除清單：R7C5、R8C4、R9C1、R9C3、R9C7、R9C9 的候選 4。",
           "focusCells": [
             75,
             76,
@@ -16679,19 +18276,38 @@ const TEACH_DATA = {
             78,
             80
           ],
+          "chainCells": [
+            76,
+            75,
+            77
+          ],
           "highlightDigits": {
+            "58": [
+              4
+            ],
+            "66": [
+              4
+            ],
+            "72": [
+              4
+            ],
+            "74": [
+              4
+            ],
             "75": [
-              4,
-              6,
-              8
+              4
             ],
             "76": [
-              4,
-              6
+              4
             ],
             "77": [
-              4,
-              8
+              4
+            ],
+            "78": [
+              4
+            ],
+            "80": [
+              4
             ]
           },
           "eliminateCells": [
@@ -16720,6 +18336,7 @@ const TEACH_DATA = {
               "digit": 4
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -17898,8 +19515,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "三值格 {4,6,8} 為軸心，兩翼 {4,6} 和 {4,8}",
-          "durationMs": 2000,
+          "caption": "定錨：軸心 R9C4={4,6,8}，兩翼 R9C5={4,6}、R9C6={4,8}",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
               75,
@@ -17921,15 +19538,19 @@ const TEACH_DATA = {
                 8
               ]
             },
-            "units": [
-              8
+            "chainCells": [
+              76,
+              75,
+              77
             ],
-            "camera": "in"
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 75
           }
         },
         {
-          "caption": "三格聯集 = {4,6,8}，共同數字 4 一定被某格佔據",
-          "durationMs": 1500,
+          "caption": "先鎖關鍵數字 4：我們要證明三格中必有一格是 4",
+          "durationMs": 1600,
           "highlight": {
             "cells": [
               75,
@@ -17947,17 +19568,172 @@ const TEACH_DATA = {
                 4
               ]
             },
+            "chainCells": [
+              76,
+              75,
+              77
+            ],
+            "chainMode": "sequential",
             "camera": "none"
           }
         },
         {
-          "caption": "同時看到三格的位置不可能填 4",
+          "caption": "分支 A：若 R9C4=4，目標立即成立",
+          "durationMs": 1300,
+          "highlight": {
+            "cells": [
+              75
+            ],
+            "digits": {
+              "75": [
+                4,
+                6,
+                8
+              ]
+            },
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 B：若 R9C4=6，則 R9C5 被迫=4",
+          "durationMs": 1400,
+          "highlight": {
+            "cells": [
+              75,
+              76
+            ],
+            "digits": {
+              "75": [
+                6
+              ],
+              "76": [
+                4,
+                6
+              ]
+            },
+            "chainCells": [
+              75,
+              76
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 C：若 R9C4=8，則 R9C6 被迫=4",
+          "durationMs": 1400,
+          "highlight": {
+            "cells": [
+              75,
+              77
+            ],
+            "digits": {
+              "75": [
+                8
+              ],
+              "77": [
+                4,
+                8
+              ]
+            },
+            "chainCells": [
+              75,
+              77
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "合流：不管哪支成立，三格中必有一格為 4",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              75,
+              76,
+              77
+            ],
+            "digits": {
+              "75": [
+                4,
+                6,
+                8
+              ],
+              "76": [
+                4,
+                6
+              ],
+              "77": [
+                4,
+                8
+              ]
+            },
+            "chainCells": [
+              76,
+              75,
+              77
+            ],
+            "chainMode": "sequential",
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "示範：R9C1 若留 4 會與合流結論衝突，故可刪",
           "durationMs": 1800,
           "highlight": {
             "cells": [
               75,
               76,
               77,
+              72
+            ],
+            "digits": {
+              "72": [
+                4
+              ],
+              "75": [
+                4
+              ],
+              "76": [
+                4
+              ],
+              "77": [
+                4
+              ]
+            },
+            "warnCells": [
+              72
+            ],
+            "chainCells": [
+              76,
+              75,
+              77
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：消去 6 個候選 4（R7C5、R8C4、R9C1、R9C3、R9C7、R9C9）",
+          "durationMs": 2300,
+          "highlight": {
+            "cells": [
+              75,
+              76,
+              77
+            ],
+            "digits": {
+              "75": [
+                4
+              ],
+              "76": [
+                4
+              ],
+              "77": [
+                4
+              ]
+            },
+            "warnCells": [
               58,
               66,
               72,
@@ -17965,66 +19741,6 @@ const TEACH_DATA = {
               78,
               80
             ],
-            "digits": {
-              "58": [
-                4
-              ],
-              "66": [
-                4
-              ],
-              "72": [
-                4
-              ],
-              "74": [
-                4
-              ],
-              "75": [
-                4,
-                6,
-                8
-              ],
-              "76": [
-                4,
-                6
-              ],
-              "77": [
-                4,
-                8
-              ],
-              "78": [
-                4
-              ],
-              "80": [
-                4
-              ]
-            },
-            "camera": "out"
-          }
-        },
-        {
-          "caption": "消去 6 個候選 4",
-          "durationMs": 1200,
-          "highlight": {
-            "cells": [
-              75,
-              76,
-              77
-            ],
-            "digits": {
-              "75": [
-                4,
-                6,
-                8
-              ],
-              "76": [
-                4,
-                6
-              ],
-              "77": [
-                4,
-                8
-              ]
-            },
             "eliminates": [
               {
                 "cell": 58,
@@ -18051,6 +19767,7 @@ const TEACH_DATA = {
                 "digit": 4
               }
             ],
+            "elimStyle": "cross-mark",
             "camera": "none"
           }
         }
@@ -18062,385 +19779,386 @@ const TEACH_DATA = {
     "name": "鏡花",
     "subtitle": "雙端同頻，遙距斷勢",
     "explanation": [
-      "W-Wing 的核心是兩個同雙值端點，並由一條強鏈連起其中一個數字。",
-      "當鏈條成立時，兩端形成同步限制，可對共同可見區做定向刪減。",
-      "實戰上先找端點，再驗證中繼強關係是否完整。"
+      "W-Wing 的核心是兩個遠端同雙值端點，並由其中一個數字的強鏈連接。",
+      "本例端點同為 {7,8}，透過數字 7 在 C9 的強鏈（R5C9 ↔ R6C9）形成同步約束。",
+      "因此同時看見兩端點的格子，候選 8 可安全刪除。"
     ],
     "example": {
       "board": [
         0,
-        1,
         0,
         0,
         0,
         0,
         0,
         0,
-        4,
-        0,
-        0,
-        0,
+        9,
         5,
-        3,
+        7,
         0,
-        0,
-        1,
-        0,
-        0,
-        0,
+        9,
         2,
         0,
         0,
-        1,
         0,
-        7,
         0,
         0,
         0,
         8,
-        9,
+        1,
         0,
         7,
-        0,
-        0,
-        1,
-        1,
-        0,
-        0,
-        0,
-        0,
-        3,
-        0,
-        0,
-        0,
-        3,
-        0,
         0,
         0,
         0,
         0,
         0,
         6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        9,
+        3,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        4,
+        0,
+        0,
+        5,
+        0,
+        0,
         2,
         0,
         0,
         0,
-        6,
+        3,
         0,
         0,
         0,
-        9,
+        0,
+        0,
+        0,
+        4,
+        1,
+        0,
+        0,
+        4,
+        0,
         0,
         0,
         7,
         0,
         0,
-        4,
-        0,
-        5,
         0,
         0,
-        0,
-        4,
-        0,
+        1,
         0,
         9,
+        3,
         5,
-        0,
-        0,
         0
       ],
       "given": [
         0,
-        1,
         0,
         0,
         0,
         0,
         0,
         0,
-        4,
-        0,
-        0,
-        0,
+        9,
         5,
-        3,
+        7,
         0,
-        0,
-        1,
-        0,
-        0,
-        0,
+        9,
         2,
         0,
         0,
-        1,
         0,
-        7,
         0,
         0,
         0,
         8,
-        9,
+        1,
         0,
         7,
-        0,
-        0,
-        1,
-        1,
-        0,
-        0,
-        0,
-        0,
-        3,
-        0,
-        0,
-        0,
-        3,
-        0,
         0,
         0,
         0,
         0,
         0,
         6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        9,
+        3,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        4,
+        0,
+        0,
+        5,
+        0,
+        0,
         2,
         0,
         0,
         0,
-        6,
+        3,
         0,
         0,
         0,
-        9,
+        0,
+        0,
+        0,
+        4,
+        1,
+        0,
+        0,
+        4,
+        0,
         0,
         0,
         7,
         0,
         0,
-        4,
-        0,
-        5,
         0,
         0,
-        0,
-        4,
-        0,
+        1,
         0,
         9,
+        3,
         5,
-        0,
-        0,
         0
       ],
       "notes": {
         "0": [
-          5,
-          6,
-          7,
-          8,
-          9
+          2,
+          3,
+          6
+        ],
+        "1": [
+          2,
+          4
         ],
         "2": [
-          3,
-          5,
-          6,
-          7,
-          9
+          2,
+          4,
+          6
         ],
         "3": [
-          2,
-          7,
+          3,
+          6,
           8
         ],
         "4": [
-          2,
+          1,
+          3,
+          4,
           6,
-          7,
           8
         ],
         "5": [
-          2,
+          1,
+          3,
+          4,
           6,
-          8,
-          9
+          8
         ],
         "6": [
-          2,
-          3,
-          6,
-          8,
-          9
-        ],
-        "7": [
-          2,
-          3,
-          5,
-          8
-        ],
-        "9": [
+          1,
           4,
-          6,
           7,
-          8,
-          9
+          8
         ],
         "10": [
-          6,
-          8,
-          9
-        ],
-        "11": [
           4,
+          5
+        ],
+        "13": [
+          1,
+          3,
+          4,
+          5,
           6,
-          7,
-          9
+          8
         ],
         "14": [
-          2,
+          1,
+          3,
           4,
+          5,
           6,
-          8,
-          9
+          8
         ],
         "15": [
-          2,
+          1,
+          4,
+          8
+        ],
+        "16": [
+          1,
+          3,
+          4,
           6,
-          8,
-          9
+          8
         ],
         "17": [
+          3,
           6,
-          8,
-          9
+          8
         ],
         "18": [
-          4,
-          5,
-          6,
-          8,
-          9
-        ],
-        "19": [
+          2,
           3,
           5,
-          6,
-          8,
-          9
+          6
         ],
         "21": [
-          4,
-          8
-        ],
-        "22": [
+          3,
           6,
-          8
+          9
+        ],
+        "23": [
+          3,
+          4,
+          5,
+          6
         ],
         "24": [
+          4
+        ],
+        "25": [
+          2,
           3,
-          6,
-          8,
-          9
+          4,
+          6
         ],
         "26": [
+          2,
           3,
-          5,
-          6,
-          8,
-          9
+          6
         ],
         "27": [
           2,
-          4,
           5,
-          6
+          8
         ],
-        "28": [
+        "29": [
           2,
           5,
-          6
+          7,
+          8
+        ],
+        "30": [
+          3,
+          7,
+          8,
+          9
         ],
         "31": [
           2,
-          5,
-          6
+          3,
+          4,
+          8,
+          9
+        ],
+        "32": [
+          2,
+          3,
+          4,
+          7,
+          8
         ],
         "33": [
-          3,
-          4
+          4,
+          5,
+          7,
+          8,
+          9
         ],
         "34": [
           3,
           4,
-          5
+          8
         ],
-        "37": [
+        "36": [
           2,
           5,
-          6,
-          9
-        ],
-        "38": [
-          4,
-          5,
-          6,
-          7,
-          9
+          8
         ],
         "39": [
-          2,
-          4,
+          7,
           8
         ],
         "40": [
+          1,
           2,
-          5,
-          6,
+          4,
           8
         ],
-        "42": [
+        "41": [
+          1,
+          2,
           4,
           7,
-          8,
-          9
+          8
         ],
         "43": [
           4,
-          5,
           8
         ],
         "44": [
-          5,
           7,
-          8,
-          9
+          8
         ],
         "46": [
-          5,
-          9
+          1,
+          7
         ],
         "47": [
-          4,
-          5,
           7,
-          9
-        ],
-        "48": [
-          1,
-          4,
           8
         ],
         "49": [
           1,
-          5,
-          8
+          3,
+          6,
+          8,
+          9
         ],
         "50": [
-          4,
+          1,
+          3,
+          6,
+          7,
           8
         ],
-        "51": [
-          4,
+        "52": [
+          3,
+          8
+        ],
+        "53": [
+          3,
           7,
           8,
           9
@@ -18448,218 +20166,298 @@ const TEACH_DATA = {
         "54": [
           2,
           5,
-          8
-        ],
-        "55": [
-          2,
-          3,
-          5,
-          8
-        ],
-        "56": [
-          1,
-          3,
-          5
-        ],
-        "58": [
-          1,
-          2,
-          7,
-          8
-        ],
-        "59": [
-          2,
-          8
-        ],
-        "60": [
-          1,
-          2,
-          3,
-          4,
-          7,
-          8
-        ],
-        "62": [
-          3,
-          7,
-          8
-        ],
-        "63": [
-          2,
           6,
           8,
           9
         ],
-        "65": [
-          1,
-          3,
+        "56": [
+          2,
+          5,
           6,
+          7,
+          8
+        ],
+        "57": [
+          6,
+          7,
+          8
+        ],
+        "58": [
+          2,
+          5,
+          6,
+          8
+        ],
+        "59": [
+          2,
+          5,
+          6,
+          7,
+          8
+        ],
+        "60": [
+          1,
+          8,
           9
         ],
-        "66": [
+        "61": [
           1,
           2,
+          6,
+          8
+        ],
+        "64": [
+          2,
+          5
+        ],
+        "65": [
+          2,
+          5,
+          6,
+          8
+        ],
+        "67": [
+          2,
           3,
+          5,
+          6,
           8
         ],
         "68": [
           2,
-          8
-        ],
-        "70": [
-          2,
           3,
-          8
-        ],
-        "71": [
-          3,
+          5,
           6,
           8
+        ],
+        "69": [
+          8,
+          9
+        ],
+        "71": [
+          2,
+          6,
+          8,
+          9
         ],
         "72": [
           2,
           6,
           8
         ],
+        "73": [
+          2,
+          4,
+          7
+        ],
         "74": [
-          1,
-          3,
-          6
-        ],
-        "75": [
-          1,
           2,
-          3,
-          7,
-          8
-        ],
-        "78": [
-          1,
-          2,
-          3,
+          4,
           6,
           7,
           8
         ],
-        "79": [
+        "76": [
           2,
-          3,
+          6,
           8
         ],
         "80": [
-          3,
+          2,
           6,
-          7,
           8
         ]
       },
       "steps": [
         {
-          "text": "找到兩個相同的雙值格：R3C4={4,8} 和 R6C6={4,8}，但它們不是同行同列同宮。",
+          "text": "先定錨端點：R5C4 與 R6C3 都是 {7,8}，而且兩格互不直視。",
           "focusCells": [
-            21,
+            39,
+            47
+          ],
+          "highlightDigits": {
+            "39": [
+              7,
+              8
+            ],
+            "47": [
+              7,
+              8
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "第一步只看 7：在 C9 內，7 只可能出現在 R5C9 或 R6C9，這是一條強關係（共軛對）。",
+          "focusCells": [
+            44,
+            53
+          ],
+          "highlightDigits": {
+            "44": [
+              7
+            ],
+            "53": [
+              7
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "分支 A：如果 R5C9=7，則同列的 R5C4 不能再是 7；因為 R5C4 只有 {7,8}，所以 R5C4 被迫=8。",
+          "focusCells": [
+            44,
+            39
+          ],
+          "highlightDigits": {
+            "39": [
+              7,
+              8
+            ],
+            "44": [
+              7
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "分支 B：如果 R6C9=7，則同列的 R6C3 不能再是 7；因為 R6C3 只有 {7,8}，所以 R6C3 被迫=8。",
+          "focusCells": [
+            53,
+            47
+          ],
+          "highlightDigits": {
+            "47": [
+              7,
+              8
+            ],
+            "53": [
+              7
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "兩分支合流：不管是哪個分支成立，R5C4 與 R6C3 至少有一格一定是 8。這就是我們要利用的結論。",
+          "focusCells": [
+            39,
+            47,
+            44,
+            53
+          ],
+          "highlightDigits": {
+            "39": [
+              7,
+              8
+            ],
+            "44": [
+              7
+            ],
+            "47": [
+              7,
+              8
+            ],
+            "53": [
+              7
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null,
+          "chainCells": [
+            39,
+            44,
+            53,
+            47
+          ]
+        },
+        {
+          "text": "先做一格示範：看 R5C1 的候選 8。若 R5C1=8，會同時把兩端點（R5C4、R6C3）的 8 排掉，變成兩端點都不能是 8，與「至少一格必為 8」矛盾，所以 R5C1 的 8 不能留。",
+          "focusCells": [
+            39,
+            47,
+            36
+          ],
+          "highlightDigits": {
+            "36": [
+              8
+            ],
+            "39": [
+              7,
+              8
+            ],
+            "47": [
+              7,
+              8
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": false,
+          "warnCells": [
+            36
+          ],
+          "warnDigit": 8
+        },
+        {
+          "text": "套用同樣邏輯到其餘共同可見格：R6C5、R6C6 的候選 8 也都不能留。最終刪除清單：R5C1、R6C5、R6C6 的 8。",
+          "focusCells": [
+            39,
+            47,
+            36,
+            49,
             50
           ],
           "highlightDigits": {
-            "21": [
-              4,
+            "36": [
+              8
+            ],
+            "39": [
+              7,
+              8
+            ],
+            "47": [
+              7,
+              8
+            ],
+            "49": [
               8
             ],
             "50": [
-              4,
-              8
-            ]
-          },
-          "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "第 6 列中，數字 4 只在 R2C6 和 R6C6 兩格（強連結）。R6C6 就是其中一個雙值格。",
-          "focusCells": [
-            21,
-            50,
-            14
-          ],
-          "highlightDigits": {
-            "14": [
-              4
-            ],
-            "21": [
-              4,
-              8
-            ],
-            "50": [
-              4
-            ]
-          },
-          "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "推理：若 R3C4=4 → 8 被排除；若 R3C4=8 → R2C6=4（強連結）→ R6C6=8。不論哪種，兩格之一必為 8。",
-          "focusCells": [
-            21,
-            50,
-            14
-          ],
-          "highlightDigits": {
-            "14": [
-              4
-            ],
-            "21": [
-              4,
-              8
-            ],
-            "50": [
-              4,
-              8
-            ]
-          },
-          "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "同時看到兩個雙值格的位置不可能是 8。消去 4 個候選。",
-          "focusCells": [
-            21,
-            50,
-            14,
-            5,
-            14,
-            39,
-            48
-          ],
-          "highlightDigits": {
-            "21": [
-              4,
-              8
-            ],
-            "50": [
-              4,
               8
             ]
           },
           "eliminateCells": [
             {
-              "cell": 5,
+              "cell": 36,
               "digit": 8
             },
             {
-              "cell": 14,
+              "cell": 49,
               "digit": 8
             },
             {
-              "cell": 39,
-              "digit": 8
-            },
-            {
-              "cell": 48,
+              "cell": 50,
               "digit": 8
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -18669,506 +20467,599 @@ const TEACH_DATA = {
     "practice": [
       {
         "board": [
-          5,
-          1,
           0,
           0,
           0,
           0,
           0,
-          0,
-          0,
-          0,
-          6,
-          0,
-          1,
-          8,
-          5,
-          3,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          4,
-          7,
-          0,
-          5,
-          0,
-          0,
-          3,
-          6,
-          4,
-          5,
-          1,
-          2,
           0,
           0,
           9,
-          4,
           5,
+          7,
+          0,
+          9,
           2,
           0,
           0,
           0,
-          1,
           0,
-          1,
-          0,
-          0,
-          3,
-          0,
-          0,
-          0,
-          0,
-          0,
-          2,
           0,
           0,
           8,
-          3,
+          1,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
           6,
           0,
           0,
-          7,
           0,
-          7,
           0,
-          5,
+          0,
+          0,
+          1,
+          0,
           9,
-          0,
-          0,
           3,
           0,
           0,
           0,
+          6,
           0,
-          7,
+          0,
+          4,
+          0,
+          0,
+          5,
+          0,
           0,
           2,
           0,
           0,
-          5
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          1,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          9,
+          3,
+          5,
+          0
         ],
         "given": [
-          5,
-          1,
           0,
           0,
           0,
           0,
           0,
-          0,
-          0,
-          0,
-          6,
-          0,
-          1,
-          8,
-          5,
-          3,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          4,
-          7,
-          0,
-          5,
-          0,
-          0,
-          3,
-          6,
-          4,
-          5,
-          1,
-          2,
           0,
           0,
           9,
-          4,
           5,
+          7,
+          0,
+          9,
           2,
           0,
           0,
           0,
-          1,
           0,
-          1,
-          0,
-          0,
-          3,
-          0,
-          0,
-          0,
-          0,
-          0,
-          2,
           0,
           0,
           8,
-          3,
+          1,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
           6,
           0,
           0,
-          7,
           0,
-          7,
           0,
-          5,
+          0,
+          0,
+          1,
+          0,
           9,
-          0,
-          0,
           3,
           0,
           0,
           0,
+          6,
           0,
-          7,
+          0,
+          4,
+          0,
+          0,
+          5,
+          0,
           0,
           2,
           0,
           0,
-          5
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          1,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          9,
+          3,
+          5,
+          0
         ],
         "notes": {
-          "2": [
+          "0": [
             2,
             3,
-            4,
-            7,
-            8,
-            9
-          ],
-          "3": [
-            6,
-            9
-          ],
-          "4": [
-            2,
             6
           ],
-          "5": [
+          "1": [
+            2,
+            4
+          ],
+          "2": [
+            2,
+            4,
+            6
+          ],
+          "3": [
             3,
-            9
+            6,
+            8
+          ],
+          "4": [
+            1,
+            3,
+            4,
+            6,
+            8
+          ],
+          "5": [
+            1,
+            3,
+            4,
+            6,
+            8
           ],
           "6": [
-            4,
-            6,
-            7,
-            8,
-            9
-          ],
-          "7": [
-            2,
-            4,
-            6,
-            7,
-            8,
-            9
-          ],
-          "8": [
-            2,
-            4,
-            6,
-            8,
-            9
-          ],
-          "9": [
-            4,
-            7
-          ],
-          "11": [
-            2,
+            1,
             4,
             7,
-            9
+            8
+          ],
+          "10": [
+            4,
+            5
+          ],
+          "13": [
+            1,
+            3,
+            4,
+            5,
+            6,
+            8
+          ],
+          "14": [
+            1,
+            3,
+            4,
+            5,
+            6,
+            8
+          ],
+          "15": [
+            1,
+            4,
+            8
           ],
           "16": [
-            2,
+            1,
+            3,
             4,
-            7,
-            9
+            6,
+            8
           ],
           "17": [
-            2,
-            4,
-            9
+            3,
+            6,
+            8
           ],
           "18": [
-            3,
-            8
-          ],
-          "19": [
-            2,
-            8,
-            9
-          ],
-          "20": [
             2,
             3,
-            8,
-            9
+            5,
+            6
           ],
           "21": [
+            3,
             6,
             9
+          ],
+          "23": [
+            3,
+            4,
+            5,
+            6
           ],
           "24": [
-            1,
-            6,
-            8,
-            9
+            4
+          ],
+          "25": [
+            2,
+            3,
+            4,
+            6
           ],
           "26": [
-            1,
             2,
-            6,
-            8,
-            9
+            3,
+            6
           ],
           "27": [
+            2,
+            5,
+            8
+          ],
+          "29": [
+            2,
+            5,
             7,
             8
+          ],
+          "30": [
+            3,
+            7,
+            8,
+            9
+          ],
+          "31": [
+            2,
+            3,
+            4,
+            8,
+            9
+          ],
+          "32": [
+            2,
+            3,
+            4,
+            7,
+            8
+          ],
+          "33": [
+            4,
+            5,
+            7,
+            8,
+            9
           ],
           "34": [
-            7,
-            8,
-            9
-          ],
-          "35": [
-            8,
-            9
-          ],
-          "40": [
-            6,
-            7
-          ],
-          "41": [
+            3,
+            4,
             8
           ],
-          "42": [
-            6,
+          "36": [
+            2,
+            5,
+            8
+          ],
+          "39": [
             7,
+            8
+          ],
+          "40": [
+            1,
+            2,
+            4,
+            8
+          ],
+          "41": [
+            1,
+            2,
+            4,
+            7,
+            8
+          ],
+          "43": [
+            4,
             8
           ],
           "44": [
-            3,
-            6,
+            7,
             8
           ],
           "46": [
-            2,
-            8
+            1,
+            7
           ],
           "47": [
-            2,
             7,
             8
           ],
           "49": [
+            1,
+            3,
             6,
-            7
+            8,
+            9
           ],
           "50": [
-            8,
-            9
-          ],
-          "51": [
-            4,
-            5,
+            1,
+            3,
             6,
             7,
-            8,
-            9
+            8
           ],
           "52": [
-            4,
-            6,
+            3,
+            8
+          ],
+          "53": [
+            3,
             7,
             8,
             9
           ],
-          "53": [
-            4,
+          "54": [
+            2,
+            5,
             6,
             8,
-            9
-          ],
-          "55": [
-            5,
             9
           ],
           "56": [
-            1,
-            4,
-            9
+            2,
+            5,
+            6,
+            7,
+            8
+          ],
+          "57": [
+            6,
+            7,
+            8
+          ],
+          "58": [
+            2,
+            5,
+            6,
+            8
+          ],
+          "59": [
+            2,
+            5,
+            6,
+            7,
+            8
           ],
           "60": [
             1,
-            4,
+            8,
             9
           ],
           "61": [
-            4,
-            9
-          ],
-          "63": [
-            4,
+            1,
+            2,
             6,
             8
           ],
+          "64": [
+            2,
+            5
+          ],
           "65": [
-            1,
-            4,
+            2,
+            5,
+            6,
+            8
+          ],
+          "67": [
+            2,
+            3,
+            5,
+            6,
             8
           ],
           "68": [
-            4
+            2,
+            3,
+            5,
+            6,
+            8
           ],
           "69": [
-            1,
-            4,
-            6,
-            8
+            8,
+            9
           ],
           "71": [
-            1,
             2,
-            4,
             6,
-            8
+            8,
+            9
           ],
           "72": [
-            3,
-            4,
+            2,
             6,
             8
           ],
           "73": [
-            8,
-            9
+            2,
+            4,
+            7
           ],
           "74": [
-            1,
-            3,
+            2,
             4,
-            8,
-            9
+            6,
+            7,
+            8
           ],
           "76": [
-            1
-          ],
-          "78": [
-            1,
-            4,
+            2,
             6,
-            8,
-            9
+            8
           ],
-          "79": [
-            4,
+          "80": [
+            2,
             6,
-            8,
-            9
+            8
           ]
         },
         "answer": {
-          "eliminates": [],
+          "eliminates": [
+            {
+              "cell": 36,
+              "digit": 8
+            },
+            {
+              "cell": 49,
+              "digit": 8
+            },
+            {
+              "cell": 50,
+              "digit": 8
+            }
+          ],
           "patternCells": [
-            0,
-            4,
-            40
+            39,
+            47,
+            44,
+            53,
+            36,
+            49,
+            50
           ],
           "description": "W-Wing：兩個雙候選格 R1C1、R1C5、R5C5 透過強鏈連接，同時看見兩端點的格子可消去共享候選。",
           "proof": [],
           "aicChain": []
         },
         "solution": [
-          5,
-          1,
           0,
           0,
           0,
           0,
           0,
-          0,
-          0,
-          0,
-          6,
-          0,
-          1,
-          8,
-          5,
-          3,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          4,
-          7,
-          0,
-          5,
-          0,
-          0,
-          3,
-          6,
-          4,
-          5,
-          1,
-          2,
           0,
           0,
           9,
-          4,
           5,
+          7,
+          0,
+          9,
           2,
           0,
           0,
           0,
-          1,
           0,
-          1,
-          0,
-          0,
-          3,
-          0,
-          0,
-          0,
-          0,
-          0,
-          2,
           0,
           0,
           8,
-          3,
+          1,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
           6,
           0,
           0,
-          7,
           0,
-          7,
           0,
-          5,
+          0,
+          0,
+          1,
+          0,
           9,
-          0,
-          0,
           3,
           0,
           0,
           0,
+          6,
           0,
-          7,
+          0,
+          4,
+          0,
+          0,
+          5,
+          0,
           0,
           2,
           0,
           0,
-          5
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          1,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          9,
+          3,
+          5,
+          0
         ],
         "source": "in-house-generated"
       }
@@ -19176,131 +21067,223 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "兩個 {4,8} 格（R3C4、R6C6）— 不在同一行列宮",
-          "durationMs": 1800,
+          "caption": "定錨端點：R5C4、R6C3 皆為 {7,8}",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
-              21,
-              50
+              39,
+              47
             ],
             "digits": {
-              "21": [
-                4,
+              "39": [
+                7,
                 8
               ],
-              "50": [
-                4,
+              "47": [
+                7,
                 8
               ]
             },
-            "camera": "in"
+            "chainCells": [
+              39,
+              47
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 39
           }
         },
         {
-          "caption": "第 6 列的 4 只有兩格（強連結）→ R2C6 ↔ R6C6",
-          "durationMs": 1800,
+          "caption": "先看 7：C9 的 7 只在 R5C9 ↔ R6C9（強關係）",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
-              21,
-              50,
-              14
+              44,
+              53
             ],
             "digits": {
-              "14": [
-                4
+              "44": [
+                7
               ],
-              "21": [
-                4,
-                8
-              ],
-              "50": [
-                4
+              "53": [
+                7
               ]
             },
-            "units": [
-              14
+            "chainCells": [
+              44,
+              53
             ],
+            "chainMode": "sequential",
             "camera": "none"
           }
         },
         {
-          "caption": "不論 R3C4 填 4 或 8，兩格之一必為 8 → 共同可見格排除 8",
-          "durationMs": 2000,
+          "caption": "分支 A：R5C9=7 時，R5C4 被迫=8",
+          "durationMs": 1600,
           "highlight": {
             "cells": [
-              21,
-              50,
-              14,
-              5,
-              14,
-              39,
-              48
+              44,
+              39
             ],
             "digits": {
-              "5": [
-                8
-              ],
-              "14": [
-                4
-              ],
-              "21": [
-                4,
-                8
-              ],
               "39": [
+                7,
                 8
               ],
-              "48": [
-                8
-              ],
-              "50": [
-                4,
-                8
+              "44": [
+                7
               ]
             },
+            "chainCells": [
+              44,
+              39
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 B：R6C9=7 時，R6C3 被迫=8",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              53,
+              47
+            ],
+            "digits": {
+              "47": [
+                7,
+                8
+              ],
+              "53": [
+                7
+              ]
+            },
+            "chainCells": [
+              53,
+              47
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "合流：不管哪支成立，兩端點至少一格必為 8",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              39,
+              47,
+              44,
+              53
+            ],
+            "digits": {
+              "39": [
+                7,
+                8
+              ],
+              "44": [
+                7
+              ],
+              "47": [
+                7,
+                8
+              ],
+              "53": [
+                7
+              ]
+            },
+            "warnCells": [],
+            "chainCells": [
+              39,
+              44,
+              53,
+              47
+            ],
+            "chainMode": "sequential",
             "camera": "out"
           }
         },
         {
-          "caption": "消去 4 個候選 8",
-          "durationMs": 1200,
+          "caption": "示範一格：R5C1 的 8 會造成端點同時失去 8，故不可留",
+          "durationMs": 1900,
           "highlight": {
             "cells": [
-              21,
-              50,
-              14
+              39,
+              47,
+              36
             ],
             "digits": {
-              "14": [
-                4
-              ],
-              "21": [
-                4,
+              "36": [
                 8
               ],
-              "50": [
-                4,
+              "39": [
+                7,
+                8
+              ],
+              "47": [
+                7,
                 8
               ]
             },
+            "warnCells": [
+              36
+            ],
+            "eliminates": [],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成消除：R5C1、R6C5、R6C6 的候選 8 全部刪除",
+          "durationMs": 2300,
+          "highlight": {
+            "cells": [
+              39,
+              47,
+              36,
+              49,
+              50
+            ],
+            "digits": {
+              "36": [
+                8
+              ],
+              "39": [
+                7,
+                8
+              ],
+              "47": [
+                7,
+                8
+              ],
+              "49": [
+                8
+              ],
+              "50": [
+                8
+              ]
+            },
+            "warnCells": [
+              36,
+              49,
+              50
+            ],
             "eliminates": [
               {
-                "cell": 5,
+                "cell": 36,
                 "digit": 8
               },
               {
-                "cell": 14,
+                "cell": 49,
                 "digit": 8
               },
               {
-                "cell": 39,
-                "digit": 8
-              },
-              {
-                "cell": 48,
+                "cell": 50,
                 "digit": 8
               }
             ],
+            "elimStyle": "cross-mark",
             "camera": "none"
           }
         }
@@ -19312,9 +21295,9 @@ const TEACH_DATA = {
     "name": "空鏡",
     "subtitle": "唯一約束，避免重解",
     "explanation": [
-      "唯一矩形建立在數獨唯一解前提，用來排除致命多解結構。",
-      "當四角形成 ab 型矩形時，若某角也退化為純 ab，盤面可能出現可互換解。",
-      "因此需保留或確立額外候選以破壞致命矩形。"
+      "Unique Rectangle（UR）先找 2x2 四格都含同一對候選（本例 2/9）。",
+      "若四格最後都只剩這對候選，盤面會出現致命雙解（Deadly Pattern）。",
+      "因此必須強制 roof 格走「額外候選」，把 2/9 從 roof 移除。"
     ],
     "example": {
       "board": [
@@ -19810,78 +21793,28 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "找到矩形：R5C3 和 R5C8 都是 {2,9}（floor），R3C3 和 R3C8 也含 2、9（roof）。",
+          "text": "先定錨矩形：R5C3、R5C8 是 floor（都為 {2,9}），R3C3、R3C8 是 roof（含 {2,9} 與額外候選）。",
           "focusCells": [
             38,
             43,
             20,
             25
           ],
-          "highlightDigits": {
-            "20": [
-              2,
-              9
-            ],
-            "25": [
-              2,
-              9
-            ],
-            "38": [
-              2,
-              9
-            ],
-            "43": [
-              2,
-              9
-            ]
-          },
-          "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "若四格都只剩 {2,9}，盤面會有兩解（Deadly Pattern）。數獨必須唯一解。",
-          "focusCells": [
+          "chainCells": [
             38,
-            43,
             20,
-            25
+            25,
+            43
           ],
           "highlightDigits": {
             "20": [
               2,
-              9
-            ],
-            "25": [
-              2,
-              9
-            ],
-            "38": [
-              2,
-              9
-            ],
-            "43": [
-              2,
-              9
-            ]
-          },
-          "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "因此 roof 格的 2、9 不能同時成立 — 至少一格必須填其他數字。",
-          "focusCells": [
-            38,
-            43,
-            20,
-            25
-          ],
-          "highlightDigits": {
-            "20": [
+              9,
               6
             ],
             "25": [
+              2,
+              9,
               5
             ],
             "38": [
@@ -19894,18 +21827,204 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "cross",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "消去 roof 格的 2 和 9，迫使它們填額外候選（6 或 5）。",
+          "text": "先看風險：若四格最後都只剩 {2,9}，這個矩形會產生兩套對稱解，違反唯一解。",
           "focusCells": [
             38,
             43,
             20,
             25
           ],
+          "chainCells": [
+            38,
+            20,
+            25,
+            43
+          ],
           "highlightDigits": {
+            "20": [
+              2,
+              9
+            ],
+            "25": [
+              2,
+              9
+            ],
+            "38": [
+              2,
+              9
+            ],
+            "43": [
+              2,
+              9
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "cross",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "所以 roof 必須破局：R3C3、R3C8 不能再保留 2/9 的矩形形態，至少要走額外候選（6 或 5）。",
+          "focusCells": [
+            20,
+            25
+          ],
+          "chainCells": [
+            20,
+            25
+          ],
+          "highlightDigits": {
+            "20": [
+              2,
+              6,
+              9
+            ],
+            "25": [
+              2,
+              5,
+              9
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "示範一格：R3C3 若保留 2 或 9，矩形仍會回到 deadly pattern 路徑；因此先刪 R3C3 的 2、9。",
+          "focusCells": [
+            38,
+            43,
+            20,
+            25
+          ],
+          "chainCells": [
+            38,
+            20,
+            25,
+            43
+          ],
+          "highlightDigits": {
+            "20": [
+              2,
+              6,
+              9
+            ],
+            "25": [
+              2,
+              5,
+              9
+            ],
+            "38": [
+              2,
+              9
+            ],
+            "43": [
+              2,
+              9
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 20,
+              "digit": 2
+            },
+            {
+              "cell": 20,
+              "digit": 9
+            }
+          ],
+          "showChain": true,
+          "chainMode": "cross",
+          "warnCells": [
+            20
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "同理套用到另一個 roof：R3C8 的 2、9 也不能留。",
+          "focusCells": [
+            38,
+            43,
+            20,
+            25
+          ],
+          "chainCells": [
+            38,
+            20,
+            25,
+            43
+          ],
+          "highlightDigits": {
+            "20": [
+              2,
+              6,
+              9
+            ],
+            "25": [
+              2,
+              5,
+              9
+            ],
+            "38": [
+              2,
+              9
+            ],
+            "43": [
+              2,
+              9
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 25,
+              "digit": 2
+            },
+            {
+              "cell": 25,
+              "digit": 9
+            }
+          ],
+          "showChain": true,
+          "chainMode": "cross",
+          "warnCells": [
+            25
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "完成消除清單：R3C3≠2、R3C3≠9、R3C8≠2、R3C8≠9，矩形被破解。",
+          "focusCells": [
+            38,
+            43,
+            20,
+            25
+          ],
+          "chainCells": [
+            38,
+            20,
+            25,
+            43
+          ],
+          "highlightDigits": {
+            "20": [
+              2,
+              6,
+              9
+            ],
+            "25": [
+              2,
+              5,
+              9
+            ],
             "38": [
               2,
               9
@@ -19933,6 +22052,7 @@ const TEACH_DATA = {
               "digit": 9
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -21173,8 +23293,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "矩形四格都含 {2,9} — R5 兩格已鎖定",
-          "durationMs": 1800,
+          "caption": "定錨 UR：floor={R5C3,R5C8}，roof={R3C3,R3C8}",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
               38,
@@ -21185,10 +23305,12 @@ const TEACH_DATA = {
             "digits": {
               "20": [
                 2,
+                6,
                 9
               ],
               "25": [
                 2,
+                5,
                 9
               ],
               "38": [
@@ -21200,12 +23322,20 @@ const TEACH_DATA = {
                 9
               ]
             },
-            "camera": "in"
+            "chainCells": [
+              38,
+              20,
+              25,
+              43
+            ],
+            "chainMode": "cross",
+            "camera": "in",
+            "cameraFocus": 20
           }
         },
         {
-          "caption": "若四格全是 {2,9} → 兩解（違反唯一解規則）",
-          "durationMs": 1800,
+          "caption": "風險：若四格都退化為 {2,9}，會出現 deadly pattern（雙解）",
+          "durationMs": 1600,
           "highlight": {
             "cells": [
               38,
@@ -21231,12 +23361,47 @@ const TEACH_DATA = {
                 9
               ]
             },
+            "chainCells": [
+              38,
+              20,
+              25,
+              43
+            ],
+            "chainMode": "cross",
             "camera": "none"
           }
         },
         {
-          "caption": "roof 必須打破矩形 → R3C3 填 6 或 R3C8 填 5",
-          "durationMs": 1800,
+          "caption": "破局要求：roof 必須走額外候選（R3C3 的 6、R3C8 的 5）",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              20,
+              25
+            ],
+            "digits": {
+              "20": [
+                2,
+                6,
+                9
+              ],
+              "25": [
+                2,
+                5,
+                9
+              ]
+            },
+            "chainCells": [
+              20,
+              25
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範一格：先刪 R3C3 的 2、9",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
               38,
@@ -21246,10 +23411,14 @@ const TEACH_DATA = {
             ],
             "digits": {
               "20": [
-                6
+                2,
+                6,
+                9
               ],
               "25": [
-                5
+                2,
+                5,
+                9
               ],
               "38": [
                 2,
@@ -21260,18 +23429,51 @@ const TEACH_DATA = {
                 9
               ]
             },
-            "camera": "out"
+            "warnCells": [
+              20
+            ],
+            "eliminates": [
+              {
+                "cell": 20,
+                "digit": 2
+              },
+              {
+                "cell": 20,
+                "digit": 9
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "chainCells": [
+              38,
+              20,
+              25,
+              43
+            ],
+            "chainMode": "cross",
+            "camera": "none"
           }
         },
         {
-          "caption": "消去 roof 的 2、9 — 矩形被破解",
-          "durationMs": 1200,
+          "caption": "同理：再刪 R3C8 的 2、9",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
               38,
-              43
+              43,
+              20,
+              25
             ],
             "digits": {
+              "20": [
+                2,
+                6,
+                9
+              ],
+              "25": [
+                2,
+                5,
+                9
+              ],
               "38": [
                 2,
                 9
@@ -21281,6 +23483,64 @@ const TEACH_DATA = {
                 9
               ]
             },
+            "warnCells": [
+              25
+            ],
+            "eliminates": [
+              {
+                "cell": 25,
+                "digit": 2
+              },
+              {
+                "cell": 25,
+                "digit": 9
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "chainCells": [
+              38,
+              20,
+              25,
+              43
+            ],
+            "chainMode": "cross",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：roof 的 2/9 全部消除，UR 被破解",
+          "durationMs": 2200,
+          "highlight": {
+            "cells": [
+              38,
+              43,
+              20,
+              25
+            ],
+            "digits": {
+              "20": [
+                2,
+                6,
+                9
+              ],
+              "25": [
+                2,
+                5,
+                9
+              ],
+              "38": [
+                2,
+                9
+              ],
+              "43": [
+                2,
+                9
+              ]
+            },
+            "warnCells": [
+              20,
+              25
+            ],
             "eliminates": [
               {
                 "cell": 20,
@@ -21299,7 +23559,8 @@ const TEACH_DATA = {
                 "digit": 9
               }
             ],
-            "camera": "none"
+            "elimStyle": "cross-mark",
+            "camera": "out"
           }
         }
       ]
@@ -21310,9 +23571,9 @@ const TEACH_DATA = {
     "name": "流彩",
     "subtitle": "雙色循環，矛盾定刪",
     "explanation": [
-      "Simple Coloring 以強鏈為骨架，將同一數字交替染成兩色。",
-      "若同色在同單位衝突，該色可整體排除；若某格同視兩色，也可刪除該候選。",
-      "先建色鏈，再找衝突點與雙色可見點。"
+      "X-Cycle / Simple Coloring 先用強鏈把同數字分成兩色。",
+      "兩色互斥且至少一色為真，這是整個推理核心。",
+      "能同時看見兩色的格子，該數字必可刪除。"
     ],
     "example": {
       "board": [
@@ -21808,13 +24069,21 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "找出數字 6 的強連結鏈：每個單位裡 6 只出現兩格，形成交替著色。",
+          "text": "先定錨強鏈：數字 6 在多個單元形成共軛對，能串成一條交替鏈。",
           "focusCells": [
             57,
-            0,
-            29,
             58,
+            0,
             18,
+            29,
+            47
+          ],
+          "chainCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
             47
           ],
           "highlightDigits": {
@@ -21838,17 +24107,27 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "藍色組（A）：R7C4、R1C1、R4C3。紅色組（B）：R7C5、R3C1、R6C3。兩組必有一真。",
+          "text": "開始著色：把鏈節點分成藍/紅兩組，且沿強鏈顏色交替。",
           "focusCells": [
             57,
-            0,
-            29,
             58,
+            0,
             18,
+            29,
+            47
+          ],
+          "chainCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
             47
           ],
           "highlightDigits": {
@@ -21872,17 +24151,63 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "同時看到藍、紅兩色的格子，無論哪色為真，都不可能是 6。",
+          "text": "核心性質：兩組不可能同時為真，但至少有一組為真。",
           "focusCells": [
             57,
-            0,
-            29,
             58,
+            0,
             18,
+            29,
+            47
+          ],
+          "chainCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
+            47
+          ],
+          "highlightDigits": {
+            "0": [
+              6
+            ],
+            "18": [
+              6
+            ],
+            "29": [
+              6
+            ],
+            "47": [
+              6
+            ],
+            "57": [
+              6
+            ],
+            "58": [
+              6
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定刪除區：同時看見藍與紅的格子，候選 6 全部進入待刪。",
+          "focusCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
             47,
             2,
             4,
@@ -21891,38 +24216,28 @@ const TEACH_DATA = {
             48,
             75
           ],
+          "chainCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
+            47
+          ],
           "highlightDigits": {
-            "0": [
-              6
-            ],
             "2": [
               6
             ],
             "4": [
               6
             ],
-            "18": [
-              6
-            ],
             "20": [
-              6
-            ],
-            "29": [
               6
             ],
             "31": [
               6
             ],
-            "47": [
-              6
-            ],
             "48": [
-              6
-            ],
-            "57": [
-              6
-            ],
-            "58": [
               6
             ],
             "75": [
@@ -21930,36 +24245,169 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2,
+            4,
+            20,
+            31,
+            48,
+            75
+          ],
+          "warnDigit": 6
         },
         {
-          "text": "消去 6 個能同時看到兩色的候選 6。",
+          "text": "先做一格示範：R1C3 若保留 6，不論藍真或紅真都會衝突，因此 R1C3≠6。",
           "focusCells": [
             57,
-            0,
-            29,
             58,
+            0,
             18,
+            29,
+            47,
+            2
+          ],
+          "chainCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
             47
           ],
           "highlightDigits": {
-            "0": [
+            "2": [
+              6
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 2,
+              "digit": 6
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 6
+        },
+        {
+          "text": "同理套用其餘交會格：其餘 5 個候選 6 也可刪。",
+          "focusCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
+            47,
+            4,
+            20,
+            31,
+            48,
+            75
+          ],
+          "chainCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
+            47
+          ],
+          "highlightDigits": {
+            "4": [
               6
             ],
-            "18": [
+            "20": [
               6
             ],
-            "29": [
+            "31": [
               6
             ],
-            "47": [
+            "48": [
               6
             ],
-            "57": [
+            "75": [
+              6
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 4,
+              "digit": 6
+            },
+            {
+              "cell": 20,
+              "digit": 6
+            },
+            {
+              "cell": 31,
+              "digit": 6
+            },
+            {
+              "cell": 48,
+              "digit": 6
+            },
+            {
+              "cell": 75,
+              "digit": 6
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            4,
+            20,
+            31,
+            48,
+            75
+          ],
+          "warnDigit": 6
+        },
+        {
+          "text": "完成消除清單：R1C3、R1C5、R3C3、R4C5、R6C4、R9C4 的候選 6 全部移除。",
+          "focusCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
+            47,
+            2,
+            4,
+            20,
+            31,
+            48,
+            75
+          ],
+          "chainCells": [
+            57,
+            58,
+            0,
+            18,
+            29,
+            47
+          ],
+          "highlightDigits": {
+            "2": [
               6
             ],
-            "58": [
+            "4": [
+              6
+            ],
+            "20": [
+              6
+            ],
+            "31": [
+              6
+            ],
+            "48": [
+              6
+            ],
+            "75": [
               6
             ]
           },
@@ -21989,6 +24437,7 @@ const TEACH_DATA = {
               "digit": 6
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -22000,435 +24449,534 @@ const TEACH_DATA = {
         "board": [
           0,
           0,
-          7,
-          0,
-          4,
-          0,
-          0,
-          8,
-          5,
-          4,
-          0,
-          8,
-          0,
-          0,
           0,
           0,
           0,
           3,
           0,
-          0,
-          0,
           5,
-          0,
-          0,
-          0,
           1,
-          9,
-          0,
-          8,
-          0,
-          0,
           2,
+          0,
+          0,
+          4,
+          0,
+          0,
+          6,
+          0,
+          7,
+          0,
+          0,
+          0,
           1,
           5,
           0,
           0,
           0,
-          7,
+          0,
+          9,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
           0,
           8,
-          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          6,
           5,
-          6,
-          0,
-          1,
-          1,
+          3,
           0,
           0,
-          6,
+          0,
           7,
+          0,
           4,
+          0,
+          0,
+          0,
+          6,
+          8,
+          0,
+          0,
           9,
           0,
-          0,
-          0,
-          0,
-          1,
           4,
           0,
           0,
           0,
-          0,
-          0,
-          0,
-          4,
           3,
           0,
           0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          6,
+          7,
           0,
           0,
           8,
           0,
-          5,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
           0
         ],
         "given": [
           0,
           0,
-          7,
-          0,
-          4,
-          0,
-          0,
-          8,
-          5,
-          4,
-          0,
-          8,
-          0,
-          0,
           0,
           0,
           0,
           3,
           0,
-          0,
-          0,
           5,
-          0,
-          0,
-          0,
           1,
-          9,
-          0,
-          8,
-          0,
-          0,
           2,
+          0,
+          0,
+          4,
+          0,
+          0,
+          6,
+          0,
+          7,
+          0,
+          0,
+          0,
           1,
           5,
           0,
           0,
           0,
-          7,
+          0,
+          9,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
           0,
           8,
-          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          6,
           5,
-          6,
-          0,
-          1,
-          1,
+          3,
           0,
           0,
-          6,
+          0,
           7,
+          0,
           4,
+          0,
+          0,
+          0,
+          6,
+          8,
+          0,
+          0,
           9,
           0,
-          0,
-          0,
-          0,
-          1,
           4,
           0,
           0,
           0,
-          0,
-          0,
-          0,
-          4,
           3,
           0,
           0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          6,
+          7,
           0,
           0,
           8,
           0,
-          5,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
           0
         ],
         "notes": {
           "0": [
-            2,
-            3,
+            4,
             6,
-            9
+            7
           ],
           "1": [
-            1,
-            2,
-            3,
+            4,
+            7,
+            8,
+            9
+          ],
+          "2": [
+            4,
             6,
+            7,
             9
           ],
           "3": [
-            1,
             2,
-            3,
+            6,
+            7,
+            8,
             9
           ],
-          "5": [
+          "4": [
             2,
-            3,
             6,
+            8,
             9
           ],
           "6": [
-            2
+            2,
+            8,
+            9
           ],
           "10": [
             1,
-            2,
-            5,
-            6,
+            3,
+            8,
             9
           ],
-          "12": [
+          "11": [
             1,
-            2,
-            7,
+            5,
             9
           ],
           "13": [
-            1,
-            6,
+            8,
             9
           ],
           "14": [
-            2,
+            8
+          ],
+          "16": [
+            3,
+            8,
+            9
+          ],
+          "18": [
+            4,
+            6,
+            7
+          ],
+          "19": [
+            3,
+            4,
+            7,
+            8,
+            9
+          ],
+          "20": [
+            4,
             6,
             7,
             9
-          ],
-          "15": [
-            2,
-            7
-          ],
-          "16": [
-            2,
-            6,
-            7
-          ],
-          "18": [
-            2,
-            3,
-            6
-          ],
-          "19": [
-            2,
-            3,
-            6
-          ],
-          "20": [
-            2
-          ],
-          "22": [
-            6,
-            8
           ],
           "23": [
             2,
-            3,
             6,
-            7
+            8
           ],
           "24": [
             2,
-            4,
-            7
-          ],
-          "27": [
             3,
-            6,
+            8,
+            9
+          ],
+          "25": [
+            2,
+            3,
+            8,
+            9
+          ],
+          "26": [
+            2,
+            3,
+            4,
             9
           ],
           "29": [
+            1,
+            2,
             4,
-            9
+            6,
+            7
           ],
           "30": [
-            9
+            2,
+            3,
+            6,
+            8
+          ],
+          "31": [
+            1,
+            2,
+            3,
+            6,
+            8
+          ],
+          "32": [
+            1,
+            2,
+            4,
+            6,
+            8
+          ],
+          "33": [
+            1,
+            2,
+            3,
+            7,
+            8
           ],
           "34": [
+            1,
+            2,
             3,
-            4,
-            7
+            7,
+            8
           ],
           "35": [
-            4,
-            7
-          ],
-          "36": [
-            2,
-            9
-          ],
-          "38": [
-            2,
-            4,
-            9
-          ],
-          "43": [
-            2,
-            4
-          ],
-          "46": [
-            2,
-            3,
-            5
-          ],
-          "47": [
-            2,
-            5
-          ],
-          "52": [
             2,
             3
           ],
-          "53": [
+          "37": [
+            1,
             2,
-            8
+            4,
+            7
           ],
-          "54": [
+          "38": [
+            1,
+            2,
+            4,
+            7
+          ],
+          "39": [
+            2,
+            3,
+            9
+          ],
+          "40": [
+            1,
+            2,
+            3,
+            9
+          ],
+          "41": [
+            1,
+            2,
+            4
+          ],
+          "42": [
+            1,
+            2,
+            3,
+            7,
+            9
+          ],
+          "46": [
+            1,
+            2
+          ],
+          "47": [
+            1,
+            2,
+            6
+          ],
+          "48": [
             2,
             5,
-            7,
+            6,
             8,
             9
           ],
-          "55": [
+          "50": [
+            1,
             2,
             5,
-            9
-          ],
-          "58": [
-            5,
             6,
-            9
-          ],
-          "59": [
-            2,
-            3,
-            6,
-            7,
-            9
-          ],
-          "60": [
-            2,
-            3,
-            7,
             8
           ],
-          "61": [
+          "52": [
+            1,
+            2,
+            8,
+            9
+          ],
+          "53": [
+            2,
+            9
+          ],
+          "54": [
+            1,
+            5,
+            7
+          ],
+          "57": [
             2,
             3,
-            6,
-            7,
-            9
+            5
+          ],
+          "58": [
+            1,
+            2,
+            3
+          ],
+          "60": [
+            1,
+            2,
+            3,
+            5,
+            7
           ],
           "62": [
             2,
-            6,
-            7,
-            8
+            3
           ],
           "63": [
+            1,
+            4,
+            5
+          ],
+          "64": [
+            1,
             2,
-            5,
-            7,
-            8,
+            4,
             9
           ],
           "66": [
-            1,
             2,
-            7,
-            9
+            5,
+            6
           ],
           "67": [
             1,
-            5,
-            6,
-            9
-          ],
-          "68": [
             2,
-            6,
-            7,
-            9
+            6
           ],
           "69": [
             1,
             2,
-            7,
-            8
+            5,
+            9
           ],
           "70": [
+            1,
             2,
-            6,
-            7,
             9
-          ],
-          "71": [
-            2,
-            6,
-            7,
-            8
           ],
           "72": [
+            1,
+            5,
+            7
+          ],
+          "73": [
+            1,
             2,
             7,
             9
           ],
-          "73": [
+          "74": [
+            1,
             2,
+            5,
+            7,
             9
           ],
           "75": [
-            1,
             2,
             3,
-            7,
-            9
+            5,
+            6,
+            8
           ],
-          "76": [
+          "77": [
             1,
-            9
+            2,
+            5,
+            6,
+            8
           ],
           "78": [
             1,
             2,
             3,
-            4,
-            7
+            5,
+            7,
+            9
+          ],
+          "79": [
+            1,
+            2,
+            3,
+            7,
+            9
           ],
           "80": [
             2,
-            4,
-            7
+            3,
+            6,
+            9
           ]
         },
         "answer": {
-          "eliminates": [],
+          "eliminates": [
+            {
+              "cell": 2,
+              "digit": 6
+            },
+            {
+              "cell": 4,
+              "digit": 6
+            },
+            {
+              "cell": 20,
+              "digit": 6
+            },
+            {
+              "cell": 31,
+              "digit": 6
+            },
+            {
+              "cell": 48,
+              "digit": 6
+            },
+            {
+              "cell": 75,
+              "digit": 6
+            }
+          ],
           "patternCells": [
+            57,
+            58,
             0,
+            18,
+            29,
+            47,
+            2,
             4,
-            40
+            20,
+            31,
+            48,
+            75
           ],
           "description": "Simple Coloring：沿共軛鏈標記雙色，找出矛盾或交叉可見點進行消去。",
           "proof": [],
@@ -22437,84 +24985,84 @@ const TEACH_DATA = {
         "solution": [
           0,
           0,
-          7,
-          0,
-          4,
-          0,
-          0,
-          8,
-          5,
-          4,
-          0,
-          8,
-          0,
-          0,
           0,
           0,
           0,
           3,
           0,
-          0,
-          0,
           5,
-          0,
-          0,
-          0,
           1,
-          9,
-          0,
-          8,
-          0,
-          0,
           2,
+          0,
+          0,
+          4,
+          0,
+          0,
+          6,
+          0,
+          7,
+          0,
+          0,
+          0,
           1,
           5,
           0,
           0,
           0,
-          7,
+          0,
+          9,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
           0,
           8,
-          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          6,
           5,
-          6,
-          0,
-          1,
-          1,
+          3,
           0,
           0,
-          6,
+          0,
           7,
+          0,
           4,
+          0,
+          0,
+          0,
+          6,
+          8,
+          0,
+          0,
           9,
           0,
-          0,
-          0,
-          0,
-          1,
           4,
           0,
           0,
           0,
-          0,
-          0,
-          0,
-          4,
           3,
           0,
           0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          6,
+          7,
           0,
           0,
           8,
           0,
-          5,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
           0
         ],
         "source": "in-house-generated"
@@ -22523,15 +25071,15 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "數字 6 的強連結鏈：每個單位裡只有兩格，交替著色",
-          "durationMs": 2000,
+          "caption": "定錨：為數字 6 建立共軛強鏈",
+          "durationMs": 1600,
           "highlight": {
             "cells": [
               57,
-              0,
-              29,
               58,
+              0,
               18,
+              29,
               47
             ],
             "digits": {
@@ -22554,19 +25102,73 @@ const TEACH_DATA = {
                 6
               ]
             },
-            "camera": "in"
+            "chainCells": [
+              57,
+              58,
+              0,
+              18,
+              29,
+              47
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 57
           }
         },
         {
-          "caption": "藍組和紅組必有一組全真 — 兩組互斥",
-          "durationMs": 1800,
+          "caption": "著色：鏈節點分成藍/紅兩組",
+          "durationMs": 1500,
           "highlight": {
             "cells": [
               57,
-              0,
-              29,
               58,
+              0,
               18,
+              29,
+              47
+            ],
+            "digits": {
+              "0": [
+                6
+              ],
+              "18": [
+                6
+              ],
+              "29": [
+                6
+              ],
+              "47": [
+                6
+              ],
+              "57": [
+                6
+              ],
+              "58": [
+                6
+              ]
+            },
+            "chainCells": [
+              57,
+              58,
+              0,
+              18,
+              29,
+              47
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "性質：兩色互斥且至少一色為真",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              57,
+              58,
+              0,
+              18,
+              29,
               47
             ],
             "digits": {
@@ -22593,16 +25195,20 @@ const TEACH_DATA = {
           }
         },
         {
-          "caption": "同時看到兩色的格子 → 無論哪色為真，該格都不可能是 6",
-          "durationMs": 2000,
+          "caption": "目標：同時看見兩色的格子進入待刪",
+          "durationMs": 1700,
           "highlight": {
             "cells": [
+              2,
+              4,
+              20,
+              31,
+              48,
+              75,
               57,
-              0,
-              29,
-              58,
-              18,
-              47,
+              58
+            ],
+            "warnCells": [
               2,
               4,
               20,
@@ -22610,79 +25216,108 @@ const TEACH_DATA = {
               48,
               75
             ],
-            "digits": {
-              "0": [
-                6
-              ],
-              "2": [
-                6
-              ],
-              "4": [
-                6
-              ],
-              "18": [
-                6
-              ],
-              "20": [
-                6
-              ],
-              "29": [
-                6
-              ],
-              "31": [
-                6
-              ],
-              "47": [
-                6
-              ],
-              "48": [
-                6
-              ],
-              "57": [
-                6
-              ],
-              "58": [
-                6
-              ],
-              "75": [
-                6
-              ]
-            },
-            "camera": "out"
+            "chainCells": [
+              57,
+              58,
+              0,
+              18,
+              29,
+              47
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
           }
         },
         {
-          "caption": "消去 6 個候選 6",
-          "durationMs": 1200,
+          "caption": "示範刪除：R1C3≠6",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              57,
+              58,
+              0,
+              18,
+              29,
+              47
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 6
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "同理：其餘五格一起刪",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              4,
+              20,
+              31,
+              48,
+              75
+            ],
+            "warnCells": [
+              4,
+              20,
+              31,
+              48,
+              75
+            ],
+            "eliminates": [
+              {
+                "cell": 4,
+                "digit": 6
+              },
+              {
+                "cell": 20,
+                "digit": 6
+              },
+              {
+                "cell": 31,
+                "digit": 6
+              },
+              {
+                "cell": 48,
+                "digit": 6
+              },
+              {
+                "cell": 75,
+                "digit": 6
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Simple Coloring 消去 6 個候選 6",
+          "durationMs": 2200,
           "highlight": {
             "cells": [
               57,
-              0,
-              29,
               58,
+              0,
               18,
+              29,
               47
             ],
-            "digits": {
-              "0": [
-                6
-              ],
-              "18": [
-                6
-              ],
-              "29": [
-                6
-              ],
-              "47": [
-                6
-              ],
-              "57": [
-                6
-              ],
-              "58": [
-                6
-              ]
-            },
+            "warnCells": [
+              2,
+              4,
+              20,
+              31,
+              48,
+              75
+            ],
             "eliminates": [
               {
                 "cell": 2,
@@ -22709,7 +25344,8 @@ const TEACH_DATA = {
                 "digit": 6
               }
             ],
-            "camera": "none"
+            "elimStyle": "cross-mark",
+            "camera": "out"
           }
         }
       ]
@@ -22720,9 +25356,9 @@ const TEACH_DATA = {
     "name": "法印",
     "subtitle": "三線成網，批次刪減",
     "explanation": [
-      "Swordfish 是魚型三線版：某數字在三行只落於同三列（或三列對三行）。",
-      "三線網一旦成立，覆蓋列之外的候選可做批次刪除。",
-      "它是 X-Wing 之後最重要的擴展型魚系技巧。"
+      "Swordfish 是 X-Wing 的 3x3 版本：三行把同一數字收斂在同三列。",
+      "一旦三行三列封閉，這三列的外部格就不能再保留該候選。",
+      "先示範一格，再一次列出全刪清單最清楚。"
     ],
     "example": {
       "board": [
@@ -23247,7 +25883,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察數字 8：第 3 行在 C7、C9；第 6 行在 C7、C8、C9；第 7 行在 C8、C9。",
+          "text": "先定錨三行：數字 8 在第 3、6、7 行都集中於 C7/C8/C9。",
           "focusCells": [
             24,
             26,
@@ -23256,6 +25892,15 @@ const TEACH_DATA = {
             53,
             61,
             62
+          ],
+          "chainCells": [
+            24,
+            26,
+            53,
+            62,
+            61,
+            52,
+            51
           ],
           "highlightDigits": {
             "24": [
@@ -23281,11 +25926,13 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "三行的 8 全部落在同三列（C7、C8、C9）→ Swordfish 成立（X-Wing 的 3×3 版）。",
+          "text": "三行共用同三列（C7/C8/C9），Swordfish 封閉網成立。",
           "focusCells": [
             24,
             26,
@@ -23294,6 +25941,15 @@ const TEACH_DATA = {
             53,
             61,
             62
+          ],
+          "chainCells": [
+            24,
+            53,
+            62,
+            61,
+            52,
+            51,
+            24
           ],
           "highlightDigits": {
             "24": [
@@ -23319,11 +25975,13 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "這三列中，不在這三行的其他格可以消去候選 8。",
+          "text": "鎖定目標：同三列但不在這三行的格子，候選 8 都是待刪對象。",
           "focusCells": [
             24,
             26,
@@ -23337,7 +25995,15 @@ const TEACH_DATA = {
             79,
             80
           ],
+          "chainCells": [
+            24,
+            53,
+            62
+          ],
           "highlightDigits": {
+            "16": [
+              8
+            ],
             "24": [
               8
             ],
@@ -23358,14 +26024,70 @@ const TEACH_DATA = {
             ],
             "62": [
               8
+            ],
+            "78": [
+              8
+            ],
+            "79": [
+              8
+            ],
+            "80": [
+              8
             ]
           },
           "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            16,
+            78,
+            79,
+            80
+          ],
+          "warnDigit": 8
         },
         {
-          "text": "消去 4 個候選 8。",
+          "text": "先做一格示範：R2C8 若保留 8，會破壞 Swordfish 封閉網，所以 R2C8≠8。",
+          "focusCells": [
+            24,
+            52,
+            61,
+            16
+          ],
+          "chainCells": [
+            24,
+            52,
+            61
+          ],
+          "highlightDigits": {
+            "16": [
+              8
+            ],
+            "24": [
+              8
+            ],
+            "52": [
+              8
+            ],
+            "61": [
+              8
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 16,
+              "digit": 8
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            16
+          ],
+          "warnDigit": 8
+        },
+        {
+          "text": "同理套用到第 9 行三格：R9C7、R9C8、R9C9 的 8 都不能留。",
           "focusCells": [
             24,
             26,
@@ -23373,6 +26095,14 @@ const TEACH_DATA = {
             52,
             53,
             61,
+            62,
+            78,
+            79,
+            80
+          ],
+          "chainCells": [
+            26,
+            53,
             62
           ],
           "highlightDigits": {
@@ -23395,6 +26125,93 @@ const TEACH_DATA = {
               8
             ],
             "62": [
+              8
+            ],
+            "78": [
+              8
+            ],
+            "79": [
+              8
+            ],
+            "80": [
+              8
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 78,
+              "digit": 8
+            },
+            {
+              "cell": 79,
+              "digit": 8
+            },
+            {
+              "cell": 80,
+              "digit": 8
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            78,
+            79,
+            80
+          ],
+          "warnDigit": 8
+        },
+        {
+          "text": "完成消除清單：R2C8≠8、R9C7≠8、R9C8≠8、R9C9≠8。",
+          "focusCells": [
+            24,
+            26,
+            51,
+            52,
+            53,
+            61,
+            62,
+            16,
+            78,
+            79,
+            80
+          ],
+          "chainCells": [
+            24,
+            53,
+            62
+          ],
+          "highlightDigits": {
+            "16": [
+              8
+            ],
+            "24": [
+              8
+            ],
+            "26": [
+              8
+            ],
+            "51": [
+              8
+            ],
+            "52": [
+              8
+            ],
+            "53": [
+              8
+            ],
+            "61": [
+              8
+            ],
+            "62": [
+              8
+            ],
+            "78": [
+              8
+            ],
+            "79": [
+              8
+            ],
+            "80": [
               8
             ]
           },
@@ -23416,6 +26233,7 @@ const TEACH_DATA = {
               "digit": 8
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -24798,8 +27616,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "數字 8 在第 3、6、7 行各只出現在 C7、C8、C9",
-          "durationMs": 2000,
+          "caption": "定錨：三行把 8 收斂到 C7/C8/C9",
+          "durationMs": 1600,
           "highlight": {
             "cells": [
               24,
@@ -24833,17 +27651,23 @@ const TEACH_DATA = {
                 8
               ]
             },
-            "units": [
-              2,
-              5,
-              6
+            "chainCells": [
+              24,
+              26,
+              53,
+              62,
+              61,
+              52,
+              51
             ],
-            "camera": "in"
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 52
           }
         },
         {
-          "caption": "3 行 × 3 列 = Swordfish（X-Wing 的擴展版）",
-          "durationMs": 1800,
+          "caption": "封閉：Swordfish 網成立",
+          "durationMs": 1500,
           "highlight": {
             "cells": [
               24,
@@ -24877,17 +27701,22 @@ const TEACH_DATA = {
                 8
               ]
             },
-            "units": [
-              15,
-              16,
-              17
+            "chainCells": [
+              24,
+              53,
+              62,
+              61,
+              52,
+              51,
+              24
             ],
+            "chainMode": "sequential",
             "camera": "none"
           }
         },
         {
-          "caption": "同三列、不在這三行的格 → 不可能是 8",
-          "durationMs": 1800,
+          "caption": "目標：三列外部的 8 全列為待刪",
+          "durationMs": 1600,
           "highlight": {
             "cells": [
               24,
@@ -24906,22 +27735,79 @@ const TEACH_DATA = {
               "16": [
                 8
               ],
+              "78": [
+                8
+              ],
+              "79": [
+                8
+              ],
+              "80": [
+                8
+              ]
+            },
+            "warnCells": [
+              16,
+              78,
+              79,
+              80
+            ],
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R2C8≠8",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              16,
+              24,
+              52,
+              61
+            ],
+            "digits": {
+              "16": [
+                8
+              ],
               "24": [
-                8
-              ],
-              "26": [
-                8
-              ],
-              "51": [
                 8
               ],
               "52": [
                 8
               ],
-              "53": [
+              "61": [
+                8
+              ]
+            },
+            "warnCells": [
+              16
+            ],
+            "eliminates": [
+              {
+                "cell": 16,
+                "digit": 8
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "同理：第 9 行三格一起刪",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              78,
+              79,
+              80,
+              26,
+              53,
+              62
+            ],
+            "digits": {
+              "26": [
                 8
               ],
-              "61": [
+              "53": [
                 8
               ],
               "62": [
@@ -24937,12 +27823,32 @@ const TEACH_DATA = {
                 8
               ]
             },
-            "camera": "out"
+            "warnCells": [
+              78,
+              79,
+              80
+            ],
+            "eliminates": [
+              {
+                "cell": 78,
+                "digit": 8
+              },
+              {
+                "cell": 79,
+                "digit": 8
+              },
+              {
+                "cell": 80,
+                "digit": 8
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
           }
         },
         {
-          "caption": "消去 4 個候選 8",
-          "durationMs": 1200,
+          "caption": "完成：Swordfish 消去 4 個候選 8",
+          "durationMs": 2200,
           "highlight": {
             "cells": [
               24,
@@ -24976,6 +27882,12 @@ const TEACH_DATA = {
                 8
               ]
             },
+            "warnCells": [
+              16,
+              78,
+              79,
+              80
+            ],
             "eliminates": [
               {
                 "cell": 16,
@@ -24994,7 +27906,8 @@ const TEACH_DATA = {
                 "digit": 8
               }
             ],
-            "camera": "none"
+            "elimStyle": "cross-mark",
+            "camera": "out"
           }
         }
       ]
@@ -25005,9 +27918,9 @@ const TEACH_DATA = {
     "name": "荊棘",
     "subtitle": "主魚帶鰭，局部破陣",
     "explanation": [
-      "Finned Swordfish 是 Swordfish 的不完全形：三線主網外多出鰭位。",
-      "鰭位會收斂刪除區域，通常僅在鰭宮與魚線交集可下刀。",
-      "先確認三線主體，再用鰭修正可刪範圍是關鍵。"
+      "Finned Swordfish 先有 Swordfish 骨架，再多出一個鰭點。",
+      "鰭會把消去範圍收窄到同鰭宮與骨架交會的格子。",
+      "所以採用單點示範再總結的節奏最直覺。"
     ],
     "example": {
       "board": [
@@ -25517,7 +28430,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察數字 8：第 1 行在 C4、C5、C6（C4 是鰭）；第 5 行在 C3、C5、C6；第 8 行在 C5、C6。",
+          "text": "先定錨：數字 8 的三行骨架在 C3/C5/C6，且第 1 行多出 C4 作為鰭。",
           "focusCells": [
             3,
             4,
@@ -25527,6 +28440,15 @@ const TEACH_DATA = {
             41,
             67,
             68
+          ],
+          "chainCells": [
+            4,
+            5,
+            41,
+            68,
+            67,
+            40,
+            38
           ],
           "highlightDigits": {
             "3": [
@@ -25555,16 +28477,16 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [
             3
           ],
           "warnDigit": 8
         },
         {
-          "text": "忽略鰭（C4），三行的 8 落在同三列（C3、C5、C6）→ Swordfish 骨架成立。",
+          "text": "先看骨架：忽略鰭 C4 時，三行仍可形成 Swordfish 主網。",
           "focusCells": [
-            3,
-            4,
             5,
             38,
             40,
@@ -25572,13 +28494,15 @@ const TEACH_DATA = {
             67,
             68
           ],
+          "chainCells": [
+            5,
+            41,
+            68,
+            67,
+            40,
+            38
+          ],
           "highlightDigits": {
-            "3": [
-              8
-            ],
-            "4": [
-              8
-            ],
             "5": [
               8
             ],
@@ -25599,11 +28523,134 @@ const TEACH_DATA = {
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "鰭的存在限制消去範圍：只有同時在 Swordfish 列上、且與鰭同宮的格可以消去。",
+          "text": "鰭修正：消去只允許在同鰭宮且受主網壓制的位置。",
+          "focusCells": [
+            3,
+            4,
+            5,
+            22,
+            23
+          ],
+          "chainCells": [
+            4,
+            5,
+            23,
+            22
+          ],
+          "highlightDigits": {
+            "3": [
+              8
+            ],
+            "4": [
+              8
+            ],
+            "5": [
+              8
+            ],
+            "22": [
+              8
+            ],
+            "23": [
+              8
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            22,
+            23
+          ],
+          "warnDigit": 8
+        },
+        {
+          "text": "先做一格示範：R3C5 的 8 與鰭修正衝突，故 R3C5≠8。",
+          "focusCells": [
+            3,
+            4,
+            5,
+            22
+          ],
+          "chainCells": [
+            4,
+            5,
+            22
+          ],
+          "highlightDigits": {
+            "3": [
+              8
+            ],
+            "4": [
+              8
+            ],
+            "5": [
+              8
+            ],
+            "22": [
+              8
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 22,
+              "digit": 8
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            22
+          ],
+          "warnDigit": 8
+        },
+        {
+          "text": "同理套用：R3C6 的候選 8 也不能留。",
+          "focusCells": [
+            3,
+            4,
+            5,
+            23
+          ],
+          "chainCells": [
+            4,
+            5,
+            23
+          ],
+          "highlightDigits": {
+            "3": [
+              8
+            ],
+            "4": [
+              8
+            ],
+            "5": [
+              8
+            ],
+            "23": [
+              8
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 23,
+              "digit": 8
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            23
+          ],
+          "warnDigit": 8
+        },
+        {
+          "text": "完成消除清單：R3C5≠8、R3C6≠8。",
           "focusCells": [
             3,
             4,
@@ -25615,6 +28662,15 @@ const TEACH_DATA = {
             68,
             22,
             23
+          ],
+          "chainCells": [
+            4,
+            5,
+            41,
+            68,
+            67,
+            40,
+            38
           ],
           "highlightDigits": {
             "3": [
@@ -25648,48 +28704,6 @@ const TEACH_DATA = {
               8
             ]
           },
-          "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "消去 R3C5 和 R3C6 的候選 8。",
-          "focusCells": [
-            3,
-            4,
-            5,
-            38,
-            40,
-            41,
-            67,
-            68
-          ],
-          "highlightDigits": {
-            "3": [
-              8
-            ],
-            "4": [
-              8
-            ],
-            "5": [
-              8
-            ],
-            "38": [
-              8
-            ],
-            "40": [
-              8
-            ],
-            "41": [
-              8
-            ],
-            "67": [
-              8
-            ],
-            "68": [
-              8
-            ]
-          },
           "eliminateCells": [
             {
               "cell": 22,
@@ -25700,6 +28714,7 @@ const TEACH_DATA = {
               "digit": 8
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -26022,8 +29037,8 @@ const TEACH_DATA = {
     "demoStory": {
       "acts": [
         {
-          "caption": "數字 8 在三行分佈：第 1 行多了 C4（鰭）",
-          "durationMs": 2000,
+          "caption": "定錨：Swordfish 骨架 + 鰭 C4",
+          "durationMs": 1600,
           "highlight": {
             "cells": [
               3,
@@ -26061,20 +29076,28 @@ const TEACH_DATA = {
                 8
               ]
             },
-            "units": [
-              0,
-              4,
-              7
+            "warnCells": [
+              3
             ],
-            "camera": "in"
+            "chainCells": [
+              4,
+              5,
+              41,
+              68,
+              67,
+              40,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 4
           }
         },
         {
-          "caption": "忽略鰭 → Swordfish 骨架 C3×C5×C6 成立",
-          "durationMs": 1800,
+          "caption": "骨架：忽略鰭時主網仍成立",
+          "durationMs": 1500,
           "highlight": {
             "cells": [
-              4,
               5,
               38,
               40,
@@ -26083,12 +29106,6 @@ const TEACH_DATA = {
               68
             ],
             "digits": {
-              "3": [
-                8
-              ],
-              "4": [
-                8
-              ],
               "5": [
                 8
               ],
@@ -26108,27 +29125,26 @@ const TEACH_DATA = {
                 8
               ]
             },
-            "units": [
-              11,
-              13,
-              14
+            "chainCells": [
+              5,
+              41,
+              68,
+              67,
+              40,
+              38
             ],
+            "chainMode": "sequential",
             "camera": "none"
           }
         },
         {
-          "caption": "鰭限制消去範圍：只影響同宮且在 Swordfish 列上的格",
-          "durationMs": 1800,
+          "caption": "鰭修正：鎖定同宮交會刪除區",
+          "durationMs": 1600,
           "highlight": {
             "cells": [
               3,
               4,
               5,
-              38,
-              40,
-              41,
-              67,
-              68,
               22,
               23
             ],
@@ -26147,29 +29163,99 @@ const TEACH_DATA = {
               ],
               "23": [
                 8
-              ],
-              "38": [
-                8
-              ],
-              "40": [
-                8
-              ],
-              "41": [
-                8
-              ],
-              "67": [
-                8
-              ],
-              "68": [
-                8
               ]
             },
-            "camera": "out"
+            "warnCells": [
+              22,
+              23
+            ],
+            "chainCells": [
+              4,
+              5,
+              23,
+              22
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
           }
         },
         {
-          "caption": "消去 2 個候選 8",
-          "durationMs": 1200,
+          "caption": "示範刪除：R3C5≠8",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              3,
+              4,
+              5,
+              22
+            ],
+            "digits": {
+              "3": [
+                8
+              ],
+              "4": [
+                8
+              ],
+              "5": [
+                8
+              ],
+              "22": [
+                8
+              ]
+            },
+            "warnCells": [
+              22
+            ],
+            "eliminates": [
+              {
+                "cell": 22,
+                "digit": 8
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "同理：R3C6≠8",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              3,
+              4,
+              5,
+              23
+            ],
+            "digits": {
+              "3": [
+                8
+              ],
+              "4": [
+                8
+              ],
+              "5": [
+                8
+              ],
+              "23": [
+                8
+              ]
+            },
+            "warnCells": [
+              23
+            ],
+            "eliminates": [
+              {
+                "cell": 23,
+                "digit": 8
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Finned Swordfish 消去 2 個候選 8",
+          "durationMs": 2200,
           "highlight": {
             "cells": [
               3,
@@ -26207,6 +29293,10 @@ const TEACH_DATA = {
                 8
               ]
             },
+            "warnCells": [
+              22,
+              23
+            ],
             "eliminates": [
               {
                 "cell": 22,
@@ -26217,7 +29307,8 @@ const TEACH_DATA = {
                 "digit": 8
               }
             ],
-            "camera": "none"
+            "elimStyle": "cross-mark",
+            "camera": "out"
           }
         }
       ]
@@ -26228,9 +29319,9 @@ const TEACH_DATA = {
     "name": "玄鏈",
     "subtitle": "強弱交替，交點定刪",
     "explanation": [
-      "AIC 以強鏈與弱鏈交替連接，建立可驗證的推理路徑。",
-      "強鏈代表至少一真，弱鏈代表不可同真。",
-      "當鏈首鏈尾形成同值關係時，可對共同可見區做定向刪除。"
+      "AIC 以強弱交替鏈做真假傳遞。",
+      "當鏈首尾對同一候選形成夾擊時，可在共同可見格刪除。",
+      "高難重點是分段驗證每一段的強弱合法性。"
     ],
     "example": {
       "board": [
@@ -26668,52 +29759,144 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：由候選出發建立強弱交替鏈，先確認起點與第一段強鏈。",
-          "focusCells": [
-            0,
-            4
-          ],
-          "highlightDigits": {
-            "4": [
-              3
-            ]
-          },
-          "eliminateCells": []
-        },
-        {
-          "text": "判定：沿鏈傳遞真假，確認每一段都符合強弱規則。",
+          "text": "定錨 AIC：先鎖鏈首 R1C1 與鏈尾 R5C5。",
           "focusCells": [
             0,
             4,
             40
           ],
-          "highlightDigits": {
-            "4": [
-              3
-            ]
-          },
-          "eliminateCells": []
-        },
-        {
-          "text": "操作：依鏈首尾關係刪除共同可見區中的對應候選。",
-          "focusCells": [
+          "chainCells": [
             0,
             4,
             40
           ],
           "highlightDigits": {
+            "0": [
+              5
+            ],
             "4": [
-              3
+              5
+            ],
+            "40": [
+              5
             ]
           },
-          "eliminateCells": []
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
         },
         {
-          "text": "任何同時看到 R1C1 和 R5C5 的格子可以消去 5。R5C1 同列看到 R1C1、同行看到 R5C5——消去 R5C1 的候選數 5。",
+          "text": "建立主鏈段：由鏈首沿強弱交替推進到中繼節點。",
           "focusCells": [
             0,
+            4,
+            40
+          ],
+          "chainCells": [
+            0,
+            4,
+            40
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R5C1 的候選 5 同時受鏈首/鏈尾影響。",
+          "focusCells": [
+            0,
+            4,
             40,
             36
+          ],
+          "chainCells": [
+            0,
+            4,
+            40
+          ],
+          "highlightDigits": {
+            "36": [
+              5
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            36
+          ],
+          "warnDigit": 5
+        },
+        {
+          "text": "分支合流：無論鏈首真假，鏈尾都會把 R5C1 的 5 排除。",
+          "focusCells": [
+            0,
+            4,
+            40,
+            36
+          ],
+          "chainCells": [
+            0,
+            4,
+            40
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            36
+          ],
+          "warnDigit": 5
+        },
+        {
+          "text": "示範刪除：R5C1≠5。",
+          "focusCells": [
+            36,
+            0,
+            4,
+            40
+          ],
+          "chainCells": [
+            0,
+            4,
+            40
+          ],
+          "highlightDigits": {
+            "36": [
+              5
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 36,
+              "digit": 5
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            36
+          ],
+          "warnDigit": 5
+        },
+        {
+          "text": "完成消除清單：R5C1 的候選 5 移除。",
+          "focusCells": [
+            0,
+            4,
+            40,
+            36
+          ],
+          "chainCells": [
+            0,
+            4,
+            40
           ],
           "highlightDigits": {},
           "eliminateCells": [
@@ -26721,7 +29904,10 @@ const TEACH_DATA = {
               "cell": 36,
               "digit": 5
             }
-          ]
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
         }
       ],
       "source": "in-house-generated"
@@ -27965,16 +31151,146 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：AIC 鏈首與鏈尾",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              4,
+              40
+            ],
+            "chainCells": [
+              0,
+              4,
+              40
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 0
+          }
+        },
+        {
+          "caption": "推進：建立強弱交替主鏈",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              0,
+              4,
+              40
+            ],
+            "chainCells": [
+              0,
+              4,
+              40
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R5C1 的 5",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              4,
+              40,
+              36
+            ],
+            "warnCells": [
+              36
+            ],
+            "chainCells": [
+              0,
+              4,
+              40
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "合流：兩分支同指向排除",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              0,
+              4,
+              40,
+              36
+            ],
+            "warnCells": [
+              36
+            ],
+            "chainCells": [
+              0,
+              4,
+              40
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R5C1≠5",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              36,
+              0,
+              4,
+              40
+            ],
+            "warnCells": [
+              36
+            ],
+            "eliminates": [
+              {
+                "cell": 36,
+                "digit": 5
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：AIC 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              0,
+              4,
+              40
+            ],
+            "warnCells": [
+              36
+            ],
+            "eliminates": [
+              {
+                "cell": 36,
+                "digit": 5
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "19": {
     "technique": "aic_mid_chain",
     "name": "無相",
     "subtitle": "中鏈反證，逐段定刪",
     "explanation": [
-      "AIC 中鏈用反證法運作：假設成立後若導致矛盾，假設即被排除。",
-      "先鎖定目標候選，再沿強弱鏈逐段推進。",
-      "當終點出現衝突時，可安全刪除起點候選。"
+      "AIC Mid Chain 的關鍵是中繼段提供必要強鏈轉折。",
+      "推理時要先看中段，再回頭看首尾如何夾擊目標。",
+      "因此拆成多段驗證最容易理解。"
     ],
     "example": {
       "board": [
@@ -28418,37 +31734,97 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：確認高亮格的目標候選與鏈起點。",
-          "focusCells": [
-            2,
-            14
-          ],
-          "highlightDigits": {
-            "2": [
-              1,
-              2
-            ]
-          },
-          "eliminateCells": []
-        },
-        {
-          "text": "判定：沿鏈推進後出現結構衝突。",
+          "text": "定錨中鏈：先圈出中繼關節（R1C3、R2C6）與鏈首。",
           "focusCells": [
             2,
             14,
             0,
             3
           ],
+          "chainCells": [
+            2,
+            14,
+            3,
+            0
+          ],
           "highlightDigits": {
+            "0": [
+              2
+            ],
             "2": [
-              1,
+              2
+            ],
+            "3": [
+              2
+            ],
+            "14": [
               2
             ]
           },
-          "eliminateCells": []
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
         },
         {
-          "text": "操作：刪除 R1C3 的候選 2。",
+          "text": "推進前段：鏈首經中繼段把真假約束傳到後段。",
+          "focusCells": [
+            2,
+            14,
+            0,
+            3,
+            6,
+            8,
+            9,
+            10
+          ],
+          "chainCells": [
+            2,
+            14,
+            3,
+            0,
+            6,
+            8
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R1C3 的候選 2 進入待驗證。",
+          "focusCells": [
+            2,
+            14,
+            0,
+            3,
+            6,
+            8
+          ],
+          "chainCells": [
+            2,
+            14,
+            3,
+            0
+          ],
+          "highlightDigits": {
+            "2": [
+              2
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "回推驗證：若 R1C3 保留 2，會在中鏈內造成自衝突。",
           "focusCells": [
             2,
             14,
@@ -28461,50 +31837,46 @@ const TEACH_DATA = {
             12,
             13,
             16,
-            17,
-            19,
-            20,
-            21,
-            22,
-            23,
-            26,
-            27,
-            30,
-            31,
-            34,
-            35,
-            38,
-            39,
-            41,
-            42,
-            43,
-            44,
-            45,
-            46,
-            47,
-            49,
-            51,
-            52,
-            54,
-            55,
-            57,
-            59,
-            60,
-            62,
-            63,
-            64,
-            65,
-            69,
-            71,
-            73,
-            75,
-            76,
-            78,
-            80
+            17
+          ],
+          "chainCells": [
+            2,
+            14,
+            3,
+            0,
+            6,
+            8
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "示範刪除：R1C3≠2。",
+          "focusCells": [
+            2,
+            2,
+            14,
+            0,
+            3,
+            6,
+            8,
+            9,
+            10
+          ],
+          "chainCells": [
+            2,
+            14,
+            3,
+            0
           ],
           "highlightDigits": {
             "2": [
-              1,
               2
             ]
           },
@@ -28513,7 +31885,40 @@ const TEACH_DATA = {
               "cell": 2,
               "digit": 2
             }
-          ]
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "完成消除清單：R1C3 的候選 2 移除。",
+          "focusCells": [
+            2,
+            14,
+            0,
+            3,
+            6,
+            8
+          ],
+          "chainCells": [
+            2,
+            14,
+            3,
+            0
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [
+            {
+              "cell": 2,
+              "digit": 2
+            }
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
         }
       ],
       "source": "in-house-generated"
@@ -28850,16 +32255,176 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：AIC 中鏈節點",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              14,
+              0,
+              3
+            ],
+            "chainCells": [
+              2,
+              14,
+              3,
+              0
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "推進：前段到後段的真假傳遞",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              14,
+              0,
+              3,
+              6,
+              8,
+              9,
+              10
+            ],
+            "chainCells": [
+              2,
+              14,
+              3,
+              0,
+              6,
+              8
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R1C3 的 2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              14,
+              0,
+              3,
+              6,
+              8
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              2,
+              14,
+              3,
+              0
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "驗證：保留 2 會造成中鏈矛盾",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              14,
+              0,
+              3,
+              6,
+              8,
+              9,
+              10,
+              12,
+              13,
+              16,
+              17
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              2,
+              14,
+              3,
+              0,
+              6,
+              8
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C3≠2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              2,
+              14,
+              0,
+              3,
+              6,
+              8,
+              9,
+              10
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Mid Chain 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              14,
+              0,
+              3
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "20": {
     "technique": "grouped_aic_nice_loop",
     "name": "觀海",
     "subtitle": "分組成鏈，迴路定刪",
     "explanation": [
-      "Grouped AIC 會把多格視為群組節點，擴展可用鏈路。",
-      "當單點鏈不足時，分組鏈可補出關鍵連接。",
-      "若迴路回推形成矛盾，即可刪除目標候選。"
+      "Grouped AIC / Nice Loop 會把「一組格」當成鏈節點。",
+      "重點是分組節點內至少一真，讓鏈能跨單位傳遞。",
+      "最終若形成迴圈矛盾，就可排除目標候選。"
     ],
     "example": {
       "board": [
@@ -29308,27 +32873,97 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：先確認目標候選與分組節點。",
-          "focusCells": [
-            2,
-            0
-          ],
-          "highlightDigits": {},
-          "eliminateCells": []
-        },
-        {
-          "text": "判定：沿分組鏈回推後出現自我衝突。",
+          "text": "定錨分組節點：先標出 grouped 節點與迴圈入口。",
           "focusCells": [
             2,
             0,
             3,
             4
           ],
-          "highlightDigits": {},
-          "eliminateCells": []
+          "chainCells": [
+            2,
+            0,
+            3,
+            4
+          ],
+          "highlightDigits": {
+            "0": [
+              2
+            ],
+            "2": [
+              2
+            ],
+            "3": [
+              2
+            ],
+            "4": [
+              2
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
         },
         {
-          "text": "操作：刪除 R1C3 的候選 2。",
+          "text": "推進迴圈：沿分組強弱關係往回連接。",
+          "focusCells": [
+            2,
+            0,
+            3,
+            4,
+            5,
+            6,
+            9,
+            10,
+            11,
+            12
+          ],
+          "chainCells": [
+            2,
+            0,
+            3,
+            4,
+            5,
+            6
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R1C3 的候選 2 在迴圈交點上。",
+          "focusCells": [
+            2,
+            0,
+            3,
+            4
+          ],
+          "chainCells": [
+            2,
+            0,
+            3,
+            4
+          ],
+          "highlightDigits": {
+            "2": [
+              2
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "迴圈驗證：若保留 2，分組節點會出現自我矛盾。",
           "focusCells": [
             2,
             0,
@@ -29341,47 +32976,77 @@ const TEACH_DATA = {
             11,
             12,
             15,
-            16,
-            20,
-            21,
-            23,
-            25,
-            26,
-            27,
-            28,
-            29,
-            30,
-            31,
-            34,
-            35,
-            36,
-            37,
-            38,
-            39,
-            43,
-            47,
-            48,
-            50,
-            53,
-            56,
-            58,
-            59,
-            61,
-            62,
-            63,
-            64,
-            65,
-            67,
-            68,
-            69,
-            70,
-            73,
-            75,
-            76,
-            77,
-            78,
-            79,
-            80
+            16
+          ],
+          "chainCells": [
+            2,
+            0,
+            3,
+            4,
+            5,
+            6
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "示範刪除：R1C3≠2。",
+          "focusCells": [
+            2,
+            2,
+            0,
+            3,
+            4,
+            5,
+            6,
+            9,
+            10,
+            11,
+            12
+          ],
+          "chainCells": [
+            2,
+            0,
+            3,
+            4
+          ],
+          "highlightDigits": {
+            "2": [
+              2
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 2,
+              "digit": 2
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "完成消除清單：R1C3 的候選 2 移除。",
+          "focusCells": [
+            2,
+            0,
+            3,
+            4
+          ],
+          "chainCells": [
+            2,
+            0,
+            3,
+            4
           ],
           "highlightDigits": {},
           "eliminateCells": [
@@ -29389,7 +33054,10 @@ const TEACH_DATA = {
               "cell": 2,
               "digit": 2
             }
-          ]
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
         }
       ],
       "source": "in-house-generated"
@@ -29725,16 +33393,178 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：Grouped 節點與入口",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              0,
+              3,
+              4
+            ],
+            "chainCells": [
+              2,
+              0,
+              3,
+              4
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "推進：Nice Loop 回連",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              0,
+              3,
+              4,
+              5,
+              6,
+              9,
+              10,
+              11,
+              12
+            ],
+            "chainCells": [
+              2,
+              0,
+              3,
+              4,
+              5,
+              6
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R1C3 的 2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              0,
+              3,
+              4
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              2,
+              0,
+              3,
+              4
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "驗證：保留 2 導致迴圈衝突",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              0,
+              3,
+              4,
+              5,
+              6,
+              9,
+              10,
+              11,
+              12,
+              15,
+              16
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              2,
+              0,
+              3,
+              4,
+              5,
+              6
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C3≠2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              2,
+              0,
+              3,
+              4,
+              5,
+              6,
+              9,
+              10,
+              11,
+              12
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Grouped AIC 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              0,
+              3,
+              4
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "21": {
     "technique": "aic_long_chain",
     "name": "破執",
     "subtitle": "長鏈推演，終點定刪",
     "explanation": [
-      "AIC 長鏈是中鏈延伸，差別在鏈長與轉折更多。",
-      "流程同樣是先假設、再推演、最後驗證是否矛盾。",
-      "若終點矛盾成立，即可刪除起點候選。"
+      "AIC Long Chain 以更長的強弱交替跨多單位推理。",
+      "操作重點是把長鏈拆段檢查，避免中途跳步。",
+      "當首尾合流同時排斥目標候選，就可刪除。"
     ],
     "example": {
       "board": [
@@ -30181,37 +34011,28 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：確認長鏈起點與目標候選。",
-          "focusCells": [
-            0,
-            26
-          ],
-          "highlightDigits": {
-            "0": [
-              3,
-              8
-            ]
-          },
-          "eliminateCells": []
-        },
-        {
-          "text": "判定：沿長鏈推進後出現不可同時滿足的條件。",
+          "text": "定錨長鏈：先圈出鏈首、鏈尾與第一段中繼。",
           "focusCells": [
             0,
             26,
             1,
             2
           ],
-          "highlightDigits": {
-            "0": [
-              3,
-              8
-            ]
-          },
-          "eliminateCells": []
+          "chainCells": [
+            0,
+            1,
+            2,
+            26
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
         },
         {
-          "text": "操作：刪除 R1C1 的候選 3。",
+          "text": "分段推進：前半段把真假約束傳到中段。",
           "focusCells": [
             0,
             26,
@@ -30221,54 +34042,110 @@ const TEACH_DATA = {
             4,
             5,
             6,
+            7
+          ],
+          "chainCells": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
             7,
-            9,
-            10,
-            11,
-            12,
+            26
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "再推後段：中段繼續傳到鏈尾，形成完整長鏈。",
+          "focusCells": [
+            26,
             17,
-            18,
-            19,
-            21,
-            23,
             24,
             25,
-            28,
-            32,
-            33,
-            36,
-            39,
-            41,
-            42,
-            43,
-            44,
-            46,
-            47,
-            49,
-            50,
-            51,
-            52,
             53,
-            54,
-            56,
-            58,
-            62,
-            64,
-            66,
-            68,
-            70,
             71,
-            73,
-            75,
-            76,
-            77,
-            79,
             80
+          ],
+          "chainCells": [
+            26,
+            17,
+            24,
+            25,
+            53,
+            71,
+            80
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            0
+          ],
+          "warnDigit": 3
+        },
+        {
+          "text": "鎖定目標：R1C1 的候選 3 受首尾同時夾擊。",
+          "focusCells": [
+            0,
+            26,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "chainCells": [
+            0,
+            1,
+            2,
+            26
           ],
           "highlightDigits": {
             "0": [
-              3,
-              8
+              3
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            0
+          ],
+          "warnDigit": 3
+        },
+        {
+          "text": "示範刪除：R1C1≠3。",
+          "focusCells": [
+            0,
+            0,
+            26,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "chainCells": [
+            0,
+            1,
+            2,
+            26
+          ],
+          "highlightDigits": {
+            "0": [
+              3
             ]
           },
           "eliminateCells": [
@@ -30276,7 +34153,38 @@ const TEACH_DATA = {
               "cell": 0,
               "digit": 3
             }
-          ]
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            0
+          ],
+          "warnDigit": 3
+        },
+        {
+          "text": "完成消除清單：R1C1 的候選 3 移除。",
+          "focusCells": [
+            0,
+            26,
+            1,
+            2
+          ],
+          "chainCells": [
+            0,
+            1,
+            2,
+            26
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [
+            {
+              "cell": 0,
+              "digit": 3
+            }
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
         }
       ],
       "source": "in-house-generated"
@@ -30612,16 +34520,180 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：AIC 長鏈入口",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              26,
+              1,
+              2
+            ],
+            "chainCells": [
+              0,
+              1,
+              2,
+              26
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 0
+          }
+        },
+        {
+          "caption": "前段：真假傳遞到中繼",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              0,
+              26,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "chainCells": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              26
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "後段：中繼推到鏈尾",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              26,
+              17,
+              24,
+              25,
+              53,
+              71,
+              80
+            ],
+            "warnCells": [
+              0
+            ],
+            "chainCells": [
+              26,
+              17,
+              24,
+              25,
+              53,
+              71,
+              80
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R1C1 的 3",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              0,
+              26,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "warnCells": [
+              0
+            ],
+            "chainCells": [
+              0,
+              1,
+              2,
+              26
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C1≠3",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              0,
+              26,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "warnCells": [
+              0
+            ],
+            "eliminates": [
+              {
+                "cell": 0,
+                "digit": 3
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Long Chain 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              0,
+              26,
+              1,
+              2
+            ],
+            "warnCells": [
+              0
+            ],
+            "eliminates": [
+              {
+                "cell": 0,
+                "digit": 3
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "22": {
     "technique": "als_xz",
     "name": "明空",
     "subtitle": "雙 ALS 交會，共識定刪",
     "explanation": [
-      "ALS-XZ 以兩個 ALS 的共享候選建立互鎖關係。",
-      "當共享限制成立時，外圍共同可見區會被同步壓縮。",
-      "因此可對共同可見區做定向刪除。"
+      "ALS-XZ 先找兩個 ALS 與共享限制候選（RCC）。",
+      "RCC 會把兩個 ALS 綁成互斥-互補關係。",
+      "若目標格同時受兩側壓制，就可刪除。"
     ],
     "example": {
       "board": [
@@ -31065,87 +35137,125 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：確認目標候選與各分支起點。",
+          "text": "定錨 ALS-A / ALS-B：先標出兩個 ALS 節點與共同候選。",
           "focusCells": [
             2,
-            8
-          ],
-          "highlightDigits": {
-            "2": [
-              2
-            ]
-          },
-          "eliminateCells": []
-        },
-        {
-          "text": "判定：比對多分支終點，均指向同一排除。",
-          "focusCells": [
-            2,
-            8,
-            3,
-            4
-          ],
-          "highlightDigits": {
-            "2": [
-              2
-            ]
-          },
-          "eliminateCells": []
-        },
-        {
-          "text": "操作：依 ALS-XZ 關係刪除 R1C3 的候選 2。",
-          "focusCells": [
-            2,
-            8,
             3,
             4,
             5,
-            7,
-            9,
             12,
             13,
+            14
+          ],
+          "chainCells": [
+            3,
+            4,
+            5,
             14,
-            16,
-            18,
-            20,
-            21,
-            22,
-            23,
-            24,
-            26,
-            27,
-            28,
-            30,
-            32,
-            35,
-            36,
-            38,
-            39,
-            41,
-            44,
-            45,
-            46,
-            50,
-            52,
-            53,
-            54,
-            55,
-            58,
-            59,
-            60,
-            62,
-            65,
-            68,
-            69,
-            71,
-            72,
-            73,
-            74,
-            76,
-            77,
-            78,
-            79,
-            80
+            13,
+            12
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "確認 RCC：兩個 ALS 透過共享候選形成 XZ 鎖定。",
+          "focusCells": [
+            3,
+            4,
+            5,
+            12,
+            13,
+            14
+          ],
+          "chainCells": [
+            3,
+            4,
+            5,
+            14,
+            13,
+            12
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R1C3 的候選 2 位於雙側共同可見區。",
+          "focusCells": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "chainCells": [
+            3,
+            4,
+            5
+          ],
+          "highlightDigits": {
+            "2": [
+              2
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "分支驗證：不論 RCC 落在哪側，R1C3 的 2 都會被排斥。",
+          "focusCells": [
+            2,
+            3,
+            4,
+            5,
+            12,
+            13,
+            14
+          ],
+          "chainCells": [
+            3,
+            4,
+            5,
+            14,
+            13,
+            12
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "示範刪除：R1C3≠2。",
+          "focusCells": [
+            2,
+            3,
+            4,
+            5,
+            12,
+            13,
+            14
+          ],
+          "chainCells": [
+            3,
+            4,
+            5
           ],
           "highlightDigits": {
             "2": [
@@ -31157,7 +35267,40 @@ const TEACH_DATA = {
               "cell": 2,
               "digit": 2
             }
-          ]
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "完成消除清單：R1C3 的候選 2 移除。",
+          "focusCells": [
+            2,
+            3,
+            4,
+            5,
+            12,
+            13,
+            14
+          ],
+          "chainCells": [
+            3,
+            4,
+            5
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [
+            {
+              "cell": 2,
+              "digit": 2
+            }
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
         }
       ],
       "source": "in-house-generated"
@@ -31493,16 +35636,172 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：ALS-A / ALS-B 節點",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              3,
+              4,
+              5,
+              12,
+              13,
+              14
+            ],
+            "chainCells": [
+              3,
+              4,
+              5,
+              14,
+              13,
+              12
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "RCC：建立 XZ 鎖定",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              3,
+              4,
+              5,
+              12,
+              13,
+              14
+            ],
+            "chainCells": [
+              3,
+              4,
+              5,
+              14,
+              13,
+              12
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R1C3 的 2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              3,
+              4,
+              5
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "驗證：兩分支同排除",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              3,
+              4,
+              5,
+              12,
+              13,
+              14
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              3,
+              4,
+              5,
+              14,
+              13,
+              12
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C3≠2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              3,
+              4,
+              5,
+              12,
+              13,
+              14
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：ALS-XZ 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              3,
+              4,
+              5,
+              12,
+              13,
+              14
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "23": {
     "technique": "als_chain",
     "name": "照界",
     "subtitle": "ALS 串聯，跨域定刪",
     "explanation": [
-      "ALS Chain 把多段 ALS 串接成連續推理通道。",
-      "當每段限制都成立，終點候選會被迫失效。",
-      "可視為 ALS-XZ 的多段延伸版。"
+      "ALS Chain 透過多個 ALS 以 RCC 串接成鏈。",
+      "鏈式傳遞會把真假壓力逐段推到終點。",
+      "當終點回打目標格時即可排除。"
     ],
     "example": {
       "board": [
@@ -31681,54 +35980,112 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：確認目標候選與各分支起點。",
+          "text": "定錨 ALS 鏈：先標出起點 ALS 與終點 ALS。",
           "focusCells": [
             0,
-            16
+            1,
+            2,
+            3
           ],
-          "highlightDigits": {
-            "0": [
-              1,
-              2,
-              4,
-              9
-            ]
-          },
-          "eliminateCells": []
+          "chainCells": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
         },
         {
-          "text": "判定：比對多分支終點，均指向同一排除。",
+          "text": "建立 RCC 串接：確認每一段共享候選能合法傳遞。",
           "focusCells": [
             0,
-            16,
-            12,
-            20
+            1,
+            2,
+            3
           ],
-          "highlightDigits": {
-            "0": [
-              1,
-              2,
-              4,
-              9
-            ]
-          },
-          "eliminateCells": []
+          "chainCells": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
         },
         {
-          "text": "操作：依 ALS Chain 收斂刪除 R1C1 的候選 2。",
+          "text": "鎖定目標：R1C1 的候選 2 位於鏈終點回打區。",
           "focusCells": [
             0,
-            16,
-            12,
-            20,
-            11
+            1,
+            2
+          ],
+          "chainCells": [
+            0,
+            1,
+            2
           ],
           "highlightDigits": {
             "0": [
-              1,
-              2,
-              4,
-              9
+              2
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            0
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "鏈路驗證：沿鏈任一可行分支都會排除 R1C1 的 2。",
+          "focusCells": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "chainCells": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            0
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "示範刪除：R1C1≠2。",
+          "focusCells": [
+            0,
+            0,
+            1,
+            2,
+            3
+          ],
+          "chainCells": [
+            0,
+            1,
+            2
+          ],
+          "highlightDigits": {
+            "0": [
+              2
             ]
           },
           "eliminateCells": [
@@ -31736,7 +36093,37 @@ const TEACH_DATA = {
               "cell": 0,
               "digit": 2
             }
-          ]
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            0
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "完成消除清單：R1C1 的候選 2 移除。",
+          "focusCells": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "chainCells": [
+            0,
+            1,
+            2
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [
+            {
+              "cell": 0,
+              "digit": 2
+            }
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
         }
       ],
       "source": "in-house-generated"
@@ -32098,16 +36485,152 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：ALS 鏈首與鏈尾",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "chainCells": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 0
+          }
+        },
+        {
+          "caption": "串接：RCC 逐段傳遞",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "chainCells": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R1C1 的 2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2
+            ],
+            "warnCells": [
+              0
+            ],
+            "chainCells": [
+              0,
+              1,
+              2
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "驗證：鏈路合流排除",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "warnCells": [
+              0
+            ],
+            "chainCells": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C1≠2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              0,
+              1,
+              2,
+              3
+            ],
+            "warnCells": [
+              0
+            ],
+            "eliminates": [
+              {
+                "cell": 0,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：ALS Chain 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "warnCells": [
+              0
+            ],
+            "eliminates": [
+              {
+                "cell": 0,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "24": {
     "technique": "forcing_chain_net",
     "name": "玄穹",
     "subtitle": "多路假設，共識定刪",
     "explanation": [
-      "Forcing Chain/Net 會對同一目標展開多條假設分支。",
-      "若所有分支收斂到同一結論，該結論必成立。",
-      "它適合在一般鏈技停滯時做收斂破局。"
+      "Forcing Chain / Net 先從同一假設分出多條分支。",
+      "若所有分支都收斂到同一排除，該排除即為真。",
+      "這種「多路同結論」很適合拆成分支節拍。"
     ],
     "example": {
       "board": [
@@ -32286,51 +36809,107 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：確認目標候選與各分支起點。",
+          "text": "定錨分支：以同一假設建立 A/B 兩條 forcing 路徑。",
           "focusCells": [
+            2,
+            5,
+            8
+          ],
+          "chainCells": [
+            2,
+            5,
+            8
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "分支 A 推導：A 路徑最終排除 R1C3 的 1。",
+          "focusCells": [
+            2,
+            5,
+            8
+          ],
+          "chainCells": [
             2,
             5
           ],
-          "highlightDigits": {
-            "2": [
-              1,
-              3,
-              4,
-              5
-            ]
-          },
-          "eliminateCells": []
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
         },
         {
-          "text": "判定：比對多分支終點，均指向同一排除。",
+          "text": "分支 B 推導：B 路徑同樣排除 R1C3 的 1。",
           "focusCells": [
+            2,
+            5,
+            8
+          ],
+          "chainCells": [
+            5,
+            8
+          ],
+          "highlightDigits": {
+            "2": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "分支合流：不論 A/B，R1C3 的 1 都不成立。",
+          "focusCells": [
+            2,
+            5,
+            8
+          ],
+          "chainCells": [
             2,
             5,
             8
           ],
           "highlightDigits": {
             "2": [
-              1,
-              3,
-              4,
-              5
+              1
             ]
           },
-          "eliminateCells": []
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 1
         },
         {
-          "text": "操作：刪除 R1C3 的候選 1。",
+          "text": "示範刪除：R1C3≠1。",
           "focusCells": [
+            2,
+            2,
+            5,
+            8
+          ],
+          "chainCells": [
             2,
             5,
             8
           ],
           "highlightDigits": {
             "2": [
-              1,
-              3,
-              4,
-              5
+              1
             ]
           },
           "eliminateCells": [
@@ -32338,7 +36917,36 @@ const TEACH_DATA = {
               "cell": 2,
               "digit": 1
             }
-          ]
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "完成消除清單：R1C3 的候選 1 移除。",
+          "focusCells": [
+            2,
+            5,
+            8
+          ],
+          "chainCells": [
+            2,
+            5,
+            8
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [
+            {
+              "cell": 2,
+              "digit": 1
+            }
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
         }
       ],
       "source": "in-house-generated"
@@ -32682,16 +37290,142 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：建立 Forcing Net 分支",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              5,
+              8
+            ],
+            "chainCells": [
+              2,
+              5,
+              8
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "分支 A：指向 R1C3≠1",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              5,
+              8
+            ],
+            "chainCells": [
+              2,
+              5
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 B：同樣指向 R1C3≠1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              5,
+              8
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              5,
+              8
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "合流：多路同結論",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              5,
+              8
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              2,
+              5,
+              8
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C3≠1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              2,
+              5,
+              8
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Forcing Net 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              5,
+              8
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "25": {
     "technique": "exocet_death_blossom",
     "name": "神人",
     "subtitle": "終極結構，收官定刪",
     "explanation": [
-      "Exocet / Death Blossom 屬於頂階終局結構技巧。",
-      "雖非每題可用，但一旦命中題型，效率極高。",
-      "命中結構後通常可直接打開收官路徑。"
+      "Exocet / Death Blossom 屬於超高難結構，建議分兩段理解。",
+      "第一段先定錨樞紐與主翼；第二段再做覆蓋合流與排除。",
+      "本章採 7 步節奏，避免一次吃太多。"
     ],
     "example": {
       "board": [
@@ -33186,99 +37920,198 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：確認樞紐與關鍵翼節點的目標候選。",
+          "text": "第一段-定錨：先圈出樞紐（pivot）與兩個主翼（wings）。",
           "focusCells": [
-            2,
-            0
-          ],
-          "highlightDigits": {
-            "2": [
-              1,
-              4
-            ]
-          },
-          "eliminateCells": []
-        },
-        {
-          "text": "判定：沿結構鏈驗證後，目標候選落入必假區。",
-          "focusCells": [
-            2,
             0,
             1,
-            3
-          ],
-          "highlightDigits": {
-            "2": [
-              1,
-              4
-            ]
-          },
-          "eliminateCells": []
-        },
-        {
-          "text": "操作：依終極結構刪除 R1C3 的候選 1。",
-          "focusCells": [
             2,
-            0,
-            1,
-            3,
-            7,
-            8,
-            9,
-            10,
             11,
-            12,
-            14,
-            15,
-            18,
-            19,
             20,
-            22,
-            23,
-            25,
-            26,
-            28,
-            29,
-            31,
-            32,
-            33,
-            35,
-            37,
-            38,
-            39,
-            43,
-            44,
-            45,
-            47,
-            49,
-            50,
-            51,
-            52,
-            54,
-            56,
-            57,
-            58,
-            59,
-            60,
-            61,
-            65,
-            66,
-            67,
-            68,
-            69,
-            70,
-            72,
-            73,
-            75,
-            76,
-            78,
-            79,
-            80
+            38
+          ],
+          "chainCells": [
+            0,
+            1,
+            2,
+            11,
+            20,
+            38
           ],
           "highlightDigits": {
             "2": [
-              1,
-              4
+              1
+            ],
+            "11": [
+              1
+            ],
+            "20": [
+              1
+            ],
+            "38": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "第一段-覆蓋：確認每個翼對候選集合的覆蓋責任，不可重疊失衡。",
+          "focusCells": [
+            0,
+            1,
+            2,
+            11,
+            20,
+            38,
+            57,
+            58
+          ],
+          "chainCells": [
+            0,
+            11,
+            20,
+            38,
+            57,
+            58
+          ],
+          "highlightDigits": {
+            "2": [
+              1
+            ],
+            "11": [
+              1
+            ],
+            "20": [
+              1
+            ],
+            "38": [
+              1
+            ],
+            "57": [
+              1
+            ],
+            "58": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "第二段-分支 A：若樞紐走 A 候選，翼鏈會排除 R1C3 的 1。",
+          "focusCells": [
+            0,
+            1,
+            2,
+            11,
+            20
+          ],
+          "chainCells": [
+            0,
+            11,
+            20,
+            2
+          ],
+          "highlightDigits": {
+            "2": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "第二段-分支 B：若樞紐走 B 候選，另一翼鏈仍會排除 R1C3 的 1。",
+          "focusCells": [
+            0,
+            1,
+            2,
+            38,
+            57
+          ],
+          "chainCells": [
+            0,
+            38,
+            57,
+            2
+          ],
+          "highlightDigits": {
+            "2": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "分支合流：不論 A/B，R1C3 的 1 都不可能成立。",
+          "focusCells": [
+            0,
+            1,
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            0,
+            11,
+            20,
+            38,
+            57,
+            2
+          ],
+          "highlightDigits": {
+            "2": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "示範刪除：R1C3≠1。",
+          "focusCells": [
+            2,
+            0,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            0,
+            11,
+            20,
+            38,
+            57,
+            2
+          ],
+          "highlightDigits": {
+            "2": [
+              1
             ]
           },
           "eliminateCells": [
@@ -33286,7 +38119,48 @@ const TEACH_DATA = {
               "cell": 2,
               "digit": 1
             }
-          ]
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "完成消除清單：R1C3 的候選 1 移除（Exocet/Death Blossom 兩段推理完成）。",
+          "focusCells": [
+            0,
+            1,
+            2,
+            11,
+            20,
+            38,
+            57,
+            58
+          ],
+          "chainCells": [
+            0,
+            11,
+            20,
+            38,
+            57,
+            58
+          ],
+          "highlightDigits": {
+            "2": [
+              1
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 2,
+              "digit": 1
+            }
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
         }
       ],
       "source": "in-house-generated"
@@ -33621,16 +38495,199 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "第一段：定錨樞紐與主翼",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              0,
+              1,
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 1
+          }
+        },
+        {
+          "caption": "第一段：檢查翼覆蓋責任",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              11,
+              20,
+              38,
+              57,
+              58
+            ],
+            "chainCells": [
+              0,
+              11,
+              20,
+              38,
+              57,
+              58
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "第二段 A：A 分支排除 R1C3 的 1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              11,
+              20
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              0,
+              11,
+              20,
+              2
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "第二段 B：B 分支同樣排除 R1C3 的 1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              38,
+              57
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              0,
+              38,
+              57,
+              2
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "合流：兩分支同結論",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              0,
+              11,
+              20,
+              38,
+              57,
+              2
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C3≠1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              0,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Exocet/Death Blossom 收斂消除",
+          "durationMs": 2300,
+          "highlight": {
+            "cells": [
+              0,
+              1,
+              2,
+              11,
+              20,
+              38,
+              57,
+              58
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "26": {
     "technique": "remote_pairs",
     "name": "遙對雙珠",
     "subtitle": "偶鏈對視，同值裁剪",
     "explanation": [
-      "Remote Pairs 以同雙值節點形成偶數鏈，並維持真假交替。",
-      "鏈首尾對同值呈互斥關係，至少一端為真一端為假。",
-      "因此同時看見首尾的格，可刪除該同值候選。"
+      "Remote Pairs 先串出同雙值偶鏈，觀察首尾對同一數字的互斥關係。",
+      "當目標格同時看見鏈端時，該數字會被兩端同時排斥。",
+      "所以可做定向刪除。"
     ],
     "example": {
       "board": [
@@ -34017,19 +39074,83 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：建立同雙值偶鏈（如 {4,6}），確認首尾同值對視。",
+          "text": "先定錨偶鏈：找出同雙值節點，形成交替鏈。",
           "focusCells": [
             2,
-            11
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38,
+            57
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：目標格若保留 6，會與首尾互斥規則衝突。",
+          "text": "確認首尾規則：鏈端對同數字呈互斥關係。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R1C3 同時受鏈端影響，候選 6 進入待驗證。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 6
+        },
+        {
+          "text": "示範反證：若 R1C3 保留 6，會與鏈端互斥規則衝突，故 R1C3≠6。",
+          "focusCells": [
+            2,
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -34042,12 +39163,23 @@ const TEACH_DATA = {
               "digit": 6
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 6
         },
         {
-          "text": "操作：刪除 R1C3 的 6，維持偶鏈一致。",
+          "text": "完成消除清單：R1C3≠6。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -34061,6 +39193,7 @@ const TEACH_DATA = {
               "digit": 6
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -34566,7 +39699,126 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：建立 Remote Pairs 偶鏈",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "鏈端：確認同數字互斥規則",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "鎖定目標：R1C3 的 6",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C3≠6",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 6
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Remote Pairs 刪除 R1C3 的 6",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 6
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "27": {
     "technique": "two_string_kite",
@@ -34579,34 +39831,70 @@ const TEACH_DATA = {
     ],
     "example": {
       "board": [
+        0,
+        1,
+        0,
+        2,
+        0,
+        0,
+        0,
+        4,
+        0,
+        0,
+        0,
+        5,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        9,
+        0,
+        0,
+        0,
+        3,
+        0,
+        5,
+        0,
+        0,
+        4,
         7,
+        0,
+        0,
+        0,
+        0,
+        0,
         8,
         0,
         0,
         0,
+        2,
+        9,
         0,
         0,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        6,
+        0,
+        0,
+        1,
+        0,
+        3,
         0,
         0,
         0,
         0,
         9,
-        0,
-        0,
-        0,
-        0,
-        3,
-        4,
-        0,
-        0,
-        4,
-        0,
-        3,
-        0,
-        9,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -34614,82 +39902,82 @@ const TEACH_DATA = {
         6,
         0,
         0,
-        1,
-        0,
-        0,
-        0,
-        5,
-        9,
-        0,
-        8,
-        0,
-        2,
-        0,
-        0,
-        0,
-        2,
-        8,
-        1,
-        0,
-        0,
-        0,
-        8,
-        0,
-        7,
-        0,
-        4,
-        9,
-        1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        4,
         0,
         4,
         0,
         0,
         0,
+        0,
         1,
-        5,
+        8,
         0,
-        0,
-        0
+        2
       ],
       "given": [
+        0,
+        1,
+        0,
+        2,
+        0,
+        0,
+        0,
+        4,
+        0,
+        0,
+        0,
+        5,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        9,
+        0,
+        0,
+        0,
+        3,
+        0,
+        5,
+        0,
+        0,
+        4,
         7,
+        0,
+        0,
+        0,
+        0,
+        0,
         8,
         0,
         0,
         0,
+        2,
+        9,
         0,
         0,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        6,
+        0,
+        0,
+        1,
+        0,
+        3,
         0,
         0,
         0,
         0,
         9,
-        0,
-        0,
-        0,
-        0,
-        3,
-        4,
-        0,
-        0,
-        4,
-        0,
-        3,
-        0,
-        9,
-        0,
-        0,
-        0,
         0,
         0,
         0,
@@ -34697,409 +39985,579 @@ const TEACH_DATA = {
         6,
         0,
         0,
-        1,
-        0,
-        0,
-        0,
-        5,
-        9,
-        0,
-        8,
-        0,
-        2,
-        0,
-        0,
-        0,
-        2,
-        8,
-        1,
-        0,
-        0,
-        0,
-        8,
-        0,
-        7,
-        0,
-        4,
-        9,
-        1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        4,
         0,
         4,
         0,
         0,
         0,
+        0,
         1,
-        5,
+        8,
         0,
-        0,
-        0
+        2
       ],
       "notes": {
-        "2": [
-          1,
-          2,
+        "0": [
           3,
-          5,
-          6
+          6,
+          7
         ],
-        "3": [
-          1,
-          4,
-          9
+        "2": [
+          3,
+          6,
+          7,
+          8
         ],
         "4": [
-          2,
           5,
-          6
+          6,
+          7,
+          8,
+          9
         ],
         "5": [
-          2,
-          4
+          3,
+          5,
+          7,
+          8
         ],
         "6": [
-          2,
-          5,
-          6
-        ],
-        "7": [
-          1,
-          2,
-          5,
-          6
+          6,
+          7,
+          9
         ],
         "8": [
-          5,
-          6
+          7,
+          8,
+          9
         ],
         "9": [
-          1,
           2,
-          5,
-          6
+          3,
+          6,
+          7
         ],
         "10": [
-          1,
           2,
-          5,
-          6
-        ],
-        "12": [
-          1,
+          3,
+          4,
+          6,
           7,
           8
         ],
         "13": [
-          2,
-          5,
+          4,
           6,
-          7
+          7,
+          8,
+          9
         ],
         "14": [
-          2,
+          3,
+          4,
           7,
           8
         ],
         "15": [
           2,
-          5,
+          6,
+          7,
+          9
+        ],
+        "16": [
+          6,
+          7,
+          8,
+          9
+        ],
+        "17": [
+          7,
+          8,
+          9
+        ],
+        "18": [
+          2,
           6,
           7
         ],
-        "18": [
-          1,
-          2,
-          5,
-          6
-        ],
         "19": [
-          1,
           2,
-          5,
-          6
+          4,
+          6,
+          7,
+          8
         ],
         "21": [
-          1,
+          4,
+          6,
+          8
+        ],
+        "22": [
+          4,
+          6,
           7,
           8
         ],
         "23": [
-          2,
+          4,
           7,
           8
         ],
         "25": [
           1,
-          2,
-          5,
-          6,
-          7,
-          8
-        ],
-        "26": [
-          5,
           6,
           7,
           8
         ],
         "27": [
+          1,
           2,
           3,
           5,
-          9
+          6
         ],
         "28": [
           2,
           3,
-          4,
           5,
-          7,
+          6,
           9
         ],
-        "29": [
-          2,
+        "31": [
+          1,
+          5,
+          6,
+          8
+        ],
+        "32": [
           3,
           5,
           8
         ],
-        "30": [
-          3,
-          4,
-          7
-        ],
-        "31": [
-          7
-        ],
         "33": [
-          3,
-          4,
+          1,
           5,
-          7
-        ],
-        "34": [
-          5,
-          7,
           9
         ],
-        "36": [
+        "34": [
           1,
           3,
-          6
+          5,
+          8,
+          9
+        ],
+        "35": [
+          1,
+          3,
+          8,
+          9
         ],
         "37": [
-          1,
           3,
-          4,
+          5,
           6,
           7
         ],
         "38": [
-          1,
           3,
+          6,
+          7
+        ],
+        "39": [
+          3,
+          5,
           6
         ],
-        "41": [
-          3,
-          4,
+        "42": [
+          1,
+          5,
           7
         ],
         "43": [
-          6,
+          1,
+          3,
+          5,
           7
         ],
         "45": [
+          1,
           3,
           5,
-          6,
-          9
+          7
         ],
         "46": [
           3,
-          4,
           5,
-          6,
           7,
           9
         ],
         "47": [
           3,
-          5,
-          6
+          7
         ],
-        "51": [
+        "48": [
           3,
           4,
           5,
+          8
+        ],
+        "49": [
+          1,
+          4,
+          5,
+          8
+        ],
+        "50": [
+          3,
+          4,
+          5,
+          8
+        ],
+        "51": [
+          1,
+          5,
+          7,
+          9
+        ],
+        "54": [
+          2,
+          5,
           6,
           7
-        ],
-        "52": [
-          5,
-          6,
-          7,
-          9
-        ],
-        "53": [
-          3,
-          5,
-          6,
-          7,
-          9
         ],
         "55": [
           2,
-          3,
           5,
-          6
+          6,
+          7,
+          8
         ],
         "57": [
-          3
+          4,
+          5,
+          8,
+          9
+        ],
+        "59": [
+          2,
+          4,
+          5,
+          7,
+          8
+        ],
+        "60": [
+          4,
+          5,
+          6,
+          7,
+          9
         ],
         "61": [
-          2,
           5,
-          6
+          6,
+          7,
+          9
         ],
         "62": [
-          3,
-          5,
-          6
-        ],
-        "63": [
-          1,
-          2,
-          3,
-          5,
+          7,
           9
         ],
         "64": [
-          1,
           2,
           3,
           5,
-          9
+          7,
+          8
         ],
         "65": [
-          1,
-          2,
-          3,
-          5
-        ],
-        "67": [
-          2,
-          7
-        ],
-        "68": [
           2,
           3,
           7,
           8
         ],
+        "66": [
+          4,
+          5,
+          8
+        ],
+        "67": [
+          4,
+          5,
+          7,
+          8
+        ],
         "69": [
-          2,
+          1,
+          4,
+          5,
+          7
+        ],
+        "70": [
+          1,
           3,
           5,
           7
         ],
         "71": [
+          1,
           3,
-          5,
-          7,
-          8,
-          9
+          7
         ],
         "73": [
-          2,
           3,
+          5,
           6,
-          9
+          7
         ],
         "74": [
-          2,
-          3,
-          6
-        ],
-        "75": [
-          3,
-          7,
-          8
-        ],
-        "78": [
-          2,
           3,
           6,
           7
         ],
-        "79": [
-          2,
-          6,
-          7,
-          8,
+        "75": [
+          5,
           9
         ],
-        "80": [
+        "76": [
+          5,
+          7,
+          9
+        ],
+        "79": [
           3,
+          5,
           6,
           7,
-          8,
           9
         ]
       },
       "steps": [
         {
-          "text": "觀察：先確認行鏈與列鏈皆為共軛（目標數各只剩兩位）。",
+          "text": "觀察數字 1：第 5 行只在 C7、C8 出現（行共軛）；第 9 列只在 R4、R8 出現（列共軛）。",
           "focusCells": [
-            2,
-            11
+            42,
+            43,
+            35,
+            71
           ],
-          "highlightDigits": {},
+          "highlightDigits": {
+            "35": [
+              1
+            ],
+            "42": [
+              1
+            ],
+            "43": [
+              1
+            ],
+            "71": [
+              1
+            ]
+          },
           "eliminateCells": [],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：沿風箏路徑傳遞真假，目標格 3 同時受到兩側限制。",
+          "text": "兩條線在 Box 6 交會：R5C7（行）和 R4C9（列）同宮，形成風箏。",
           "focusCells": [
-            2,
-            11,
-            20,
-            38
+            42,
+            43,
+            35,
+            71
           ],
-          "highlightDigits": {},
-          "eliminateCells": [
-            {
-              "cell": 11,
-              "digit": 3
-            }
-          ],
+          "highlightDigits": {
+            "35": [
+              1
+            ],
+            "42": [
+              1
+            ],
+            "43": [
+              1
+            ],
+            "71": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "操作：刪除 R2C3 的 3，維持共軛鏈一致。",
+          "text": "假設第 8 行有一格是 1（R8C7 或 R8C8 都一樣）：",
           "focusCells": [
-            2,
-            11,
-            20,
-            38,
-            57
+            69,
+            70
           ],
-          "highlightDigits": {},
+          "highlightDigits": {
+            "69": [
+              1
+            ],
+            "70": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": false,
+          "warnCells": [
+            69,
+            70
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "→ 同行 R8C9 不能是 1 → 第 9 列的 1 只能在 R4C9。",
+          "focusCells": [
+            69,
+            70,
+            71,
+            35
+          ],
+          "highlightDigits": {
+            "35": [
+              1
+            ],
+            "69": [
+              1
+            ],
+            "70": [
+              1
+            ],
+            "71": [
+              1
+            ]
+          },
           "eliminateCells": [
             {
-              "cell": 11,
-              "digit": 3
+              "cell": 71,
+              "digit": 1
             }
           ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            69,
+            70
+          ],
+          "warnDigit": null
+        },
+        {
+          "text": "→ R4C9 = 1，但 R5C7 和 R5C8 都在同一宮（Box 6）→ 兩格都不能是 1 → 第 5 行沒有地方放 1，矛盾！",
+          "focusCells": [
+            35,
+            42,
+            43
+          ],
+          "highlightDigits": {
+            "35": [
+              1
+            ],
+            "42": [
+              1
+            ],
+            "43": [
+              1
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 42,
+              "digit": 1
+            },
+            {
+              "cell": 43,
+              "digit": 1
+            }
+          ],
+          "removedCandidates": [
+            {
+              "cell": 71,
+              "digit": 1
+            }
+          ],
+          "showChain": false,
+          "warnCells": [
+            42,
+            43
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "所以第 8 行的 R8C7 和 R8C8 都不可能是 1。消去 2 個候選。",
+          "focusCells": [
+            42,
+            43,
+            35,
+            71,
+            69,
+            70
+          ],
+          "highlightDigits": {
+            "35": [
+              1
+            ],
+            "42": [
+              1
+            ],
+            "43": [
+              1
+            ],
+            "71": [
+              1
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 69,
+              "digit": 1
+            },
+            {
+              "cell": 70,
+              "digit": 1
+            }
+          ],
+          "showChain": false,
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "消除完成：第 8 行的 1 只剩 R8C9 → 直接填入 1！雙線風箏一招定勝負。",
+          "focusCells": [
+            42,
+            43,
+            35,
+            71
+          ],
+          "highlightDigits": {
+            "35": [
+              1
+            ],
+            "42": [
+              1
+            ],
+            "43": [
+              1
+            ],
+            "71": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "removedCandidates": [
+            {
+              "cell": 69,
+              "digit": 1
+            },
+            {
+              "cell": 70,
+              "digit": 1
+            }
+          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -35699,16 +41157,158 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "數字 1：第 5 行（C7、C8）和第 9 列（R4、R8）各只有兩格",
+          "durationMs": 1800,
+          "highlight": {
+            "cells": [
+              42,
+              43,
+              35,
+              71
+            ],
+            "digits": {
+              "35": [
+                1
+              ],
+              "42": [
+                1
+              ],
+              "43": [
+                1
+              ],
+              "71": [
+                1
+              ]
+            },
+            "units": [
+              4,
+              17
+            ],
+            "camera": "in",
+            "cameraFocus": 53
+          }
+        },
+        {
+          "caption": "兩條線在 Box 6 交會 → 雙線風箏成形",
+          "durationMs": 2200,
+          "highlight": {
+            "cells": [
+              42,
+              43,
+              35,
+              71
+            ],
+            "digits": {
+              "35": [
+                1
+              ],
+              "42": [
+                1
+              ],
+              "43": [
+                1
+              ],
+              "71": [
+                1
+              ]
+            },
+            "crossLines": [
+              43,
+              42,
+              35,
+              71
+            ],
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "端點 R5C8 和 R8C9 的共同可見格不可能是 1",
+          "durationMs": 1800,
+          "highlight": {
+            "cells": [
+              42,
+              43,
+              35,
+              71
+            ],
+            "digits": {
+              "35": [
+                1
+              ],
+              "42": [
+                1
+              ],
+              "43": [
+                1
+              ],
+              "71": [
+                1
+              ]
+            },
+            "warnCells": [
+              69,
+              70
+            ],
+            "camera": "out"
+          }
+        },
+        {
+          "caption": "消去 R8C7 和 R8C8 的候選 1",
+          "durationMs": 2200,
+          "highlight": {
+            "cells": [
+              42,
+              43,
+              35,
+              71
+            ],
+            "digits": {
+              "35": [
+                1
+              ],
+              "42": [
+                1
+              ],
+              "43": [
+                1
+              ],
+              "71": [
+                1
+              ]
+            },
+            "warnCells": [
+              69,
+              70
+            ],
+            "eliminates": [
+              {
+                "cell": 69,
+                "digit": 1
+              },
+              {
+                "cell": 70,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        }
+      ]
+    }
   },
   "28": {
     "technique": "empty_rectangle",
     "name": "空矩折返",
     "subtitle": "空矩回打，交點定刪",
     "explanation": [
-      "Empty Rectangle 先在宮內定位空矩輪廓，再接外部共軛鏈回打。",
-      "回打後，目標格若保留候選會破壞空矩條件。",
-      "因此可在交點位置做定向刪除。"
+      "Empty Rectangle 先在宮內辨識空矩輪廓，再接外部強弱關係回打。",
+      "回打後目標格若保留關鍵數字，會違反空矩條件。",
+      "因此可做單點刪除。"
     ],
     "example": {
       "board": [
@@ -36189,19 +41789,83 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：辨識候選 1 的空矩輪廓，鎖定外鏈回打路徑。",
+          "text": "先定錨空矩：在宮內找出關鍵數字的空矩輪廓。",
           "focusCells": [
             2,
-            11
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38,
+            57
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：沿外鏈回推後，目標格 1 會導致空矩違規。",
+          "text": "接上外鏈：建立由外部單元回打空矩的推導路徑。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R3C3 的候選 1 是回打衝突點。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            20
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "示範反證：若 R3C3 保留 1，空矩條件會被破壞，故 R3C3≠1。",
+          "focusCells": [
+            20,
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -36214,12 +41878,23 @@ const TEACH_DATA = {
               "digit": 1
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            20
+          ],
+          "warnDigit": 1
         },
         {
-          "text": "操作：刪除 R3C3 的 1，恢復空矩一致。",
+          "text": "完成消除清單：R3C3≠1。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -36233,6 +41908,7 @@ const TEACH_DATA = {
               "digit": 1
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -36832,16 +42508,135 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：辨識 Empty Rectangle 輪廓",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "回打：外鏈連回空矩核心",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "鎖定目標：R3C3 的 1",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              20
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R3C3≠1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              20,
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              20
+            ],
+            "eliminates": [
+              {
+                "cell": 20,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Empty Rectangle 刪除 R3C3 的 1",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              20
+            ],
+            "eliminates": [
+              {
+                "cell": 20,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "29": {
     "technique": "bug_plus_one",
     "name": "唯一缺口",
     "subtitle": "例外一格，唯一落點",
     "explanation": [
-      "BUG+1 的訊號是幾乎全盤雙值，只有一格為三值以上的例外格。",
-      "若例外格刪錯，盤面會退化成 BUG 型多解風險。",
-      "因此需用唯一解原則，鎖定例外格中的真候選。"
+      "BUG+1 要先找到「幾乎雙值循環」中的唯一例外格。",
+      "例外格裡有一個候選會讓循環回到多解風險，這個候選必須剔除。",
+      "本例最終在例外格 R5C3 做定向刪除。"
     ],
     "example": {
       "board": [
@@ -37274,31 +43069,132 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：確認盤面接近 BUG，且僅有一格是多候選例外。",
+          "text": "先找缺口：R5C3 是本盤的例外格（候選最多），其餘關鍵鏈節點維持雙值循環。",
           "focusCells": [
             2,
-            11
+            11,
+            38,
+            58
+          ],
+          "chainCells": [
+            2,
+            11,
+            38,
+            58
           ],
           "highlightDigits": {
+            "2": [
+              3,
+              5,
+              8
+            ],
+            "11": [
+              3,
+              7,
+              8
+            ],
             "38": [
-              1
+              1,
+              2,
+              3,
+              5,
+              6
+            ],
+            "58": [
+              3,
+              6
             ]
           },
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：若移除目標候選會回到 BUG 多解風險，則該候選不可刪。",
+          "text": "先鎖測試候選：把 R5C3 的候選 1 當作待驗證目標。",
           "focusCells": [
-            2,
-            11,
-            20,
+            38
+          ],
+          "chainCells": [
             38
           ],
           "highlightDigits": {
             "38": [
-              1
+              1,
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": false,
+          "warnCells": [
+            38
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "若 R5C3 仍保留 1，盤面會回到 BUG 循環型態（多解風險），與唯一解原則衝突。",
+          "focusCells": [
+            2,
+            11,
+            38,
+            58
+          ],
+          "chainCells": [
+            2,
+            11,
+            38,
+            58
+          ],
+          "highlightDigits": {
+            "2": [
+              3,
+              5,
+              8
+            ],
+            "11": [
+              3,
+              7,
+              8
+            ],
+            "38": [
+              1,
+              2,
+              3,
+              5,
+              6
+            ],
+            "58": [
+              3,
+              6
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            38
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "因此，R5C3 的候選 1 不可留。先做單點示範刪除：R5C3≠1。",
+          "focusCells": [
+            38
+          ],
+          "chainCells": [
+            38
+          ],
+          "highlightDigits": {
+            "38": [
+              1,
+              2,
+              3,
+              5,
+              6
             ]
           },
           "eliminateCells": [
@@ -37307,25 +43203,56 @@ const TEACH_DATA = {
               "digit": 1
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
+          "showChain": false,
+          "warnCells": [
+            38
+          ],
+          "warnDigit": 1
         },
         {
-          "text": "操作：鎖定例外格真值，並清除其餘衍生衝突候選。",
+          "text": "完成：唯一缺口已被修正，本步刪除清單只有一項：R5C3 的候選 1。",
           "focusCells": [
             2,
             11,
-            20,
             38,
-            57
+            58
           ],
-          "highlightDigits": {},
+          "chainCells": [
+            2,
+            11,
+            38,
+            58
+          ],
+          "highlightDigits": {
+            "2": [
+              3,
+              5,
+              8
+            ],
+            "11": [
+              3,
+              7,
+              8
+            ],
+            "38": [
+              1,
+              2,
+              3,
+              5,
+              6
+            ],
+            "58": [
+              3,
+              6
+            ]
+          },
           "eliminateCells": [
             {
               "cell": 38,
               "digit": 1
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -37877,16 +43804,207 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：找到唯一缺口 R5C3（例外格）",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              38,
+              58
+            ],
+            "digits": {
+              "2": [
+                3,
+                5,
+                8
+              ],
+              "11": [
+                3,
+                7,
+                8
+              ],
+              "38": [
+                1,
+                2,
+                3,
+                5,
+                6
+              ],
+              "58": [
+                3,
+                6
+              ]
+            },
+            "chainCells": [
+              2,
+              11,
+              38,
+              58
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 38
+          }
+        },
+        {
+          "caption": "鎖定測試目標：R5C3 的候選 1",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              38
+            ],
+            "digits": {
+              "38": [
+                1,
+                2,
+                3,
+                5,
+                6
+              ]
+            },
+            "warnCells": [
+              38
+            ],
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "反證：若保留 1，盤面回到 BUG 多解風險",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              38,
+              58
+            ],
+            "digits": {
+              "2": [
+                3,
+                5,
+                8
+              ],
+              "11": [
+                3,
+                7,
+                8
+              ],
+              "38": [
+                1,
+                2,
+                3,
+                5,
+                6
+              ],
+              "58": [
+                3,
+                6
+              ]
+            },
+            "warnCells": [
+              38
+            ],
+            "chainCells": [
+              2,
+              11,
+              38,
+              58
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R5C3≠1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              38
+            ],
+            "digits": {
+              "38": [
+                1,
+                2,
+                3,
+                5,
+                6
+              ]
+            },
+            "warnCells": [
+              38
+            ],
+            "eliminates": [
+              {
+                "cell": 38,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：唯一缺口修正，刪除清單已收斂",
+          "durationMs": 1900,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              38,
+              58
+            ],
+            "digits": {
+              "2": [
+                3,
+                5,
+                8
+              ],
+              "11": [
+                3,
+                7,
+                8
+              ],
+              "38": [
+                1,
+                2,
+                3,
+                5,
+                6
+              ],
+              "58": [
+                3,
+                6
+              ]
+            },
+            "eliminates": [
+              {
+                "cell": 38,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out",
+            "warnCells": [
+              38
+            ]
+          }
+        }
+      ]
+    }
   },
   "30": {
     "technique": "jellyfish",
     "name": "水母陣",
     "subtitle": "四線覆蓋，外圍淨化",
     "explanation": [
-      "Jellyfish 是四線魚型：四行（或四列）候選只覆蓋四列（或四行）。",
-      "四線一旦封閉，真值必被收容在覆蓋區內。",
-      "因此覆蓋區外的同列（同行）候選可批次刪除。"
+      "Jellyfish 是四行四列的魚型封閉網。",
+      "當四線收斂成立時，網外同列候選需被清除。",
+      "本例以單點示範後收斂到完整刪除。"
     ],
     "example": {
       "board": [
@@ -38339,19 +44457,83 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：找出候選 5 的四行四列封閉覆蓋。",
+          "text": "先定錨四線：找出候選 5 的四行四列封閉結構。",
           "focusCells": [
             2,
-            11
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38,
+            57
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：覆蓋外的 R7C4 若保留 5，會破壞四線收容。",
+          "text": "確認封閉：Jellyfish 主網成立，外部候選 5 進入待刪。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R7C4 的 5 位於網外交點。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            57
+          ],
+          "warnDigit": 5
+        },
+        {
+          "text": "示範反證：若 R7C4 保留 5，會破壞四線收斂，故 R7C4≠5。",
+          "focusCells": [
+            57,
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -38364,12 +44546,23 @@ const TEACH_DATA = {
               "digit": 5
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            57
+          ],
+          "warnDigit": 5
         },
         {
-          "text": "操作：刪除 R7C4 的 5。",
+          "text": "完成消除清單：R7C4≠5。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -38383,6 +44576,7 @@ const TEACH_DATA = {
               "digit": 5
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -38954,16 +45148,135 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：建立 Jellyfish 四線主網",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "封閉：主網成立，外部格進入待刪",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "鎖定目標：R7C4 的 5",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R7C4≠5",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              57,
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              57
+            ],
+            "eliminates": [
+              {
+                "cell": 57,
+                "digit": 5
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Jellyfish 刪除 R7C4 的 5",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              57
+            ],
+            "eliminates": [
+              {
+                "cell": 57,
+                "digit": 5
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "31": {
     "technique": "finned_jellyfish",
     "name": "鰭水母",
     "subtitle": "主網帶鰭，宮內定刪",
     "explanation": [
-      "Finned Jellyfish 是 Jellyfish 主網外多一個鰭點的變體。",
-      "鰭點會限制可刪區域，通常縮在鰭所在宮的交集。",
-      "先確認主網，再用鰭做宮內定向刪除。"
+      "Finned Jellyfish 先有 Jellyfish 主網，再加入鰭點修正。",
+      "鰭會把刪除區域收窄到特定交集格。",
+      "因此可做精準單點刪除。"
     ],
     "example": {
       "board": [
@@ -39416,19 +45729,83 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：確認 Jellyfish 主網成立並標出鰭點。",
+          "text": "先定錨主網：四線 Jellyfish 骨架先成立。",
           "focusCells": [
             2,
-            11
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38,
+            57
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：目標格位於鰭宮交集，保留 4 會與主網衝突。",
+          "text": "加入鰭修正：確認鰭點後，鎖定可刪交集區。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R1C3 的 4 位於鰭交集刪除區。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 4
+        },
+        {
+          "text": "示範反證：若 R1C3 保留 4，會與鰭修正後主網衝突，故 R1C3≠4。",
+          "focusCells": [
+            2,
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -39441,12 +45818,23 @@ const TEACH_DATA = {
               "digit": 4
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 4
         },
         {
-          "text": "操作：刪除 R1C3 的 4。",
+          "text": "完成消除清單：R1C3≠4。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -39460,6 +45848,7 @@ const TEACH_DATA = {
               "digit": 4
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -40031,16 +46420,135 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：Jellyfish 主網",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "鰭修正：收窄到交集刪除區",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "鎖定目標：R1C3 的 4",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C3≠4",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 4
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Finned Jellyfish 刪除 R1C3 的 4",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 4
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "32": {
     "technique": "xy_chain",
     "name": "雙值連環",
     "subtitle": "鏈首鏈尾，同值封殺",
     "explanation": [
-      "XY-Chain 由雙值節點串接，鄰接節點共享一個候選。",
-      "當鏈首與鏈尾共享同值，兩端至少一端為真。",
-      "因此同視首尾的格子可刪除該同值。"
+      "XY-Chain 透過雙值鏈的交替強弱關係，把首尾同數字連起來。",
+      "同時看見首尾的格子，該數字會被兩端同時排斥。",
+      "因此能做定向刪除。"
     ],
     "example": {
       "board": [
@@ -40478,19 +46986,83 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：建立 XY 鏈，確認首尾共享候選 2。",
+          "text": "先定錨雙值鏈：建立可交替傳遞的 XY 節點路徑。",
           "focusCells": [
             2,
-            11
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38,
+            57
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：目標格若保留 2，會與首尾至少一真規則衝突。",
+          "text": "確認首尾同數字：鏈首鏈尾共享同一候選。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R2C3 同時看見首尾，候選 2 進入待驗證。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            11
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "示範反證：若 R2C3 保留 2，會與首尾至少一真規則衝突，故 R2C3≠2。",
+          "focusCells": [
+            11,
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -40503,12 +47075,23 @@ const TEACH_DATA = {
               "digit": 2
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            11
+          ],
+          "warnDigit": 2
         },
         {
-          "text": "操作：刪除 R2C3 的 2。",
+          "text": "完成消除清單：R2C3≠2。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -40522,6 +47105,7 @@ const TEACH_DATA = {
               "digit": 2
             }
           ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -41078,16 +47662,135 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：建立 XY-Chain",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "首尾：共享同數字候選",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "鎖定目標：R2C3 的 2",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              11
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R2C3≠2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              11,
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              11
+            ],
+            "eliminates": [
+              {
+                "cell": 11,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：XY-Chain 刪除 R2C3 的 2",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              11
+            ],
+            "eliminates": [
+              {
+                "cell": 11,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "33": {
     "technique": "discontinuous_nice_loop",
     "name": "斷續環",
     "subtitle": "環首破綻，直接定刪",
     "explanation": [
-      "Discontinuous Nice Loop 以起點雙強或雙弱做快速判定。",
-      "雙強通常導出候選必假；雙弱則導出候選必真。",
-      "可在起點直接得到刪除或定值，省去長鏈展開。"
+      "Discontinuous Nice Loop 在起點會出現雙強或雙弱特徵。",
+      "本例屬於雙強起點，代表該候選可直接排除。",
+      "先辨識起點型態，再做單點示範最清楚。"
     ],
     "example": {
       "board": [
@@ -41525,19 +48228,140 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：建立環鏈並檢查起點連接型態。",
+          "text": "定錨環鏈：建立 discontinuous loop 的節點連接。",
           "focusCells": [
             2,
-            11
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：本例起點對候選 4 形成雙強。",
+          "text": "判讀起點：本例起點對候選 4 呈雙強連接。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：雙強結論直指 R3C3 的 4 為假。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "20": [
+              4
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            20
+          ],
+          "warnDigit": 4
+        },
+        {
+          "text": "反證確認：若 R3C3 保留 4，環鏈起點會自衝突。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            20
+          ],
+          "warnDigit": 4
+        },
+        {
+          "text": "示範刪除：R3C3≠4。",
+          "focusCells": [
+            20,
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "20": [
+              4
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 20,
+              "digit": 4
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            20
+          ],
+          "warnDigit": 4
+        },
+        {
+          "text": "完成消除清單：R3C3 的候選 4 移除。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -41550,25 +48374,7 @@ const TEACH_DATA = {
               "digit": 4
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "操作：刪除 R3C3 的 4。",
-          "focusCells": [
-            2,
-            11,
-            20,
-            38,
-            57
-          ],
-          "highlightDigits": {},
-          "eliminateCells": [
-            {
-              "cell": 20,
-              "digit": 4
-            }
-          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -42125,16 +48931,155 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：建立 Discontinuous Loop",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "判讀：起點呈雙強",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R3C3 的 4",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              20
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "驗證：保留 4 會產生起點衝突",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              20
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R3C3≠4",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              20,
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              20
+            ],
+            "eliminates": [
+              {
+                "cell": 20,
+                "digit": 4
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Discontinuous Loop 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              20
+            ],
+            "eliminates": [
+              {
+                "cell": 20,
+                "digit": 4
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "34": {
     "technique": "cell_forcing_chain",
     "name": "格強制鏈",
     "subtitle": "單格分支，同結論收斂",
     "explanation": [
-      "Cell Forcing Chain 從同一格不同候選展開分支推演。",
-      "若分支最終收斂到同一排除，該排除必成立。",
-      "核心是分支覆蓋，不靠猜測只看收斂結果。"
+      "Cell Forcing Chain 從同一格的多候選做分支。",
+      "若每個分支都導向同一排除，該排除可直接成立。",
+      "這類題目重點是把每個分支講清楚。"
     ],
     "example": {
       "board": [
@@ -42573,19 +49518,142 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：以目標格兩候選作為 A/B 分支起點。",
+          "text": "定錨分支起點：以同一格候選建立 A/B 情境。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "分支 A：推導到 R5C3 的 6 被排除。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
             2,
             11
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：A、B 兩分支皆迫使 R5C3 不可為 6。",
+          "text": "分支 B：同樣推導到 R5C3 的 6 被排除。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "38": [
+              6
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            38
+          ],
+          "warnDigit": 6
+        },
+        {
+          "text": "分支合流：A/B 都指向 R5C3≠6。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "38": [
+              6
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            38
+          ],
+          "warnDigit": 6
+        },
+        {
+          "text": "示範刪除：R5C3≠6。",
+          "focusCells": [
+            38,
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "38": [
+              6
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 38,
+              "digit": 6
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            38
+          ],
+          "warnDigit": 6
+        },
+        {
+          "text": "完成消除清單：R5C3 的候選 6 移除。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -42598,25 +49666,7 @@ const TEACH_DATA = {
               "digit": 6
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "操作：刪除 R5C3 的 6。",
-          "focusCells": [
-            2,
-            11,
-            20,
-            38,
-            57
-          ],
-          "highlightDigits": {},
-          "eliminateCells": [
-            {
-              "cell": 38,
-              "digit": 6
-            }
-          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -43174,16 +50224,153 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：Cell Forcing 分支起點",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "分支 A：導向 R5C3≠6",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              11
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 B：同結論",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              38
+            ],
+            "chainCells": [
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "合流：兩支同排除",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              38
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R5C3≠6",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              38,
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              38
+            ],
+            "eliminates": [
+              {
+                "cell": 38,
+                "digit": 6
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Cell Forcing 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              38
+            ],
+            "eliminates": [
+              {
+                "cell": 38,
+                "digit": 6
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "35": {
     "technique": "region_forcing_chain",
     "name": "域強制鏈",
     "subtitle": "區域分支，共識收斂",
     "explanation": [
-      "Region Forcing Chain 以行列宮作為分支單位，而非單一格。",
-      "每個區域分支代表一種局部可行配置。",
-      "若所有分支共識同一排除，該候選可安全刪除。"
+      "Region Forcing Chain 在同一宮（或列/行）建立多個區域分支。",
+      "若各分支都排除同一候選，就能直接刪除。",
+      "高難點在於分支多，但結論仍要收斂一致。"
     ],
     "example": {
       "board": [
@@ -43622,19 +50809,142 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：在同一宮建立多個可行分支情境。",
+          "text": "定錨區域分支：在同宮建立多個可行情境。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "分支 A：推出 R7C4 的 2 不成立。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
             2,
             11
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：各分支皆導致 R7C4 的 2 產生矛盾。",
+          "text": "分支 B：同樣推出 R7C4 的 2 不成立。",
           "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "57": [
+              2
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            57
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "分支 C：第三條路徑仍指向 R7C4≠2。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "57": [
+              2
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            57
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "示範刪除：R7C4≠2。",
+          "focusCells": [
+            57,
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "57": [
+              2
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 57,
+              "digit": 2
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            57
+          ],
+          "warnDigit": 2
+        },
+        {
+          "text": "完成消除清單：R7C4 的候選 2 移除。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
             2,
             11,
             20,
@@ -43647,25 +50957,7 @@ const TEACH_DATA = {
               "digit": 2
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "操作：刪除 R7C4 的 2。",
-          "focusCells": [
-            2,
-            11,
-            20,
-            38,
-            57
-          ],
-          "highlightDigits": {},
-          "eliminateCells": [
-            {
-              "cell": 57,
-              "digit": 2
-            }
-          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -44223,16 +51515,153 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：Region Forcing 分支",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "分支 A：導向 R7C4≠2",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              11
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 B：同結論",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              57
+            ],
+            "chainCells": [
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 C：再次同結論",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R7C4≠2",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              57,
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              57
+            ],
+            "eliminates": [
+              {
+                "cell": 57,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Region Forcing 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              57
+            ],
+            "eliminates": [
+              {
+                "cell": 57,
+                "digit": 2
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "36": {
     "technique": "template",
     "name": "模板映射",
     "subtitle": "全域模板，非法定刪",
     "explanation": [
-      "Template 先建立某數字的全盤合法模板集合。",
-      "不屬於任何合法模板的位置可直接排除。",
-      "它是全局推理，不依賴單一局部鏈。"
+      "Template 先列出某數字的所有合法模板。",
+      "不在任何模板中的候選可直接刪除。",
+      "本例 R1C3 的 4 不屬於任何合法模板。"
     ],
     "example": {
       "board": [
@@ -44671,20 +52100,131 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：列出候選 4 的合法模板群。",
+          "text": "定錨模板集：列出數字 4 的候選模板群。",
           "focusCells": [
-            2,
-            11
+            11,
+            20,
+            38,
+            2
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：R1C3 不在任何模板允許位置。",
+          "text": "模板比對：交集/聯集後鎖定必假位置。",
+          "focusCells": [
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R1C3 的 4 不在任何可行模板。",
           "focusCells": [
             2,
+            11,
+            20
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "2": [
+              4
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 4
+        },
+        {
+          "text": "反證驗證：若保留 R1C3=4，所有模板都被破壞。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 4
+        },
+        {
+          "text": "示範刪除：R1C3≠4。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "2": [
+              4
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 2,
+              "digit": 4
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            2
+          ],
+          "warnDigit": 4
+        },
+        {
+          "text": "完成消除清單：R1C3 的候選 4 移除。",
+          "focusCells": [
+            11,
+            20,
+            38,
+            2
+          ],
+          "chainCells": [
             11,
             20,
             38
@@ -44696,25 +52236,7 @@ const TEACH_DATA = {
               "digit": 4
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "操作：刪除 R1C3 的 4。",
-          "focusCells": [
-            2,
-            11,
-            20,
-            38,
-            57
-          ],
-          "highlightDigits": {},
-          "eliminateCells": [
-            {
-              "cell": 2,
-              "digit": 4
-            }
-          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -45272,16 +52794,147 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：建立 Template 模板集",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              11,
+              20,
+              38,
+              2
+            ],
+            "chainCells": [
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 11
+          }
+        },
+        {
+          "caption": "比對：模板交集/聯集",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R1C3 的 4",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "驗證：保留 4 會破壞模板",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              2
+            ],
+            "chainCells": [
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R1C3≠4",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 4
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Template 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              11,
+              20,
+              38,
+              2
+            ],
+            "warnCells": [
+              2
+            ],
+            "eliminates": [
+              {
+                "cell": 2,
+                "digit": 4
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "37": {
     "technique": "als_xy",
     "name": "ALS 交映",
     "subtitle": "雙 ALS 互鎖，外圍定刪",
     "explanation": [
-      "ALS-XY 先定位兩個 ALS，並建立共享限制候選。",
-      "共享候選在兩 ALS 之間形成必然分配關係。",
-      "同時看見兩 ALS 的外圍格可做定向刪除。"
+      "ALS-XY 由兩個 ALS 共享兩個限制候選。",
+      "透過 XY 雙限制可把外圍目標候選同時排斥。",
+      "本例刪除點在 R2C3 的 3。"
     ],
     "example": {
       "board": [
@@ -45725,21 +53378,132 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：定位 ALS-A / ALS-B，確認共享候選與 RCC。",
+          "text": "定錨 ALS-A / ALS-B：先找雙限制候選 X、Y。",
           "focusCells": [
             2,
+            20,
+            38,
             11
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：沿 RCC 傳遞後，外圍目標格的 3 不再可行。",
+          "text": "確認雙限制：兩個 ALS 在 X、Y 上形成互補。",
           "focusCells": [
             2,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R2C3 的候選 3 同時受兩側影響。",
+          "focusCells": [
             11,
+            2,
+            20
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "11": [
+              3
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            11
+          ],
+          "warnDigit": 3
+        },
+        {
+          "text": "分支驗證：不論 X 或 Y 先落真，R2C3 的 3 都被排除。",
+          "focusCells": [
+            11,
+            2,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            11
+          ],
+          "warnDigit": 3
+        },
+        {
+          "text": "示範刪除：R2C3≠3。",
+          "focusCells": [
+            11,
+            2,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "11": [
+              3
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 11,
+              "digit": 3
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            11
+          ],
+          "warnDigit": 3
+        },
+        {
+          "text": "完成消除清單：R2C3 的候選 3 移除。",
+          "focusCells": [
+            2,
+            20,
+            38,
+            11
+          ],
+          "chainCells": [
+            2,
             20,
             38
           ],
@@ -45750,25 +53514,7 @@ const TEACH_DATA = {
               "digit": 3
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "操作：刪除 R2C3 的 3。",
-          "focusCells": [
-            2,
-            11,
-            20,
-            38,
-            57
-          ],
-          "highlightDigits": {},
-          "eliminateCells": [
-            {
-              "cell": 11,
-              "digit": 3
-            }
-          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -46331,16 +54077,147 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：ALS-XY 兩節點",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              20,
+              38,
+              11
+            ],
+            "chainCells": [
+              2,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "雙限制：X/Y 互補",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R2C3 的 3",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              11,
+              2,
+              20
+            ],
+            "warnCells": [
+              11
+            ],
+            "chainCells": [
+              2,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "驗證：雙分支同排除",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              11,
+              2,
+              20,
+              38
+            ],
+            "warnCells": [
+              11
+            ],
+            "chainCells": [
+              2,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R2C3≠3",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              11,
+              2,
+              20,
+              38
+            ],
+            "warnCells": [
+              11
+            ],
+            "eliminates": [
+              {
+                "cell": 11,
+                "digit": 3
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：ALS-XY 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              20,
+              38,
+              11
+            ],
+            "warnCells": [
+              11
+            ],
+            "eliminates": [
+              {
+                "cell": 11,
+                "digit": 3
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "38": {
     "technique": "als_w_wing",
     "name": "ALS 翼合",
     "subtitle": "ALS 翼合，聯動定刪",
     "explanation": [
-      "ALS-W-Wing 結合 ALS 約束與 W-Wing 翼鏈。",
-      "ALS 提供收斂邊界，翼鏈提供真假傳遞路徑。",
-      "兩者同時成立時可做高可靠定刪。"
+      "ALS-W-Wing 把 ALS 邏輯和 W-Wing 強鏈融合。",
+      "雙端 ALS 透過共軛對同步後，能排除共同可見目標。",
+      "本例刪除 R3C3 的 1。"
     ],
     "example": {
       "board": [
@@ -46784,21 +54661,129 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：先定義 ALS 節點，再建立翼鏈雙端連接。",
+          "text": "定錨雙端 ALS：先圈出兩個端點 ALS。",
           "focusCells": [
             2,
-            11
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：翼鏈傳遞至 ALS 邊界後，目標格 1 被雙向排斥。",
+          "text": "加入強鏈：用共軛對把兩端 ALS 同步。",
           "focusCells": [
             2,
-            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定目標：R3C3 的候選 1 位於雙端共同可見區。",
+          "focusCells": [
+            20,
+            2,
+            38
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "20": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            20
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "同步驗證：任一分支都會使 R3C3 的 1 失效。",
+          "focusCells": [
+            20,
+            2,
+            38
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            20
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "示範刪除：R3C3≠1。",
+          "focusCells": [
+            20,
+            2,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "20": [
+              1
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 20,
+              "digit": 1
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            20
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "完成消除清單：R3C3 的候選 1 移除。",
+          "focusCells": [
+            2,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
             20,
             38
           ],
@@ -46809,25 +54794,7 @@ const TEACH_DATA = {
               "digit": 1
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "操作：刪除 R3C3 的 1。",
-          "focusCells": [
-            2,
-            11,
-            20,
-            38,
-            57
-          ],
-          "highlightDigits": {},
-          "eliminateCells": [
-            {
-              "cell": 20,
-              "digit": 1
-            }
-          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -47390,16 +55357,144 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：ALS 雙端節點",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              2,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "同步：共軛對連接雙端",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              20,
+              38
+            ],
+            "chainCells": [
+              2,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定 R3C3 的 1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              20,
+              2,
+              38
+            ],
+            "warnCells": [
+              20
+            ],
+            "chainCells": [
+              2,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "驗證：同步分支同排除",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              20,
+              2,
+              38
+            ],
+            "warnCells": [
+              20
+            ],
+            "chainCells": [
+              2,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R3C3≠1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              20,
+              2,
+              20,
+              38
+            ],
+            "warnCells": [
+              20
+            ],
+            "eliminates": [
+              {
+                "cell": 20,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：ALS-W-Wing 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              2,
+              20,
+              38
+            ],
+            "warnCells": [
+              20
+            ],
+            "eliminates": [
+              {
+                "cell": 20,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "39": {
     "technique": "sue_de_coq",
     "name": "蘇德可",
     "subtitle": "交界分拆，容量定刪",
     "explanation": [
-      "Sue de Coq 在宮與行列交界建立候選集合分拆。",
-      "交界與非交界集合的候選容量必須守恆。",
-      "外圍若出現超額候選即違反守恆，可定向刪除。"
+      "Sue de Coq 要先切分交界區與兩側獨立容量。",
+      "容量超額時，超出的候選可直接排除。",
+      "本例超額候選落在 R5C3 的 1。"
     ],
     "example": {
       "board": [
@@ -47850,20 +55945,131 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：切分交界格與非交界格，建立候選容量。",
+          "text": "定錨交界：標出 row/box 交界格與兩側候選池。",
           "focusCells": [
-            2,
-            11
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
           ],
           "highlightDigits": {},
           "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
           "warnCells": [],
           "warnDigit": null
         },
         {
-          "text": "判定：容量計算顯示目標候選 1 屬於超額。",
+          "text": "容量分解：計算交界、行側、宮側各自可容納數。",
           "focusCells": [
-            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "鎖定超額：候選 1 在外側形成容量超額。",
+          "focusCells": [
+            38,
+            11,
+            20
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "38": [
+              1
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            38
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "容量驗證：若保留超額 1，交界配置無法同時滿足。",
+          "focusCells": [
+            38,
+            11,
+            20,
+            57
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {},
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            38
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "示範刪除：R5C3≠1。",
+          "focusCells": [
+            38,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            11,
+            20,
+            38
+          ],
+          "highlightDigits": {
+            "38": [
+              1
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 38,
+              "digit": 1
+            }
+          ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            38
+          ],
+          "warnDigit": 1
+        },
+        {
+          "text": "完成消除清單：R5C3 的候選 1 移除。",
+          "focusCells": [
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
             11,
             20,
             38
@@ -47875,25 +56081,7 @@ const TEACH_DATA = {
               "digit": 1
             }
           ],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "操作：刪除 R5C3 的 1。",
-          "focusCells": [
-            2,
-            11,
-            20,
-            38,
-            57
-          ],
-          "highlightDigits": {},
-          "eliminateCells": [
-            {
-              "cell": 38,
-              "digit": 1
-            }
-          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -48463,16 +56651,147 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：Sue de Coq 交界切分",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 11
+          }
+        },
+        {
+          "caption": "容量：三區候選池分解",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              11,
+              20,
+              38
+            ],
+            "chainCells": [
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "目標：鎖定超額候選 1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              38,
+              11,
+              20
+            ],
+            "warnCells": [
+              38
+            ],
+            "chainCells": [
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "驗證：保留 1 會容量衝突",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              38,
+              11,
+              20,
+              57
+            ],
+            "warnCells": [
+              38
+            ],
+            "chainCells": [
+              11,
+              20,
+              38
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R5C3≠1",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              38,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              38
+            ],
+            "eliminates": [
+              {
+                "cell": 38,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Sue de Coq 收斂消除",
+          "durationMs": 2100,
+          "highlight": {
+            "cells": [
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              38
+            ],
+            "eliminates": [
+              {
+                "cell": 38,
+                "digit": 1
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   },
   "40": {
     "technique": "death_blossom",
     "name": "終花綻放",
     "subtitle": "樞紐多翼，終局定刪",
     "explanation": [
-      "Death Blossom 由一個樞紐與多翼節點（ALS/鏈）構成。",
-      "樞紐任一候選都會觸發至少一個翼節點為真。",
-      "若某格同時被所有翼覆蓋，該候選可被強制定刪。"
+      "Death Blossom 用單樞紐連接多翼，屬於終局級技巧。",
+      "關鍵是每個樞紐分支都會啟動至少一翼排除同一目標。",
+      "因此用多分支合流方式最容易理解。"
     ],
     "example": {
       "board": [
@@ -48967,44 +57286,7 @@ const TEACH_DATA = {
       },
       "steps": [
         {
-          "text": "觀察：建立樞紐候選與多翼覆蓋關係。",
-          "focusCells": [
-            2,
-            11
-          ],
-          "highlightDigits": {
-            "57": [
-              5
-            ]
-          },
-          "eliminateCells": [],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "判定：不論樞紐取值，R7C4 的 5 都會被至少一翼否定。",
-          "focusCells": [
-            2,
-            11,
-            20,
-            38
-          ],
-          "highlightDigits": {
-            "57": [
-              5
-            ]
-          },
-          "eliminateCells": [
-            {
-              "cell": 57,
-              "digit": 5
-            }
-          ],
-          "warnCells": [],
-          "warnDigit": null
-        },
-        {
-          "text": "操作：刪除 R7C4 的 5，打開終局破口。",
+          "text": "定錨樞紐：先標出 pivot 與三個翼節點。",
           "focusCells": [
             2,
             11,
@@ -49012,13 +57294,188 @@ const TEACH_DATA = {
             38,
             57
           ],
-          "highlightDigits": {},
+          "chainCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "highlightDigits": {
+            "57": [
+              5
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "翼覆蓋：確認每個翼對候選集合的覆蓋區。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "highlightDigits": {
+            "57": [
+              5
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [],
+          "warnDigit": null
+        },
+        {
+          "text": "分支 A：pivot 取值 A 時，翼 A 直接排除 R7C4 的 5。",
+          "focusCells": [
+            2,
+            11,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            57
+          ],
+          "highlightDigits": {
+            "57": [
+              5
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            57
+          ],
+          "warnDigit": 5
+        },
+        {
+          "text": "分支 B：pivot 取值 B 時，翼 B 仍排除 R7C4 的 5。",
+          "focusCells": [
+            2,
+            20,
+            57
+          ],
+          "chainCells": [
+            2,
+            20,
+            57
+          ],
+          "highlightDigits": {
+            "57": [
+              5
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            57
+          ],
+          "warnDigit": 5
+        },
+        {
+          "text": "分支 C：pivot 取值 C 時，翼 C 一樣排除 R7C4 的 5。",
+          "focusCells": [
+            2,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            38,
+            57
+          ],
+          "highlightDigits": {
+            "57": [
+              5
+            ]
+          },
+          "eliminateCells": [],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            57
+          ],
+          "warnDigit": 5
+        },
+        {
+          "text": "示範刪除：R7C4≠5。",
+          "focusCells": [
+            57,
+            2,
+            11,
+            20,
+            38
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "highlightDigits": {
+            "57": [
+              5
+            ]
+          },
           "eliminateCells": [
             {
               "cell": 57,
               "digit": 5
             }
           ],
+          "showChain": true,
+          "chainMode": "sequential",
+          "warnCells": [
+            57
+          ],
+          "warnDigit": 5
+        },
+        {
+          "text": "完成消除清單：R7C4 的候選 5 移除。",
+          "focusCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "chainCells": [
+            2,
+            11,
+            20,
+            38,
+            57
+          ],
+          "highlightDigits": {
+            "57": [
+              5
+            ]
+          },
+          "eliminateCells": [
+            {
+              "cell": 57,
+              "digit": 5
+            }
+          ],
+          "showChain": false,
           "warnCells": [],
           "warnDigit": null
         }
@@ -49632,6 +58089,166 @@ const TEACH_DATA = {
         ],
         "source": "in-house-generated"
       }
-    ]
+    ],
+    "demoStory": {
+      "acts": [
+        {
+          "caption": "定錨：Death Blossom 樞紐與三翼",
+          "durationMs": 1700,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "in",
+            "cameraFocus": 2
+          }
+        },
+        {
+          "caption": "覆蓋：三翼責任區確認",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 A：導向 R7C4≠5",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              57
+            ],
+            "warnCells": [
+              57
+            ],
+            "chainCells": [
+              2,
+              11,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 B：同樣導向 R7C4≠5",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              20,
+              57
+            ],
+            "warnCells": [
+              57
+            ],
+            "chainCells": [
+              2,
+              20,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "分支 C：再次同結論",
+          "durationMs": 1500,
+          "highlight": {
+            "cells": [
+              2,
+              38,
+              57
+            ],
+            "warnCells": [
+              57
+            ],
+            "chainCells": [
+              2,
+              38,
+              57
+            ],
+            "chainMode": "sequential",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "示範刪除：R7C4≠5",
+          "durationMs": 1600,
+          "highlight": {
+            "cells": [
+              57,
+              2,
+              11,
+              20,
+              38
+            ],
+            "warnCells": [
+              57
+            ],
+            "eliminates": [
+              {
+                "cell": 57,
+                "digit": 5
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "none"
+          }
+        },
+        {
+          "caption": "完成：Death Blossom 收斂消除",
+          "durationMs": 2200,
+          "highlight": {
+            "cells": [
+              2,
+              11,
+              20,
+              38,
+              57
+            ],
+            "warnCells": [
+              57
+            ],
+            "eliminates": [
+              {
+                "cell": 57,
+                "digit": 5
+              }
+            ],
+            "elimStyle": "cross-mark",
+            "camera": "out"
+          }
+        }
+      ]
+    }
   }
 };

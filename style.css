@@ -2045,7 +2045,24 @@ header h1 {
     100% { opacity: 0; transform: scale(0.7); text-decoration: line-through; }
 }
 
-/* Ripple wave reserved for X-Wing+ (Phase 2 skills) */
+/* ── Ripple wave (fill-all + future X-Wing skills) ── */
+
+@keyframes skill-ripple-expand {
+    0%   { r: 2; opacity: 0.6; stroke-width: 1.2; }
+    60%  { opacity: 0.3; }
+    100% { r: 85; opacity: 0; stroke-width: 0.3; }
+}
+
+/* ── Candidate reveal animation (fill-all) ── */
+
+.cell.candidate-reveal .notes-grid {
+    animation: candidate-pop 0.3s var(--ease-zen, ease-out);
+}
+
+@keyframes candidate-pop {
+    0%   { opacity: 0; transform: scale(0.7); }
+    100% { opacity: 1; transform: scale(1); }
+}
 
 /* ===== Stats & Achievements Modal ===== */
 #stats-modal {
@@ -3344,6 +3361,76 @@ body.library-open {
 @keyframes demoTargetGlow {
     0%   { box-shadow: inset 0 0 0 0 transparent; }
     100% { box-shadow: inset 0 0 6px var(--accent-light); }
+}
+
+/* Cross lines overlay (X-Wing) — draw in then fade out */
+.demo-cross-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+    overflow: visible;
+}
+.demo-cross-line {
+    stroke: var(--accent-strong);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    opacity: 0;
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    fill: none;
+    animation: demoCrossDraw 0.6s ease-out forwards, demoCrossFade 0.4s 1.4s ease-in forwards;
+}
+.demo-cross-line-2 {
+    animation-delay: 0.15s, 1.4s;
+}
+@keyframes demoCrossDraw {
+    0%   { opacity: 0.7; stroke-dashoffset: 200; }
+    100% { opacity: 0.7; stroke-dashoffset: 0; }
+}
+@keyframes demoCrossFade {
+    0%   { opacity: 0.7; }
+    100% { opacity: 0; }
+}
+
+/* Cross mark ✕ on eliminated digits */
+.tc-note.cross-mark {
+    position: relative;
+    color: #d63031;
+    text-decoration: none;
+    animation: demoCrossMarkFadeOut 0.3s 0.6s ease-in forwards;
+}
+.tc-note.cross-mark::after {
+    content: '✕';
+    position: absolute;
+    inset: -2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d63031;
+    font-size: 1.1em;
+    font-weight: 800;
+    line-height: 1;
+    animation: demoCrossMarkPop 0.3s ease-out both, demoCrossMarkFadeOut 0.3s 0.6s ease-in forwards;
+}
+@keyframes demoCrossMarkPop {
+    0%   { opacity: 0; transform: scale(0.3); }
+    50%  { transform: scale(1.15); }
+    100% { opacity: 0.9; transform: scale(1); }
+}
+@keyframes demoCrossMarkFadeOut {
+    0%   { opacity: 0.9; }
+    100% { opacity: 0; }
+}
+
+/* Warn cells — red border for elimination targets, fades out with cross-mark */
+.teach-cell.demo-warn {
+    box-shadow: inset 0 0 0 1.5px #d63031;
+    animation: demoWarnFade 0.3s 0.6s ease-in forwards;
+}
+@keyframes demoWarnFade {
+    0%   { box-shadow: inset 0 0 0 1.5px #d63031; }
+    100% { box-shadow: inset 0 0 0 0 transparent; }
 }
 
 /* Dimmed cells — non-focus cells fade when camera='in' */

@@ -1,0 +1,281 @@
+{
+  "generated_at": "2026-03-23T08:12:30.577Z",
+  "total_levels": 1000,
+  "stages": [
+    {
+      "stage": 1,
+      "stars": 0,
+      "difficultyName": "鏈啟",
+      "technique": "aic",
+      "count": 40,
+      "ids": [
+        9001,
+        9040
+      ]
+    },
+    {
+      "stage": 2,
+      "stars": 0.5,
+      "difficultyName": "鏈序",
+      "technique": "aic",
+      "count": 40,
+      "ids": [
+        9041,
+        9080
+      ]
+    },
+    {
+      "stage": 3,
+      "stars": 0.75,
+      "difficultyName": "中鏈·一",
+      "technique": "aic_mid_chain",
+      "count": 40,
+      "ids": [
+        9081,
+        9120
+      ]
+    },
+    {
+      "stage": 4,
+      "stars": 1,
+      "difficultyName": "中鏈·二",
+      "technique": "aic_mid_chain",
+      "count": 40,
+      "ids": [
+        121,
+        160
+      ]
+    },
+    {
+      "stage": 5,
+      "stars": 2,
+      "difficultyName": "長鏈·一",
+      "technique": "aic_long_chain",
+      "count": 40,
+      "ids": [
+        161,
+        200
+      ]
+    },
+    {
+      "stage": 6,
+      "stars": 3,
+      "difficultyName": "長鏈·二",
+      "technique": "aic_long_chain",
+      "count": 40,
+      "ids": [
+        20001,
+        20040
+      ]
+    },
+    {
+      "stage": 7,
+      "stars": 3.5,
+      "difficultyName": "群鏈迴路·一",
+      "technique": "grouped_aic_nice_loop",
+      "count": 40,
+      "ids": [
+        20041,
+        20080
+      ]
+    },
+    {
+      "stage": 8,
+      "stars": 4,
+      "difficultyName": "群鏈迴路·二",
+      "technique": "grouped_aic_nice_loop",
+      "count": 40,
+      "ids": [
+        20081,
+        20120
+      ]
+    },
+    {
+      "stage": 9,
+      "stars": 4.5,
+      "difficultyName": "ALS-XZ·一",
+      "technique": "als_xz",
+      "count": 40,
+      "ids": [
+        20121,
+        20160
+      ]
+    },
+    {
+      "stage": 10,
+      "stars": 5,
+      "difficultyName": "ALS-XZ·二",
+      "technique": "als_xz",
+      "count": 40,
+      "ids": [
+        20161,
+        20200
+      ]
+    },
+    {
+      "stage": 11,
+      "stars": 5.5,
+      "difficultyName": "ALS Chain·一",
+      "technique": "als_chain",
+      "count": 40,
+      "ids": [
+        20401,
+        20440
+      ]
+    },
+    {
+      "stage": 12,
+      "stars": 6,
+      "difficultyName": "ALS Chain·二",
+      "technique": "als_chain",
+      "count": 40,
+      "ids": [
+        20241,
+        20280
+      ]
+    },
+    {
+      "stage": 13,
+      "stars": 6.5,
+      "difficultyName": "網鏈·一",
+      "technique": "forcing_chain_net",
+      "count": 40,
+      "ids": [
+        20281,
+        20320
+      ]
+    },
+    {
+      "stage": 14,
+      "stars": 7,
+      "difficultyName": "網鏈·二",
+      "technique": "forcing_chain_net",
+      "count": 40,
+      "ids": [
+        20321,
+        20360
+      ]
+    },
+    {
+      "stage": 15,
+      "stars": 7.5,
+      "difficultyName": "長鏈實戰",
+      "technique": "aic_long_chain",
+      "count": 40,
+      "ids": [
+        20361,
+        20400
+      ]
+    },
+    {
+      "stage": 16,
+      "stars": 8,
+      "difficultyName": "群鏈實戰",
+      "technique": "grouped_aic_nice_loop",
+      "count": 40,
+      "ids": [
+        20201,
+        20240
+      ]
+    },
+    {
+      "stage": 17,
+      "stars": 8.5,
+      "difficultyName": "ALS-XZ實戰",
+      "technique": "als_xz",
+      "count": 40,
+      "ids": [
+        20441,
+        20480
+      ]
+    },
+    {
+      "stage": 18,
+      "stars": 8.75,
+      "difficultyName": "ALS Chain實戰",
+      "technique": "als_chain",
+      "count": 40,
+      "ids": [
+        20481,
+        20520
+      ]
+    },
+    {
+      "stage": 19,
+      "stars": 9,
+      "difficultyName": "網鏈壓力",
+      "technique": "forcing_chain_net",
+      "count": 40,
+      "ids": [
+        20521,
+        20560
+      ]
+    },
+    {
+      "stage": 20,
+      "stars": 9.25,
+      "difficultyName": "中鏈壓力",
+      "technique": "aic_mid_chain",
+      "count": 40,
+      "ids": [
+        20561,
+        20600
+      ]
+    },
+    {
+      "stage": 21,
+      "stars": 9.5,
+      "difficultyName": "Sue de Coq·一",
+      "technique": "sue_de_coq",
+      "count": 40,
+      "ids": [
+        20601,
+        20640
+      ]
+    },
+    {
+      "stage": 22,
+      "stars": 9.6,
+      "difficultyName": "Sue de Coq·二",
+      "technique": "sue_de_coq",
+      "count": 40,
+      "ids": [
+        20641,
+        20680
+      ]
+    },
+    {
+      "stage": 23,
+      "stars": 9.7,
+      "difficultyName": "Exocet·一",
+      "technique": "exocet_death_blossom",
+      "count": 40,
+      "ids": [
+        20681,
+        20720
+      ]
+    },
+    {
+      "stage": 24,
+      "stars": 9.85,
+      "difficultyName": "Exocet·二",
+      "technique": "exocet_death_blossom",
+      "count": 40,
+      "ids": [
+        20721,
+        20760
+      ]
+    },
+    {
+      "stage": 25,
+      "stars": 10,
+      "difficultyName": "Exocet·終",
+      "technique": "exocet_death_blossom",
+      "count": 40,
+      "ids": [
+        20761,
+        20800
+      ]
+    }
+  ]
+}

@@ -1,0 +1,637 @@
+{
+  "checked": 1000,
+  "failed": 1000,
+  "passed": 0,
+  "sample_failures": [
+    {
+      "id": 9001,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9002,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9003,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9004,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9005,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9006,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9007,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9008,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9009,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9010,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9011,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9012,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9013,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9014,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9015,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9016,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9017,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9018,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9019,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9020,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9021,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9022,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9023,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9024,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9025,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9026,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9027,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9028,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9029,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    },
+    {
+      "id": 9030,
+      "maxTechnique": "exocet_death_blossom",
+      "unique_ok": false,
+      "gate": {
+        "pass": true,
+        "mode": "strict",
+        "target_technique": "exocet_death_blossom",
+        "gate_technique": "aic",
+        "with_solved": true,
+        "without_solved": false,
+        "with_used_gate": true,
+        "max_used_gate": "aic",
+        "require_gate_highest": true,
+        "gate_is_highest": true,
+        "accepted_gate_techniques": [
+          "aic"
+        ],
+        "relaxed_fallback": false
+      }
+    }
+  ]
+}

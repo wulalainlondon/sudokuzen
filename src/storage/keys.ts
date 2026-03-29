@@ -21,6 +21,7 @@ export const SK = {
   S_GRADE_STREAK: 'sudoku_s_grade_streak',
   REPLAY_WATCH_COUNT: 'sudoku_replay_watch_count',
   TECHNIQUES_USED: 'sudoku_techniques_used',
+  SKILL_MODE: 'sudoku_skill_mode',
 
   /** Returns the save-game key for a given level id. */
   save(levelId: number, speedrun: boolean): string {

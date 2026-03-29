@@ -5,6 +5,8 @@ type Props = {
   cells: number[];
   eliminateCells?: number[];
   animate?: boolean;
+  /** 'sequential' = connect in order (default), 'cross' = draw X diagonals (for 4 cells) */
+  mode?: 'sequential' | 'cross';
 };
 
 function cellCenter(boardEl: HTMLElement, idx: number): { x: number; y: number } | null {
@@ -23,7 +25,7 @@ function readCssVar(name: string, fallback: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 }
 
-export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = true }: Props): ReactElement {
+export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = true, mode = 'sequential' }: Props): ReactElement {
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [links, setLinks] = useState<{ x1: number; y1: number; x2: number; y2: number }[]>([]);
   const [dots, setDots] = useState<{ x: number; y: number }[]>([]);
@@ -47,8 +49,14 @@ export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = t
       setDots(pts);
 
       const newLinks: { x1: number; y1: number; x2: number; y2: number }[] = [];
-      for (let i = 0; i < pts.length - 1; i++) {
-        newLinks.push({ x1: pts[i].x, y1: pts[i].y, x2: pts[i + 1].x, y2: pts[i + 1].y });
+      if (mode === 'cross' && pts.length === 4) {
+        // Draw X: diagonal 0→3 and 1→2
+        newLinks.push({ x1: pts[0].x, y1: pts[0].y, x2: pts[3].x, y2: pts[3].y });
+        newLinks.push({ x1: pts[1].x, y1: pts[1].y, x2: pts[2].x, y2: pts[2].y });
+      } else {
+        for (let i = 0; i < pts.length - 1; i++) {
+          newLinks.push({ x1: pts[i].x, y1: pts[i].y, x2: pts[i + 1].x, y2: pts[i + 1].y });
+        }
       }
       setLinks(newLinks);
       setElims(eliminateCells.map((idx) => cellCenter(b, idx)).filter(Boolean) as { x: number; y: number }[]);
@@ -87,7 +95,7 @@ export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = t
           stroke={chainColor}
           strokeWidth={1.8}
           strokeOpacity={chainOpacity}
-          markerEnd="url(#chain-end)"
+          markerEnd={mode === 'cross' ? undefined : 'url(#chain-end)'}
           strokeDasharray={dashLen || undefined}
           strokeDashoffset={dashLen || undefined}
           style={dashLen ? { animation: `chain-draw 0.5s ${i * 0.12}s ease-out forwards` } : undefined}

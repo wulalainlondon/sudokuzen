@@ -21,6 +21,7 @@ import {
   toggleNoteMode,
   toggleContinuousFill,
   setContinuousDigit,
+  fillAllCandidates,
 } from '../game/core';
 import { exitSkillMode, castSkill } from '../features/skills/skillController';
 import {
@@ -287,6 +288,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     exitSkillMode,
     castSkill,
     erase,
+    fillAllCandidates,
     sendDuoEmoji,
     replayReset,
     replayStepBack,

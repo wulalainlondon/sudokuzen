@@ -8,6 +8,8 @@ export type TeachEliminateTarget = {
 export type TeachStepModel = {
   text: string;
   focusCells: number[];
+  /** Optional explicit chain path for overlay; falls back to focusCells when omitted. */
+  chainCells?: number[];
   visibleCells?: number[];
   highlightDigits: Record<string, number[]>;
   eliminateCells: TeachEliminateTarget[];
@@ -15,6 +17,8 @@ export type TeachStepModel = {
   removedCandidates?: TeachEliminateTarget[];
   /** Hide chain overlay lines for this step (default: show) */
   showChain?: boolean;
+  /** Chain overlay mode: 'sequential' (default) or 'cross' (X-pattern for 4 cells) */
+  chainMode?: 'sequential' | 'cross';
   warnCells: number[];
   warnDigit: number | null;
 };
@@ -45,8 +49,10 @@ export type PracticeItemModel = {
 // ── Demo story — cinematic technique showcase ────────────────────
 
 export type DemoActHighlight = {
-  /** Cells to glow/focus */
+  /** Cells to glow/focus (blue) */
   cells?: number[];
+  /** Cells to warn/target (red border) */
+  warnCells?: number[];
   /** Specific digits to ring within cells: { "49": [9], "50": [9] } */
   digits?: Record<string, number[]>;
   /** Highlight an entire row (0-8), column (9-17), or box (18-26) as a color band */
@@ -59,6 +65,14 @@ export type DemoActHighlight = {
   cameraFocus?: number;
   /** Emit a ripple wave from these cells (cell indices). Ripple sweeps across the board. */
   rippleFrom?: number[];
+  /** Draw X cross lines between 4 cells: [TL, TR, BL, BR]. Lines animate in then fade out. */
+  crossLines?: number[];
+  /** Draw chain links between cells in order (for pivot -> wings, AIC segments, etc.). */
+  chainCells?: number[];
+  /** Chain overlay mode for chainCells. */
+  chainMode?: 'sequential' | 'cross';
+  /** Use ✕ mark over eliminated digits instead of strikethrough */
+  elimStyle?: 'strike' | 'cross-mark';
 };
 
 export type DemoAct = {

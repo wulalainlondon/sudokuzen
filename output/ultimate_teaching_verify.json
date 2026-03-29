@@ -1,0 +1,53 @@
+{
+  "checked": 1000,
+  "failed": 0,
+  "passed": 1000,
+  "by_tech": {
+    "aic": {
+      "passed": 80,
+      "failed": 0,
+      "total": 80
+    },
+    "aic_long_chain": {
+      "passed": 120,
+      "failed": 0,
+      "total": 120
+    },
+    "aic_mid_chain": {
+      "passed": 120,
+      "failed": 0,
+      "total": 120
+    },
+    "als_chain": {
+      "passed": 120,
+      "failed": 0,
+      "total": 120
+    },
+    "als_xz": {
+      "passed": 120,
+      "failed": 0,
+      "total": 120
+    },
+    "exocet_death_blossom": {
+      "passed": 120,
+      "failed": 0,
+      "total": 120
+    },
+    "forcing_chain_net": {
+      "passed": 120,
+      "failed": 0,
+      "total": 120
+    },
+    "grouped_aic_nice_loop": {
+      "passed": 120,
+      "failed": 0,
+      "total": 120
+    },
+    "sue_de_coq": {
+      "passed": 80,
+      "failed": 0,
+      "total": 80
+    }
+  },
+  "sample_failures": []
+}

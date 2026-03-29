@@ -1,0 +1,6 @@
+[
+  {
+    "type": "console.error",
+    "text": "SW init fail: TypeError: Failed to register a ServiceWorker: The URL protocol of the current origin ('null') is not supported.\n    at file:///Users/wulala/Downloads/AI/sudoku-webapp/index.html:2223:37"
+  }
+]

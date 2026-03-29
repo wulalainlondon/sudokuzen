@@ -1,0 +1,130 @@
+{
+  "changed": 960,
+  "summary": [
+    {
+      "realm": "初心",
+      "expected": "naked_single",
+      "count": 40
+    },
+    {
+      "realm": "鍛骨",
+      "expected": "hidden_single",
+      "count": 40
+    },
+    {
+      "realm": "虛空",
+      "expected": "locked_candidates",
+      "count": 40
+    },
+    {
+      "realm": "無我",
+      "expected": "naked_pair",
+      "count": 40
+    },
+    {
+      "realm": "破陣",
+      "expected": "hidden_pair",
+      "count": 40
+    },
+    {
+      "realm": "空鏡",
+      "expected": "naked_triple",
+      "count": 40
+    },
+    {
+      "realm": "星潮",
+      "expected": "hidden_triple",
+      "count": 40
+    },
+    {
+      "realm": "玄鏈",
+      "expected": "x_wing",
+      "count": 40
+    },
+    {
+      "realm": "本源",
+      "expected": "finned_x_wing",
+      "count": 40
+    },
+    {
+      "realm": "寂滅",
+      "expected": "skyscraper",
+      "count": 40
+    },
+    {
+      "realm": "化神",
+      "expected": "xy_wing",
+      "count": 40
+    },
+    {
+      "realm": "返虛",
+      "expected": "xyz_wing",
+      "count": 40
+    },
+    {
+      "realm": "合道",
+      "expected": "w_wing",
+      "count": 40
+    },
+    {
+      "realm": "渡劫",
+      "expected": "unique_rectangle",
+      "count": 40
+    },
+    {
+      "realm": "真仙",
+      "expected": "x_cycle_simple_coloring",
+      "count": 40
+    },
+    {
+      "realm": "二昇",
+      "expected": "swordfish",
+      "count": 40
+    },
+    {
+      "realm": "玄仙",
+      "expected": "finned_swordfish",
+      "count": 40
+    },
+    {
+      "realm": "太乙",
+      "expected": "aic",
+      "count": 40
+    },
+    {
+      "realm": "大羅",
+      "expected": "aic_mid_chain",
+      "count": 40
+    },
+    {
+      "realm": "混元",
+      "expected": "grouped_aic_nice_loop",
+      "count": 40
+    },
+    {
+      "realm": "天尊",
+      "expected": "aic_long_chain",
+      "count": 40
+    },
+    {
+      "realm": "三昇",
+      "expected": "als_xz",
+      "count": 40
+    },
+    {
+      "realm": "神王",
+      "expected": "als_chain",
+      "count": 40
+    },
+    {
+      "realm": "帝宙",
+      "expected": "forcing_chain_net",
+      "count": 40
+    },
+    {
+      "realm": "神人",
+      "expected": "exocet_death_blossom",
+      "count": 40
+    }
+  ]
+}

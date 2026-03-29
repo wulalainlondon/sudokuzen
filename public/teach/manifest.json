@@ -1,6 +1,6 @@
 {
-  "version": "80481a1b4b05",
-  "generatedAt": "2026-03-29T06:06:49.752Z",
+  "version": "694ccb414baa",
+  "generatedAt": "2026-03-29T12:18:42.548Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -22,266 +22,266 @@
       "name": "封鎖",
       "subtitle": "宮列互鎖，外圍刪減",
       "hasPractice": true,
-      "size": 3085
+      "size": 3274
     },
     "4": {
       "technique": "naked_pair",
       "name": "雙契",
       "subtitle": "同對成形，旁格排除",
       "hasPractice": true,
-      "size": 3877
+      "size": 4035
     },
     "5": {
       "technique": "hidden_pair",
       "name": "藏雙",
       "subtitle": "先找座位，再清雜訊",
       "hasPractice": true,
-      "size": 4173
+      "size": 4381
     },
     "6": {
       "technique": "naked_triple",
       "name": "編織",
       "subtitle": "三格三數，批次刪減",
       "hasPractice": true,
-      "size": 6966
+      "size": 7178
     },
     "7": {
       "technique": "hidden_triple",
       "name": "隱流",
       "subtitle": "三數隱伏，反向清候選",
       "hasPractice": true,
-      "size": 6991
+      "size": 7230
     },
     "8": {
       "technique": "x_wing",
       "name": "破陣",
       "subtitle": "雙線成矩，交叉清除",
       "hasPractice": true,
-      "size": 6153
+      "size": 7079
     },
     "9": {
       "technique": "finned_x_wing",
       "name": "天望",
       "subtitle": "鰭位約束，局部清除",
       "hasPractice": true,
-      "size": 5775
+      "size": 7524
     },
     "10": {
       "technique": "skyscraper",
       "name": "鋒刃",
       "subtitle": "雙鏈交會，交點刪減",
       "hasPractice": true,
-      "size": 5916
+      "size": 7428
     },
     "11": {
       "technique": "xy_wing",
       "name": "雙翼",
       "subtitle": "樞紐雙翼，交點清除",
       "hasPractice": true,
-      "size": 3846
+      "size": 7422
     },
     "12": {
       "technique": "xyz_wing",
       "name": "三翼",
       "subtitle": "三點共視，集中刪減",
       "hasPractice": true,
-      "size": 6157
+      "size": 8232
     },
     "13": {
       "technique": "w_wing",
       "name": "鏡花",
       "subtitle": "雙端同頻，遙距斷勢",
       "hasPractice": true,
-      "size": 4280
+      "size": 6170
     },
     "14": {
       "technique": "unique_rectangle",
       "name": "空鏡",
       "subtitle": "唯一約束，避免重解",
       "hasPractice": true,
-      "size": 6221
+      "size": 8029
     },
     "15": {
       "technique": "x_cycle_simple_coloring",
       "name": "流彩",
       "subtitle": "雙色循環，矛盾定刪",
       "hasPractice": true,
-      "size": 4699
+      "size": 6857
     },
     "16": {
       "technique": "swordfish",
       "name": "法印",
       "subtitle": "三線成網，批次刪減",
       "hasPractice": true,
-      "size": 7047
+      "size": 8694
     },
     "17": {
       "technique": "finned_swordfish",
       "name": "荊棘",
       "subtitle": "主魚帶鰭，局部破陣",
       "hasPractice": true,
-      "size": 4146
+      "size": 5368
     },
     "18": {
       "technique": "aic",
       "name": "玄鏈",
       "subtitle": "強弱交替，交點定刪",
       "hasPractice": true,
-      "size": 4871
+      "size": 6583
     },
     "19": {
       "technique": "aic_mid_chain",
       "name": "無相",
       "subtitle": "中鏈反證，逐段定刪",
       "hasPractice": true,
-      "size": 3034
+      "size": 4908
     },
     "20": {
       "technique": "grouped_aic_nice_loop",
       "name": "觀海",
       "subtitle": "分組成鏈，迴路定刪",
       "hasPractice": true,
-      "size": 3053
+      "size": 4955
     },
     "21": {
       "technique": "aic_long_chain",
       "name": "破執",
       "subtitle": "長鏈推演，終點定刪",
       "hasPractice": true,
-      "size": 3030
+      "size": 4880
     },
     "22": {
       "technique": "als_xz",
       "name": "明空",
       "subtitle": "雙 ALS 交會，共識定刪",
       "hasPractice": true,
-      "size": 3027
+      "size": 4881
     },
     "23": {
       "technique": "als_chain",
       "name": "照界",
       "subtitle": "ALS 串聯，跨域定刪",
       "hasPractice": true,
-      "size": 2385
+      "size": 4187
     },
     "24": {
       "technique": "forcing_chain_net",
       "name": "玄穹",
       "subtitle": "多路假設，共識定刪",
       "hasPractice": true,
-      "size": 2308
+      "size": 4131
     },
     "25": {
       "technique": "exocet_death_blossom",
       "name": "神人",
       "subtitle": "終極結構，收官定刪",
       "hasPractice": true,
-      "size": 3207
+      "size": 5645
     },
     "26": {
       "technique": "remote_pairs",
       "name": "遙對雙珠",
       "subtitle": "偶鏈對視，同值裁剪",
       "hasPractice": true,
-      "size": 2931
+      "size": 4401
     },
     "27": {
       "technique": "two_string_kite",
       "name": "雙線風箏",
       "subtitle": "行列共軛，交點定刪",
       "hasPractice": true,
-      "size": 3383
+      "size": 5529
     },
     "28": {
       "technique": "empty_rectangle",
       "name": "空矩折返",
       "subtitle": "空矩回打，交點定刪",
       "hasPractice": true,
-      "size": 3353
+      "size": 4840
     },
     "29": {
       "technique": "bug_plus_one",
       "name": "唯一缺口",
       "subtitle": "例外一格，唯一落點",
       "hasPractice": true,
-      "size": 3178
+      "size": 4973
     },
     "30": {
       "technique": "jellyfish",
       "name": "水母陣",
       "subtitle": "四線覆蓋，外圍淨化",
       "hasPractice": true,
-      "size": 3207
+      "size": 4690
     },
     "31": {
       "technique": "finned_jellyfish",
       "name": "鰭水母",
       "subtitle": "主網帶鰭，宮內定刪",
       "hasPractice": true,
-      "size": 3216
+      "size": 4686
     },
     "32": {
       "technique": "xy_chain",
       "name": "雙值連環",
       "subtitle": "鏈首鏈尾，同值封殺",
       "hasPractice": true,
-      "size": 3124
+      "size": 4612
     },
     "33": {
       "technique": "discontinuous_nice_loop",
       "name": "斷續環",
       "subtitle": "環首破綻，直接定刪",
       "hasPractice": true,
-      "size": 3140
+      "size": 5002
     },
     "34": {
       "technique": "cell_forcing_chain",
       "name": "格強制鏈",
       "subtitle": "單格分支，同結論收斂",
       "hasPractice": true,
-      "size": 3156
+      "size": 4972
     },
     "35": {
       "technique": "region_forcing_chain",
       "name": "域強制鏈",
       "subtitle": "區域分支，共識收斂",
       "hasPractice": true,
-      "size": 3163
+      "size": 4989
     },
     "36": {
       "technique": "template",
       "name": "模板映射",
       "subtitle": "全域模板，非法定刪",
       "hasPractice": true,
-      "size": 3108
+      "size": 4889
     },
     "37": {
       "technique": "als_xy",
       "name": "ALS 交映",
       "subtitle": "雙 ALS 互鎖，外圍定刪",
       "hasPractice": true,
-      "size": 3188
+      "size": 4947
     },
     "38": {
       "technique": "als_w_wing",
       "name": "ALS 翼合",
       "subtitle": "ALS 翼合，聯動定刪",
       "hasPractice": true,
-      "size": 3180
+      "size": 4924
     },
     "39": {
       "technique": "sue_de_coq",
       "name": "蘇德可",
       "subtitle": "交界分拆，容量定刪",
       "hasPractice": true,
-      "size": 3172
+      "size": 4966
     },
     "40": {
       "technique": "death_blossom",
       "name": "終花綻放",
       "subtitle": "樞紐多翼，終局定刪",
       "hasPractice": true,
-      "size": 3441
+      "size": 5682
     }
   }
 }

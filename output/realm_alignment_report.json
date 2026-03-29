@@ -1,0 +1,142 @@
+{
+  "assignment": [
+    {
+      "realm": "初心",
+      "target": "xy_wing",
+      "usedTech": "xy_wing",
+      "count": 40
+    },
+    {
+      "realm": "鍛骨",
+      "target": "swordfish",
+      "usedTech": "swordfish",
+      "count": 40
+    },
+    {
+      "realm": "虛空",
+      "target": "aic",
+      "usedTech": "aic",
+      "count": 40
+    },
+    {
+      "realm": "無我",
+      "target": "aic",
+      "usedTech": "aic",
+      "count": 40
+    },
+    {
+      "realm": "破陣",
+      "target": "aic",
+      "usedTech": "aic",
+      "count": 40
+    },
+    {
+      "realm": "空鏡",
+      "target": "aic_mid_chain",
+      "usedTech": "aic_mid_chain",
+      "count": 40
+    },
+    {
+      "realm": "星潮",
+      "target": "aic_mid_chain",
+      "usedTech": "aic_mid_chain",
+      "count": 40
+    },
+    {
+      "realm": "玄鏈",
+      "target": "grouped_aic_nice_loop",
+      "usedTech": "grouped_aic_nice_loop",
+      "count": 40
+    },
+    {
+      "realm": "化神",
+      "target": "grouped_aic_nice_loop",
+      "usedTech": "grouped_aic_nice_loop",
+      "count": 40
+    },
+    {
+      "realm": "返虛",
+      "target": "aic_long_chain",
+      "usedTech": "aic_long_chain",
+      "count": 40
+    },
+    {
+      "realm": "合道",
+      "target": "aic_long_chain",
+      "usedTech": "aic_long_chain",
+      "count": 40
+    },
+    {
+      "realm": "渡劫",
+      "target": "als_xz",
+      "usedTech": "als_xz",
+      "count": 40
+    },
+    {
+      "realm": "真仙",
+      "target": "als_xz",
+      "usedTech": "als_xz",
+      "count": 40
+    },
+    {
+      "realm": "二昇",
+      "target": "als_xz",
+      "usedTech": "als_xz",
+      "count": 40
+    },
+    {
+      "realm": "玄仙",
+      "target": "als_chain",
+      "usedTech": "als_chain",
+      "count": 40
+    },
+    {
+      "realm": "太乙",
+      "target": "als_chain",
+      "usedTech": "als_chain",
+      "count": 40
+    },
+    {
+      "realm": "大羅",
+      "target": "als_chain",
+      "usedTech": "als_chain",
+      "count": 40
+    },
+    {
+      "realm": "混元",
+      "target": "als_chain",
+      "usedTech": "sue_de_coq",
+      "count": 40
+    },
+    {
+      "realm": "天尊",
+      "target": "forcing_chain_net",
+      "usedTech": "forcing_chain_net",
+      "count": 40
+    },
+    {
+      "realm": "三昇",
+      "target": "forcing_chain_net",
+      "usedTech": "forcing_chain_net",
+      "count": 40
+    },
+    {
+      "realm": "神王",
+      "target": "forcing_chain_net",
+      "usedTech": "forcing_chain_net",
+      "count": 40
+    },
+    {
+      "realm": "帝宙",
+      "target": "exocet_death_blossom",
+      "usedTech": "exocet_death_blossom",
+      "count": 40
+    },
+    {
+      "realm": "神人",
+      "target": "exocet_death_blossom",
+      "usedTech": "exocet_death_blossom",
+      "count": 40
+    }
+  ]
+}

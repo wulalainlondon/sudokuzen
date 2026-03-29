@@ -1,0 +1,47 @@
+{
+  "count": 320,
+  "plan": [
+    [
+      8.75,
+      "無相",
+      "aic_mid_chain"
+    ],
+    [
+      9.0,
+      "觀海",
+      "grouped_aic_nice_loop"
+    ],
+    [
+      9.25,
+      "破執",
+      "aic_long_chain"
+    ],
+    [
+      9.5,
+      "明空",
+      "als_xz"
+    ],
+    [
+      9.6,
+      "照界",
+      "als_chain"
+    ],
+    [
+      9.7,
+      "無礙",
+      "sue_de_coq"
+    ],
+    [
+      9.85,
+      "玄穹",
+      "forcing_chain_net"
+    ],
+    [
+      10.0,
+      "神人",
+      "exocet_death_blossom"
+    ]
+  ],
+  "firstId": 20481,
+  "lastId": 20800
+}
