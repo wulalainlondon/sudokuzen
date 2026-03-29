@@ -23,6 +23,19 @@ service cloud.firestore {
                    && (request.resource.data.guestId == null || request.resource.data.guestId is string);
     }
 
+    // Player profile (achievements cloud sync)
+    match /player_profiles/{playerId} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update: if request.resource.data.playerId == playerId
+                            && request.resource.data.alias is string
+                            && request.resource.data.alias.size() >= 1
+                            && request.resource.data.alias.size() <= 24
+                            && request.resource.data.achievements is map
+                            && request.resource.data.achievements.size() <= 200;
+      allow delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
