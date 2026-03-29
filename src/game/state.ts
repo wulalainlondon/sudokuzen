@@ -10,6 +10,15 @@ export interface CellData {
   isError: boolean;
 }
 
+export interface SkillModeState {
+  enabled: boolean;
+  selectedCells: number[];
+  castMessage: string;
+  casting: boolean;
+  litCandidates: Array<{ cell: number; digit: number }>;
+  preview: import('../features/skills/types').SkillPreview | null;
+}
+
 export interface LevelData {
   id: number;
   stars: number;
@@ -110,6 +119,17 @@ export const gs = {
 
   // ── Practice ──────────────────────────────────────────────────────
   practiceState: null as any,
+
+  // ── Skill Mode ───────────────────────────────────────────────────
+  // Access through features/skills/skillController.ts — do NOT read/write directly.
+  skillMode: {
+    enabled: false,
+    selectedCells: [],
+    castMessage: '',
+    casting: false,
+    litCandidates: [],
+    preview: null,
+  } as SkillModeState,
 
   // ── Visual replay ─────────────────────────────────────────────────
   rbState: [] as any[],

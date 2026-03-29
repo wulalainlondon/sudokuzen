@@ -4,6 +4,27 @@ import { gs } from './state';
 import type { CellData } from './state';
 import { playCellSelectSound } from './audio';
 
+// ── Callback hooks (injected by core.ts to avoid circular imports) ───
+let _onContinuousCellClick: ((idx: number) => boolean) | null = null;
+let _onContinuousDigitSet: ((digit: number) => void) | null = null;
+let _onCandidateProbeTap: ((cell: number, digit: number) => void) | null = null;
+let _onCellLongPress: ((idx: number, prevSelected: number) => void) | null = null;
+let _onSkillModeExit: (() => void) | null = null;
+
+export function setBoardCallbacks(callbacks: {
+  onContinuousCellClick: (idx: number) => boolean;
+  onContinuousDigitSet: (digit: number) => void;
+  onCandidateProbeTap: (cell: number, digit: number) => void;
+  onCellLongPress: (idx: number, prevSelected: number) => void;
+  onSkillModeExit: () => void;
+}): void {
+  _onContinuousCellClick = callbacks.onContinuousCellClick;
+  _onContinuousDigitSet = callbacks.onContinuousDigitSet;
+  _onCandidateProbeTap = callbacks.onCandidateProbeTap;
+  _onCellLongPress = callbacks.onCellLongPress;
+  _onSkillModeExit = callbacks.onSkillModeExit;
+}
+
 export function renderGrid(): void {
   if (!gs.gridEl) return;
   gs.gridEl.innerHTML = '';
@@ -12,24 +33,46 @@ export function renderGrid(): void {
     cell.dataset.idx = String(i);
     cell.className = `cell ${data.fixed ? 'is-fixed' : ''} ${data.isError ? 'error' : ''}`;
     updateCellDisplay(cell, data);
+    // ── Long-press detection for skill mode ──
+    let lpTimer: ReturnType<typeof setTimeout> | null = null;
+    let lpFired = false;
     cell.addEventListener('pointerdown', (ev) => {
       if (ev && ev.button !== undefined && ev.button !== 0) return;
+      lpFired = false;
+
+      // Capture the previously selected cell BEFORE selectCell changes it
+      const prevSelected = gs.selectedIdx;
+
+      // Start long-press timer (only for empty cells with notes, and a different cell was already selected)
+      const cellData = gs.cellsData[i];
+      if (cellData && cellData.value === 0 && cellData.notes.length > 0 && prevSelected !== null && prevSelected !== i) {
+        lpTimer = setTimeout(() => {
+          lpFired = true;
+          _onCellLongPress?.(i, prevSelected);
+        }, 300);
+      }
+
       // In continuous fill mode
       if (gs.continuousFillDigit !== null && gs.continuousFillDigit >= 1) {
         const cellVal = gs.cellsData[i].value;
         if (cellVal !== 0) {
-          // Tapped a filled cell → switch locked digit to that number
-          import('./core').then((m) => m.setContinuousDigit(cellVal));
+          _onContinuousDigitSet?.(cellVal);
           selectCell(i);
         } else {
-          import('./core').then((m) => {
-            if (!m.handleContinuousCellClick(i)) selectCell(i);
-          });
+          if (!_onContinuousCellClick?.(i)) selectCell(i);
         }
       } else {
         selectCell(i);
       }
     });
+    cell.addEventListener('pointerup', () => {
+      if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
+      // Normal tap while skill mode is active → exit skill mode
+      if (!lpFired && gs.skillMode.enabled) {
+        _onSkillModeExit?.();
+      }
+    });
+    cell.addEventListener('pointerleave', () => { if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; } });
     gs.gridEl!.appendChild(cell);
   });
   updateNumpadState();
@@ -63,7 +106,7 @@ export function updateCellDisplay(cell: HTMLElement, data: CellData): void {
       nd.textContent = String(n);
       nd.addEventListener('pointerdown', () => {
         if (!data.notes.includes(n) || !Number.isInteger(cellIdx) || cellIdx < 0) return;
-        import('./core').then((m) => m.handleCandidateProbeTap(cellIdx, n));
+        _onCandidateProbeTap?.(cellIdx, n);
       });
       ng.appendChild(nd);
     }

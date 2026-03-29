@@ -1,4 +1,5 @@
 // Core game logic — init, input, win detection, save/load
+// Skill mode logic lives in features/skills/skillController.ts.
 
 import { gs } from './state';
 import { getAllLevels } from '../data/dataRegistry';
@@ -13,12 +14,22 @@ import {
   playEraseSound,
 } from './audio';
 import { showFeedback, markErrorArea } from '../ui/feedback';
-import { renderGrid, updateCellDisplay, selectCell, getUnitIndices, isUnitComplete, updateNumpadState } from './board';
+import { renderGrid, updateCellDisplay, selectCell, getUnitIndices, isUnitComplete, updateNumpadState, setBoardCallbacks } from './board';
 import { startTimer } from './timer';
 import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
 import { recalculatePlayerFilledCount, updateGhostProgressUI } from '../features/ghost';
 import { checkAllAchievements, unlockAchievement, recordElimination } from '../features/stats';
-import { evaluateLockedCandidatesSkill, executeLockedCandidatesSkill } from '../features/skills/lockedCandidates';
+import {
+  evaluateLockedSkill,
+  toggleSkillMode,
+  handleCandidateProbeTap,
+  castLockedSkill,
+  resetSkillState,
+  applyGridSkillClass,
+  enterSkillMode,
+  exitSkillMode,
+  castSkill,
+} from '../features/skills/skillController';
 
 // Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
 async function callDuoProgress() {
@@ -78,206 +89,17 @@ function solutionDigitAt(idx: number): number {
   return d >= 1 && d <= 9 ? d : 0;
 }
 
-function ensureSkillModeState() {
-  if ((gs as any).skillMode && (gs as any).skillMode.litCandidates) {
-    return (gs as any).skillMode;
-  }
-  const fallback = {
-    enabled: false,
-    litCandidates: new Set<string>(),
-    preview: {
-      valid: false,
-      reason: '先在同宮點亮兩個相同候選',
-      digit: undefined as number | undefined,
-      lineType: undefined as 'row' | 'col' | undefined,
-      lineIndex: undefined as number | undefined,
-      sourcePair: null as [number, number] | null,
-      targets: [] as Array<{ cell: number; digit: number }>,
-    },
-    castMessage: '',
-    casting: false,
-    lastTapKey: '',
-    lastTapAt: 0,
-  };
-  (gs as any).skillMode = fallback;
-  return fallback;
-}
+// Re-export skill functions for legacy call sites (window facade, legacyRuntime).
+export { evaluateLockedSkill, toggleSkillMode, handleCandidateProbeTap, castLockedSkill, exitSkillMode, castSkill };
 
-function setGridSkillClass(): void {
-  if (!gs.gridEl) return;
-  const sm = ensureSkillModeState();
-  gs.gridEl.classList.toggle('skill-mode', sm.enabled);
-}
-
-function updateSkillPanelUI(): void {
-  const sm = ensureSkillModeState();
-  const panel = document.getElementById('skill-panel');
-  const castBtn = document.getElementById('skill-cast-btn') as HTMLButtonElement | null;
-  const subtitle = document.getElementById('skill-subtitle');
-  const status = document.getElementById('skill-status');
-  const toggleBtn = document.getElementById('skill-mode-toggle-btn') as HTMLButtonElement | null;
-  if (!panel || !castBtn || !subtitle || !status || !toggleBtn) return;
-
-  panel.classList.toggle('hidden', !sm.enabled);
-  toggleBtn.classList.toggle('active', sm.enabled);
-  toggleBtn.textContent = sm.enabled ? '技能 ON' : '技能 OFF';
-
-  if (!sm.enabled) {
-    subtitle.textContent = 'Locked Candidates';
-    status.textContent = '技能模式關閉';
-    castBtn.disabled = true;
-    castBtn.textContent = '封鎖脈衝';
-    return;
-  }
-
-  const p = sm.preview;
-  if (sm.casting) {
-    subtitle.textContent = `Locked Candidates · 候選 ${p.digit ?? '-'}`;
-    status.textContent = sm.castMessage || '封鎖脈衝演算中...';
-    castBtn.disabled = true;
-    castBtn.textContent = '施放中...';
-    return;
-  }
-
-  if (p.valid) {
-    const line = p.lineType === 'row' ? `第 ${Number(p.lineIndex) + 1} 列` : `第 ${Number(p.lineIndex) + 1} 欄`;
-    subtitle.textContent = `Locked Candidates · 候選 ${p.digit}`;
-    status.textContent = `可施放：${line} 可消去 ${p.targets.length} 個`;
-    castBtn.disabled = false;
-    castBtn.textContent = `封鎖脈衝（-${p.targets.length}）`;
-  } else {
-    subtitle.textContent = 'Locked Candidates';
-    status.textContent = p.reason || '先在同宮點亮兩個相同候選';
-    castBtn.disabled = true;
-    castBtn.textContent = '封鎖脈衝';
-  }
-}
-
-function clearSkillState(): void {
-  const sm = ensureSkillModeState();
-  sm.litCandidates.clear();
-  sm.casting = false;
-  sm.castMessage = '';
-  sm.preview = {
-    valid: false,
-    reason: '先在同宮點亮兩個相同候選',
-    digit: undefined,
-    lineType: undefined,
-    lineIndex: undefined,
-    sourcePair: null,
-    targets: [],
-  };
-}
-
-function refreshLitCandidatesVisuals(): void {
-  const sm = ensureSkillModeState();
-  if (!gs.gridEl) return;
-  Array.from(gs.gridEl.querySelectorAll('.note-num')).forEach((el) => {
-    const note = el as HTMLElement;
-    const cell = Number(note.dataset.cell ?? '-1');
-    const digit = Number(note.dataset.digit ?? '-1');
-    if (!Number.isInteger(cell) || !Number.isInteger(digit)) return;
-    const key = `${cell}:${digit}`;
-    note.classList.toggle('note-lit', sm.enabled && sm.litCandidates.has(key));
-  });
-}
-
-export function evaluateLockedSkill(): void {
-  const sm = ensureSkillModeState();
-  if (!sm.enabled) {
-    clearSkillState();
-    updateSkillPanelUI();
-    refreshLitCandidatesVisuals();
-    return;
-  }
-  sm.preview = evaluateLockedCandidatesSkill(sm.litCandidates, gs.cellsData);
-  updateSkillPanelUI();
-  refreshLitCandidatesVisuals();
-}
-
-export function toggleSkillMode(forceEnabled?: boolean): void {
-  const sm = ensureSkillModeState();
-  const enabled = typeof forceEnabled === 'boolean' ? forceEnabled : !sm.enabled;
-  sm.enabled = enabled;
-  localStorage.setItem(SK.SKILL_MODE, String(enabled));
-  if (!enabled) clearSkillState();
-  setGridSkillClass();
-  evaluateLockedSkill();
-}
-
-export function toggleLitCandidate(cell: number, digit: number): void {
-  if (!gs.skillMode.enabled) return;
-  if (!Number.isInteger(cell) || !Number.isInteger(digit)) return;
-  if (cell < 0 || cell >= 81 || digit < 1 || digit > 9) return;
-  const data = gs.cellsData[cell];
-  if (!data || data.value !== 0 || !data.notes.includes(digit)) return;
-  const key = `${cell}:${digit}`;
-  if (gs.skillMode.litCandidates.has(key)) gs.skillMode.litCandidates.delete(key);
-  else gs.skillMode.litCandidates.add(key);
-  evaluateLockedSkill();
-}
-
-export function handleCandidateProbeTap(cell: number, digit: number): void {
-  if (!gs.skillMode.enabled) return;
-  const key = `${cell}:${digit}`;
-  const now = Date.now();
-  if (gs.skillMode.lastTapKey === key && now - gs.skillMode.lastTapAt <= 320) {
-    gs.skillMode.lastTapKey = '';
-    gs.skillMode.lastTapAt = 0;
-    toggleLitCandidate(cell, digit);
-    return;
-  }
-  gs.skillMode.lastTapKey = key;
-  gs.skillMode.lastTapAt = now;
-}
-
-export async function castLockedSkill(): Promise<void> {
-  if (!gs.skillMode.enabled) return;
-  if (gs.skillMode.casting) return;
-  const preview = gs.skillMode.preview;
-  if (!preview.valid) {
-    showFeedback(preview.reason || '條件未成立', 'error');
-    updateSkillPanelUI();
-    return;
-  }
-  const result = executeLockedCandidatesSkill(gs.cellsData, preview);
-  if (!result.valid || !result.targets.length) {
-    showFeedback(result.reason || '沒有可消去候選', 'error');
-    clearSkillState();
-    evaluateLockedSkill();
-    return;
-  }
-
-  gs.skillMode.casting = true;
-  gs.skillMode.castMessage = '封鎖脈衝啟動：鎖定推理線';
-  updateSkillPanelUI();
-  const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
-  for (let i = 0; i < result.targets.length; i++) {
-    const t = result.targets[i];
-    const cellEl = gs.gridEl!.children[t.cell] as HTMLElement;
-    updateCellDisplay(cellEl, gs.cellsData[t.cell]);
-    gs.skillMode.castMessage = `封鎖脈衝施放中：${i + 1}/${result.targets.length}`;
-    updateSkillPanelUI();
-    recordAction(
-      'skill_eliminate',
-      `${cellLabel(t.cell)} 封鎖脈衝消去候選 ${t.digit}`,
-      t.cell,
-      t.digit,
-      gs.cellsData[t.cell].notes,
-    );
-    recordElimination();
-    if (i < result.targets.length - 1) {
-      // Keep each elimination readable so the reasoning remains legible.
-      await wait(120);
-    }
-  }
-  gs.skillMode.castMessage = `封鎖脈衝成功：消去 ${result.targets.length} 個候選`;
-  gs.skillMode.casting = false;
-  showFeedback(gs.skillMode.castMessage, 'success');
-  gs.skillMode.litCandidates.clear();
-  evaluateLockedSkill();
-  saveGameStatus();
-}
+// ── Board callbacks (Risk 6 fix: replace dynamic import() in event handlers) ──
+setBoardCallbacks({
+  onContinuousCellClick: (idx: number) => handleContinuousCellClick(idx),
+  onContinuousDigitSet: (digit: number) => setContinuousDigit(digit),
+  onCandidateProbeTap: () => { /* no-op — replaced by long-press cell selection */ },
+  onCellLongPress: (idx: number, prevSelected: number) => enterSkillMode(idx, prevSelected),
+  onSkillModeExit: () => exitSkillMode(),
+});
 
 // ── Game lifecycle ──────────────────────────────────────────────────
 
@@ -290,8 +112,8 @@ export function initGame(levelId = 1, forceReset = false, playWithGhost = false,
 
   gs.isGhostMode = playWithGhost;
   gs.ghostHistory = gs.isGhostMode && ghostData ? ghostData : [];
-  document.getElementById('ghost-progress-container')!.classList.toggle('hidden', !gs.isGhostMode);
-  Array.from(gs.gridEl!.children).forEach((c) => c.classList.remove('ghost-marked'));
+  document.getElementById('ghost-progress-container')?.classList.toggle('hidden', !gs.isGhostMode);
+  if (gs.gridEl) Array.from(gs.gridEl.children).forEach((c) => c.classList.remove('ghost-marked'));
 
   const saved = forceReset ? null : loadGameStatus(gs.currentLevel.id);
 
@@ -310,21 +132,21 @@ export function initGame(levelId = 1, forceReset = false, playWithGhost = false,
     if (saved.isGhostMode === true && saved.ghostHistory) {
       gs.isGhostMode = true;
       gs.ghostHistory = saved.ghostHistory;
-      document.getElementById('ghost-progress-container')!.classList.remove('hidden');
+      document.getElementById('ghost-progress-container')?.classList.remove('hidden');
     }
   } else {
     resetGameState();
   }
 
   updateLivesUI();
-  gs.overlay!.style.display = 'none';
-  document.getElementById('pause-screen')!.style.display = 'none';
-  gs.winCelebrationEl!.style.display = 'none';
+  if (gs.overlay) gs.overlay.style.display = 'none';
+  document.getElementById('pause-screen')?.style.setProperty('display', 'none');
+  if (gs.winCelebrationEl) gs.winCelebrationEl.style.display = 'none';
   renderGrid();
-  setGridSkillClass();
+  applyGridSkillClass();
   evaluateLockedSkill();
-  document.getElementById('level-screen')!.style.display = 'none';
-  (document.querySelector('.game-container') as HTMLElement).style.display = 'flex';
+  document.getElementById('level-screen')?.style.setProperty('display', 'none');
+  (document.querySelector('.game-container') as HTMLElement | null)?.style.setProperty('display', 'flex');
   loadLevelLeaderboard(gs.currentLevel.id);
 
   // If a restored save is already solved (common after interrupted updates),
@@ -349,13 +171,14 @@ function resetGameState(): void {
     notes: [],
     isError: false,
   }));
-  clearSkillState();
+  resetSkillState();
 }
 
 // ── Save / Load ─────────────────────────────────────────────────────
 
 export function saveGameStatus(): void {
   if (!gs.currentLevel) return;
+  const saveKey = SK.save(gs.currentLevel.id, gs.isSpeedrunMode);
   const data = {
     levelId: gs.currentLevel.id,
     cellsData: gs.cellsData,
@@ -366,7 +189,7 @@ export function saveGameStatus(): void {
     isGhostMode: gs.isGhostMode,
     ghostHistory: gs.isGhostMode ? gs.ghostHistory : null,
   };
-  localStorage.setItem(SK.save(gs.currentLevel.id, gs.isSpeedrunMode), JSON.stringify(data));
+  localStorage.setItem(saveKey, JSON.stringify(data));
   localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
 }
 
@@ -376,7 +199,8 @@ function loadGameStatus(levelId: number): any {
 }
 
 function clearGameStatus(levelId: number): void {
-  localStorage.removeItem(SK.save(levelId, gs.isSpeedrunMode));
+  const saveKey = SK.save(levelId, gs.isSpeedrunMode);
+  localStorage.removeItem(saveKey);
 }
 
 // ── Input handling ──────────────────────────────────────────────────
