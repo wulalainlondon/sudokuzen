@@ -81,8 +81,8 @@ if (swBumped) {
     console.log(`[WARNING] Failed to update SW.js (maybe pattern not found)`);
 }
 
-// 3. Update index.html
-const indexRegex = /(const\s+APP_VERSION\s*=\s*['"])([^'"]+)(['"])/g;
+// 3. Update index.html inline version marker
+const indexRegex = /(var\s+INLINE_VER\s*=\s*['"])([^'"]+)(['"])/g;
 const indexBumped = bumpFileContent(INDEX_FILE, indexRegex, (match, prefix, oldV, suffix) => {
     return `${prefix}${nextVersion}${suffix}`;
 });
