@@ -1,6 +1,6 @@
 {
-  "version": "d698eacca637",
-  "generatedAt": "2026-03-29T00:58:50.233Z",
+  "version": "673ec8bcd48c",
+  "generatedAt": "2026-03-29T02:28:20.483Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -99,7 +99,7 @@
       "name": "空鏡",
       "subtitle": "唯一約束，避免重解",
       "hasPractice": true,
-      "size": 4885
+      "size": 6221
     },
     "15": {
       "technique": "x_cycle_simple_coloring",
