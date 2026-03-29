@@ -1,6 +1,6 @@
 {
-  "version": "e77aeff48e67",
-  "generatedAt": "2026-03-29T02:30:52.442Z",
+  "version": "a859c3a41484",
+  "generatedAt": "2026-03-29T02:43:54.721Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -113,7 +113,7 @@
       "name": "法印",
       "subtitle": "三線成網，批次刪減",
       "hasPractice": true,
-      "size": 5372
+      "size": 7047
     },
     "17": {
       "technique": "finned_swordfish",
