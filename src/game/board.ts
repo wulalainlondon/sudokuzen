@@ -9,6 +9,7 @@ export function renderGrid(): void {
   gs.gridEl.innerHTML = '';
   gs.cellsData.forEach((data, i) => {
     const cell = document.createElement('div');
+    cell.dataset.idx = String(i);
     cell.className = `cell ${data.fixed ? 'is-fixed' : ''} ${data.isError ? 'error' : ''}`;
     updateCellDisplay(cell, data);
     cell.addEventListener('pointerdown', (ev) => {
@@ -53,10 +54,17 @@ export function updateCellDisplay(cell: HTMLElement, data: CellData): void {
   } else {
     const ng = document.createElement('div');
     ng.className = 'notes-grid';
+    const cellIdx = Number(cell.dataset.idx ?? '-1');
     for (let n = 1; n <= 9; n++) {
       const nd = document.createElement('div');
       nd.className = `note-num ${data.notes.includes(n) ? 'active' : ''}`;
+      nd.dataset.cell = String(cellIdx);
+      nd.dataset.digit = String(n);
       nd.textContent = String(n);
+      nd.addEventListener('pointerdown', () => {
+        if (!data.notes.includes(n) || !Number.isInteger(cellIdx) || cellIdx < 0) return;
+        import('./core').then((m) => m.handleCandidateProbeTap(cellIdx, n));
+      });
       ng.appendChild(nd);
     }
     cell.appendChild(ng);
@@ -130,7 +138,10 @@ export function updateNumpadState(): void {
   if (!gs.numButtons.length || !gs.cellsData.length) return;
   const counts = new Array(10).fill(0);
   for (const c of gs.cellsData) {
-    if (c.value >= 1 && c.value <= 9) counts[c.value] += 1;
+    const v = Number((c as any).value);
+    if (!Number.isFinite(v)) continue;
+    const d = Math.round(v);
+    if (d >= 1 && d <= 9) counts[d] += 1;
   }
   gs.numButtons.forEach((btn, i) => {
     const n = i + 1;
