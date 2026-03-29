@@ -1,6 +1,6 @@
 {
-  "version": "a859c3a41484",
-  "generatedAt": "2026-03-29T02:43:54.721Z",
+  "version": "e85530849a2f",
+  "generatedAt": "2026-03-29T02:46:45.846Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -120,7 +120,7 @@
       "name": "荊棘",
       "subtitle": "主魚帶鰭，局部破陣",
       "hasPractice": true,
-      "size": 2442
+      "size": 4146
     },
     "18": {
       "technique": "aic",
