@@ -34,6 +34,16 @@ service cloud.firestore {
                             && request.resource.data.achievements is map
                             && request.resource.data.achievements.size() <= 200;
       allow delete: if false;
+
+      match /game_saves/{saveKey} {
+        allow get: if true;
+        allow list: if false;
+        allow create, update: if request.resource.data.playerId == playerId
+                              && request.resource.data.key is string
+                              && request.resource.data.key == saveKey
+                              && request.resource.data.payload is map;
+        allow delete: if resource.data.playerId == playerId;
+      }
     }
 
     match /{document=**} {

@@ -1,13 +1,30 @@
 // Firebase initialisation, leaderboard, and player identity
 
 import { gs } from '../game/state';
-import { SK } from '../storage/keys';
+import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds, normalizeAlias, ALIAS_MIN_LEN } from '../game/utils';
 import { showFeedback } from '../ui/feedback';
 import { getAllLevels } from '../data/dataRegistry';
 
 declare const firebase: any;
 type AchievementMap = Record<string, { date: string }>;
+type GenericRecordMap = Record<string, any>;
+const SAVE_KEY_PATTERN = /^sudoku_(speed_)?save_(\d+)$/;
+const PROFILE_SAVE_SUBCOLLECTION = 'game_saves';
+const PROGRESS_SYNC_DEBOUNCE_MS = 1200;
+const SAVE_SYNC_DEBOUNCE_MS = 800;
+const PROFILE_SYNC_KEYS: Set<string> = new Set([
+  SK.RECORDS,
+  SK.SPEED_RECORDS,
+  SK.ACHIEVEMENTS,
+  SK.LAST_LEVEL,
+  SK.SPEEDRUN,
+  SK.SKILL_MODE,
+  SK.THEME,
+]);
+let progressSyncTimer: ReturnType<typeof setTimeout> | null = null;
+const pendingSaveSyncTimers = new Map<string, ReturnType<typeof setTimeout>>();
+let bridgeInstalled = false;
 
 function isIsoDay(value: unknown): value is string {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -47,6 +64,120 @@ function sameAchievementMaps(a: AchievementMap, b: AchievementMap): boolean {
     if (!b[key] || b[key].date !== a[key].date) return false;
   }
   return true;
+}
+
+function isPlainObject(value: unknown): value is Record<string, any> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function toInt(value: unknown, fallback = 0): number {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.floor(n);
+}
+
+function normalizeClassicRecord(raw: any): { time: number; stars: number; replayHistory: any[] } | null {
+  if (typeof raw === 'number') {
+    return { time: Math.max(0, toInt(raw)), stars: 1, replayHistory: [] };
+  }
+  if (!isPlainObject(raw)) return null;
+  const time = Math.max(0, toInt(raw.time));
+  const stars = Math.min(3, Math.max(1, toInt(raw.stars, 1)));
+  const replayHistory = Array.isArray(raw.replayHistory) ? raw.replayHistory : [];
+  return { time, stars, replayHistory };
+}
+
+function normalizeSpeedRecord(raw: any): { time: number; submissions: number; replayHistory: any[] } | null {
+  if (!isPlainObject(raw)) return null;
+  const time = Math.max(0, toInt(raw.time));
+  const submissions = Math.max(1, toInt(raw.submissions, 1));
+  const replayHistory = Array.isArray(raw.replayHistory) ? raw.replayHistory : [];
+  return { time, submissions, replayHistory };
+}
+
+function normalizeRecordMap(raw: any, mode: 'classic' | 'speed'): GenericRecordMap {
+  if (!isPlainObject(raw)) return {};
+  const out: GenericRecordMap = {};
+  for (const [levelId, rec] of Object.entries(raw)) {
+    const normalized = mode === 'classic' ? normalizeClassicRecord(rec) : normalizeSpeedRecord(rec);
+    if (normalized) out[levelId] = normalized;
+  }
+  return out;
+}
+
+function pickBetterClassic(a: any, b: any): any {
+  const ra = normalizeClassicRecord(a);
+  const rb = normalizeClassicRecord(b);
+  if (!ra) return rb;
+  if (!rb) return ra;
+  if (ra.stars !== rb.stars) return ra.stars > rb.stars ? ra : rb;
+  return ra.time <= rb.time ? ra : rb;
+}
+
+function pickBetterSpeed(a: any, b: any): any {
+  const ra = normalizeSpeedRecord(a);
+  const rb = normalizeSpeedRecord(b);
+  if (!ra) return rb;
+  if (!rb) return ra;
+  if (ra.submissions !== rb.submissions) return ra.submissions < rb.submissions ? ra : rb;
+  return ra.time <= rb.time ? ra : rb;
+}
+
+function mergeRecordMaps(localMap: GenericRecordMap, remoteMap: GenericRecordMap, mode: 'classic' | 'speed'): GenericRecordMap {
+  const out: GenericRecordMap = { ...remoteMap };
+  for (const [levelId, localRec] of Object.entries(localMap)) {
+    out[levelId] = mode === 'classic' ? pickBetterClassic(localRec, out[levelId]) : pickBetterSpeed(localRec, out[levelId]);
+  }
+  return out;
+}
+
+function readLocalSettings(): {
+  speedrun: boolean | null;
+  skillMode: boolean | null;
+  theme: string | null;
+  lastLevel: number | null;
+} {
+  const speedrunRaw = localStorage.getItem(SK.SPEEDRUN);
+  const skillRaw = localStorage.getItem(SK.SKILL_MODE);
+  const themeRaw = localStorage.getItem(SK.THEME);
+  const lastLevelRaw = localStorage.getItem(SK.LAST_LEVEL);
+  const lastLevel = lastLevelRaw === null ? null : Math.max(1, toInt(lastLevelRaw, 1));
+  return {
+    speedrun: speedrunRaw === null ? null : speedrunRaw === 'true',
+    skillMode: skillRaw === null ? null : skillRaw === 'true',
+    theme: themeRaw && themeRaw.trim() ? themeRaw.trim() : null,
+    lastLevel,
+  };
+}
+
+function applyRemoteSettingsIfMissing(remote: any): void {
+  if (!isPlainObject(remote)) return;
+  if (localStorage.getItem(SK.SPEEDRUN) === null && typeof remote.speedrun === 'boolean') {
+    localStorage.setItem(SK.SPEEDRUN, String(remote.speedrun));
+  }
+  if (localStorage.getItem(SK.SKILL_MODE) === null && typeof remote.skillMode === 'boolean') {
+    localStorage.setItem(SK.SKILL_MODE, String(remote.skillMode));
+  }
+  if (localStorage.getItem(SK.THEME) === null && typeof remote.theme === 'string' && remote.theme.trim()) {
+    localStorage.setItem(SK.THEME, remote.theme.trim());
+  }
+  if (localStorage.getItem(SK.LAST_LEVEL) === null && Number.isFinite(Number(remote.lastLevel))) {
+    localStorage.setItem(SK.LAST_LEVEL, String(Math.max(1, toInt(remote.lastLevel, 1))));
+  }
+}
+
+function getLocalSavePayload(saveKey: string): any | null {
+  const raw = localStorage.getItem(saveKey);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function isProfileSyncKey(key: string): boolean {
+  return PROFILE_SYNC_KEYS.has(key);
 }
 
 // ── Init ────────────────────────────────────────────────────────────
@@ -95,6 +226,7 @@ export function saveAlias(): void {
   localStorage.setItem(SK.PLAYER_ALIAS, alias);
   if (gs.aliasInputEl) gs.aliasInputEl.value = alias;
   showFeedback(`暱稱已更新：${alias}`);
+  scheduleProgressSync();
 }
 
 export async function mergeCloudAchievements(localAchievements: AchievementMap): Promise<AchievementMap | null> {
@@ -141,6 +273,180 @@ export async function syncAchievementsToCloud(achievements: AchievementMap): Pro
     );
   } catch (e) {
     console.warn('sync achievements failed:', e);
+  }
+}
+
+export async function syncPlayerProgressToCloud(): Promise<void> {
+  if (!gs.firebaseReady || !gs.db) return;
+  const { playerId, alias } = getPlayerIdentity();
+  const records = normalizeRecordMap(readJson<Record<string, any>>(SK.RECORDS, {}), 'classic');
+  const speedRecords = normalizeRecordMap(readJson<Record<string, any>>(SK.SPEED_RECORDS, {}), 'speed');
+  const achievements = sanitizeAchievementMap(readJson<AchievementMap>(SK.ACHIEVEMENTS, {}));
+  const settings = readLocalSettings();
+  try {
+    await gs.db
+      .collection('player_profiles')
+      .doc(playerId)
+      .set(
+        {
+          playerId,
+          alias,
+          records,
+          speedRecords,
+          achievements,
+          settings,
+          progressUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+  } catch (e) {
+    console.warn('sync player progress failed:', e);
+  }
+}
+
+export function scheduleProgressSync(delayMs = PROGRESS_SYNC_DEBOUNCE_MS): void {
+  if (!gs.firebaseReady || !gs.db) return;
+  if (progressSyncTimer) clearTimeout(progressSyncTimer);
+  progressSyncTimer = setTimeout(() => {
+    progressSyncTimer = null;
+    void syncPlayerProgressToCloud();
+  }, delayMs);
+}
+
+export function installPlayerCloudSyncBridge(): void {
+  if (bridgeInstalled) return;
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  const proto = Object.getPrototypeOf(window.localStorage) as Storage;
+  if (!proto || typeof proto.setItem !== 'function' || typeof proto.removeItem !== 'function') return;
+
+  const rawSetItem = proto.setItem;
+  const rawRemoveItem = proto.removeItem;
+
+  proto.setItem = function setItemPatched(this: Storage, key: string, value: string): void {
+    rawSetItem.call(this, key, value);
+    if (this !== window.localStorage) return;
+    if (SAVE_KEY_PATTERN.test(key)) {
+      const payload = getLocalSavePayload(key);
+      if (payload) scheduleSaveSync(key, payload);
+      scheduleProgressSync();
+      return;
+    }
+    if (isProfileSyncKey(key)) scheduleProgressSync();
+  };
+
+  proto.removeItem = function removeItemPatched(this: Storage, key: string): void {
+    rawRemoveItem.call(this, key);
+    if (this !== window.localStorage) return;
+    if (SAVE_KEY_PATTERN.test(key)) {
+      void deleteSaveFromCloud(key);
+      scheduleProgressSync();
+      return;
+    }
+    if (isProfileSyncKey(key)) scheduleProgressSync();
+  };
+
+  bridgeInstalled = true;
+}
+
+export async function syncSaveToCloud(saveKey: string, payload: any): Promise<void> {
+  if (!gs.firebaseReady || !gs.db) return;
+  if (!SAVE_KEY_PATTERN.test(saveKey) || !isPlainObject(payload)) return;
+  const { playerId, alias } = getPlayerIdentity();
+  try {
+    await gs.db
+      .collection('player_profiles')
+      .doc(playerId)
+      .collection(PROFILE_SAVE_SUBCOLLECTION)
+      .doc(saveKey)
+      .set(
+        {
+          key: saveKey,
+          playerId,
+          alias,
+          payload,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+  } catch (e) {
+    console.warn('sync save failed:', e);
+  }
+}
+
+export function scheduleSaveSync(saveKey: string, payload: any, delayMs = SAVE_SYNC_DEBOUNCE_MS): void {
+  if (!gs.firebaseReady || !gs.db) return;
+  const oldTimer = pendingSaveSyncTimers.get(saveKey);
+  if (oldTimer) clearTimeout(oldTimer);
+  const timer = setTimeout(() => {
+    pendingSaveSyncTimers.delete(saveKey);
+    void syncSaveToCloud(saveKey, payload);
+  }, delayMs);
+  pendingSaveSyncTimers.set(saveKey, timer);
+}
+
+export async function deleteSaveFromCloud(saveKey: string): Promise<void> {
+  if (!gs.firebaseReady || !gs.db) return;
+  if (!SAVE_KEY_PATTERN.test(saveKey)) return;
+  const existingTimer = pendingSaveSyncTimers.get(saveKey);
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+    pendingSaveSyncTimers.delete(saveKey);
+  }
+  const { playerId } = getPlayerIdentity();
+  try {
+    await gs.db.collection('player_profiles').doc(playerId).collection(PROFILE_SAVE_SUBCOLLECTION).doc(saveKey).delete();
+  } catch (e) {
+    console.warn('delete cloud save failed:', e);
+  }
+}
+
+export async function hydratePlayerProfileFromCloud(): Promise<void> {
+  if (!gs.firebaseReady || !gs.db) return;
+  const { playerId } = getPlayerIdentity();
+  const docRef = gs.db.collection('player_profiles').doc(playerId);
+  try {
+    const doc = await docRef.get();
+    if (!doc.exists) {
+      scheduleProgressSync(50);
+      return;
+    }
+    const data = doc.data() || {};
+
+    const localRecords = normalizeRecordMap(readJson<Record<string, any>>(SK.RECORDS, {}), 'classic');
+    const remoteRecords = normalizeRecordMap(data.records, 'classic');
+    const mergedRecords = mergeRecordMaps(localRecords, remoteRecords, 'classic');
+    if (JSON.stringify(localRecords) !== JSON.stringify(mergedRecords)) writeJson(SK.RECORDS, mergedRecords);
+
+    const localSpeedRecords = normalizeRecordMap(readJson<Record<string, any>>(SK.SPEED_RECORDS, {}), 'speed');
+    const remoteSpeedRecords = normalizeRecordMap(data.speedRecords, 'speed');
+    const mergedSpeedRecords = mergeRecordMaps(localSpeedRecords, remoteSpeedRecords, 'speed');
+    if (JSON.stringify(localSpeedRecords) !== JSON.stringify(mergedSpeedRecords)) writeJson(SK.SPEED_RECORDS, mergedSpeedRecords);
+
+    const localAchievements = sanitizeAchievementMap(readJson<AchievementMap>(SK.ACHIEVEMENTS, {}));
+    const remoteAchievements = sanitizeAchievementMap(data.achievements);
+    const mergedAchievements = mergeAchievementMaps(localAchievements, remoteAchievements);
+    if (!sameAchievementMaps(localAchievements, mergedAchievements)) writeJson(SK.ACHIEVEMENTS, mergedAchievements);
+
+    applyRemoteSettingsIfMissing(data.settings);
+
+    const saveSnap = await docRef.collection(PROFILE_SAVE_SUBCOLLECTION).get();
+    saveSnap.docs.forEach((saveDoc: any) => {
+      const saveData = saveDoc.data() || {};
+      const key = typeof saveData.key === 'string' ? saveData.key : saveDoc.id;
+      if (!SAVE_KEY_PATTERN.test(key) || !isPlainObject(saveData.payload)) return;
+      if (localStorage.getItem(key) === null) {
+        localStorage.setItem(key, JSON.stringify(saveData.payload));
+      }
+    });
+
+    scheduleProgressSync(80);
+    for (const key of Object.keys(localStorage)) {
+      if (!SAVE_KEY_PATTERN.test(key)) continue;
+      const payload = getLocalSavePayload(key);
+      if (payload) scheduleSaveSync(key, payload, 120);
+    }
+  } catch (e) {
+    console.warn('hydrate player profile failed:', e);
   }
 }
 
