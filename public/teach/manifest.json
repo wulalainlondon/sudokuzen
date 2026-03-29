@@ -1,6 +1,6 @@
 {
-  "version": "0499eb33dd69",
-  "generatedAt": "2026-03-29T00:25:02.221Z",
+  "version": "d698eacca637",
+  "generatedAt": "2026-03-29T00:58:50.233Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -92,7 +92,7 @@
       "name": "鏡花",
       "subtitle": "雙端同頻，遙距斷勢",
       "hasPractice": true,
-      "size": 2799
+      "size": 4280
     },
     "14": {
       "technique": "unique_rectangle",
