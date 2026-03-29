@@ -1,6 +1,6 @@
 {
-  "version": "8106c636beb7",
-  "generatedAt": "2026-03-28T14:16:41.185Z",
+  "version": "0499eb33dd69",
+  "generatedAt": "2026-03-29T00:25:02.221Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -85,7 +85,7 @@
       "name": "三翼",
       "subtitle": "三點共視，集中刪減",
       "hasPractice": true,
-      "size": 4621
+      "size": 6157
     },
     "13": {
       "technique": "w_wing",
