@@ -1871,6 +1871,22 @@ header h1 {
     cursor: default;
 }
 
+.skill-fill-btn {
+    border: 1px solid var(--cell-border);
+    background: var(--btn-bg);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.skill-fill-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
 .skill-cancel-btn {
     border: 1px solid var(--cell-border);
     background: var(--btn-bg);

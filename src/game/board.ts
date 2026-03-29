@@ -43,9 +43,9 @@ export function renderGrid(): void {
       // Capture the previously selected cell BEFORE selectCell changes it
       const prevSelected = gs.selectedIdx;
 
-      // Start long-press timer (only for empty cells with notes, and a different cell was already selected)
+      // Start long-press timer (empty editable cell + a different cell was already selected)
       const cellData = gs.cellsData[i];
-      if (cellData && cellData.value === 0 && cellData.notes.length > 0 && prevSelected !== null && prevSelected !== i) {
+      if (cellData && cellData.value === 0 && prevSelected !== null && prevSelected !== i) {
         lpTimer = setTimeout(() => {
           lpFired = true;
           _onCellLongPress?.(i, prevSelected);

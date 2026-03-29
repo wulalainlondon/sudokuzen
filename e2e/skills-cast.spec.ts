@@ -144,4 +144,28 @@ test.describe('skills-cast', () => {
     expect(result.after7).toEqual(result.before7);
     expect(result.afterActions).toBe(result.beforeActions);
   });
+
+  test('can enter skill mode even when selected cells have no candidates', async ({ page }) => {
+    await page.evaluate(() => {
+      const e2e = (window as any).__e2e;
+      const cells = e2e.gs.cellsData;
+
+      for (const idx of [0, 1]) {
+        cells[idx].value = 0;
+        cells[idx].fixed = false;
+        cells[idx].isError = false;
+        cells[idx].notes = [];
+      }
+      e2e.selectCell(0);
+    });
+
+    const target = page.locator('#grid > .cell:nth-child(2)');
+    await target.dispatchEvent('pointerdown', { button: 0 });
+    await page.waitForTimeout(360);
+    await target.dispatchEvent('pointerup', { button: 0 });
+
+    await expect(page.locator('#skill-panel')).toBeVisible();
+    await expect(page.locator('#skill-cast-btn')).toBeDisabled();
+    await expect(page.locator('#skill-fill-btn')).toBeVisible();
+  });
 });

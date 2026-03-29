@@ -59,9 +59,10 @@ function hideSkillPanel(): void {
 function updatePanelUI(): void {
   const skill = sm();
   const castBtn = document.getElementById('skill-cast-btn') as HTMLButtonElement | null;
+  const fillBtn = document.getElementById('skill-fill-btn') as HTMLButtonElement | null;
   const subtitle = document.getElementById('skill-subtitle');
   const status = document.getElementById('skill-status');
-  if (!castBtn || !subtitle || !status) return;
+  if (!castBtn || !fillBtn || !subtitle || !status) return;
 
   const p = _preview;
 
@@ -69,10 +70,12 @@ function updatePanelUI(): void {
     subtitle.textContent = `${p.skillName} · {${p.digits?.join(',') ?? '-'}}`;
     status.textContent = skill.castMessage || '演算中...';
     castBtn.disabled = true;
+    fillBtn.disabled = true;
     castBtn.textContent = '施放中...';
     return;
   }
 
+  fillBtn.disabled = false;
   if (p?.valid) {
     subtitle.textContent = `${p.skillName} · {${p.digits?.join(',') ?? ''}}`;
     status.textContent = `可施放：${p.unitLabel} 可消去 ${p.targets.length} 個`;
