@@ -190,6 +190,13 @@ export function updateNumpadState(): void {
     const n = i + 1;
     btn.classList.toggle('completed', counts[n] >= 9);
   });
+  // Auto-cancel continuous fill when the locked digit is fully placed
+  if (gs.continuousFillDigit !== null && gs.continuousFillDigit >= 1 && counts[gs.continuousFillDigit] >= 9) {
+    gs.continuousFillDigit = null;
+    const btn = document.getElementById('continuous-fill-toggle');
+    if (btn) btn.classList.remove('active');
+    gs.numButtons.forEach((b) => b.classList.remove('continuous-active'));
+  }
 }
 
 export function syncLevelCardSize(): void {
