@@ -11,6 +11,7 @@ type AchievementMap = Record<string, { date: string }>;
 type GenericRecordMap = Record<string, any>;
 const SAVE_KEY_PATTERN = /^sudoku_(speed_)?save_(\d+)$/;
 const PROFILE_SAVE_SUBCOLLECTION = 'game_saves';
+const ALIAS_INDEX_COLLECTION = 'alias_player_index';
 const PROGRESS_SYNC_DEBOUNCE_MS = 1200;
 const SAVE_SYNC_DEBOUNCE_MS = 800;
 const PROFILE_SYNC_KEYS: Set<string> = new Set([
@@ -176,6 +177,48 @@ function getLocalSavePayload(saveKey: string): any | null {
   }
 }
 
+function aliasKeyOf(alias: string): string {
+  return normalizeAlias(alias).trim().toLowerCase();
+}
+
+async function upsertAliasIndex(playerId: string, alias: string): Promise<void> {
+  if (!gs.firebaseReady || !gs.db) return;
+  const aliasKey = aliasKeyOf(alias);
+  if (!aliasKey) return;
+  try {
+    await gs.db
+      .collection(ALIAS_INDEX_COLLECTION)
+      .doc(aliasKey)
+      .set(
+        {
+          aliasKey,
+          aliasDisplay: alias,
+          playerId,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+  } catch (e) {
+    console.warn('upsert alias index failed:', e);
+  }
+}
+
+async function findPlayerIdByAlias(alias: string): Promise<string | null> {
+  if (!gs.firebaseReady || !gs.db) return null;
+  const aliasKey = aliasKeyOf(alias);
+  if (!aliasKey) return null;
+  try {
+    const doc = await gs.db.collection(ALIAS_INDEX_COLLECTION).doc(aliasKey).get();
+    if (!doc.exists) return null;
+    const data = doc.data() || {};
+    const playerId = typeof data.playerId === 'string' ? data.playerId : null;
+    return playerId;
+  } catch (e) {
+    console.warn('find playerId by alias failed:', e);
+    return null;
+  }
+}
+
 function isProfileSyncKey(key: string): boolean {
   return PROFILE_SYNC_KEYS.has(key);
 }
@@ -226,6 +269,8 @@ export function saveAlias(): void {
   localStorage.setItem(SK.PLAYER_ALIAS, alias);
   if (gs.aliasInputEl) gs.aliasInputEl.value = alias;
   showFeedback(`暱稱已更新：${alias}`);
+  const { playerId } = getPlayerIdentity();
+  void upsertAliasIndex(playerId, alias);
   scheduleProgressSync();
 }
 
@@ -299,6 +344,7 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
         },
         { merge: true },
       );
+    await upsertAliasIndex(playerId, alias);
   } catch (e) {
     console.warn('sync player progress failed:', e);
   }
@@ -402,10 +448,28 @@ export async function deleteSaveFromCloud(saveKey: string): Promise<void> {
 
 export async function hydratePlayerProfileFromCloud(): Promise<void> {
   if (!gs.firebaseReady || !gs.db) return;
-  const { playerId } = getPlayerIdentity();
-  const docRef = gs.db.collection('player_profiles').doc(playerId);
+  const identity = getPlayerIdentity();
+  let playerId = identity.playerId;
+  let alias = identity.alias;
+  let docRef = gs.db.collection('player_profiles').doc(playerId);
   try {
-    const doc = await docRef.get();
+    let doc = await docRef.get();
+    if (!doc.exists) {
+      const mappedPlayerId = await findPlayerIdByAlias(alias);
+      if (mappedPlayerId && mappedPlayerId !== playerId) {
+        const mappedRef = gs.db.collection('player_profiles').doc(mappedPlayerId);
+        const mappedDoc = await mappedRef.get();
+        if (mappedDoc.exists) {
+          playerId = mappedPlayerId;
+          docRef = mappedRef;
+          doc = mappedDoc;
+          localStorage.setItem(SK.PLAYER_ID, mappedPlayerId);
+          localStorage.setItem(SK.PLAYER_ALIAS, alias);
+          if (gs.aliasInputEl) gs.aliasInputEl.value = alias;
+          showFeedback(`已依暱稱「${alias}」恢復雲端進度`);
+        }
+      }
+    }
     if (!doc.exists) {
       scheduleProgressSync(50);
       return;
@@ -440,6 +504,7 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
     });
 
     scheduleProgressSync(80);
+    await upsertAliasIndex(playerId, alias);
     for (const key of Object.keys(localStorage)) {
       if (!SAVE_KEY_PATTERN.test(key)) continue;
       const payload = getLocalSavePayload(key);

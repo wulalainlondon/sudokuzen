@@ -46,6 +46,20 @@ service cloud.firestore {
       }
     }
 
+    match /alias_player_index/{aliasKey} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update: if request.resource.data.aliasKey is string
+                            && request.resource.data.aliasKey == aliasKey
+                            && request.resource.data.aliasDisplay is string
+                            && request.resource.data.aliasDisplay.size() >= 1
+                            && request.resource.data.aliasDisplay.size() <= 24
+                            && request.resource.data.playerId is string
+                            && request.resource.data.playerId.size() >= 8
+                            && request.resource.data.playerId.size() <= 64;
+      allow delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
