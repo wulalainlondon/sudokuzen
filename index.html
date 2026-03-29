@@ -198,7 +198,17 @@
         <!-- 3. 數獨主網格 -->
         <div class="sudoku-grid" id="grid"></div>
 
-        <div class="numpad" id="numpad"></div>
+        <div class="numpad-skill-wrapper">
+            <div class="numpad" id="numpad"></div>
+            <div class="skill-panel hidden" id="skill-panel">
+                <div class="skill-subtitle" id="skill-subtitle"></div>
+                <div class="skill-status" id="skill-status"></div>
+                <div class="skill-actions">
+                    <button class="skill-cast-btn" id="skill-cast-btn" onclick="castSkill()" disabled>施放</button>
+                    <button class="skill-cancel-btn" onclick="exitSkillMode()">取消</button>
+                </div>
+            </div>
+        </div>
         <div class="duo-emoji-bar" id="duo-emoji-bar">
             <button class="duo-emoji-btn" onclick="sendDuoEmoji('💪')">💪</button>
             <button class="duo-emoji-btn" onclick="sendDuoEmoji('😱')">😱</button>
@@ -207,16 +217,6 @@
             <button class="duo-emoji-btn" onclick="sendDuoEmoji('🔥')">🔥</button>
         </div>
         <div class="controls">
-            <button class="ctrl-btn skill-mode-toggle hidden" id="skill-mode-toggle-btn" onclick="toggleSkillMode()">
-                技能 OFF
-            </button>
-            <div class="skill-panel hidden" id="skill-panel">
-                <div class="skill-title">封鎖脈衝</div>
-                <div class="skill-subtitle" id="skill-subtitle">Locked Candidates</div>
-                <div class="skill-status" id="skill-status">先在同宮點亮兩個相同候選</div>
-                <button class="skill-cast-btn" id="skill-cast-btn" onclick="castLockedSkill()" disabled>封鎖脈衝</button>
-            </div>
-        </div>
     </div>
 
     <div id="replay-modal">

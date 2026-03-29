@@ -18,7 +18,9 @@ function getNotes(notes: Record<string, number[]>, idx: number): number[] {
 function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: DemoStory }): ReactElement {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [actIndex, setActIndex] = useState(0);
-  const [elimProgress, setElimProgress] = useState(-1);
+  const [elimProgress, setElimProgress] = useState(-1); // for non-ripple sequential mode
+  const [elimStruck, setElimStruck] = useState<Set<number>>(new Set()); // indices struck (ripple mode)
+  const [elimFlash, setElimFlash] = useState<Set<number>>(new Set()); // cells currently flashing red
   const [done, setDone] = useState(false);
 
   const example = module.example!;
@@ -32,28 +34,102 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
     const elims = h.eliminates ?? [];
 
     if (elims.length > 0) {
-      // Animate eliminates sequentially within this act
-      let idx = 0;
-      const interval = setInterval(() => {
-        setElimProgress(idx);
-        idx++;
-        if (idx >= elims.length) {
-          clearInterval(interval);
-          // Wait a bit then advance
+      const rippleSrc = h.rippleFrom ?? [];
+      const timers: ReturnType<typeof setTimeout>[] = [];
+
+      if (rippleSrc.length > 0) {
+        // Distance-based timing: ripple hit → flash red 220ms → strikethrough
+        const RIPPLE_DURATION = 1800;
+        const FLASH_MS = 220;
+        const srcRow = rippleSrc.reduce((s, c) => s + Math.floor(c / 9), 0) / rippleSrc.length;
+        const srcCol = rippleSrc.reduce((s, c) => s + (c % 9), 0) / rippleSrc.length;
+
+        // Use SVG-aligned distance for visual sync
+        const srcSvgX = ((srcCol + 0.5) / 9) * 100;
+        const srcSvgY = ((srcRow + 0.5) / 9) * 100;
+        const maxSvgR = 90; // covers full board diagonal (~95 SVG units)
+
+        const elimsWithDelay = elims
+          .map((e, idx) => {
+            const eRow = Math.floor(e.cell / 9);
+            const eCol = e.cell % 9;
+            const eSvgX = ((eCol + 0.5) / 9) * 100;
+            const eSvgY = ((eRow + 0.5) / 9) * 100;
+            const svgDist = Math.sqrt((eSvgX - srcSvgX) ** 2 + (eSvgY - srcSvgY) ** 2);
+            const hitTime = (svgDist / maxSvgR) * RIPPLE_DURATION;
+            return { ...e, idx, hitTime };
+          })
+          .sort((a, b) => a.hitTime - b.hitTime);
+
+        elimsWithDelay.forEach((e) => {
+          // Flash: ripple hits cell
+          timers.push(
+            setTimeout(() => {
+              setElimFlash((prev) => new Set([...prev, e.cell]));
+            }, e.hitTime),
+          );
+          // Strike: flash ends, digit removed
+          timers.push(
+            setTimeout(() => {
+              setElimFlash((prev) => {
+                const n = new Set(prev);
+                n.delete(e.cell);
+                return n;
+              });
+              setElimStruck((prev) => new Set([...prev, e.idx]));
+            }, e.hitTime + FLASH_MS),
+          );
+        });
+
+        // Advance after all eliminates + buffer
+        const lastHit = elimsWithDelay[elimsWithDelay.length - 1]?.hitTime ?? 0;
+        timers.push(
           setTimeout(
             () => {
-              if (actIndex < story.acts.length - 1) {
-                setActIndex((i) => i + 1);
-                setElimProgress(-1);
-              } else {
-                setDone(true);
-              }
+              // Mark all as struck
+              setElimStruck(new Set(elims.map((_, i) => i)));
+              setTimeout(
+                () => {
+                  if (actIndex < story.acts.length - 1) {
+                    setActIndex((i) => i + 1);
+                    setElimProgress(-1);
+                    setElimStruck(new Set());
+                    setElimFlash(new Set());
+                  } else {
+                    setDone(true);
+                  }
+                },
+                Math.max(act.durationMs - lastHit - FLASH_MS - 200, 400),
+              );
             },
-            Math.max(act.durationMs - elims.length * 180, 300),
-          );
-        }
-      }, 180);
-      return () => clearInterval(interval);
+            lastHit + FLASH_MS + 100,
+          ),
+        );
+      } else {
+        // Fixed interval (no ripple)
+        let idx = 0;
+        const interval = setInterval(() => {
+          setElimProgress(idx);
+          idx++;
+          if (idx >= elims.length) {
+            clearInterval(interval);
+            setTimeout(
+              () => {
+                if (actIndex < story.acts.length - 1) {
+                  setActIndex((i) => i + 1);
+                  setElimProgress(-1);
+                } else {
+                  setDone(true);
+                }
+              },
+              Math.max(act.durationMs - elims.length * 180, 300),
+            );
+          }
+        }, 180);
+        timers.push(interval as unknown as ReturnType<typeof setTimeout>);
+      }
+
+      return () => timers.forEach((t) => clearTimeout(t));
     }
 
     const timer = setTimeout(() => {
@@ -69,8 +145,24 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
   const handleReplay = () => {
     setActIndex(0);
     setElimProgress(-1);
+    setElimStruck(new Set());
+    setElimFlash(new Set());
     setDone(false);
   };
+
+  // Ripple: compute origin position from rippleFrom cells (must be before early return)
+  const rippleSources = (!done && act?.highlight.rippleFrom) || [];
+  const rippleKey = rippleSources.length > 0 ? rippleSources.join(',') : '';
+  const rippleStyle = useMemo(() => {
+    if (!rippleKey) return null;
+    const cells = rippleKey.split(',').map(Number);
+    const avgRow = cells.reduce((s, c) => s + Math.floor(c / 9), 0) / cells.length;
+    const avgCol = cells.reduce((s, c) => s + (c % 9), 0) / cells.length;
+    return {
+      cx: ((avgCol + 0.5) / 9) * 100,
+      cy: ((avgRow + 0.5) / 9) * 100,
+    };
+  }, [rippleKey]);
 
   if (!act && !done) return <div className="teach-board" />;
 
@@ -80,7 +172,8 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
   const ringDigits = currentHighlight?.digits ?? {};
   const unitHighlights = new Set(currentHighlight?.units ?? []);
   const camera = currentHighlight?.camera ?? 'none';
-  const cameraClass = camera === 'in' ? 'camera-zoom-in' : '';
+  // camera:'in' now dims non-focus cells instead of zooming (no clipping)
+  const dimNonFocus = camera === 'in';
 
   // Eliminates: show all from completed acts + progress of current act
   const completedElims: { cell: number; digit: number }[] = [];
@@ -89,17 +182,28 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
     if (a) completedElims.push(...a);
   }
   if (!done && act?.highlight.eliminates) {
-    for (let i = 0; i <= elimProgress && i < act.highlight.eliminates.length; i++) {
-      completedElims.push(act.highlight.eliminates[i]);
+    if (elimStruck.size > 0) {
+      // Ripple mode: only show indices that have been struck
+      act.highlight.eliminates.forEach((e, i) => {
+        if (elimStruck.has(i)) completedElims.push(e);
+      });
+    } else {
+      // Sequential mode
+      for (let i = 0; i <= elimProgress && i < act.highlight.eliminates.length; i++) {
+        completedElims.push(act.highlight.eliminates[i]);
+      }
     }
   }
-  const elimSet = new Map<number, number>(); // cell → digit
-  for (const e of completedElims) elimSet.set(e.cell, e.digit);
+  const elimSet = new Map<number, Set<number>>(); // cell → digits
+  for (const e of completedElims) {
+    if (!elimSet.has(e.cell)) elimSet.set(e.cell, new Set());
+    elimSet.get(e.cell)!.add(e.digit);
+  }
 
   const caption = done ? (story.acts[story.acts.length - 1]?.caption ?? '') : (act?.caption ?? '');
 
   return (
-    <div className={`demo-board-wrapper ${cameraClass}`}>
+    <div className="demo-board-wrapper">
       <div className="demo-camera-frame">
         <div className="teach-board" ref={boardRef}>
           {Array.from({ length: 81 }, (_, i) => {
@@ -107,7 +211,7 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
             const noteArr = getNotes(example.notes, i);
             const isFocus = focusCells.has(i);
             const cellRingDigits = ringDigits[String(i)] ?? [];
-            const elimDigit = elimSet.get(i) ?? -1;
+            const elimDigits = elimSet.get(i);
 
             // Unit highlight: check if cell belongs to a highlighted unit
             const row = Math.floor(i / 9);
@@ -116,9 +220,15 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
             const inHighlightedUnit =
               unitHighlights.has(row) || unitHighlights.has(9 + col) || unitHighlights.has(18 + box);
 
+            const isFlashing = elimFlash.has(i);
+            // Dim non-focus cells when camera='in'
+            const isDimmed = dimNonFocus && !isFocus && !inHighlightedUnit;
+
             let className = 'teach-cell';
             if (isFocus) className += ' focus';
             if (inHighlightedUnit && !isFocus) className += ' demo-unit-highlight';
+            if (isFlashing) className += ' demo-ripple-hit';
+            if (isDimmed) className += ' demo-dimmed';
 
             return (
               <div key={i} className={className} data-idx={i}>
@@ -130,7 +240,8 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
                       const d = offset + 1;
                       const hasDigit = noteArr.includes(d);
                       let noteClass = 'tc-note';
-                      if (elimDigit === d) noteClass += ' strike';
+                      if (elimDigits?.has(d)) noteClass += ' strike';
+                      if (isFlashing && hasDigit && cellRingDigits.includes(d)) noteClass += ' demo-flash-digit';
                       if (cellRingDigits.includes(d)) noteClass += ' demo-source-digit';
                       return (
                         <span key={d} className={noteClass} data-digit={d}>
@@ -144,6 +255,19 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
             );
           })}
         </div>
+
+        {/* Ripple wave overlay */}
+        {rippleStyle && (
+          <svg
+            className="demo-ripple-overlay"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            key={`ripple-${actIndex}`}
+          >
+            <circle className="demo-ripple-ring" cx={rippleStyle.cx} cy={rippleStyle.cy} r="3" />
+            <circle className="demo-ripple-ring demo-ripple-ring-2" cx={rippleStyle.cx} cy={rippleStyle.cy} r="3" />
+          </svg>
+        )}
       </div>
 
       {/* Elimination count after final act */}

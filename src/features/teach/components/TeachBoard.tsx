@@ -23,8 +23,18 @@ export function TeachBoard({ example, step }: Props): ReactElement {
   const focusSet = new Set(focusCells);
   const visibleSet = new Set(step?.visibleCells ?? []);
   const hasVisibleMask = visibleSet.size > 0;
-  const eliminateMap = new Map((step?.eliminateCells ?? []).map((x) => [x.cell, x.digit]));
+  const eliminateMap = new Map<number, Set<number>>();
+  for (const x of step?.eliminateCells ?? []) {
+    if (!eliminateMap.has(x.cell)) eliminateMap.set(x.cell, new Set());
+    eliminateMap.get(x.cell)!.add(x.digit);
+  }
   const eliminateIndices = (step?.eliminateCells ?? []).map((x) => x.cell);
+  // removedCandidates: completely hide these candidates (post-elimination view)
+  const removedMap = new Map<number, Set<number>>();
+  for (const x of step?.removedCandidates ?? []) {
+    if (!removedMap.has(x.cell)) removedMap.set(x.cell, new Set());
+    removedMap.get(x.cell)!.add(x.digit);
+  }
   const warnSet = new Set(step?.warnCells ?? []);
   const warnDigit = step?.warnDigit ?? null;
 
@@ -52,7 +62,13 @@ export function TeachBoard({ example, step }: Props): ReactElement {
                   const highlight = step?.highlightDigits?.[String(i)]?.includes(d) ?? false;
                   if (highlight) noteClass += ' highlight';
 
-                  if (eliminateMap.get(i) === d) noteClass += ' strike';
+                  if (eliminateMap.get(i)?.has(d)) noteClass += ' strike';
+
+                  // Hide completely if in removedCandidates
+                  const isRemoved = removedMap.get(i)?.has(d);
+                  if (isRemoved && noteArr.includes(d)) return (
+                    <span key={d} className="tc-note" data-digit={d}></span>
+                  );
 
                   if (warnDigit === d && warnSet.has(i)) noteClass += ' warn-missing';
 
@@ -68,7 +84,7 @@ export function TeachBoard({ example, step }: Props): ReactElement {
         );
       })}
 
-      {focusCells.length >= 2 && (
+      {focusCells.length >= 2 && step?.showChain !== false && (
         <ChainOverlay boardRef={boardRef} cells={focusCells} eliminateCells={eliminateIndices} animate />
       )}
     </div>

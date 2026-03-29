@@ -35,6 +35,8 @@ function normalizeStep(step: any): TeachStepModel {
     visibleCells: visibleCells.length ? visibleCells : undefined,
     highlightDigits: normalizeHighlightDigits(step?.highlightDigits),
     eliminateCells: normalizeEliminateCells(step?.eliminateCells),
+    removedCandidates: step?.removedCandidates ? normalizeEliminateCells(step.removedCandidates) : undefined,
+    showChain: step?.showChain ?? undefined,
     warnCells: normalizeIntArray(step?.warnCells),
     warnDigit: Number.isFinite(Number(step?.warnDigit)) ? Number(step.warnDigit) : null,
   };

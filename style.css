@@ -1640,8 +1640,7 @@ header h1 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 6px;
-    width: min(84vw, 300px);
-    margin-top: auto;
+    width: 100%;
     margin-bottom: 0;
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
 }
@@ -1709,6 +1708,24 @@ header h1 {
     display: none;
 }
 
+@media (max-height: 700px) {
+    .numpad {
+        gap: 3px;
+        width: min(72vw, 240px);
+        padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    }
+
+    .num-btn {
+        aspect-ratio: 1.3/1;
+        font-size: min(4.6vw, 0.95rem);
+        border-radius: 10px;
+    }
+
+    .numpad-skill-wrapper {
+        width: min(72vw, 240px);
+    }
+}
+
 @media (max-height: 780px) {
     .numpad {
         gap: 5px;
@@ -1718,6 +1735,10 @@ header h1 {
     .num-btn {
         font-size: min(5.2vw, 1.1rem);
         border-radius: 14px;
+    }
+
+    .numpad-skill-wrapper {
+        width: min(82vw, 280px);
     }
 }
 
@@ -1729,6 +1750,10 @@ header h1 {
 
     .num-btn {
         font-size: min(5.4vw, 1.15rem);
+    }
+
+    .numpad-skill-wrapper {
+        width: min(83vw, 290px);
     }
 }
 
@@ -1782,51 +1807,88 @@ header h1 {
     color: var(--accent-strong);
 }
 
-.skill-panel {
-    width: min(88vw, 300px);
-    border: 1px solid color-mix(in srgb, var(--cell-border) 84%, transparent);
-    border-radius: 12px;
-    padding: 10px 12px;
-    background: color-mix(in srgb, var(--btn-bg) 86%, var(--grid-bg));
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+.numpad-skill-wrapper {
+    position: relative;
+    width: min(84vw, 300px);
+    margin-top: auto;
 }
 
-.skill-title {
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    color: var(--text-main);
+.skill-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    border: 1px solid color-mix(in srgb, var(--accent-strong) 25%, var(--cell-border));
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: color-mix(in srgb, var(--btn-bg) 97%, var(--grid-bg));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    animation: skill-panel-in 0.25s var(--ease-zen, ease-out);
+}
+
+@keyframes skill-panel-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .skill-subtitle {
-    font-size: 0.68rem;
-    color: var(--text-light);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent-strong);
+    letter-spacing: 0.3px;
 }
 
 .skill-status {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     color: var(--text-main);
     line-height: 1.4;
     min-height: 20px;
 }
 
-.skill-cast-btn {
+.skill-actions {
+    display: flex;
+    gap: 8px;
     margin-top: 2px;
+}
+
+.skill-cast-btn {
+    flex: 1;
     border: 1px solid color-mix(in srgb, var(--accent-strong) 30%, var(--cell-border));
     background: color-mix(in srgb, var(--accent-strong) 84%, #ffffff 16%);
     color: #fff;
     border-radius: 8px;
-    padding: 8px 10px;
-    font-size: 0.76rem;
+    padding: 10px 10px;
+    font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
 }
 
 .skill-cast-btn:disabled {
-    opacity: 0.55;
+    opacity: 0.45;
     cursor: default;
+}
+
+.skill-cancel-btn {
+    border: 1px solid var(--cell-border);
+    background: var(--btn-bg);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Skill panel overlays numpad (numpad keeps its height via visibility:hidden) */
+
+/* ── Skill: selected cell highlight ── */
+
+.cell.skill-selected {
+    box-shadow: inset 0 0 0 2.5px var(--accent-strong);
+    z-index: 2;
 }
 
 .ctrl-btn svg {
@@ -1873,6 +1935,117 @@ header h1 {
     text-shadow: 0 0 6px color-mix(in srgb, var(--accent-light) 55%, transparent);
     transform: scale(1.06);
 }
+
+/* ── Skill: Source & Target cell highlights ── */
+
+.cell.skill-source {
+    box-shadow: inset 0 0 0 2px var(--accent-strong);
+    z-index: 2;
+}
+
+.cell.skill-target {
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--error-color, #e74c3c) 70%, transparent);
+    z-index: 2;
+}
+
+/* ── Skill: Connection lines SVG overlay ── */
+
+.skill-connection-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 3;
+    overflow: visible;
+}
+
+.skill-line {
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: skill-line-in 0.3s var(--ease-zen, ease-out) forwards;
+}
+
+.skill-line-source {
+    stroke: var(--accent-strong);
+    stroke-width: 2.5;
+}
+
+.skill-line-target {
+    stroke: color-mix(in srgb, var(--error-color, #e74c3c) 65%, transparent);
+    stroke-dasharray: 6 4;
+}
+
+@keyframes skill-line-in {
+    from { opacity: 0; }
+    to   { opacity: 0.7; }
+}
+
+/* ── Skill: Source cell pulse on cast ── */
+
+.cell.skill-source-pulse {
+    animation: skill-source-pulse 0.2s ease-out;
+}
+
+@keyframes skill-source-pulse {
+    0%   { box-shadow: inset 0 0 0 2.5px var(--accent-strong); }
+    50%  { box-shadow: inset 0 0 0 4px var(--accent-strong), 0 0 8px color-mix(in srgb, var(--accent-light) 40%, transparent); }
+    100% { box-shadow: inset 0 0 0 2.5px var(--accent-strong); }
+}
+
+/* ── Skill: Connection line flash on cast ── */
+
+.skill-line.skill-line-flash {
+    opacity: 1;
+    stroke-width: 3;
+    transition: opacity 0.15s, stroke-width 0.15s;
+}
+
+/* ── Skill: Strike animation on eliminated cell ── */
+
+.cell.skill-strike {
+    animation: skill-strike-pulse 0.22s ease-out;
+}
+
+@keyframes skill-strike-pulse {
+    0%   { background: var(--cell-bg); }
+    40%  { background: color-mix(in srgb, var(--error-color, #e74c3c) 25%, var(--cell-bg)); }
+    100% { background: var(--cell-bg); }
+}
+
+/* ── Skill: Hidden Pair inward target + strike ── */
+
+.cell.skill-target-inward {
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, #f39c12 70%, transparent);
+    z-index: 2;
+}
+
+.cell.skill-strike-inward {
+    animation: skill-strike-inward-pulse 0.22s ease-out;
+}
+
+@keyframes skill-strike-inward-pulse {
+    0%   { background: var(--cell-bg); }
+    40%  { background: color-mix(in srgb, #f39c12 20%, var(--cell-bg)); }
+    100% { background: var(--cell-bg); }
+}
+
+/* ── Skill: Digit-level elimination (matches teach animation) ── */
+
+.note-num.skill-elim-digit {
+    color: var(--error-color, #e74c3c);
+    animation: skill-elim-digit 0.65s ease-out both;
+    pointer-events: none;
+}
+
+@keyframes skill-elim-digit {
+    0%   { opacity: 1; transform: scale(1); text-decoration: none; }
+    30%  { opacity: 0.85; transform: scale(1.04); text-decoration: line-through; color: var(--error-color, #e74c3c); }
+    55%  { opacity: 0.5; transform: scale(0.95); text-decoration: line-through; }
+    100% { opacity: 0; transform: scale(0.7); text-decoration: line-through; }
+}
+
+/* Ripple wave reserved for X-Wing+ (Phase 2 skills) */
 
 /* ===== Stats & Achievements Modal ===== */
 #stats-modal {
@@ -3103,7 +3276,7 @@ body.library-open {
     will-change: transform;
 }
 .demo-board-wrapper.camera-zoom-in .demo-camera-frame .teach-board {
-    transform: scale(1.36);
+    transform: scale(1.18);
     filter: saturate(1.06);
 }
 .demo-story-overlay {
@@ -3173,10 +3346,51 @@ body.library-open {
     100% { box-shadow: inset 0 0 6px var(--accent-light); }
 }
 
+/* Dimmed cells — non-focus cells fade when camera='in' */
+.teach-cell.demo-dimmed {
+    opacity: 0.3;
+    transition: opacity 0.4s var(--ease-zen);
+}
+
 /* Unit highlight band — soft tint for row/col/box context */
 .teach-cell.demo-unit-highlight {
     background: color-mix(in srgb, var(--accent-light) 18%, transparent);
     transition: background 0.4s var(--ease-zen);
+}
+
+/* Ripple hit flash — cell flashes red when wave reaches it */
+.teach-cell.demo-ripple-hit {
+    animation: demoRippleHitFlash 0.22s ease-out;
+}
+@keyframes demoRippleHitFlash {
+    0%   { background: transparent; }
+    30%  { background: color-mix(in srgb, #e74c3c 28%, transparent); }
+    100% { background: transparent; }
+}
+
+/* Ripple wave — expanding circle from source cells */
+.demo-ripple-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    overflow: visible;
+}
+.demo-ripple-ring {
+    fill: none;
+    stroke: var(--accent-strong);
+    stroke-width: 0.8;
+    opacity: 0;
+    animation: demoRippleExpand 1.8s ease-out forwards;
+}
+.demo-ripple-ring-2 {
+    animation-delay: 0.25s;
+    stroke: var(--accent-light);
+}
+@keyframes demoRippleExpand {
+    0%   { r: 2; opacity: 0.55; stroke-width: 1; }
+    40%  { opacity: 0.3; }
+    100% { r: 90; opacity: 0; stroke-width: 0.12; }
 }
 
 /* Technique name — slams in right before elimination */

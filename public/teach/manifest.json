@@ -1,6 +1,6 @@
 {
-  "version": "e85530849a2f",
-  "generatedAt": "2026-03-29T02:46:45.846Z",
+  "version": "80481a1b4b05",
+  "generatedAt": "2026-03-29T06:06:49.752Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -22,35 +22,35 @@
       "name": "封鎖",
       "subtitle": "宮列互鎖，外圍刪減",
       "hasPractice": true,
-      "size": 3063
+      "size": 3085
     },
     "4": {
       "technique": "naked_pair",
       "name": "雙契",
       "subtitle": "同對成形，旁格排除",
       "hasPractice": true,
-      "size": 3309
+      "size": 3877
     },
     "5": {
       "technique": "hidden_pair",
       "name": "藏雙",
       "subtitle": "先找座位，再清雜訊",
       "hasPractice": true,
-      "size": 3335
+      "size": 4173
     },
     "6": {
       "technique": "naked_triple",
       "name": "編織",
       "subtitle": "三格三數，批次刪減",
       "hasPractice": true,
-      "size": 6777
+      "size": 6966
     },
     "7": {
       "technique": "hidden_triple",
       "name": "隱流",
       "subtitle": "三數隱伏，反向清候選",
       "hasPractice": true,
-      "size": 6521
+      "size": 6991
     },
     "8": {
       "technique": "x_wing",

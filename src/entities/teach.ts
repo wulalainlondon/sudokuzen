@@ -11,6 +11,10 @@ export type TeachStepModel = {
   visibleCells?: number[];
   highlightDigits: Record<string, number[]>;
   eliminateCells: TeachEliminateTarget[];
+  /** Candidates to hide completely (show the "after" state) */
+  removedCandidates?: TeachEliminateTarget[];
+  /** Hide chain overlay lines for this step (default: show) */
+  showChain?: boolean;
   warnCells: number[];
   warnDigit: number | null;
 };
@@ -49,8 +53,12 @@ export type DemoActHighlight = {
   units?: number[];
   /** Cells + digits to strike through (elimination) */
   eliminates?: TeachEliminateTarget[];
-  /** Camera zoom: 'in' | 'out' | 'none' */
+  /** Camera mode: 'in' = dim non-focus cells, 'out' = full board visible, 'none' = no change */
   camera?: 'in' | 'out' | 'none';
+  /** Zoom focus point as cell index (used with camera:'in' to determine dim region). */
+  cameraFocus?: number;
+  /** Emit a ripple wave from these cells (cell indices). Ripple sweeps across the board. */
+  rippleFrom?: number[];
 };
 
 export type DemoAct = {
