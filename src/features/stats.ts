@@ -290,10 +290,14 @@ export function recordReplayWatch(): void {
 
 export function switchStatsTab(tab: string): void {
   const isOverview = tab === 'overview';
-  document.getElementById('stats-tab-overview')!.classList.toggle('active', isOverview);
-  document.getElementById('stats-tab-achievement')!.classList.toggle('active', !isOverview);
-  (document.getElementById('stats-content-overview') as HTMLElement).style.display = isOverview ? 'block' : 'none';
-  (document.getElementById('stats-content-achievement') as HTMLElement).style.display = isOverview ? 'none' : 'block';
+  const tabOverview = document.getElementById('stats-tab-overview');
+  const tabAchievement = document.getElementById('stats-tab-achievement');
+  const contentOverview = document.getElementById('stats-content-overview');
+  const contentAchievement = document.getElementById('stats-content-achievement');
+  if (tabOverview) tabOverview.classList.toggle('active', isOverview);
+  if (tabAchievement) tabAchievement.classList.toggle('active', !isOverview);
+  if (contentOverview) contentOverview.style.display = isOverview ? 'block' : 'none';
+  if (contentAchievement) contentAchievement.style.display = isOverview ? 'none' : 'block';
 }
 
 export function renderStatsModal(): void {
@@ -303,7 +307,12 @@ export function renderStatsModal(): void {
   // Overview
   const completionPct = stats.totalLevels > 0 ? Math.round((stats.totalCleared / stats.totalLevels) * 100) : 0;
   const fastLabel = stats.fastestLevel ? stats.fastestLevel.displayName : '';
-  document.getElementById('stats-overview')!.innerHTML = `
+  const overviewEl = document.getElementById('stats-overview');
+  const tierProgressEl = document.getElementById('stats-tier-progress');
+  const achievementCounterEl = document.getElementById('achievement-counter');
+  const achievementGridEl = document.getElementById('achievement-grid');
+  if (!overviewEl || !tierProgressEl || !achievementCounterEl || !achievementGridEl) return;
+  overviewEl.innerHTML = `
     <div class="stat-item">
         <div class="stat-value">${stats.totalCleared}<span style="font-size:0.7rem;color:var(--text-light)">/${stats.totalLevels}</span></div>
         <div class="stat-label">通關數 (${completionPct}%)</div>
@@ -331,7 +340,7 @@ export function renderStatsModal(): void {
   `;
 
   // Tier progress
-  document.getElementById('stats-tier-progress')!.innerHTML = stats.tierStats
+  tierProgressEl.innerHTML = stats.tierStats
     .map((t) => {
       const pct = t.total > 0 ? Math.round((t.cleared / t.total) * 100) : 0;
       return `<div class="tier-progress">
@@ -344,10 +353,10 @@ export function renderStatsModal(): void {
 
   // Achievements
   const unlockedCount = ACHIEVEMENTS.filter((a) => achievements[a.id]).length;
-  document.getElementById('achievement-counter')!.innerHTML =
+  achievementCounterEl.innerHTML =
     `已解鎖 <span>${unlockedCount}</span> / ${ACHIEVEMENTS.length}`;
 
-  document.getElementById('achievement-grid')!.innerHTML = ACHIEVEMENTS.map((a) => {
+  achievementGridEl.innerHTML = ACHIEVEMENTS.map((a) => {
     const u = achievements[a.id];
     return `<div class="achievement-card ${u ? 'unlocked' : 'locked'}">
         <div class="achievement-icon">${a.icon}</div>
@@ -359,10 +368,14 @@ export function renderStatsModal(): void {
 }
 
 export function openStatsModal(): void {
-  switchStatsTab('overview');
-  renderStatsModal();
-  // Retroactively check achievements from existing records
-  checkAllAchievements();
+  try {
+    switchStatsTab('overview');
+    renderStatsModal();
+    // Retroactively check achievements from existing records
+    checkAllAchievements();
+  } catch (e) {
+    console.error('openStatsModal failed:', e);
+  }
   document.getElementById('stats-modal')!.style.display = 'flex';
 }
 
