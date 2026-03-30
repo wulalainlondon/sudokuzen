@@ -255,8 +255,18 @@ function clearGameStatus(levelId: number): void {
 
 // ── Input handling ──────────────────────────────────────────────────
 
+function isDigitCompletedOnBoard(num: number): boolean {
+  let count = 0;
+  for (const c of gs.cellsData) {
+    if (c.value === num) count++;
+    if (count >= 9) return true;
+  }
+  return false;
+}
+
 export function handleInput(num: number): void {
   if (blindRevealing) return;
+  if (isDigitCompletedOnBoard(num)) return;
   if (gs.selectedIdx === null || gs.cellsData[gs.selectedIdx].fixed) return;
   if (!gs.isDuoMode && gs.errors >= gs.maxErrors) return;
   if (isDuoCooldownActive()) return;
@@ -433,7 +443,7 @@ function checkWin(): void {
   if (gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild') {
     import('../features/wild/wildController').then((m) => {
       const result = m.onWildComplete(gs.seconds, gs.errors);
-      showWildWinCelebration(gs.seconds, result.expGained, result.leveledUp, result.newLevel);
+      showWildWinCelebration(gs.seconds, result.expGained, result.leveledUp, result.newLevel, result.firstKill, result.firstKillSub);
     });
     return;
   }
@@ -679,12 +689,14 @@ function showWinCelebration(earnedValue: number): void {
   if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
 }
 
-function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number): void {
+function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number, firstKill?: string | null, firstKillSub?: string | null): void {
   const mins = Math.floor(seconds / 60)
     .toString()
     .padStart(2, '0');
   const secs = (seconds % 60).toString().padStart(2, '0');
-  document.getElementById('win-level-name')!.textContent = gs.currentLevel!.displayName;
+  document.getElementById('win-level-name')!.textContent = firstKill
+    ? `「${firstKill} · ${firstKillSub}」首次討伐！`
+    : gs.currentLevel!.displayName;
   document.getElementById('win-time')!.textContent = `${mins}:${secs}`;
 
   // Check for session summary (round 10 complete)
@@ -1018,6 +1030,7 @@ export function toggleContinuousFill(): void {
 
 export function setContinuousDigit(num: number): void {
   if (gs.continuousFillDigit === null) return; // not in continuous mode
+  if (isDigitCompletedOnBoard(num)) return;
   gs.continuousFillDigit = num;
   updateContinuousFillUI();
   // Highlight all matching cells on the board immediately

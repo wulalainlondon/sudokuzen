@@ -397,8 +397,8 @@ function failGauntlet(): void {
 export function onWildComplete(
   seconds: number,
   errors: number,
-): { expGained: number; leveledUp: boolean; newLevel: number } {
-  if (!_encounter || !_active) return { expGained: 0, leveledUp: false, newLevel: 1 };
+): { expGained: number; leveledUp: boolean; newLevel: number; firstKill: string | null; firstKillSub: string | null } {
+  if (!_encounter || !_active) return { expGained: 0, leveledUp: false, newLevel: 1, firstKill: null, firstKillSub: null };
 
   // Handle gauntlet advancement
   if (isGauntletActive()) {
@@ -433,7 +433,7 @@ export function onWildComplete(
       _active = false;
       resetWildGsFields();
 
-      return result;
+      return { ...result, firstKill: null, firstKillSub: null };
     }
 
     // Not final — advance to next (async, but we still return a partial result)
@@ -456,7 +456,7 @@ export function onWildComplete(
     launchGauntletNext(profile);
 
     // Return 0 exp (not finished yet) — the win celebration should show gauntlet progress
-    return { expGained: 0, leveledUp: false, newLevel: profile.iqLevel };
+    return { expGained: 0, leveledUp: false, newLevel: profile.iqLevel, firstKill: null, firstKillSub: null };
   }
 
   const profile = getWildProfile();
@@ -470,6 +470,7 @@ export function onWildComplete(
 
   // Update bestiary
   const entry = profile.bestiary[_encounter.technique];
+  const isFirstKill = entry ? entry.kills === 0 : false;
   if (entry) {
     entry.kills++;
     if (entry.bestTime === null || seconds < entry.bestTime) {
@@ -524,7 +525,7 @@ export function onWildComplete(
     // Don't clear session yet — win celebration will read it for summary
     _active = false;
     resetWildGsFields();
-    return { expGained, leveledUp: result.leveledUp, newLevel: result.newLevel };
+    return { expGained, leveledUp: result.leveledUp, newLevel: result.newLevel, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null };
   }
 
   _active = false;
@@ -546,7 +547,7 @@ export function onWildComplete(
     await triggerFinaleIfNeeded(conqueredCount >= totalTechs);
   }, 2000);
 
-  return result;
+  return { ...result, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null };
 }
 
 async function launchGauntletNext(profile: WildProfile): Promise<void> {
