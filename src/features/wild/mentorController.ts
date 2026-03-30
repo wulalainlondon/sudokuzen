@@ -119,7 +119,7 @@ export function triggerContinuousFillHint(): void {
   // Show mentor hint after a brief delay (let player see the board first)
   setTimeout(async () => {
     const { showFeedback } = await import('../../ui/feedback');
-    showFeedback('提示：長按數字鍵可開啟連續填入', 'success');
+    showFeedback('提示：開啟後可直接點擊空格填入選取中的數字', 'success');
   }, 1500);
 }
 
