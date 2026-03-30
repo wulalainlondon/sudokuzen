@@ -121,7 +121,8 @@ export function getRealmUnlockState(): {
     const tierLevels = levels.filter((l) => l.difficultyName === name && !l.hidden);
     const cleared = tierLevels.filter((l) => records[l.id]).length;
     const total = tierLevels.length;
-    return { name, cleared, total, isCleared: total > 0 && cleared >= total };
+    const UNLOCK_THRESHOLD = 3;
+    return { name, cleared, total, isCleared: total > 0 && cleared >= Math.min(UNLOCK_THRESHOLD, total) };
   });
 
   let highestConsecutiveCleared = -1;
@@ -141,7 +142,8 @@ export function getTierUnlockMessage(tierName: string, unlockState?: ReturnType<
   const idx = state.tiers.indexOf(tierName);
   if (idx <= 0) return '境界尚未達成，暫時無法挑戰。';
   const prev = state.stats[idx - 1];
-  return `需先全通「${prev.name}」(${prev.cleared}/${prev.total}) 才能挑戰後續境界`;
+  const needed = Math.min(3, prev.total);
+  return `需先全通「${prev.name}」(${prev.cleared}/${needed}) 才能挑戰後續境界`;
 }
 
 export function canAccessLevel(level: any, unlockState?: ReturnType<typeof getRealmUnlockState>): boolean {
@@ -190,7 +192,7 @@ export function renderStageMap(): void {
       <div class="stage-dot">${isLocked ? '🔒' : isCleared ? '✓' : ''}</div>
       <div class="stage-info">
         <div class="stage-name">${tierName}</div>
-        <div class="stage-progress">${isLocked ? lockHint : cleared === 0 ? '尚未挑戰' : isCleared ? '已全通' : '進行中'}</div>
+        <div class="stage-progress">${isLocked ? lockHint : cleared === 0 ? '尚未挑戰' : isCleared ? '已解鎖' : '進行中'}</div>
       </div>
       <div class="stage-bar-wrap"><div class="stage-bar-fill" style="width:${pct}%"></div></div>
       <div class="stage-count">${cleared}/${total}</div>
