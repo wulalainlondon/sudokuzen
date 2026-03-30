@@ -246,7 +246,9 @@ export function renderWildLobby(): void {
   if (enterTextEl) enterTextEl.textContent = sessionSummary.enterText;
   if (enterSubEl) enterSubEl.textContent = sessionSummary.enterSub;
 
-  // Auto-cast toggle
+  // Auto-cast toggle (hidden in newbie zone)
+  const autocastRow = document.querySelector('.wild-autocast-row') as HTMLElement | null;
+  if (autocastRow) autocastRow.style.display = profile.iqLevel >= 21 ? '' : 'none';
   const toggleBtn = document.getElementById('wild-autocast-toggle');
   const hintEl = document.getElementById('wild-autocast-hint');
   if (toggleBtn) {
