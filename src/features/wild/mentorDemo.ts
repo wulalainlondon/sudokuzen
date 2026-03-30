@@ -287,23 +287,65 @@ export async function runMentorDemo(): Promise<void> {
 
   await wait(600);
 
-  // ── Phase 0: 領域展開 ──
+  // ── Phase 0: 領域展開 (same animation as real fillAllCandidates) ──
   techLabel.textContent = '領域展開';
   techLabel.style.color = TECH_COLORS['領域展開']!;
 
   const solverGrid = initGrid(DEMO_PUZZLE);
+  // Fill candidate data first
   for (let i = 0; i < 81; i++) {
     if (gs.cellsData[i].value !== 0) continue;
     gs.cellsData[i].notes = [...solverGrid[i].cands].sort();
-    const cellEl = gs.gridEl?.children[i] as HTMLElement | undefined;
-    if (cellEl) {
-      updateCellDisplay(cellEl, gs.cellsData[i]);
-      cellEl.classList.add('demo-fill-flash');
-      setTimeout(() => cellEl.classList.remove('demo-fill-flash'), 250);
-    }
-    if (i % 6 === 0) await wait(15);
   }
-  await wait(800);
+
+  // Ripple SVG from center (same as real fillAllCandidates)
+  if (gs.gridEl) {
+    gs.gridEl.style.position = 'relative';
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:5;overflow:visible';
+    const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    ring.setAttribute('cx', '50');
+    ring.setAttribute('cy', '50');
+    ring.setAttribute('r', '2');
+    ring.setAttribute('fill', 'none');
+    ring.setAttribute('stroke', 'var(--accent-strong)');
+    ring.setAttribute('stroke-width', '1');
+    ring.style.animation = 'skill-ripple-expand 1s ease-out forwards';
+    svg.appendChild(ring);
+    gs.gridEl.appendChild(svg);
+
+    await wait(250);
+
+    // Reveal cells by distance from center (same order as real)
+    const cellOrder = Array.from({ length: 81 }, (_, i) => {
+      const row = Math.floor(i / 9), col = i % 9;
+      const dist = Math.sqrt((row - 4) ** 2 + (col - 4) ** 2);
+      return { i, dist };
+    }).sort((a, b) => a.dist - b.dist);
+
+    const TOTAL_REVEAL = 600;
+    const maxDist = cellOrder[cellOrder.length - 1].dist;
+
+    for (const { i, dist } of cellOrder) {
+      if (gs.cellsData[i].value !== 0 || gs.cellsData[i].notes.length === 0) continue;
+      const delay = (dist / maxDist) * TOTAL_REVEAL;
+      setTimeout(() => {
+        const cellEl = gs.gridEl?.children[i] as HTMLElement | undefined;
+        if (cellEl) {
+          updateCellDisplay(cellEl, gs.cellsData[i]);
+          cellEl.classList.add('candidate-reveal');
+          setTimeout(() => cellEl.classList.remove('candidate-reveal'), 300);
+        }
+      }, delay);
+    }
+
+    await wait(TOTAL_REVEAL + 300);
+    svg.remove();
+  }
+
+  await wait(400);
   techLabel.textContent = '';
 
   // ── Generate REAL steps ──
@@ -507,11 +549,22 @@ export async function runMentorDemo(): Promise<void> {
   techLabel.textContent = '天劫';
   techLabel.style.color = TECH_COLORS['天劫']!;
 
-  // Highlight all remaining empty cells with red pulse
-  const emptyCells: number[] = [];
-  for (let i = 0; i < 81; i++) if (gs.cellsData[i].value === 0) emptyCells.push(i);
+  // Find cells that still have candidates — these are the REAL stuck cells
+  // Only highlight cells with multiple candidates (the bottleneck pattern)
+  // Cells with 0 or 1 candidate are just waiting for the bottleneck to resolve
+  const stuckCells: number[] = [];
+  const waitingCells: number[] = [];
+  for (let i = 0; i < 81; i++) {
+    if (gs.cellsData[i].value !== 0) continue;
+    if (gs.cellsData[i].notes.length >= 2) {
+      stuckCells.push(i);  // These form the exocet bottleneck
+    } else {
+      waitingCells.push(i);  // These are waiting for the bottleneck to clear
+    }
+  }
 
-  for (const idx of emptyCells) {
+  // Red pulse only on the actual bottleneck cells
+  for (const idx of stuckCells) {
     const el = gs.gridEl?.children[idx] as HTMLElement;
     if (el) el.classList.add('demo-exocet-pulse');
   }
@@ -526,7 +579,7 @@ export async function runMentorDemo(): Promise<void> {
   await wait(2500);
 
   // Clean up pulse
-  for (const idx of emptyCells) {
+  for (const idx of stuckCells) {
     const el = gs.gridEl?.children[idx] as HTMLElement;
     if (el) el.classList.remove('demo-exocet-pulse');
   }
