@@ -2395,6 +2395,10 @@ header h1 {
     transition: opacity 1s, filter 1s;
 }
 
+.game-container.demo-backdrop {
+    background: #0a0a0f !important;
+}
+
 /* ===== Mentor Overlay (弈塵) ===== */
 
 #mentor-overlay {

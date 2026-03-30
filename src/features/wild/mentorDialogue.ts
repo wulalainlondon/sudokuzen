@@ -24,7 +24,7 @@ export const MENTOR_INTRO: MentorLine[] = [
 export const MENTOR_POST_DEMO: MentorLine[] = [
   {
     key: 'post_demo_1',
-    text: '六十二步，彈指之間。\n最後四步，三天三夜。\n\n那東西叫天劫。\n四十種邏輯之中，最深的一種。\n\n我沒能走過去。',
+    text: '封鎖、藏雙、隱流……\n每一道牆我都翻過去了。\n\n最後那三步，叫天劫。\n我看了它三天。每一條推理都把我帶回原點。\n\n我沒能走過去。',
     sub: '—— 弈塵',
   },
   {
