@@ -85,9 +85,17 @@ function sessionStreakMultiplier(wins: number): number {
   return 1.0;
 }
 
+const SESSION_LEVEL_GATE = 21; // Lv.21+ unlocks 修行輪; below is free roam
+
 export async function startWorldSession(): Promise<void> {
   const profile = getWildProfile();
-  profile.currentSession = { round: 0, wins: 0, totalExp: 0, techniques: [] };
+  if (profile.iqLevel >= SESSION_LEVEL_GATE) {
+    // 修行輪: 10-round structured session
+    profile.currentSession = { round: 0, wins: 0, totalExp: 0, techniques: [] };
+  } else {
+    // 新手村: free roam, no session structure
+    profile.currentSession = null;
+  }
   saveWildProfile(profile);
   await startWildEncounter();
 }
@@ -107,13 +115,15 @@ export async function startWildEncounter(): Promise<void> {
     saveWildProfile(profile);
   }
 
-  showFeedback(session ? `修行輪 ${session.round}/10` : '探索中...', 'success');
+  showFeedback(session ? `修行輪 ${session.round}/10` : '遭遇中...', 'success');
 
   try {
     if (session) {
       _encounter = await selectSessionEncounter(profile, session.round);
     } else {
       _encounter = await selectEncounter(profile);
+      // Free roam (新手村): force standard mode — no ironman/blind for beginners
+      _encounter.challengeMode = 'standard';
     }
   } catch (e) {
     showFeedback('題庫載入失敗，請稍後重試', 'error');

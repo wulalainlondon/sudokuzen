@@ -56,7 +56,22 @@ function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {
   enterText: string;
   enterSub: string;
 } {
+  const SESSION_LEVEL_GATE = 21;
+  const canSession = profile.iqLevel >= SESSION_LEVEL_GATE;
   const session = profile.currentSession;
+
+  if (!canSession) {
+    // 新手村: free roam
+    return {
+      roundText: '自由探索',
+      fillPct: 0,
+      metaText: `Lv.${SESSION_LEVEL_GATE} 解鎖修行輪`,
+      techText: `已遭遇 ${Object.keys(profile.bestiary).length} 種技巧`,
+      enterText: '進入世界',
+      enterSub: '隨機遭遇 · 基礎修煉',
+    };
+  }
+
   if (!session || session.round <= 0) {
     return {
       roundText: '新修行輪',
