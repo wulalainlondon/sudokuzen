@@ -24,24 +24,33 @@ declare global {
 }
 
 export function bootstrapApp(): void {
-  runStorageMigrations([createTeachSelectionMigration(), createLegacySaveSanitizationMigration()]);
+  try {
+    runStorageMigrations([createTeachSelectionMigration(), createLegacySaveSanitizationMigration()]);
 
-  window.__pwaRuntime = {
-    enforceAppVersion,
-    registerServiceWorkerUpdateFlow,
-  };
+    window.__pwaRuntime = {
+      enforceAppVersion,
+      registerServiceWorkerUpdateFlow,
+    };
 
-  bootLegacyRuntime(APP_VERSION);
-  if (gs.firebaseReady) {
-    // IMPORTANT: hydrate MUST complete before bridge activates.
-    // Otherwise the bridge pushes empty localStorage to cloud,
-    // overwriting the remote profile.
-    hydratePlayerProfileFromCloud().finally(() => {
-      installPlayerCloudSyncBridge();
-    });
+    bootLegacyRuntime(APP_VERSION);
+    if (gs.firebaseReady) {
+      // IMPORTANT: hydrate MUST complete before bridge activates.
+      // Otherwise the bridge pushes empty localStorage to cloud,
+      // overwriting the remote profile.
+      hydratePlayerProfileFromCloud().finally(() => {
+        installPlayerCloudSyncBridge();
+      });
+    }
+    mountReactStrangler();
+    installLegacyTeachBridge();
+  } catch (e: any) {
+    // Show error on screen for debugging on devices without console access
+    const msg = e?.message || String(e);
+    const stack = e?.stack || '';
+    document.body.insertAdjacentHTML('afterbegin',
+      `<pre style="position:fixed;top:0;left:0;right:0;z-index:9999;background:red;color:white;padding:12px;font-size:11px;max-height:40vh;overflow:auto;">BOOT ERROR: ${msg}\n${stack}</pre>`);
+    console.error('bootstrapApp fatal:', e);
   }
-  mountReactStrangler();
-  installLegacyTeachBridge();
 
   // Expose test hooks in dev mode for E2E (Playwright)
   if (import.meta.env.DEV) {

@@ -102,7 +102,7 @@
                     </button>
                 </div>
                 <!-- Enter Button -->
-                <button class="wild-enter-btn" id="wild-enter-btn" onclick="startPoolRandom()">
+                <button class="wild-enter-btn" id="wild-enter-btn">
                     <span class="wild-enter-chip" id="wild-enter-chip">穩定遭遇池</span>
                     <span class="wild-enter-text">進入世界</span>
                     <span class="wild-enter-sub" id="wild-enter-sub">隨機遭遇 · 技巧修煉</span>
@@ -435,7 +435,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.03.30-V14';
+        var INLINE_VER = '2026.03.30-V15';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);
