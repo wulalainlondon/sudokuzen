@@ -132,6 +132,12 @@ function ensureWildFilterBindings(): void {
 
 // ── Study skill (fragment system) ────────────────────────────────────
 
+// Technique key → teach star ID mapping
+const TECH_TO_STAR: Record<string, number> = {
+  naked_single: 1, hidden_single: 2, locked_candidates: 3,
+  naked_pair: 4, hidden_pair: 5, naked_triple: 6, hidden_triple: 7,
+};
+
 async function studySkill(techKey: string): Promise<void> {
   const profile = loadWildProfile();
   if (!profile.studiedSkills) profile.studiedSkills = [];
@@ -139,6 +145,16 @@ async function studySkill(techKey: string): Promise<void> {
 
   const meta = TECHNIQUE_TABLE.find(t => t.key === techKey);
   if (!meta) return;
+
+  const starId = TECH_TO_STAR[techKey];
+  if (starId) {
+    // Open teach module — player must read the lesson
+    const { openTeachFromLibrary } = await import('../teach-legacy');
+    openTeachFromLibrary(starId);
+
+    // Wait for teach modal to close, then mark as studied
+    await waitForTeachClose();
+  }
 
   // Mark as studied
   profile.studiedSkills.push(techKey);
@@ -163,6 +179,22 @@ async function studySkill(techKey: string): Promise<void> {
   }
 
   renderWildLobby();
+}
+
+/** Wait for the teach modal to be closed by the player. */
+function waitForTeachClose(): Promise<void> {
+  return new Promise(resolve => {
+    const check = setInterval(() => {
+      const modal = document.getElementById('teach-modal');
+      // Modal is closed when display is none or it doesn't exist
+      if (!modal || modal.style.display === 'none' || modal.classList.contains('hidden')) {
+        clearInterval(check);
+        resolve();
+      }
+    }, 300);
+    // Safety timeout: resolve after 60s even if modal never closes
+    setTimeout(() => { clearInterval(check); resolve(); }, 60000);
+  });
 }
 
 // ── Render lobby ─────────────────────────────────────────────────────
@@ -378,6 +410,7 @@ function setWorldViewActive(active: boolean): void {
   const stageView = document.getElementById('stage-view');
   const tierView = document.getElementById('tier-view');
   const lobby = document.getElementById('wild-lobby');
+  const libraryBtn = document.getElementById('library-btn');
   if (levelScreen) levelScreen.classList.toggle('world-view-active', active);
   if (levelTitle) levelTitle.textContent = active ? 'WORLD REALM' : 'SUDOKU ZEN';
   if (levelModeChip) levelModeChip.classList.toggle('hidden', !active);
@@ -385,6 +418,8 @@ function setWorldViewActive(active: boolean): void {
   if (stageView) stageView.style.display = active ? 'none' : 'flex';
   if (tierView) tierView.classList.toggle('hidden', true);
   if (lobby) lobby.classList.toggle('hidden', !active);
+  // Hide library button in world view — teach is accessed via bestiary study
+  if (libraryBtn) libraryBtn.style.display = active ? 'none' : '';
 }
 
 export function openWildLobby(): void {
