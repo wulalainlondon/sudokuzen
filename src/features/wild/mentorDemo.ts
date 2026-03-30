@@ -311,40 +311,61 @@ export async function runMentorDemo(): Promise<void> {
   const singlesSteps = allSteps.filter(s => s.technique === 'naked_single' || s.technique === 'hidden_single');
   const midSteps = allSteps.filter(s => s.technique !== 'naked_single' && s.technique !== 'hidden_single');
 
-  // ── Phase 1: Singles blitz ──
+  // ── Helper: apply eliminations to cellsData + DOM ──
+  function applyEliminations(elims: Elim[]): void {
+    for (const e of elims) {
+      const notes = gs.cellsData[e.cellIdx].notes;
+      const ni = notes.indexOf(e.digit);
+      if (ni >= 0) notes.splice(ni, 1);
+    }
+  }
+
+  function applyFills(fills: { cellIdx: number; digit: number }[]): void {
+    for (const f of fills) {
+      gs.cellsData[f.cellIdx].value = f.digit;
+      gs.cellsData[f.cellIdx].notes = [];
+      filled++;
+    }
+  }
+
+  function refreshCells(indices: Iterable<number>): void {
+    for (const idx of indices) {
+      const el = gs.gridEl?.children[idx] as HTMLElement | undefined;
+      if (el) updateCellDisplay(el, gs.cellsData[idx]);
+    }
+  }
+
+  function cleanupSkillClasses(): void {
+    if (!gs.gridEl) return;
+    const cls = ['skill-source-pulse', 'skill-strike', 'skill-strike-inward',
+      'skill-pair-bond', 'skill-purify-pulse', 'skill-quickcast-flash'];
+    Array.from(gs.gridEl.children).forEach(c => { for (const cl of cls) c.classList.remove(cl); });
+    gs.gridEl.querySelectorAll('.skill-noise-digit, .skill-elim-digit, .skill-reveal-digit, .skill-lock-digit-ring').forEach(el => {
+      el.classList.remove('skill-noise-digit', 'skill-elim-digit', 'skill-reveal-digit', 'skill-lock-digit-ring');
+    });
+  }
+
+  // ── Phase 1: Singles blitz (uses quickcast flash — same as real 明眼/暗眼) ──
   for (let i = 0; i < singlesSteps.length; i++) {
     const step = singlesSteps[i];
     techLabel.textContent = step.label;
     techLabel.style.color = TECH_COLORS[step.label] ?? '#fff';
 
-    // Eliminate candidates
-    for (const e of step.eliminations) {
-      const notes = gs.cellsData[e.cellIdx].notes;
-      const ni = notes.indexOf(e.digit);
-      if (ni >= 0) notes.splice(ni, 1);
-    }
+    applyEliminations(step.eliminations);
+    applyFills(step.fills);
 
-    // Fill
+    // Flash fill cell (same class as real quick cast)
     for (const f of step.fills) {
-      gs.cellsData[f.cellIdx].value = f.digit;
-      gs.cellsData[f.cellIdx].notes = [];
-      filled++;
       const cellEl = gs.gridEl?.children[f.cellIdx] as HTMLElement | undefined;
       if (cellEl) {
         updateCellDisplay(cellEl, gs.cellsData[f.cellIdx]);
-        cellEl.classList.add('demo-fill-flash');
-        setTimeout(() => cellEl.classList.remove('demo-fill-flash'), 200);
+        cellEl.classList.add('skill-quickcast-flash');
+        setTimeout(() => cellEl.classList.remove('skill-quickcast-flash'), 250);
       }
     }
 
-    // Update peer displays
-    const updated = new Set(step.eliminations.map(e => e.cellIdx));
-    for (const idx of updated) {
-      if (gs.cellsData[idx].value === 0) {
-        const el = gs.gridEl?.children[idx] as HTMLElement | undefined;
-        if (el) updateCellDisplay(el, gs.cellsData[idx]);
-      }
-    }
+    // Update peers
+    refreshCells(new Set(step.eliminations.map(e => e.cellIdx).filter(idx => gs.cellsData[idx].value === 0)));
 
     counter.textContent = `${filled}/81`;
     if (i % 3 === 0) await wait(40);
@@ -353,74 +374,92 @@ export async function runMentorDemo(): Promise<void> {
   await wait(500);
   techLabel.textContent = '';
 
-  // ── Phase 2: Mid-tier techniques — show real eliminations ──
+  // ── Phase 2: Mid-tier techniques (uses REAL cast animation classes) ──
   for (const step of midSteps) {
     techLabel.textContent = step.label;
     techLabel.style.color = TECH_COLORS[step.label] ?? '#fff';
 
-    // Highlight source cells
+    const isInward = step.technique === 'hidden_pair' || step.technique === 'hidden_triple';
+
+    // Phase A: Source cells pulse (skill-source-pulse / skill-pair-bond)
+    const sourceClass = isInward ? 'skill-pair-bond' : 'skill-source-pulse';
     for (const idx of step.sourceCells) {
       const el = gs.gridEl?.children[idx] as HTMLElement;
-      if (el) el.classList.add('demo-skill-pulse');
+      if (el) el.classList.add(sourceClass);
     }
     await wait(350);
 
-    // Mark elimination targets (amber warning)
-    for (const e of step.eliminations) {
-      const cellEl = gs.gridEl?.children[e.cellIdx] as HTMLElement | undefined;
-      if (cellEl) {
-        const span = findNoteSpan(cellEl, e.digit);
-        if (span) span.classList.add('skill-noise-digit');
+    // Phase B: Mark targets
+    if (isInward) {
+      // Hidden pair/triple: reveal kept digits, then mark noise
+      // (noise = the candidates being eliminated)
+      for (const e of step.eliminations) {
+        const cellEl = gs.gridEl?.children[e.cellIdx] as HTMLElement | undefined;
+        if (cellEl) {
+          const span = findNoteSpan(cellEl, e.digit);
+          if (span) span.classList.add('skill-noise-digit');
+        }
+      }
+    } else {
+      // Outward (locked candidates): mark targets on peer cells
+      for (const e of step.eliminations) {
+        const cellEl = gs.gridEl?.children[e.cellIdx] as HTMLElement | undefined;
+        if (cellEl) {
+          const span = findNoteSpan(cellEl, e.digit);
+          if (span) span.classList.add('skill-noise-digit');
+        }
       }
     }
     await wait(300);
 
-    // Strike: eliminate
-    for (const e of step.eliminations) {
+    // Phase C: Strike — staggered elimination (same as real cast)
+    const strikeClass = isInward ? 'skill-strike-inward' : 'skill-strike';
+    for (let j = 0; j < step.eliminations.length; j++) {
+      const e = step.eliminations[j];
       const cellEl = gs.gridEl?.children[e.cellIdx] as HTMLElement | undefined;
       if (cellEl) {
+        cellEl.classList.add(strikeClass);
         const span = findNoteSpan(cellEl, e.digit);
         if (span) { span.classList.remove('skill-noise-digit'); span.classList.add('skill-elim-digit'); }
       }
-      const notes = gs.cellsData[e.cellIdx].notes;
-      const ni = notes.indexOf(e.digit);
-      if (ni >= 0) notes.splice(ni, 1);
+      if (j < step.eliminations.length - 1) await wait(80);
     }
-    await wait(250);
 
-    // Update cell displays
-    const affectedCells = new Set([...step.eliminations.map(e => e.cellIdx), ...step.sourceCells]);
-    for (const idx of affectedCells) {
-      if (gs.cellsData[idx].value === 0) {
-        const el = gs.gridEl?.children[idx] as HTMLElement | undefined;
-        if (el) updateCellDisplay(el, gs.cellsData[idx]);
+    // Apply data changes
+    applyEliminations(step.eliminations);
+    applyFills(step.fills);
+
+    await wait(400);
+
+    // Phase D: Purify pulse for inward techniques
+    if (isInward) {
+      for (const idx of step.sourceCells) {
+        const el = gs.gridEl?.children[idx] as HTMLElement;
+        if (el) el.classList.add('skill-purify-pulse');
       }
+      await wait(300);
     }
 
-    // Fill cells from this step
+    // Update displays
+    const affected = new Set([...step.eliminations.map(e => e.cellIdx), ...step.sourceCells, ...step.fills.map(f => f.cellIdx)]);
+    refreshCells(affected);
+
+    // Fill animation for filled cells
     for (const f of step.fills) {
-      gs.cellsData[f.cellIdx].value = f.digit;
-      gs.cellsData[f.cellIdx].notes = [];
-      filled++;
       const el = gs.gridEl?.children[f.cellIdx] as HTMLElement | undefined;
       if (el) {
-        updateCellDisplay(el, gs.cellsData[f.cellIdx]);
-        el.classList.add('demo-fill-flash');
-        setTimeout(() => el.classList.remove('demo-fill-flash'), 400);
+        el.classList.add('skill-quickcast-flash');
+        setTimeout(() => el.classList.remove('skill-quickcast-flash'), 300);
       }
     }
 
-    // Clean source pulse
-    for (const idx of step.sourceCells) {
-      const el = gs.gridEl?.children[idx] as HTMLElement;
-      if (el) el.classList.remove('demo-skill-pulse');
-    }
+    // Cleanup skill classes
+    await wait(250);
+    cleanupSkillClasses();
 
     counter.textContent = `${filled}/81`;
-    await wait(600);
 
-    // After each mid-tier, re-run singles that got unlocked
-    // (candidates already updated, so check for new naked singles)
+    // After each mid-tier, singles sweep (same quickcast animation)
     let sweepFilled = true;
     while (sweepFilled) {
       sweepFilled = false;
@@ -432,7 +471,6 @@ export async function runMentorDemo(): Promise<void> {
           gs.cellsData[i].notes = [];
           filled++;
           sweepFilled = true;
-          // Remove from peers
           for (const p of getPeers(i)) {
             const pn = gs.cellsData[p].notes;
             const pi = pn.indexOf(d);
@@ -441,12 +479,11 @@ export async function runMentorDemo(): Promise<void> {
           const el = gs.gridEl?.children[i] as HTMLElement | undefined;
           if (el) {
             updateCellDisplay(el, gs.cellsData[i]);
-            el.classList.add('demo-fill-flash');
-            setTimeout(() => el.classList.remove('demo-fill-flash'), 200);
+            el.classList.add('skill-quickcast-flash');
+            setTimeout(() => el.classList.remove('skill-quickcast-flash'), 250);
           }
         }
       }
-      // Update all cell displays
       for (let i = 0; i < 81; i++) {
         if (gs.cellsData[i].value === 0) {
           const el = gs.gridEl?.children[i] as HTMLElement | undefined;
@@ -457,9 +494,11 @@ export async function runMentorDemo(): Promise<void> {
         techLabel.textContent = '明眼';
         techLabel.style.color = TECH_COLORS['明眼']!;
         counter.textContent = `${filled}/81`;
-        await wait(80);
+        await wait(60);
       }
     }
+
+    await wait(400);
   }
 
   await wait(700);
