@@ -22,6 +22,7 @@ export const SK = {
   REPLAY_WATCH_COUNT: 'sudoku_replay_watch_count',
   TECHNIQUES_USED: 'sudoku_techniques_used',
   SKILL_MODE: 'sudoku_skill_mode',
+  WILD_PROFILE: 'sudoku_wild_profile',
 
   /** Returns the save-game key for a given level id. */
   save(levelId: number, speedrun: boolean): string {

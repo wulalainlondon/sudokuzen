@@ -9,6 +9,12 @@ import { showFeedback } from '../ui/feedback';
 
 declare const firebase: any;
 
+// ── Module-level guard flags ─────────────────────────────────────────
+let _countdownLaunched = false;
+let _duoFinishSubmitted = false;
+let _snapshotRetryCount = 0;
+const MAX_SNAPSHOT_RETRIES = 3;
+
 // ── Room Reference ───────────────────────────────────────────────────
 
 export function duoRoomRef() {
@@ -79,8 +85,14 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
 
 export function subscribeDuoRoom(): void {
   if (gs.duoUnsubscribe) gs.duoUnsubscribe();
+  _snapshotRetryCount = 0;
+  _attachSnapshotListener();
+}
+
+function _attachSnapshotListener(): void {
   gs.duoUnsubscribe = duoRoomRef().onSnapshot(
     (snap: any) => {
+      _snapshotRetryCount = 0; // reset on success
       if (!snap.exists) {
         resetDuoState();
         return;
@@ -90,6 +102,16 @@ export function subscribeDuoRoom(): void {
     },
     (err: any) => {
       console.warn('duo snapshot error:', err);
+      _snapshotRetryCount++;
+      if (_snapshotRetryCount <= MAX_SNAPSHOT_RETRIES) {
+        showFeedback('連線中斷，嘗試重新連接...', 'neutral');
+        setTimeout(() => {
+          _attachSnapshotListener();
+        }, 2000);
+      } else {
+        showFeedback('連線失敗', 'error');
+        resetDuoState();
+      }
     },
   );
 }
@@ -156,28 +178,37 @@ export function updateDuoPreLevelUI(d: any): void {
   zone.classList.remove('hidden');
 
   // Host slot
-  document.getElementById('duo-host-alias')!.textContent = d.hostAlias || '--';
-  const hostSlot = document.getElementById('duo-slot-host')!;
-  const hostStatus = document.getElementById('duo-host-status')!;
-  hostSlot.classList.toggle('ready', !!d.hostReady);
-  hostStatus.textContent = d.hostReady ? '已準備' : '等待中';
-  hostStatus.classList.toggle('is-ready', !!d.hostReady);
+  const hostAliasEl = document.getElementById('duo-host-alias');
+  if (hostAliasEl) hostAliasEl.textContent = d.hostAlias || '--';
+  const hostSlot = document.getElementById('duo-slot-host');
+  const hostStatus = document.getElementById('duo-host-status');
+  if (hostSlot) hostSlot.classList.toggle('ready', !!d.hostReady);
+  if (hostStatus) {
+    hostStatus.textContent = d.hostReady ? '已準備' : '等待中';
+    hostStatus.classList.toggle('is-ready', !!d.hostReady);
+  }
 
   // Guest slot
-  const guestSlot = document.getElementById('duo-slot-guest')!;
-  const guestAlias = document.getElementById('duo-guest-alias')!;
-  const guestStatus = document.getElementById('duo-guest-status')!;
+  const guestSlot = document.getElementById('duo-slot-guest');
+  const guestAlias = document.getElementById('duo-guest-alias');
+  const guestStatus = document.getElementById('duo-guest-status');
   if (d.guestId) {
-    guestSlot.classList.remove('empty');
-    guestAlias.textContent = d.guestAlias || '--';
-    guestSlot.classList.toggle('ready', !!d.guestReady);
-    guestStatus.textContent = d.guestReady ? '已準備' : '等待中';
-    guestStatus.classList.toggle('is-ready', !!d.guestReady);
+    if (guestSlot) {
+      guestSlot.classList.remove('empty');
+      guestSlot.classList.toggle('ready', !!d.guestReady);
+    }
+    if (guestAlias) guestAlias.textContent = d.guestAlias || '--';
+    if (guestStatus) {
+      guestStatus.textContent = d.guestReady ? '已準備' : '等待中';
+      guestStatus.classList.toggle('is-ready', !!d.guestReady);
+    }
   } else {
-    guestSlot.classList.add('empty');
-    guestAlias.textContent = '等待加入...';
-    guestStatus.textContent = '';
-    guestStatus.classList.remove('is-ready');
+    if (guestSlot) guestSlot.classList.add('empty');
+    if (guestAlias) guestAlias.textContent = '等待加入...';
+    if (guestStatus) {
+      guestStatus.textContent = '';
+      guestStatus.classList.remove('is-ready');
+    }
   }
 
   // Show streak if present
@@ -200,16 +231,18 @@ export function updateDuoPreLevelUI(d: any): void {
     preStreak.innerHTML = '';
   }
 
-  // Ready button state
+  // Ready button state — driven solely by snapshot data
   const myReady = gs.duoRole === 'host' ? d.hostReady : d.guestReady;
   if (d.status === 'countdown') {
-    readyBtn!.style.display = 'none';
-    countdownArea!.style.display = 'block';
+    if (readyBtn) readyBtn.style.display = 'none';
+    if (countdownArea) countdownArea.style.display = 'block';
   } else {
-    readyBtn!.style.display = d.guestId ? 'inline-block' : 'none';
-    countdownArea!.style.display = 'none';
-    readyBtn!.textContent = myReady ? '\u2713 已準備' : '準備完成';
-    readyBtn!.classList.toggle('is-ready', myReady);
+    if (readyBtn) {
+      readyBtn.style.display = d.guestId ? 'inline-block' : 'none';
+      readyBtn.textContent = myReady ? '\u2713 已準備' : '準備完成';
+      readyBtn.classList.toggle('is-ready', myReady);
+    }
+    if (countdownArea) countdownArea.style.display = 'none';
   }
 }
 
@@ -218,64 +251,75 @@ export function updateDuoPreLevelUI(d: any): void {
 export async function toggleDuoReady(): Promise<void> {
   if (!gs.firebaseReady || !gs.duoRole) return;
   const field = gs.duoRole === 'host' ? 'hostReady' : 'guestReady';
-  gs.duoMyReady = !gs.duoMyReady;
+  const newReady = !gs.duoMyReady;
 
   try {
     await gs.db.runTransaction(async (tx: any) => {
       const doc = await tx.get(duoRoomRef());
       if (!doc.exists) return;
       const d = doc.data();
-      const update: any = { [field]: gs.duoMyReady, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+      const update: any = { [field]: newReady, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
 
-      // Check if both will be ready after this update
-      const hostReady = gs.duoRole === 'host' ? gs.duoMyReady : d.hostReady;
-      const guestReady = gs.duoRole === 'guest' ? gs.duoMyReady : d.guestReady;
-      if (hostReady && guestReady && d.guestId) {
-        // Both ready! Set countdown start
-        update.status = 'countdown';
-        // startAt = now + 4 seconds (3s visible countdown + 1s buffer)
-        update.startAt = firebase.firestore.Timestamp.fromMillis(Date.now() + 4000);
+      // Only the HOST can set status='countdown' to prevent race condition
+      if (gs.duoRole === 'host') {
+        const hostReady = newReady;
+        const guestReady = d.guestReady;
+        if (hostReady && guestReady && d.guestId) {
+          update.status = 'countdown';
+          update.startAt = firebase.firestore.Timestamp.fromMillis(Date.now() + 4000);
+        }
       }
       tx.update(duoRoomRef(), update);
     });
+    // Update local state AFTER transaction succeeds
+    gs.duoMyReady = newReady;
   } catch (e) {
     console.warn('toggleDuoReady failed:', e);
-    gs.duoMyReady = !gs.duoMyReady; // revert
+    // Don't update local state — it was never changed
   }
 }
 
 // ── Countdown ────────────────────────────────────────────────────────
 
 export function startDuoCountdown(startAtTs: any): void {
-  if (gs.duoRoundLaunched) return;
+  if (gs.duoRoundLaunched || _countdownLaunched) return;
   const area = document.getElementById('duo-countdown-area');
   if (!area) return;
 
   const targetMs = startAtTs.toMillis ? startAtTs.toMillis() : startAtTs.seconds * 1000;
   if (gs.duoCountdownTimer && gs.duoCountdownStartMs === targetMs) return; // same countdown instance
   if (gs.duoCountdownTimer && gs.duoCountdownStartMs !== targetMs) {
-    clearInterval(gs.duoCountdownTimer);
+    clearTimeout(gs.duoCountdownTimer as ReturnType<typeof setTimeout>);
     gs.duoCountdownTimer = null;
   }
   gs.duoCountdownStartMs = targetMs;
-  let lastShown: number | null = null;
+  _countdownLaunched = true;
 
-  gs.duoCountdownTimer = setInterval(() => {
-    const remaining = Math.ceil((targetMs - Date.now()) / 1000);
+  // Animate countdown UI using requestAnimationFrame
+  let lastShown: number | null = null;
+  function updateCountdownUI() {
+    const remaining = Math.max(0, Math.ceil((targetMs - Date.now()) / 1000));
     if (remaining > 0) {
       if (remaining !== lastShown) {
-        area.innerHTML = `<div class="duo-countdown-display">${remaining}</div>`;
+        area!.innerHTML = `<div class="duo-countdown-display">${remaining}</div>`;
         lastShown = remaining;
       }
-    } else {
-      clearInterval(gs.duoCountdownTimer!);
-      gs.duoCountdownTimer = null;
-      if (gs.duoRoundLaunched) return;
-      gs.duoRoundLaunched = true;
-      area.innerHTML = `<div class="duo-countdown-display">GO!</div>`;
-      setTimeout(() => launchDuoGame(), 300);
+      requestAnimationFrame(updateCountdownUI);
     }
-  }, 100);
+    // When remaining hits 0, the setTimeout below handles launch
+  }
+  updateCountdownUI();
+
+  // Launch at exact server-defined target time
+  const now = Date.now();
+  const delay = Math.max(0, targetMs - now);
+  gs.duoCountdownTimer = setTimeout(() => {
+    gs.duoCountdownTimer = null;
+    if (gs.duoRoundLaunched) return;
+    gs.duoRoundLaunched = true;
+    area!.innerHTML = `<div class="duo-countdown-display">GO!</div>`;
+    setTimeout(() => launchDuoGame(), 300);
+  }, delay) as unknown as ReturnType<typeof setInterval>;
 }
 
 // ── Launch Game ──────────────────────────────────────────────────────
@@ -285,6 +329,8 @@ export async function launchDuoGame(): Promise<void> {
   gs.isDuoMode = true;
   // Reset continuous fill mode for fair play
   gs.continuousFillDigit = null;
+  // Reset progress throttle so first progress update is immediate
+  gs.duoProgressThrottle = 0;
 
   // Calculate total cells to fill
   const { getAllLevels } = await import('../data/dataRegistry');
@@ -297,26 +343,40 @@ export async function launchDuoGame(): Promise<void> {
   // Hide pre-level modal, start game
   const { hidePreLevelModal } = await import('../features/levels');
   hidePreLevelModal();
-  document.getElementById('level-screen')!.style.display = 'none';
+  const levelScreen = document.getElementById('level-screen');
+  if (levelScreen) levelScreen.style.display = 'none';
   const { initGame } = await import('../game/core');
   initGame(gs.duoRoomData.levelId, true, false, null);
 
   // Show duo progress bar and emoji bar
-  document.getElementById('duo-progress-container')!.style.display = 'flex';
-  document.getElementById('duo-emoji-bar')!.style.display = 'flex';
+  const progressContainer = document.getElementById('duo-progress-container');
+  if (progressContainer) progressContainer.style.display = 'flex';
+  const emojiBar = document.getElementById('duo-emoji-bar');
+  if (emojiBar) emojiBar.style.display = 'flex';
 
-  // Update room status to playing
+  // Both host and guest update status to 'playing' via merge write
+  // Whoever writes first wins; second write is a no-op (same value)
+  const statusUpdate: any = {
+    status: 'playing',
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
   if (gs.duoRole === 'host') {
-    duoRoomRef()
-      .update({
-        status: 'playing',
-        hostProgress: 0,
-        guestProgress: 0,
-        hostFinishTime: null,
-        guestFinishTime: null,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      })
-      .catch(() => {});
+    statusUpdate.hostProgress = 0;
+    statusUpdate.guestProgress = 0;
+    statusUpdate.hostFinishTime = null;
+    statusUpdate.guestFinishTime = null;
+  }
+
+  try {
+    await duoRoomRef().set(statusUpdate, { merge: true });
+  } catch (e) {
+    console.warn('launchDuoGame status update failed, retrying:', e);
+    try {
+      await duoRoomRef().set(statusUpdate, { merge: true });
+    } catch (e2) {
+      console.error('launchDuoGame status update retry failed:', e2);
+      showFeedback('連線異常，請重試', 'error');
+    }
   }
 }
 
@@ -360,6 +420,8 @@ export function showDuoOpponentFinished(alias: string, timeSec: number, stars: n
 
 export async function submitDuoFinish(timeSec: number, stars: number): Promise<void> {
   if (!gs.isDuoMode || !gs.firebaseReady) return;
+  if (_duoFinishSubmitted) return;
+  _duoFinishSubmitted = true;
   const timeField = gs.duoRole === 'host' ? 'hostFinishTime' : 'guestFinishTime';
   const starsField = gs.duoRole === 'host' ? 'hostStars' : 'guestStars';
   const progressField = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
@@ -409,9 +471,9 @@ export function showDuoResult(d: any): void {
 
   // Streak badge
   if (rec.streak >= 2 && rec.streakHolder) {
-    streakEl!.innerHTML = `<div class="duo-streak-badge">\u{1F525} ${rec.streakHolder} 連勝 ${rec.streak} 場！</div>`;
+    if (streakEl) streakEl.innerHTML = `<div class="duo-streak-badge">\u{1F525} ${rec.streakHolder} 連勝 ${rec.streak} 場！</div>`;
   } else {
-    streakEl!.innerHTML = '';
+    if (streakEl) streakEl.innerHTML = '';
   }
 
   function makeCard(alias: string, time: number, stars: number | null, isWinner: boolean): string {
@@ -427,26 +489,29 @@ export function showDuoResult(d: any): void {
     makeCard(d.hostAlias, hTime, d.hostStars, hWin) + makeCard(d.guestAlias, gTime, d.guestStars, gWin);
 
   if (isDraw) {
-    diffEl!.textContent = '平手！心有靈犀 \u{1F495}';
+    if (diffEl) diffEl.textContent = '平手！心有靈犀 \u{1F495}';
   } else {
     const winnerAlias = hWin ? d.hostAlias : d.guestAlias;
-    diffEl!.textContent = `${winnerAlias} 快了 ${formatSeconds(diff)}`;
+    if (diffEl) diffEl.textContent = `${winnerAlias} 快了 ${formatSeconds(diff)}`;
   }
 
   // Lifetime record
   const wins = rec.wins || {};
   const names = Object.keys(wins);
-  if (names.length >= 2) {
-    const sorted = names.sort((a: string, b: string) => wins[b] - wins[a]);
-    recordEl!.innerHTML = `歷史戰績：<span>${sorted[0]} ${wins[sorted[0]]}</span> 勝 — <span>${sorted[1]} ${wins[sorted[1]]}</span> 勝`;
-  } else if (names.length === 1) {
-    recordEl!.innerHTML = `歷史戰績：<span>${names[0]} ${wins[names[0]]}</span> 勝`;
-  } else {
-    recordEl!.innerHTML = '';
+  if (recordEl) {
+    if (names.length >= 2) {
+      const sorted = names.sort((a: string, b: string) => wins[b] - wins[a]);
+      recordEl.innerHTML = `歷史戰績：<span>${sorted[0]} ${wins[sorted[0]]}</span> 勝 — <span>${sorted[1]} ${wins[sorted[1]]}</span> 勝`;
+    } else if (names.length === 1) {
+      recordEl.innerHTML = `歷史戰績：<span>${names[0]} ${wins[names[0]]}</span> 勝`;
+    } else {
+      recordEl.innerHTML = '';
+    }
   }
 
   // Hide emoji bar
-  document.getElementById('duo-emoji-bar')!.style.display = 'none';
+  const emojiBarEl = document.getElementById('duo-emoji-bar');
+  if (emojiBarEl) emojiBarEl.style.display = 'none';
 
   modal.style.display = 'flex';
 }
@@ -511,7 +576,7 @@ export function handleDuoEmoji(d: any): void {
   const emoji = d[emojiField];
   const ts = d[tsField];
   if (!emoji || !ts) return;
-  const key = `${emoji}_${ts}`;
+  const key = `${ts}`;
   if (key === gs.duoLastEmojiSeen) return;
   gs.duoLastEmojiSeen = key;
   spawnEmojiFloat(emoji, false);
@@ -538,7 +603,8 @@ export function spawnEmojiFloat(emoji: string, isSelf: boolean): void {
 // ── Close / Leave / Reset ────────────────────────────────────────────
 
 export async function closeDuoResult(): Promise<void> {
-  document.getElementById('duo-result-modal')!.style.display = 'none';
+  const modal = document.getElementById('duo-result-modal');
+  if (modal) modal.style.display = 'none';
   // Mark room finished
   if (gs.firebaseReady) {
     duoRoomRef()
@@ -577,6 +643,9 @@ export async function leaveDuoRoom(): Promise<void> {
 
 export function resetDuoState(): void {
   duoResultShown = false;
+  _countdownLaunched = false;
+  _duoFinishSubmitted = false;
+  _snapshotRetryCount = 0;
   gs.duoPenaltySeconds = 0;
   gs.duoCooldownUntil = 0;
   gs.duoLastErrorCell = -1;
@@ -595,12 +664,27 @@ export function resetDuoState(): void {
   gs.duoOpponentNotified = false;
   gs.duoProgressThrottle = 0;
   if (gs.duoCountdownTimer) {
-    clearInterval(gs.duoCountdownTimer);
+    clearTimeout(gs.duoCountdownTimer as unknown as ReturnType<typeof setTimeout>);
     gs.duoCountdownTimer = null;
   }
   if (gs.duoUnsubscribe) {
     gs.duoUnsubscribe();
     gs.duoUnsubscribe = null;
+  }
+  if (gs.duoGlowUnsubscribe) {
+    gs.duoGlowUnsubscribe();
+    gs.duoGlowUnsubscribe = null;
+  }
+  // Clean up emoji fields in room document
+  if (gs.firebaseReady) {
+    duoRoomRef()
+      .update({
+        hostEmoji: null,
+        hostEmojiTs: null,
+        guestEmoji: null,
+        guestEmojiTs: null,
+      })
+      .catch(() => {});
   }
   const readyZone = document.getElementById('duo-ready-zone');
   if (readyZone) readyZone.classList.add('hidden');

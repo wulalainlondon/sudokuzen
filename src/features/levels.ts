@@ -448,6 +448,6 @@ export function updateSpeedrunToggleUI(): void {
 // ── Random / Pool (Wild mode) ────────────────────────────────────────
 
 export async function startPoolRandom(): Promise<void> {
-  const { startWildEncounter } = await import('./wild/wildController');
-  await startWildEncounter();
+  const { startWorldSession } = await import('./wild/wildController');
+  await startWorldSession();
 }

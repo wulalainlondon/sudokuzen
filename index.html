@@ -50,7 +50,52 @@
         <div id="stage-view">
             <div class="stage-map" id="stage-map"></div>
             <div class="random-bar">
-                <button class="random-btn" onclick="startPoolRandom()">今日隨機</button>
+                <button class="random-btn" onclick="openWildLobby()">世界</button>
+            </div>
+        </div>
+        <!-- Wild Mode Lobby -->
+        <div id="wild-lobby" class="hidden">
+            <div class="wild-lobby-header">
+                <button class="tier-back-btn" onclick="closeWildLobby()">← 返回</button>
+                <div class="wild-lobby-title">世界</div>
+            </div>
+            <div class="wild-lobby-body">
+                <!-- Profile Card -->
+                <div class="wild-profile-card">
+                    <div class="wild-profile-level">
+                        <span class="wild-level-badge" id="wild-level">Lv.1</span>
+                        <span class="wild-level-title" id="wild-level-title">見習修士</span>
+                    </div>
+                    <div class="wild-exp-bar-wrap">
+                        <div class="wild-exp-fill" id="wild-exp-fill"></div>
+                    </div>
+                    <div class="wild-exp-text" id="wild-exp-text">0 / 50 EXP</div>
+                    <div class="wild-profile-stats">
+                        <div class="wild-stat"><span class="wild-stat-num" id="wild-completed">0</span><span class="wild-stat-label">狩獵數</span></div>
+                        <div class="wild-stat"><span class="wild-stat-num" id="wild-discovered">0</span><span class="wild-stat-label">圖鑑</span></div>
+                        <div class="wild-stat"><span class="wild-stat-num" id="wild-encounters">0</span><span class="wild-stat-label">遭遇數</span></div>
+                    </div>
+                </div>
+                <!-- Auto-Cast Toggle -->
+                <div class="wild-autocast-row">
+                    <label class="wild-autocast-label" for="wild-autocast-toggle">
+                        <span class="wild-autocast-text">精通技巧自動施放</span>
+                        <span class="wild-autocast-hint" id="wild-autocast-hint">已精通的技巧將自動推演</span>
+                    </label>
+                    <button class="wild-toggle-btn" id="wild-autocast-toggle" onclick="toggleWildAutoCast()" role="switch" aria-checked="true">
+                        <span class="wild-toggle-knob"></span>
+                    </button>
+                </div>
+                <!-- Enter Button -->
+                <button class="wild-enter-btn" id="wild-enter-btn" onclick="startPoolRandom()">
+                    <span class="wild-enter-text">進入世界</span>
+                    <span class="wild-enter-sub">隨機遭遇 · 技巧修煉</span>
+                </button>
+                <!-- Bestiary Preview -->
+                <div class="wild-bestiary-section">
+                    <div class="wild-bestiary-title">妖獸圖鑑 <span id="wild-bestiary-count">0 / 40</span></div>
+                    <div class="wild-bestiary-grid" id="wild-bestiary-grid"></div>
+                </div>
             </div>
         </div>
         <div id="tier-view" class="hidden">
@@ -114,7 +159,7 @@
             <h2>GAME OVER</h2>
             <p>你犯了 3 次錯誤</p>
             <button class="retry-btn" onclick="resetGame()">重新開始</button>
-            <button class="back-btn" onclick="showLevelScreen(true)">返回選關</button>
+            <button class="back-btn" id="overlay-back-btn" onclick="showLevelScreen(true)">返回選關</button>
         </div>
 
         <div id="pause-screen">
@@ -139,9 +184,10 @@
                 <div class="leaderboard-title">首通榜 TOP 3</div>
                 <div class="leaderboard-list" id="win-leaderboard-list">載入中...</div>
             </div>
-            <button class="back-btn btn-replay" onclick="openReplayModal()">查看回放</button>
-            <button class="resume-btn" onclick="showLevelScreen(true)">下一關</button>
-            <button class="back-btn" class="back-btn-light"
+            <button class="back-btn btn-replay" id="win-replay-btn" onclick="openReplayModal()">查看回放</button>
+            <button class="resume-btn" id="win-next-btn" onclick="showLevelScreen(true)">下一關</button>
+            <button class="resume-btn wild-continue-btn hidden" id="wild-continue-btn" onclick="continueWild()">繼續世界</button>
+            <button class="back-btn" id="win-back-btn" class="back-btn-light"
                 onclick="showLevelScreen(true)">返回選關</button>
         </div>
 
@@ -218,6 +264,15 @@
             <button class="duo-emoji-btn" onclick="sendDuoEmoji('🔥')">🔥</button>
         </div>
         <div class="controls">
+    </div>
+
+    <!-- Mentor Message Overlay -->
+    <div id="mentor-overlay" class="hidden">
+        <div class="mentor-panel">
+            <div class="mentor-text" id="mentor-text"></div>
+            <div class="mentor-sub" id="mentor-sub"></div>
+            <button class="mentor-dismiss-btn" onclick="dismissMentor()">……</button>
+        </div>
     </div>
 
     <div id="replay-modal">
@@ -349,7 +404,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.03.30-V6';
+        var INLINE_VER = '2026.03.30-V7';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);

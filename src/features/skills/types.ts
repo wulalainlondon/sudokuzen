@@ -71,3 +71,32 @@ export function getUnitCells(unitType: 'row' | 'col' | 'box', unitIndex: number)
   }
   return cells;
 }
+
+/** Check if cell A can see cell B (same row, col, or box). */
+export function cellsSeeEachOther(a: number, b: number): boolean {
+  const rowA = Math.floor(a / 9), colA = a % 9;
+  const rowB = Math.floor(b / 9), colB = b % 9;
+  if (rowA === rowB || colA === colB) return true;
+  const boxA = Math.floor(rowA / 3) * 3 + Math.floor(colA / 3);
+  const boxB = Math.floor(rowB / 3) * 3 + Math.floor(colB / 3);
+  return boxA === boxB;
+}
+
+/** Get all peers (cells that can see this cell). */
+export function getCellPeers(idx: number): number[] {
+  const row = Math.floor(idx / 9), col = idx % 9;
+  const peers = new Set<number>();
+  for (let c = 0; c < 9; c++) peers.add(row * 9 + c);
+  for (let r = 0; r < 9; r++) peers.add(r * 9 + col);
+  const br = Math.floor(row / 3) * 3, bc = Math.floor(col / 3) * 3;
+  for (let r = br; r < br + 3; r++) for (let c = bc; c < bc + 3; c++) peers.add(r * 9 + c);
+  peers.delete(idx);
+  return [...peers];
+}
+
+/** Get common peers of multiple cells. */
+export function getCommonPeers(cells: number[]): number[] {
+  if (cells.length === 0) return [];
+  const sets = cells.map(c => new Set(getCellPeers(c)));
+  return [...sets[0]].filter(p => sets.every(s => s.has(p)));
+}

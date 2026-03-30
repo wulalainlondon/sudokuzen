@@ -57,6 +57,9 @@ import {
   openTeachFromLibrary,
   closePracticeModal,
 } from '../features/teach-legacy';
+import { openWildLobby, closeWildLobby, toggleWildAutoCast } from '../features/wild/wildLobby';
+import { continueWild, exitWild, startWorldSession } from '../features/wild/wildController';
+import { dismissMentor } from '../features/wild/mentorController';
 
 export function bootLegacyRuntime(appVersion: string): void {
   gs.appVersion = appVersion;
@@ -256,6 +259,12 @@ export function bootLegacyRuntime(appVersion: string): void {
       return;
     }
 
+    // Wild lobby → stage map
+    if (!document.getElementById('wild-lobby')?.classList.contains('hidden')) {
+      closeWildLobby();
+      return;
+    }
+
     // Tier view → stage map
     if (!document.getElementById('tier-view')?.classList.contains('hidden')) {
       backToStageMap();
@@ -310,5 +319,12 @@ export function bootLegacyRuntime(appVersion: string): void {
     openTeachFromLibrary,
     closePracticeModal,
     openReplayModal,
+    openWildLobby,
+    closeWildLobby,
+    toggleWildAutoCast,
+    continueWild,
+    exitWild,
+    startWorldSession,
+    dismissMentor,
   });
 }

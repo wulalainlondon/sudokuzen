@@ -43,13 +43,22 @@ export function renderGrid(): void {
       // Capture the previously selected cell BEFORE selectCell changes it
       const prevSelected = gs.selectedIdx;
 
-      // Start long-press timer (empty editable cell + a different cell was already selected)
+      // Start long-press timer for skill mode:
+      // - Two-cell: empty cell + different cell already selected → domain expansion
+      // - Single-cell: empty cell, no prior selection → quick cast (naked/hidden single)
       const cellData = gs.cellsData[i];
-      if (cellData && cellData.value === 0 && prevSelected !== null && prevSelected !== i) {
-        lpTimer = setTimeout(() => {
-          lpFired = true;
-          _onCellLongPress?.(i, prevSelected);
-        }, 300);
+      if (cellData && cellData.value === 0) {
+        if (prevSelected !== null && prevSelected !== i) {
+          lpTimer = setTimeout(() => {
+            lpFired = true;
+            _onCellLongPress?.(i, prevSelected);
+          }, 300);
+        } else if (prevSelected === null || prevSelected === i) {
+          lpTimer = setTimeout(() => {
+            lpFired = true;
+            _onCellLongPress?.(i, -1); // -1 signals single-cell quick cast
+          }, 300);
+        }
       }
 
       // In continuous fill mode

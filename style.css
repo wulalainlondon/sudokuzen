@@ -2061,6 +2061,123 @@ header h1 {
     100% { opacity: 0; transform: scale(0.7); text-decoration: line-through; }
 }
 
+/* ── Skill V3: Naked Pair "Twin Lock" (雙契鎖定) ── */
+
+.cell.skill-pair-bond {
+    animation: skill-pair-bond 0.4s ease-out;
+    box-shadow: inset 0 0 0 2.5px var(--accent-strong), 0 0 10px color-mix(in srgb, var(--accent-light) 35%, transparent);
+}
+
+@keyframes skill-pair-bond {
+    0%   { box-shadow: inset 0 0 0 1px var(--accent-strong); }
+    50%  { box-shadow: inset 0 0 0 4px var(--accent-strong), 0 0 14px color-mix(in srgb, var(--accent-light) 50%, transparent); }
+    100% { box-shadow: inset 0 0 0 2.5px var(--accent-strong), 0 0 10px color-mix(in srgb, var(--accent-light) 35%, transparent); }
+}
+
+.note-num.skill-lock-digit-ring {
+    color: var(--accent-strong);
+    animation: skill-lock-digit-ring 0.35s ease-out both;
+    z-index: 5;
+    position: relative;
+}
+
+@keyframes skill-lock-digit-ring {
+    0%   { transform: scale(1); opacity: 0.7; }
+    50%  { transform: scale(1.25); opacity: 1; text-shadow: 0 0 6px var(--accent-light); }
+    100% { transform: scale(1.15); opacity: 1; text-shadow: 0 0 4px color-mix(in srgb, var(--accent-light) 50%, transparent); }
+}
+
+.skill-line-bond {
+    stroke: var(--accent-strong);
+    stroke-width: 3;
+    opacity: 0;
+    animation: skill-line-bond-in 0.35s ease-out forwards;
+}
+
+@keyframes skill-line-bond-in {
+    0%   { opacity: 0; stroke-width: 1; }
+    60%  { opacity: 0.85; stroke-width: 3.5; }
+    100% { opacity: 0.7; stroke-width: 3; }
+}
+
+.skill-line-sweep {
+    stroke: color-mix(in srgb, var(--error-color, #e74c3c) 55%, transparent);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 3;
+    opacity: 0;
+    animation: skill-line-sweep-in 0.25s ease-out forwards;
+}
+
+@keyframes skill-line-sweep-in {
+    0%   { opacity: 0; }
+    100% { opacity: 0.6; }
+}
+
+/* ── Skill V3: Naked Triple "Weave" (編織) ── */
+
+.cell.skill-weave-anchor {
+    animation: skill-weave-anchor 0.3s ease-out both;
+    box-shadow: inset 0 0 0 2.5px var(--accent-strong), 0 0 8px color-mix(in srgb, var(--accent-light) 30%, transparent);
+}
+
+.cell.skill-weave-anchor-1 { animation-delay: 100ms; }
+.cell.skill-weave-anchor-2 { animation-delay: 200ms; }
+
+@keyframes skill-weave-anchor {
+    0%   { box-shadow: inset 0 0 0 0px var(--accent-strong); opacity: 0.7; }
+    60%  { box-shadow: inset 0 0 0 3.5px var(--accent-strong), 0 0 12px color-mix(in srgb, var(--accent-light) 45%, transparent); opacity: 1; }
+    100% { box-shadow: inset 0 0 0 2.5px var(--accent-strong), 0 0 8px color-mix(in srgb, var(--accent-light) 30%, transparent); opacity: 1; }
+}
+
+.skill-line-weave {
+    stroke: var(--accent-strong);
+    stroke-width: 2;
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    opacity: 0.7;
+    animation: skill-line-draw 0.3s ease-out forwards;
+}
+
+@keyframes skill-line-draw {
+    0%   { stroke-dashoffset: 200; }
+    100% { stroke-dashoffset: 0; }
+}
+
+/* ── Skill V3: Hidden Pair "Reveal" (藏雙現形) ── */
+
+.note-num.skill-reveal-digit {
+    animation: skill-reveal-digit 0.4s ease-out both;
+    z-index: 5;
+    position: relative;
+}
+
+@keyframes skill-reveal-digit {
+    0%   { opacity: 0.4; transform: scale(0.85); color: var(--note-color, #666); }
+    60%  { opacity: 1; transform: scale(1.2); color: var(--accent-strong); text-shadow: 0 0 6px var(--accent-light); }
+    100% { opacity: 1; transform: scale(1.1); color: var(--accent-strong); text-shadow: 0 0 3px color-mix(in srgb, var(--accent-light) 40%, transparent); }
+}
+
+.note-num.skill-noise-digit {
+    animation: skill-noise-mark 0.3s ease-out both;
+}
+
+@keyframes skill-noise-mark {
+    0%   { color: var(--note-color, #666); }
+    100% { color: #f39c12; opacity: 0.7; }
+}
+
+/* ── Skill V3: Purify pulse (Hidden Pair/Triple post-cleanup) ── */
+
+.cell.skill-purify-pulse {
+    animation: skill-purify-pulse 0.4s ease-out;
+}
+
+@keyframes skill-purify-pulse {
+    0%   { box-shadow: inset 0 0 0 2px var(--accent-strong); }
+    50%  { box-shadow: inset 0 0 0 3.5px #f1c40f, 0 0 12px color-mix(in srgb, #f1c40f 40%, transparent); }
+    100% { box-shadow: none; }
+}
+
 /* ── Ripple wave (fill-all + future X-Wing skills) ── */
 
 @keyframes skill-ripple-expand {
@@ -2078,6 +2195,486 @@ header h1 {
 @keyframes candidate-pop {
     0%   { opacity: 0; transform: scale(0.7); }
     100% { opacity: 1; transform: scale(1); }
+}
+
+/* ===== Wild Mode — Rarity Environment Tints ===== */
+
+.game-container.wild-common {
+    /* No visual change for common encounters */
+}
+
+.game-container.wild-rare {
+    background: linear-gradient(180deg, color-mix(in srgb, #d4af37 8%, var(--bg)) 0%, var(--bg) 40%);
+}
+
+.game-container.wild-legendary {
+    background: linear-gradient(180deg, color-mix(in srgb, #9370db 10%, var(--bg)) 0%, var(--bg) 40%);
+}
+
+.game-container.wild-mythic {
+    background: linear-gradient(180deg, color-mix(in srgb, #ff1493 8%, var(--bg)) 0%, var(--bg) 40%);
+    animation: wild-mythic-pulse 3s ease-in-out infinite;
+}
+
+@keyframes wild-mythic-pulse {
+    0%, 100% { filter: brightness(1); }
+    50%      { filter: brightness(1.03); }
+}
+
+/* ===== Mentor Demo (弈塵 power demonstration) ===== */
+
+.demo-tech-label {
+    position: fixed;
+    top: max(env(safe-area-inset-top, 0px), 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    z-index: 100;
+    pointer-events: none;
+    text-shadow: 0 0 12px currentColor;
+    transition: color 0.15s;
+}
+
+.demo-step-counter {
+    position: fixed;
+    bottom: max(env(safe-area-inset-bottom, 0px), 20px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    z-index: 100;
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+}
+
+.cell.demo-fill-flash {
+    animation: demo-fill 0.3s ease-out;
+}
+
+@keyframes demo-fill {
+    0%   { box-shadow: inset 0 0 0 2px rgba(116, 185, 255, 0.8); background: rgba(116, 185, 255, 0.15); }
+    100% { box-shadow: inset 0 0 0 0 transparent; background: transparent; }
+}
+
+.cell.demo-skill-pulse {
+    animation: demo-skill 0.4s ease;
+    z-index: 5;
+}
+
+@keyframes demo-skill {
+    0%   { box-shadow: 0 0 0 0 rgba(0, 206, 201, 0.6); }
+    50%  { box-shadow: 0 0 10px 3px rgba(0, 206, 201, 0.4); }
+    100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.cell.demo-exocet-pulse {
+    animation: demo-exocet 0.8s ease infinite;
+    z-index: 5;
+}
+
+@keyframes demo-exocet {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 50, 50, 0.3); }
+    50%      { box-shadow: 0 0 14px 4px rgba(255, 50, 50, 0.6); }
+}
+
+.sudoku-grid.demo-frozen {
+    opacity: 0.6;
+    filter: brightness(0.8);
+    transition: opacity 1s, filter 1s;
+}
+
+/* ===== Mentor Overlay (弈塵) ===== */
+
+#mentor-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    padding: 24px;
+    animation: mentor-fade-in 0.6s ease;
+}
+
+#mentor-overlay.hidden {
+    display: none;
+}
+
+@keyframes mentor-fade-in {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.mentor-panel {
+    max-width: 360px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.mentor-text {
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    text-align: center;
+    white-space: pre-line;
+    letter-spacing: 0.03em;
+}
+
+.mentor-sub {
+    color: #888;
+    font-size: 0.72rem;
+    text-align: center;
+    white-space: pre-line;
+    font-style: italic;
+}
+
+.mentor-dismiss-btn {
+    margin-top: 8px;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #aaa;
+    padding: 8px 32px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s;
+    letter-spacing: 0.15em;
+}
+
+.mentor-dismiss-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ccc;
+}
+
+/* ===== Wild Mode Lobby ===== */
+
+#wild-lobby {
+    padding: 0 16px 24px;
+}
+
+#wild-lobby.hidden {
+    display: none;
+}
+
+.wild-lobby-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0 12px;
+}
+
+.wild-lobby-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.wild-lobby-body {
+    max-width: 400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Profile Card */
+.wild-profile-card {
+    background: color-mix(in srgb, var(--btn-bg) 60%, transparent);
+    border: 1px solid color-mix(in srgb, var(--cell-border) 50%, transparent);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wild-profile-level {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.wild-level-badge {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent, #0984E3);
+    font-variant-numeric: tabular-nums;
+}
+
+.wild-level-title {
+    font-size: 0.85rem;
+    color: var(--text-sub, #636e72);
+}
+
+.wild-exp-bar-wrap {
+    height: 6px;
+    background: color-mix(in srgb, var(--cell-border) 40%, transparent);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.wild-exp-fill {
+    height: 100%;
+    background: var(--accent, #0984E3);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+}
+
+.wild-exp-text {
+    font-size: 0.75rem;
+    color: var(--text-sub, #636e72);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.wild-profile-stats {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 8px;
+    border-top: 1px solid color-mix(in srgb, var(--cell-border) 30%, transparent);
+}
+
+.wild-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.wild-stat-num {
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.wild-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-sub, #636e72);
+}
+
+/* Enter Button */
+.wild-enter-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 20px;
+    border: 1px solid var(--accent, #0984E3);
+    background: color-mix(in srgb, var(--accent, #0984E3) 10%, transparent);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.wild-enter-btn:active {
+    transform: scale(0.97);
+}
+
+.wild-enter-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent, #0984E3);
+}
+
+.wild-enter-sub {
+    font-size: 0.72rem;
+    color: var(--text-sub, #636e72);
+}
+
+/* Bestiary Section */
+.wild-bestiary-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wild-bestiary-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.wild-bestiary-title span {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--text-sub, #636e72);
+}
+
+.wild-bestiary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 6px;
+}
+
+.wild-beast-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 4px;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--cell-border) 40%, transparent);
+    background: color-mix(in srgb, var(--btn-bg) 40%, transparent);
+    transition: border-color 0.2s;
+}
+
+.wild-beast-card.undiscovered {
+    opacity: 0.35;
+}
+
+.wild-beast-card.rarity-common  { border-left: 3px solid #b2bec3; }
+.wild-beast-card.rarity-rare    { border-left: 3px solid #d4af37; }
+.wild-beast-card.rarity-legendary { border-left: 3px solid #9370db; }
+.wild-beast-card.rarity-mythic  { border-left: 3px solid #ff1493; }
+
+.wild-beast-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.wild-beast-sub {
+    font-size: 0.6rem;
+    color: var(--text-sub, #636e72);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.wild-beast-kills {
+    font-size: 0.65rem;
+    color: var(--text-sub, #636e72);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Bestiary Note Popup (弈塵's notes) */
+.beast-note-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 250;
+    padding: 32px;
+    cursor: pointer;
+    animation: mentor-fade-in 0.4s ease;
+}
+
+.beast-note-title {
+    color: #ccc;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    letter-spacing: 0.08em;
+}
+
+.beast-note-body {
+    color: #e0e0e0;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    text-align: center;
+    max-width: 320px;
+    white-space: pre-line;
+}
+
+.beast-note-attr {
+    margin-top: 16px;
+    color: #777;
+    font-size: 0.7rem;
+    font-style: italic;
+}
+
+/* Auto-Cast Toggle */
+.wild-autocast-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: color-mix(in srgb, var(--btn-bg) 60%, transparent);
+    border: 1px solid color-mix(in srgb, var(--cell-border) 50%, transparent);
+    border-radius: 10px;
+}
+
+.wild-autocast-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+}
+
+.wild-autocast-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.wild-autocast-hint {
+    font-size: 0.68rem;
+    color: var(--text-sub, #636e72);
+    max-width: 220px;
+}
+
+.wild-toggle-btn {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    border: none;
+    background: color-mix(in srgb, var(--cell-border) 60%, transparent);
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.wild-toggle-btn.active {
+    background: var(--accent, #0984E3);
+}
+
+.wild-toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.wild-toggle-btn.active .wild-toggle-knob {
+    transform: translateX(20px);
+}
+
+/* ===== Quick Cast (明眼 / 暗眼) ===== */
+
+.cell.skill-quickcast-flash {
+    animation: quickcast-flash 0.25s ease-out;
+    z-index: 5;
+}
+
+@keyframes quickcast-flash {
+    0%   { box-shadow: 0 0 0 0 rgba(116, 185, 255, 0.8); transform: scale(1); }
+    50%  { box-shadow: 0 0 12px 4px rgba(116, 185, 255, 0.6); transform: scale(1.06); }
+    100% { box-shadow: 0 0 0 0 transparent; transform: scale(1); }
 }
 
 /* ===== Stats & Achievements Modal ===== */
@@ -3587,4 +4184,27 @@ body.library-open {
 @keyframes chain-dot {
     from { opacity: 0; transform: scale(0); }
     to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Blind Reveal Animation (盲審揭曉) ── */
+.cell.blind-reveal-correct {
+    animation: blind-correct 0.4s ease;
+}
+
+.cell.blind-reveal-error {
+    animation: blind-error 0.5s ease;
+}
+
+@keyframes blind-correct {
+    0%   { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.6); }
+    50%  { box-shadow: 0 0 8px 2px rgba(0, 200, 83, 0.4); }
+    100% { box-shadow: none; }
+}
+
+@keyframes blind-error {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-3px); box-shadow: 0 0 8px 2px rgba(255, 50, 50, 0.5); }
+    40%      { transform: translateX(3px); }
+    60%      { transform: translateX(-2px); }
+    80%      { transform: translateX(2px); }
 }

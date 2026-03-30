@@ -8,20 +8,55 @@ import { updateCellDisplay } from '../../game/board';
 import { cellLabel } from '../../game/utils';
 import { recordElimination } from '../stats';
 import { registerSkill, evaluateAllSkills, getSkillById } from './skillRegistry';
+import { nakedSingleSkill } from './nakedSingle';
+import { hiddenSingleSkill } from './hiddenSingle';
 import { lockedCandidatesSkill } from './lockedCandidates';
 import { nakedPairSkill } from './nakedPair';
 import { hiddenPairSkill } from './hiddenPair';
 import { nakedTripleSkill } from './nakedTriple';
 import { hiddenTripleSkill } from './hiddenTriple';
+import { xWingSkill } from './xWing';
+import { swordfishSkill } from './swordfish';
+import { jellyfishSkill } from './jellyfish';
+import { xyWingSkill } from './xyWing';
+import { xyzWingSkill } from './xyzWing';
+import { wWingSkill } from './wWing';
+import { uniqueRectangleSkill } from './uniqueRectangle';
+import { remotePairsSkill } from './remotePairs';
+import { skyscraperSkill } from './skyscraper';
+import { twoStringKiteSkill } from './twoStringKite';
+import { emptyRectangleSkill } from './emptyRectangle';
+import { finnedXWingSkill } from './finnedXWing';
+import { bugPlusOneSkill } from './bugPlusOne';
 import type { SkillPreview } from './types';
+import { getChoreography } from './castChoreography';
 
 // ── Register skills (order = evaluation priority) ────────────────────
+// Quick-cast singles (evaluated first for speed)
+registerSkill(nakedSingleSkill);
+registerSkill(hiddenSingleSkill);
+
 // Lv1 — Phase 1 techniques (3-7)
 registerSkill(lockedCandidatesSkill);
 registerSkill(nakedPairSkill);
 registerSkill(nakedTripleSkill);
 registerSkill(hiddenPairSkill);
 registerSkill(hiddenTripleSkill);
+
+// Lv2 — Phase 2 techniques
+registerSkill(xWingSkill);
+registerSkill(swordfishSkill);
+registerSkill(jellyfishSkill);
+registerSkill(xyWingSkill);
+registerSkill(xyzWingSkill);
+registerSkill(wWingSkill);
+registerSkill(uniqueRectangleSkill);
+registerSkill(remotePairsSkill);
+registerSkill(skyscraperSkill);
+registerSkill(twoStringKiteSkill);
+registerSkill(emptyRectangleSkill);
+registerSkill(finnedXWingSkill);
+registerSkill(bugPlusOneSkill);
 
 // ── State ────────────────────────────────────────────────────────────
 
@@ -205,6 +240,14 @@ export function enterSkillMode(cellIdx: number, prevSelected?: number): void {
     return;
   }
 
+  // Single-cell quick cast: prevSelected === -1 means no prior cell (wild mode only)
+  if (prevSelected === -1) {
+    const isWild = gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
+    if (isWild && tryQuickCast(cellIdx)) return;
+    // Outside wild or quick cast didn't match — ignore single-cell long-press
+    return;
+  }
+
   // Enter skill mode with 2 cells: the previously selected + long-pressed
   const firstCell = prevSelected ?? gs.selectedIdx;
   skill.enabled = true;
@@ -217,6 +260,119 @@ export function enterSkillMode(cellIdx: number, prevSelected?: number): void {
   if (navigator.vibrate) navigator.vibrate(15);
   showSkillPanel();
   evaluate();
+}
+
+/** Quick-cast entry: single cell, no previous selection needed.
+ *  Used for naked_single / hidden_single in wild mode.
+ *  Returns true if a quick cast was initiated. */
+export function tryQuickCast(cellIdx: number): boolean {
+  const cell = gs.cellsData[cellIdx];
+  if (!cell || cell.value !== 0) return false;
+
+  // Check if this cell qualifies for any single-cell skill
+  const preview = evaluateAllSkills([cellIdx], gs.cellsData);
+  if (!preview.valid) return false;
+
+  // Only quick-cast for singles skills
+  if (preview.skillId !== 'naked_single' && preview.skillId !== 'hidden_single') return false;
+
+  const skill = sm();
+  skill.enabled = true;
+  skill.selectedCells = [cellIdx];
+  _preview = preview;
+  skill.preview = preview;
+
+  // Skip panel — go straight to cast
+  if (navigator.vibrate) navigator.vibrate(10);
+  doQuickCast();
+  return true;
+}
+
+async function doQuickCast(): Promise<void> {
+  const skill = sm();
+  if (!_preview?.valid) { exitSkillMode(); return; }
+
+  const detector = getSkillById(_preview.skillId);
+  if (!detector) { exitSkillMode(); return; }
+
+  const result = detector.execute(gs.cellsData, _preview);
+  if (!result.valid) { exitSkillMode(); return; }
+
+  skill.casting = true;
+
+  // Run choreography (fast: ~250-900ms)
+  const choreography = getChoreography(result.skillId);
+  if (gs.gridEl) {
+    await choreography({
+      gridEl: gs.gridEl,
+      result,
+      findNoteSpan,
+      wait,
+      recordAction,
+      recordElimination,
+      cellLabel,
+    });
+  }
+
+  // After quick cast, auto-fill if only 1 candidate remains
+  const idx = result.sourceCells[0];
+  const cellData = gs.cellsData[idx];
+  if (cellData && cellData.value === 0 && cellData.notes.length <= 1) {
+    const fillDigit = result.digits?.[0] ?? cellData.notes[0];
+    if (fillDigit) {
+      await quickCastFill(idx, fillDigit);
+    }
+  }
+
+  // Redraw
+  if (gs.gridEl) {
+    const cellEl = gs.gridEl.children[idx] as HTMLElement | undefined;
+    if (cellEl) {
+      const { updateCellDisplay } = await import('../../game/board');
+      updateCellDisplay(cellEl, gs.cellsData[idx]);
+    }
+  }
+
+  const skillName = result.skillName;
+  showFeedback(`${skillName}！`, 'success');
+  exitSkillMode();
+
+  const { saveGameStatus } = await import('../../game/core');
+  saveGameStatus();
+}
+
+/** Fill a cell after quick cast, triggering normal game logic (peer note elimination, win check). */
+async function quickCastFill(idx: number, digit: number): Promise<void> {
+  const cellData = gs.cellsData[idx];
+  cellData.value = digit;
+  cellData.notes = [];
+  cellData.isError = false;
+  recordAction('quickcast_fill', `${cellLabel(idx)} 快斬填入 ${digit}`, idx, digit, null);
+
+  // Auto-eliminate from peers
+  const { updateCellDisplay, getUnitIndices } = await import('../../game/board');
+  const { rowIndices, colIndices, boxIndices } = getUnitIndices(idx);
+  const peers = new Set([...rowIndices, ...colIndices, ...boxIndices]);
+  peers.delete(idx);
+  for (const p of peers) {
+    const pCell = gs.cellsData[p];
+    if (pCell.value !== 0) continue;
+    const ni = pCell.notes.indexOf(digit);
+    if (ni > -1) {
+      pCell.notes.splice(ni, 1);
+      if (gs.gridEl) {
+        const pEl = gs.gridEl.children[p] as HTMLElement;
+        updateCellDisplay(pEl, pCell);
+      }
+      recordElimination();
+    }
+  }
+
+  // Update display
+  if (gs.gridEl) {
+    const cellEl = gs.gridEl.children[idx] as HTMLElement;
+    updateCellDisplay(cellEl, cellData);
+  }
 }
 
 export function exitSkillMode(): void {
@@ -260,45 +416,17 @@ export async function castSkill(): Promise<void> {
   skill.castMessage = `${result.skillName}...`;
   updatePanelUI();
 
-  // Phase 1: Source cells pulse (200ms)
-  for (const src of result.sourceCells) {
-    gs.gridEl?.children[src]?.classList.add('skill-source-pulse');
-  }
-  // Connection lines flash
-  const svgLines = document.querySelectorAll('.skill-line');
-  svgLines.forEach((l) => l.classList.add('skill-line-flash'));
-  await wait(200);
-
-  // Phase 2: Staggered digit-level strike → vanish
-  removeConnectionOverlay();
-  const STAGGER = 100;
-
-  for (let i = 0; i < result.targets.length; i++) {
-    const t = result.targets[i];
-    const cellEl = gs.gridEl?.children[t.cell] as HTMLElement | undefined;
-    if (!cellEl) continue;
-
-    // Cell background flash
-    cellEl.classList.add('skill-strike');
-
-    // Digit strike animation
-    const noteSpan = findNoteSpan(cellEl, t.digit);
-    if (noteSpan) noteSpan.classList.add('skill-elim-digit');
-
-    recordAction('skill_eliminate', `${cellLabel(t.cell)} ${result.skillName}消去候選 ${t.digit}`, t.cell, t.digit, gs.cellsData[t.cell].notes);
-    recordElimination();
-
-    // Stagger: wait before next target (but not after last)
-    if (i < result.targets.length - 1) await wait(STAGGER);
-  }
-
-  // Wait for last digit's vanish animation to finish (0.65s)
-  await wait(650);
-
-  // Remove strike classes
+  // Delegate animation to per-skill choreography
+  const choreography = getChoreography(result.skillId);
   if (gs.gridEl) {
-    Array.from(gs.gridEl.children).forEach((c) => {
-      c.classList.remove('skill-strike', 'skill-source-pulse');
+    await choreography({
+      gridEl: gs.gridEl,
+      result,
+      findNoteSpan,
+      wait,
+      recordAction,
+      recordElimination,
+      cellLabel,
     });
   }
 

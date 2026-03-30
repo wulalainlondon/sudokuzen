@@ -1,7 +1,7 @@
 // Core game logic — init, input, win detection, save/load
 // Skill mode logic lives in features/skills/skillController.ts.
 
-import { gs } from './state';
+import { gs, type LevelData } from './state';
 import { getAllLevels } from '../data/dataRegistry';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds, cellLabel, normalizeSavedCells } from './utils';
@@ -29,6 +29,7 @@ import {
   enterSkillMode,
   exitSkillMode,
   castSkill,
+  tryQuickCast,
 } from '../features/skills/skillController';
 
 // Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
@@ -48,6 +49,9 @@ async function callCloseLibrary() {
   const m = await import('../features/teach-legacy');
   m.closeLibraryOverlay();
 }
+
+// ── Blind reveal guard ──────────────────────────────────────────────
+let blindRevealing = false;
 
 // ── Auto-eliminate notes from peers ─────────────────────────────────
 
@@ -90,7 +94,7 @@ function solutionDigitAt(idx: number): number {
 }
 
 // Re-export skill functions for legacy call sites (window facade, legacyRuntime).
-export { evaluateLockedSkill, toggleSkillMode, handleCandidateProbeTap, castLockedSkill, exitSkillMode, castSkill };
+export { evaluateLockedSkill, toggleSkillMode, handleCandidateProbeTap, castLockedSkill, exitSkillMode, castSkill, tryQuickCast };
 
 // ── Board callbacks (Risk 6 fix: replace dynamic import() in event handlers) ──
 setBoardCallbacks({
@@ -103,10 +107,14 @@ setBoardCallbacks({
 
 // ── Game lifecycle ──────────────────────────────────────────────────
 
-export function initGame(levelId = 1, forceReset = false, playWithGhost = false, ghostData: any = null): void {
+export function initGame(levelId = 1, forceReset = false, playWithGhost = false, ghostData: any = null, overrideLevelData?: LevelData): void {
   callCloseLibrary();
-  const levels = getAllLevels();
-  gs.currentLevel = levels.find((l) => l.id === levelId) || levels[0];
+  if (overrideLevelData) {
+    gs.currentLevel = overrideLevelData;
+  } else {
+    const levels = getAllLevels();
+    gs.currentLevel = levels.find((l) => l.id === levelId) || levels[0];
+  }
   callCloseReplay();
   localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
 
@@ -178,6 +186,8 @@ function resetGameState(): void {
 
 export function saveGameStatus(): void {
   if (!gs.currentLevel) return;
+  // Wild mode puzzles don't persist saves — leaving mid-game = escape
+  if (gs.currentLevel.id < 0) return;
   const saveKey = SK.save(gs.currentLevel.id, gs.isSpeedrunMode);
   const data = {
     levelId: gs.currentLevel.id,
@@ -206,6 +216,7 @@ function clearGameStatus(levelId: number): void {
 // ── Input handling ──────────────────────────────────────────────────
 
 export function handleInput(num: number): void {
+  if (blindRevealing) return;
   if (gs.selectedIdx === null || gs.cellsData[gs.selectedIdx].fixed) return;
   if (!gs.isDuoMode && gs.errors >= gs.maxErrors) return;
   if (isDuoCooldownActive()) return;
@@ -239,6 +250,20 @@ export function handleInput(num: number): void {
       updateNumpadState();
       if (gs.isDuoMode) callDuoProgress();
       checkSpeedrunComplete(gs.selectedIdx);
+      evaluateLockedSkill();
+      return;
+    }
+
+    // ── Blind mode: skip error check, just fill ──
+    if (gs.wildBlindMode) {
+      data.value = num;
+      data.notes = [];
+      recordAction('fill', `${cellLabel(gs.selectedIdx)} (盲審) 填入 ${num}`, gs.selectedIdx, num);
+      playFillSound();
+      updateCellDisplay(cellEl, data);
+      saveGameStatus();
+      updateNumpadState();
+      checkBlindComplete();
       evaluateLockedSkill();
       return;
     }
@@ -363,6 +388,16 @@ function checkWin(): void {
     gs.duoCooldownTimer = null;
   }
   gs.duoCooldownUntil = 0;
+
+  // ── Wild mode: delegate to Wild controller ──
+  if (gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild') {
+    import('../features/wild/wildController').then((m) => {
+      const result = m.onWildComplete(gs.seconds, gs.errors);
+      showWildWinCelebration(gs.seconds, result.expGained, result.leveledUp, result.newLevel);
+    });
+    return;
+  }
+
   clearGameStatus(gs.currentLevel!.id);
   const earnedValue = saveProgress();
   showWinCelebration(earnedValue);
@@ -417,6 +452,62 @@ function checkSpeedrunComplete(lastIdx: number): void {
   }
 }
 
+async function checkBlindComplete(): Promise<void> {
+  // In blind mode, check when all 81 cells are filled
+  const isFull = gs.cellsData.every((c) => c.value !== 0);
+  if (!isFull) return;
+
+  // Disable input during reveal
+  blindRevealing = true;
+
+  // Scan phase: reveal cells one by one
+  let correct = 0;
+  let errors = 0;
+
+  for (let i = 0; i < 81; i++) {
+    if (gs.cellsData[i].fixed) {
+      correct++;
+      continue; // skip clue cells, they are always correct
+    }
+
+    const cellEl = gs.gridEl!.children[i] as HTMLElement;
+    const isCorrect = gs.cellsData[i].value === solutionDigitAt(i);
+
+    if (isCorrect) {
+      correct++;
+      cellEl.classList.add('blind-reveal-correct');
+    } else {
+      errors++;
+      gs.cellsData[i].isError = true;
+      cellEl.classList.add('blind-reveal-error', 'error');
+      updateCellDisplay(cellEl, gs.cellsData[i]);
+    }
+
+    // Update running count
+    showFeedback(`盲審揭曉中... 正確: ${correct} / 錯誤: ${errors}`, errors > 0 ? 'error' : 'neutral');
+
+    await new Promise(r => setTimeout(r, 30));
+  }
+
+  // Re-enable input
+  blindRevealing = false;
+
+  // Result phase
+  if (errors === 0) {
+    checkWin();
+  } else {
+    showFeedback(`盲審結果：${correct} 正確 / ${errors} 錯誤`, 'error');
+    showGameOver();
+  }
+
+  // Clean up animation classes after animations finish
+  setTimeout(() => {
+    gs.gridEl?.querySelectorAll('.blind-reveal-correct, .blind-reveal-error').forEach(el => {
+      el.classList.remove('blind-reveal-correct', 'blind-reveal-error');
+    });
+  }, 600);
+}
+
 function saveProgress(): number {
   if (gs.isSpeedrunMode) {
     const records = readJson<Record<string, any>>(SK.SPEED_RECORDS, {});
@@ -447,9 +538,38 @@ function saveProgress(): number {
   }
 }
 
-function showGameOver(): void {
+export function showGameOver(): void {
   clearInterval(gs.timerInterval!);
-  clearGameStatus(gs.currentLevel!.id);
+
+  // ── Wild mode: beast escapes ──
+  const isWild = gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
+  if (isWild) {
+    import('../features/wild/wildController').then((m) => m.onWildEscape());
+  } else {
+    clearGameStatus(gs.currentLevel!.id);
+  }
+
+  // Update overlay button text for wild mode
+  const overlayBackBtn = document.getElementById('overlay-back-btn');
+  if (overlayBackBtn) {
+    if (isWild) {
+      // Check if in a session with rounds remaining
+      import('../features/wild/wildController').then((m) => {
+        const session = m.getSession();
+        if (session && session.round < 10) {
+          overlayBackBtn.textContent = `繼續修行 (${session.round}/10)`;
+          overlayBackBtn.setAttribute('onclick', 'continueWild()');
+        } else {
+          overlayBackBtn.textContent = '離開世界';
+          overlayBackBtn.setAttribute('onclick', 'exitWild(); showLevelScreen(true)');
+        }
+      });
+    } else {
+      overlayBackBtn.textContent = '返回選關';
+      overlayBackBtn.setAttribute('onclick', 'showLevelScreen(true)');
+    }
+  }
+
   gs.overlay!.style.display = 'flex';
 }
 
@@ -493,11 +613,80 @@ function showWinCelebration(earnedValue: number): void {
   } else {
     document.getElementById('win-stars')!.textContent = '★'.repeat(earnedValue) + '☆'.repeat(3 - earnedValue);
   }
+  // Reset to normal mode buttons
+  const wildBtn = document.getElementById('wild-continue-btn');
+  const nextBtn = document.getElementById('win-next-btn');
+  const replayBtn = document.getElementById('win-replay-btn');
+  const backBtn = document.getElementById('win-back-btn');
+  const leaderboardCard = gs.winCelebrationEl?.querySelector('.leaderboard-card') as HTMLElement | null;
+  if (wildBtn) wildBtn.classList.add('hidden');
+  if (nextBtn) nextBtn.style.display = '';
+  if (replayBtn) replayBtn.style.display = '';
+  if (backBtn) { backBtn.textContent = '返回選關'; backBtn.setAttribute('onclick', 'showLevelScreen(true)'); }
+  if (leaderboardCard) leaderboardCard.style.display = '';
   createConfettiBurst(22);
   gs.winCelebrationEl!.style.display = 'flex';
   showFeedback('完成！太棒了！', 'success');
   playWinSound();
   if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
+}
+
+function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number): void {
+  const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const secs = (seconds % 60).toString().padStart(2, '0');
+  document.getElementById('win-level-name')!.textContent = gs.currentLevel!.displayName;
+  document.getElementById('win-time')!.textContent = `${mins}:${secs}`;
+
+  // Check for session summary (round 10 complete)
+  import('../features/wild/wildController').then((m) => {
+    const session = m.getSession();
+    const wildBtn = document.getElementById('wild-continue-btn');
+    const nextBtn = document.getElementById('win-next-btn');
+    const replayBtn = document.getElementById('win-replay-btn');
+    const backBtn = document.getElementById('win-back-btn');
+    const leaderboardCard = gs.winCelebrationEl?.querySelector('.leaderboard-card') as HTMLElement | null;
+
+    if (session && session.round >= 10) {
+      // Session complete — show summary
+      const streakMult = session.wins >= 10 ? 1.5 : session.wins >= 8 ? 1.3 : session.wins >= 5 ? 1.1 : 1.0;
+      const starsEl = document.getElementById('win-stars')!;
+      starsEl.innerHTML = `修行輪完成！<br>${session.wins}/10 勝 · +${session.totalExp} EXP` +
+        (streakMult > 1 ? `<br>連勝加成 ×${streakMult}` : '');
+      if (wildBtn) {
+        wildBtn.classList.remove('hidden');
+        wildBtn.textContent = '新的修行輪';
+      }
+    } else if (session) {
+      // Mid-session — show round progress
+      document.getElementById('win-stars')!.textContent = leveledUp
+        ? `+${expGained} EXP — Lv.${newLevel}!`
+        : `+${expGained} EXP`;
+      if (wildBtn) {
+        wildBtn.classList.remove('hidden');
+        wildBtn.textContent = `繼續修行 (${session.round}/10)`;
+      }
+    } else {
+      // Standalone encounter
+      document.getElementById('win-stars')!.textContent = leveledUp
+        ? `+${expGained} EXP — Lv.${newLevel}!`
+        : `+${expGained} EXP`;
+      if (wildBtn) {
+        wildBtn.classList.remove('hidden');
+        wildBtn.textContent = '繼續世界';
+      }
+    }
+
+    if (nextBtn) nextBtn.style.display = 'none';
+    if (replayBtn) replayBtn.style.display = 'none';
+    if (backBtn) { backBtn.textContent = '離開世界'; backBtn.setAttribute('onclick', 'exitWild(); showLevelScreen(true)'); }
+    if (leaderboardCard) leaderboardCard.style.display = 'none';
+  });
+
+  createConfettiBurst(leveledUp ? 35 : 22);
+  gs.winCelebrationEl!.style.display = 'flex';
+  showFeedback(leveledUp ? `升級！IQ Lv.${newLevel}` : '狩獵成功！', 'success');
+  playWinSound();
+  if (navigator.vibrate) navigator.vibrate(leveledUp ? [25, 45, 25, 45, 25, 45, 25, 70, 50] : [25, 45, 25, 45, 25, 70, 50]);
 }
 
 function createConfettiBurst(count = 50): void {
@@ -630,6 +819,10 @@ export function toggleTheme(): void {
 }
 
 export function toggleNoteMode(): void {
+  if (gs.wildNotesDisabled) {
+    showFeedback('無念模式：筆記已禁用', 'error');
+    return;
+  }
   gs.isNotesMode = !gs.isNotesMode;
   document.getElementById('note-toggle')!.classList.toggle('active', gs.isNotesMode);
   // If continuous fill is active, let user know notes mode changes how it fills
@@ -663,6 +856,10 @@ function highlightDigitOnBoard(digit: number): void {
 
 export async function fillAllCandidates(): Promise<void> {
   if (!gs.gridEl || !gs.cellsData.length) return;
+  if (gs.wildNotesDisabled) {
+    showFeedback('無念模式：筆記已禁用', 'error');
+    return;
+  }
 
   // Calculate all legal candidates for every empty cell
   let totalFilled = 0;

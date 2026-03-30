@@ -131,6 +131,13 @@ export const gs = {
     preview: null,
   } as SkillModeState,
 
+  // ── Wild challenge mode ──────────────────────────────────────────
+  wildChallengeMode: null as import('../features/wild/wildState').ChallengeMode | null,
+  wildBlindMode: false,
+  wildNotesDisabled: false,
+  wildTimerCountdown: 0,
+  wildTimerInterval: null as ReturnType<typeof setInterval> | null,
+
   // ── Visual replay ─────────────────────────────────────────────────
   rbState: [] as any[],
   rbStepIdx: 0,
