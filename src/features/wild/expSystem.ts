@@ -3,17 +3,17 @@
 import { RARITY_MULTIPLIER, TECHNIQUE_TABLE, type Rarity } from './techniqueMeta';
 import type { WildProfile } from './wildState';
 
-/** Cumulative EXP needed to reach level N: 50 * N * (N+1) / 2 */
+/** Cumulative EXP needed to reach level N: 15 * N * (N+1) / 2 */
 export function expForLevel(n: number): number {
-  return (50 * n * (n + 1)) / 2;
+  return Math.floor(15 * n * (n + 1) / 2);
 }
 
 /** Derive IQ level from total EXP. */
 export function levelFromExp(totalExp: number): number {
-  // Solve: 50 * n * (n+1) / 2 <= totalExp → 25n² + 25n - totalExp <= 0
-  // n = (-25 + sqrt(625 + 100*totalExp)) / 50
+  // Solve: 15 * n * (n+1) / 2 <= totalExp → 7.5n² + 7.5n - totalExp <= 0
+  // n = (-7.5 + sqrt(56.25 + 30*totalExp)) / 15
   if (totalExp <= 0) return 1;
-  const n = Math.floor((-25 + Math.sqrt(625 + 100 * totalExp)) / 50);
+  const n = Math.floor((-7.5 + Math.sqrt(56.25 + 30 * totalExp)) / 15);
   return Math.max(1, n);
 }
 

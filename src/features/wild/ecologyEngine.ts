@@ -66,10 +66,46 @@ function getAvailablePool(profile: WildProfile): TechniqueMeta[] {
 
 // ── Two-step tier-based weighted selection ───────────────────────────
 
-/** Probability of rolling each tier [0..4]. Tunable. */
-export const TIER_PROBABILITIES: readonly number[] = [0.6, 0.2, 0.12, 0.06, 0.02];
+/** Base tier probabilities. T0=singles, T4=mythic. */
+const BASE_TIER_PROBS: Record<number, number> = { 0: 0.55, 1: 0.25, 2: 0.12, 3: 0.06, 4: 0.02 };
+const TIER_GATES: Record<number, number> = { 0: 1, 1: 1, 2: 21, 3: 41, 4: 71 };
 
-function tieredPick(pool: TechniqueMeta[]): TechniqueMeta {
+/** Calculate level-adjusted tier probabilities. Higher level = less T0, more high tiers. */
+function getAdjustedTierProbs(iqLevel: number): Map<number, number> {
+  const adjusted = new Map<number, number>();
+
+  for (const [tier, base] of Object.entries(BASE_TIER_PROBS)) {
+    const t = Number(tier);
+    const gate = TIER_GATES[t] ?? 1;
+
+    if (iqLevel < gate) {
+      adjusted.set(t, 0);
+      continue;
+    }
+
+    const overflow = Math.max(0, iqLevel - gate);
+    if (t === 0) {
+      // T0 (singles) decays as player grows — veterans don't need basics
+      const decay = Math.max(0.15, 1 - iqLevel / 120);
+      adjusted.set(t, base * decay);
+    } else {
+      // Higher tiers get slight boost per 10 levels above gate
+      const bonus = 1 + Math.floor(overflow / 10) * 0.5;
+      adjusted.set(t, base * bonus);
+    }
+  }
+
+  // Normalize
+  let total = 0;
+  for (const v of adjusted.values()) total += v;
+  if (total > 0) {
+    for (const [k, v] of adjusted) adjusted.set(k, v / total);
+  }
+
+  return adjusted;
+}
+
+function tieredPick(pool: TechniqueMeta[], iqLevel: number): TechniqueMeta {
   // Step 1: Group available pool by tier
   const byTier = new Map<number, TechniqueMeta[]>();
   for (const t of pool) {
@@ -78,19 +114,24 @@ function tieredPick(pool: TechniqueMeta[]): TechniqueMeta {
     byTier.set(t.tier, arr);
   }
 
-  // Step 2: Roll tier using probabilities
+  // Step 2: Get level-adjusted tier probabilities
+  const probs = getAdjustedTierProbs(iqLevel);
+
+  // Step 3: Roll tier using adjusted probabilities (only tiers that have available techniques)
   const roll = Math.random();
   let cumulative = 0;
   let rolledTier = 0;
-  for (let i = 0; i < TIER_PROBABILITIES.length; i++) {
-    cumulative += TIER_PROBABILITIES[i];
+  for (let i = 0; i < 5; i++) {
+    if (!byTier.has(i) || (byTier.get(i)?.length ?? 0) === 0) continue;
+    cumulative += probs.get(i) ?? 0;
     if (roll < cumulative) {
       rolledTier = i;
       break;
     }
+    rolledTier = i; // fallback to last available tier
   }
 
-  // Step 3: If rolled tier has no available techniques, fall to next lower tier
+  // Step 4: If rolled tier has no available techniques, fall to next lower tier
   let chosen = byTier.get(rolledTier);
   if (!chosen || chosen.length === 0) {
     for (let t = rolledTier - 1; t >= 0; t--) {
@@ -101,7 +142,7 @@ function tieredPick(pool: TechniqueMeta[]): TechniqueMeta {
   // Final fallback: pick any from pool
   if (!chosen || chosen.length === 0) chosen = pool;
 
-  // Step 4: Uniform random pick within the tier
+  // Step 5: Uniform random pick within the tier
   return chosen[Math.floor(Math.random() * chosen.length)];
 }
 
@@ -172,8 +213,8 @@ export async function selectSessionEncounter(profile: WildProfile, round: number
     const bossPool = pool.filter((t) => t.tier === highestTier);
     picked = bossPool[Math.floor(Math.random() * bossPool.length)];
   } else {
-    // Uniform random within filtered pool
-    picked = pool[Math.floor(Math.random() * pool.length)];
+    // Tier-weighted pick scaled by player level
+    picked = tieredPick(pool, profile.iqLevel);
   }
 
   // Boss round forces ironman; others use normal challenge mode selection
@@ -190,9 +231,9 @@ export async function selectEncounter(profile: WildProfile): Promise<WildEncount
   if (pool.length === 0) {
     // Fallback: all on cooldown — pick from implemented basics ignoring cooldown
     const basics = TECHNIQUE_TABLE.filter((t) => IMPLEMENTED_SKILLS.has(t.key) && t.levelGate <= profile.iqLevel);
-    picked = basics.length > 0 ? tieredPick(basics) : TECHNIQUE_TABLE[0];
+    picked = basics.length > 0 ? tieredPick(basics, profile.iqLevel) : TECHNIQUE_TABLE[0];
   } else {
-    picked = tieredPick(pool);
+    picked = tieredPick(pool, profile.iqLevel);
   }
   const mode = selectChallengeMode(picked.tier, profile);
   return buildEncounter(picked, mode);
