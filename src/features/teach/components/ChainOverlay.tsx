@@ -25,7 +25,13 @@ function readCssVar(name: string, fallback: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 }
 
-export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = true, mode = 'sequential' }: Props): ReactElement {
+export function ChainOverlay({
+  boardRef,
+  cells,
+  eliminateCells = [],
+  animate = true,
+  mode = 'sequential',
+}: Props): ReactElement {
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [links, setLinks] = useState<{ x1: number; y1: number; x2: number; y2: number }[]>([]);
   const [dots, setDots] = useState<{ x: number; y: number }[]>([]);
@@ -64,7 +70,7 @@ export function ChainOverlay({ boardRef, cells, eliminateCells = [], animate = t
 
     ro.observe(board);
     return () => ro.disconnect();
-  }, [boardRef, cells, eliminateCells]);
+  }, [boardRef, cells, eliminateCells, mode]);
 
   if (links.length === 0 && dots.length === 0) return <></>;
 

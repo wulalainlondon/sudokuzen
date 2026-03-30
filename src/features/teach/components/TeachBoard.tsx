@@ -67,9 +67,7 @@ export function TeachBoard({ example, step }: Props): ReactElement {
 
                   // Hide completely if in removedCandidates
                   const isRemoved = removedMap.get(i)?.has(d);
-                  if (isRemoved && noteArr.includes(d)) return (
-                    <span key={d} className="tc-note" data-digit={d}></span>
-                  );
+                  if (isRemoved && noteArr.includes(d)) return <span key={d} className="tc-note" data-digit={d}></span>;
 
                   if (warnDigit === d && warnSet.has(i)) noteClass += ' warn-missing';
 
@@ -86,7 +84,13 @@ export function TeachBoard({ example, step }: Props): ReactElement {
       })}
 
       {chainCells.length >= 2 && step?.showChain !== false && (
-        <ChainOverlay boardRef={boardRef} cells={chainCells} eliminateCells={eliminateIndices} animate mode={step?.chainMode} />
+        <ChainOverlay
+          boardRef={boardRef}
+          cells={chainCells}
+          eliminateCells={eliminateIndices}
+          animate
+          mode={step?.chainMode}
+        />
       )}
     </div>
   );

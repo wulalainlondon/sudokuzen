@@ -14,7 +14,15 @@ import {
   playEraseSound,
 } from './audio';
 import { showFeedback, markErrorArea } from '../ui/feedback';
-import { renderGrid, updateCellDisplay, selectCell, getUnitIndices, isUnitComplete, updateNumpadState, setBoardCallbacks } from './board';
+import {
+  renderGrid,
+  updateCellDisplay,
+  selectCell,
+  getUnitIndices,
+  isUnitComplete,
+  updateNumpadState,
+  setBoardCallbacks,
+} from './board';
 import { startTimer } from './timer';
 import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
 import { recalculatePlayerFilledCount, updateGhostProgressUI } from '../features/ghost';
@@ -94,20 +102,50 @@ function solutionDigitAt(idx: number): number {
 }
 
 // Re-export skill functions for legacy call sites (window facade, legacyRuntime).
-export { evaluateLockedSkill, toggleSkillMode, handleCandidateProbeTap, castLockedSkill, exitSkillMode, castSkill, tryQuickCast };
+export {
+  evaluateLockedSkill,
+  toggleSkillMode,
+  handleCandidateProbeTap,
+  castLockedSkill,
+  exitSkillMode,
+  castSkill,
+  tryQuickCast,
+};
 
 // ── Board callbacks (Risk 6 fix: replace dynamic import() in event handlers) ──
 setBoardCallbacks({
   onContinuousCellClick: (idx: number) => handleContinuousCellClick(idx),
   onContinuousDigitSet: (digit: number) => setContinuousDigit(digit),
-  onCandidateProbeTap: () => { /* no-op — replaced by long-press cell selection */ },
+  onCandidateProbeTap: () => {
+    /* no-op — replaced by long-press cell selection */
+  },
   onCellLongPress: (idx: number, prevSelected: number) => enterSkillMode(idx, prevSelected),
   onSkillModeExit: () => exitSkillMode(),
 });
 
 // ── Game lifecycle ──────────────────────────────────────────────────
 
-export function initGame(levelId = 1, forceReset = false, playWithGhost = false, ghostData: any = null, overrideLevelData?: LevelData): void {
+function updateGameHeaderByMode(isWild: boolean): void {
+  const gameTitle = document.getElementById('game-title');
+  const gameModeChip = document.getElementById('game-mode-chip');
+  const quitBtn = document.getElementById('quit-btn');
+  const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
+  if (gameTitle) gameTitle.textContent = isWild ? 'WORLD BATTLE' : 'SUDOKU';
+  if (gameModeChip) gameModeChip.classList.toggle('hidden', !isWild);
+  if (gameContainer) gameContainer.classList.toggle('world-play-active', isWild);
+  if (quitBtn) {
+    quitBtn.textContent = isWild ? '離開世界' : 'Quit';
+    quitBtn.setAttribute('onclick', isWild ? 'exitWild(); showLevelScreen(true)' : 'showLevelScreen(true)');
+  }
+}
+
+export function initGame(
+  levelId = 1,
+  forceReset = false,
+  playWithGhost = false,
+  ghostData: any = null,
+  overrideLevelData?: LevelData,
+): void {
   callCloseLibrary();
   if (overrideLevelData) {
     gs.currentLevel = overrideLevelData;
@@ -117,6 +155,8 @@ export function initGame(levelId = 1, forceReset = false, playWithGhost = false,
   }
   callCloseReplay();
   localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
+  const isWild = gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
+  updateGameHeaderByMode(isWild);
 
   gs.isGhostMode = playWithGhost;
   gs.ghostHistory = gs.isGhostMode && ghostData ? ghostData : [];
@@ -486,7 +526,7 @@ async function checkBlindComplete(): Promise<void> {
     // Update running count
     showFeedback(`盲審揭曉中... 正確: ${correct} / 錯誤: ${errors}`, errors > 0 ? 'error' : 'neutral');
 
-    await new Promise(r => setTimeout(r, 30));
+    await new Promise((r) => setTimeout(r, 30));
   }
 
   // Re-enable input
@@ -502,7 +542,7 @@ async function checkBlindComplete(): Promise<void> {
 
   // Clean up animation classes after animations finish
   setTimeout(() => {
-    gs.gridEl?.querySelectorAll('.blind-reveal-correct, .blind-reveal-error').forEach(el => {
+    gs.gridEl?.querySelectorAll('.blind-reveal-correct, .blind-reveal-error').forEach((el) => {
       el.classList.remove('blind-reveal-correct', 'blind-reveal-error');
     });
   }, 600);
@@ -588,6 +628,11 @@ export function updateLivesUI(): void {
     gs.livesEl.innerHTML = '<span style="color: #FFC107; text-shadow: 0 0 5px rgba(255,193,7,0.5);">⚡</span>';
     return;
   }
+  if (gs.wildBlindMode) {
+    gs.livesEl.innerHTML =
+      '<span style="color: var(--accent-strong); font-size: 0.72rem; letter-spacing: 0.08em;">盲審</span>';
+    return;
+  }
   if (gs.isDuoMode && gs.errors >= gs.maxErrors) {
     // Lives depleted — cooldown UI takes over (handled by updateDuoCooldownUI)
     if (!isDuoCooldownActive()) {
@@ -622,7 +667,10 @@ function showWinCelebration(earnedValue: number): void {
   if (wildBtn) wildBtn.classList.add('hidden');
   if (nextBtn) nextBtn.style.display = '';
   if (replayBtn) replayBtn.style.display = '';
-  if (backBtn) { backBtn.textContent = '返回選關'; backBtn.setAttribute('onclick', 'showLevelScreen(true)'); }
+  if (backBtn) {
+    backBtn.textContent = '返回選關';
+    backBtn.setAttribute('onclick', 'showLevelScreen(true)');
+  }
   if (leaderboardCard) leaderboardCard.style.display = '';
   createConfettiBurst(22);
   gs.winCelebrationEl!.style.display = 'flex';
@@ -632,7 +680,9 @@ function showWinCelebration(earnedValue: number): void {
 }
 
 function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number): void {
-  const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const mins = Math.floor(seconds / 60)
+    .toString()
+    .padStart(2, '0');
   const secs = (seconds % 60).toString().padStart(2, '0');
   document.getElementById('win-level-name')!.textContent = gs.currentLevel!.displayName;
   document.getElementById('win-time')!.textContent = `${mins}:${secs}`;
@@ -650,7 +700,8 @@ function showWildWinCelebration(seconds: number, expGained: number, leveledUp: b
       // Session complete — show summary
       const streakMult = session.wins >= 10 ? 1.5 : session.wins >= 8 ? 1.3 : session.wins >= 5 ? 1.1 : 1.0;
       const starsEl = document.getElementById('win-stars')!;
-      starsEl.innerHTML = `修行輪完成！<br>${session.wins}/10 勝 · +${session.totalExp} EXP` +
+      starsEl.innerHTML =
+        `修行輪完成！<br>${session.wins}/10 勝 · +${session.totalExp} EXP` +
         (streakMult > 1 ? `<br>連勝加成 ×${streakMult}` : '');
       if (wildBtn) {
         wildBtn.classList.remove('hidden');
@@ -678,7 +729,10 @@ function showWildWinCelebration(seconds: number, expGained: number, leveledUp: b
 
     if (nextBtn) nextBtn.style.display = 'none';
     if (replayBtn) replayBtn.style.display = 'none';
-    if (backBtn) { backBtn.textContent = '離開世界'; backBtn.setAttribute('onclick', 'exitWild(); showLevelScreen(true)'); }
+    if (backBtn) {
+      backBtn.textContent = '離開世界';
+      backBtn.setAttribute('onclick', 'exitWild(); showLevelScreen(true)');
+    }
     if (leaderboardCard) leaderboardCard.style.display = 'none';
   });
 
@@ -686,7 +740,8 @@ function showWildWinCelebration(seconds: number, expGained: number, leveledUp: b
   gs.winCelebrationEl!.style.display = 'flex';
   showFeedback(leveledUp ? `升級！IQ Lv.${newLevel}` : '狩獵成功！', 'success');
   playWinSound();
-  if (navigator.vibrate) navigator.vibrate(leveledUp ? [25, 45, 25, 45, 25, 45, 25, 70, 50] : [25, 45, 25, 45, 25, 70, 50]);
+  if (navigator.vibrate)
+    navigator.vibrate(leveledUp ? [25, 45, 25, 45, 25, 45, 25, 70, 50] : [25, 45, 25, 45, 25, 70, 50]);
 }
 
 function createConfettiBurst(count = 50): void {
@@ -919,7 +974,8 @@ export async function fillAllCandidates(): Promise<void> {
 
   // Reveal cells in distance-based order from center (4,4)
   const cellOrder = Array.from({ length: 81 }, (_, i) => {
-    const row = Math.floor(i / 9), col = i % 9;
+    const row = Math.floor(i / 9),
+      col = i % 9;
     const dist = Math.sqrt((row - 4) ** 2 + (col - 4) ** 2);
     return { i, dist };
   }).sort((a, b) => a.dist - b.dist);

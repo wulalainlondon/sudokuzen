@@ -5,9 +5,9 @@
 // ── Milestone dialogues (triggered once at key moments) ─────────────
 
 export interface MentorLine {
-  key: string;        // unique trigger key
-  text: string;       // main dialogue
-  sub?: string;       // optional subtitle/attribution
+  key: string; // unique trigger key
+  text: string; // main dialogue
+  sub?: string; // optional subtitle/attribution
 }
 
 export const MENTOR_INTRO: MentorLine[] = [
@@ -133,11 +133,13 @@ export const MENTOR_TECH_NOTES: Record<string, TechNote> = {
   },
   empty_rectangle: {
     veiled: '有時候，空白本身就是線索。',
-    unveiled: '虛空。宮格裡的空白畫出了一個長方形，然後那個長方形指向了唯一的出口。用虛無來指引方向，這大概是最像禪的技巧了。',
+    unveiled:
+      '虛空。宮格裡的空白畫出了一個長方形，然後那個長方形指向了唯一的出口。用虛無來指引方向，這大概是最像禪的技巧了。',
   },
   x_wing: {
     veiled: '那個在行列間交叉的影子……我曾以為那是兩把鎖，後來才發現，那是一道通往高維的門。',
-    unveiled: '鋒刃。兩行兩列，四個交叉點，構成一把十字型的刃。揮出去的瞬間，整條線上的雜質全部斬落。它是最乾淨的殺招。',
+    unveiled:
+      '鋒刃。兩行兩列，四個交叉點，構成一把十字型的刃。揮出去的瞬間，整條線上的雜質全部斬落。它是最乾淨的殺招。',
   },
   finned_x_wing: {
     veiled: '完美的對稱被打破了一角。但正是那個缺口，暴露了它的本質。',
@@ -145,7 +147,8 @@ export const MENTOR_TECH_NOTES: Record<string, TechNote> = {
   },
   xy_wing: {
     veiled: '三個格子，像三片葉子從一個根部散開。',
-    unveiled: '翼擊。一個軸心連著兩片翼。它們各自只有兩個候選，但組合起來卻能打到意想不到的地方。我很喜歡這招，因為它像風。',
+    unveiled:
+      '翼擊。一個軸心連著兩片翼。它們各自只有兩個候選，但組合起來卻能打到意想不到的地方。我很喜歡這招，因為它像風。',
   },
   xyz_wing: {
     veiled: '比翼多了一個維度。軸心變得更複雜了。',
@@ -171,7 +174,8 @@ export const MENTOR_TECH_NOTES: Record<string, TechNote> = {
   },
   swordfish: {
     veiled: '鋒刃的延伸。從二維到三維。',
-    unveiled: '三叉。三行三列的鋒刃。它的形狀不再是十字，而是一張不規則的網。當你學會看見它的時候，你已經不是初學者了。',
+    unveiled:
+      '三叉。三行三列的鋒刃。它的形狀不再是十字，而是一張不規則的網。當你學會看見它的時候，你已經不是初學者了。',
   },
   finned_swordfish: {
     veiled: '三叉上的一根多餘的刺。',
@@ -187,7 +191,8 @@ export const MENTOR_TECH_NOTES: Record<string, TechNote> = {
   },
   aic: {
     veiled: '第一條鏈。從此以後，推理不再是一步，而是一條路。',
-    unveiled: '玄鏈。交替推理鏈。強連結和弱連結交替出現，像呼吸一樣——吸氣是確定的，呼氣是可能的。走到終點時，起點的命運就改變了。',
+    unveiled:
+      '玄鏈。交替推理鏈。強連結和弱連結交替出現，像呼吸一樣——吸氣是確定的，呼氣是可能的。走到終點時，起點的命運就改變了。',
   },
   aic_mid_chain: {
     veiled: '鏈走到一半，中間的某個節點突然暴露了弱點。',
@@ -249,7 +254,8 @@ export const MENTOR_TECH_NOTES: Record<string, TechNote> = {
   },
   death_blossom: {
     veiled: '……花開的瞬間，所有花瓣都指向同一個方向。然後那個方向就死了。',
-    unveiled: '死綻。一朵由殘集組成的花。軸心的每個候選都連著一片花瓣（ALS），花瓣們的共同視野就是死亡地帶。美麗而致命。',
+    unveiled:
+      '死綻。一朵由殘集組成的花。軸心的每個候選都連著一片花瓣（ALS），花瓣們的共同視野就是死亡地帶。美麗而致命。',
   },
   exocet_death_blossom: {
     veiled: '……\n\n（最後的筆跡幾乎無法辨認）\n\n我看見了它的輪廓。就在那一瞬間，我的功力……\n\n（此後再無文字）',
@@ -268,11 +274,11 @@ export const MENTOR_FINALE: MentorLine = {
 // ── Helper: get milestone for a level-up ────────────────────────────
 
 export function getMilestoneForLevel(newLevel: number): MentorLine | null {
-  if (newLevel === 11) return MENTOR_MILESTONES.find(m => m.key === 'tier1_mastered') ?? null;
-  if (newLevel === 21) return MENTOR_MILESTONES.find(m => m.key === 'tier2_unlocked') ?? null;
-  if (newLevel === 41) return MENTOR_MILESTONES.find(m => m.key === 'tier3_unlocked') ?? null;
-  if (newLevel === 61) return MENTOR_MILESTONES.find(m => m.key === 'tier3_deep') ?? null;
-  if (newLevel === 71) return MENTOR_MILESTONES.find(m => m.key === 'tier4_threshold') ?? null;
+  if (newLevel === 11) return MENTOR_MILESTONES.find((m) => m.key === 'tier1_mastered') ?? null;
+  if (newLevel === 21) return MENTOR_MILESTONES.find((m) => m.key === 'tier2_unlocked') ?? null;
+  if (newLevel === 41) return MENTOR_MILESTONES.find((m) => m.key === 'tier3_unlocked') ?? null;
+  if (newLevel === 61) return MENTOR_MILESTONES.find((m) => m.key === 'tier3_deep') ?? null;
+  if (newLevel === 71) return MENTOR_MILESTONES.find((m) => m.key === 'tier4_threshold') ?? null;
   return null;
 }
 

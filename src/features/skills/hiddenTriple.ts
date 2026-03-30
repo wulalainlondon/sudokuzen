@@ -29,7 +29,15 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
       const s0 = [...cells[a].notes].sort();
       const s1 = [...cells[b].notes].sort();
       const s2 = [...cells[c].notes].sort();
-      if (s0[0] === s1[0] && s0[0] === s2[0] && s0[1] === s1[1] && s0[1] === s2[1] && s0[2] === s1[2] && s0[2] === s2[2]) continue;
+      if (
+        s0[0] === s1[0] &&
+        s0[0] === s2[0] &&
+        s0[1] === s1[1] &&
+        s0[1] === s2[1] &&
+        s0[2] === s1[2] &&
+        s0[2] === s2[2]
+      )
+        continue;
     }
 
     // Find all shared units among all 3 cells
@@ -74,7 +82,10 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
           }
           if (!isHidden) break;
         }
-        if (isHidden) { validUnit = unit; break; }
+        if (isHidden) {
+          validUnit = unit;
+          break;
+        }
       }
       if (!validUnit) continue;
 
@@ -87,9 +98,17 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
       }
 
       if (targets.length > 0) {
-        return { valid: true, skillId: META.id, skillName: META.name, skillSubtitle: META.subtitle,
-          sweepDirection: META.sweepDirection, digits: tripleDigits, unitLabel: validUnit.label,
-          sourceCells: triple, targets };
+        return {
+          valid: true,
+          skillId: META.id,
+          skillName: META.name,
+          skillSubtitle: META.subtitle,
+          sweepDirection: META.sweepDirection,
+          digits: tripleDigits,
+          unitLabel: validUnit.label,
+          sourceCells: triple,
+          targets,
+        };
       }
     }
   }
@@ -107,7 +126,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const hiddenTripleSkill: SkillDetector = { ...META, evaluate, execute };

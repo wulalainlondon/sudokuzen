@@ -1,7 +1,7 @@
 // Mentor controller — manages showing 弈塵's messages at the right moments.
 // Tracks which messages have been seen via localStorage.
 
-import { SK, readJson, writeJson } from '../../storage/keys';
+import { readJson, writeJson } from '../../storage/keys';
 import type { MentorLine } from './mentorDialogue';
 import { MENTOR_INTRO, MENTOR_POST_DEMO, MENTOR_FINALE, getMilestoneForLevel, getTechNote } from './mentorDialogue';
 
@@ -33,7 +33,10 @@ function showMentorMessage(line: MentorLine): Promise<void> {
     const overlay = document.getElementById('mentor-overlay');
     const textEl = document.getElementById('mentor-text');
     const subEl = document.getElementById('mentor-sub');
-    if (!overlay || !textEl || !subEl) { resolve(); return; }
+    if (!overlay || !textEl || !subEl) {
+      resolve();
+      return;
+    }
 
     textEl.textContent = line.text;
     subEl.textContent = line.sub ?? '';

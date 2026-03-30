@@ -1,6 +1,6 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
-import { makeEmptyPreview, cellsSeeEachOther } from './types';
+import { makeEmptyPreview } from './types';
 
 const META = { id: 'empty_rectangle', name: '虛空', subtitle: 'Empty Rectangle', sweepDirection: 'outward' as const };
 
@@ -17,7 +17,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
 
   const notesA = cells[selectedCells[0]].notes;
   const notesB = cells[selectedCells[1]].notes;
-  const commonDigits = notesA.filter(d => notesB.includes(d));
+  const commonDigits = notesA.filter((d) => notesB.includes(d));
 
   for (const digit of commonDigits) {
     const result = tryEmptyRectangle(selectedCells, cells, digit);
@@ -39,24 +39,20 @@ function getBoxCells(boxIndex: number): number[] {
   return out;
 }
 
-function tryEmptyRectangle(
-  selectedCells: number[],
-  cells: CellData[],
-  digit: number,
-): SkillPreview | null {
+function tryEmptyRectangle(selectedCells: number[], cells: CellData[], digit: number): SkillPreview | null {
   // For each box, check if the digit's candidates form an empty rectangle:
   // all candidates lie in one row AND one column within the box
   for (let box = 0; box < 9; box++) {
     const boxCells = getBoxCells(box);
-    const digitCells = boxCells.filter(idx => {
+    const digitCells = boxCells.filter((idx) => {
       const c = cells[idx];
       return c && c.value === 0 && c.notes.includes(digit);
     });
     if (digitCells.length < 2) continue;
 
     // Check if all digit cells lie in at most 1 row + 1 col intersection
-    const rows = new Set(digitCells.map(i => Math.floor(i / 9)));
-    const cols = new Set(digitCells.map(i => i % 9));
+    const rows = new Set(digitCells.map((i) => Math.floor(i / 9)));
+    const cols = new Set(digitCells.map((i) => i % 9));
 
     // Empty rectangle: candidates are NOT all in one row and NOT all in one column
     // They span exactly the intersection of one row and one column within the box
@@ -106,7 +102,7 @@ function tryEmptyRectangle(
             if (!targetCell || targetCell.value !== 0 || !targetCell.notes.includes(digit)) continue;
 
             const allSource = [...new Set([...digitCells, conjugateCell])];
-            if (!selectedCells.every(c => allSource.includes(c))) continue;
+            if (!selectedCells.every((c) => allSource.includes(c))) continue;
 
             return {
               valid: true,
@@ -136,7 +132,7 @@ function tryEmptyRectangle(
           const conjCol = conjugateCell % 9;
 
           for (const rc of digitCells) {
-            if ((rc % 9) !== erCol) continue;
+            if (rc % 9 !== erCol) continue;
             const rcRow = Math.floor(rc / 9);
             if (rcRow === erRow) continue;
             const targetIdx = rcRow * 9 + conjCol;
@@ -145,7 +141,7 @@ function tryEmptyRectangle(
             if (!targetCell || targetCell.value !== 0 || !targetCell.notes.includes(digit)) continue;
 
             const allSource = [...new Set([...digitCells, conjugateCell])];
-            if (!selectedCells.every(c => allSource.includes(c))) continue;
+            if (!selectedCells.every((c) => allSource.includes(c))) continue;
 
             return {
               valid: true,
@@ -177,7 +173,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const emptyRectangleSkill: SkillDetector = { ...META, evaluate, execute };

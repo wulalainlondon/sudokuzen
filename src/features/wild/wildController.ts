@@ -4,12 +4,17 @@
 import { gs, type LevelData } from '../../game/state';
 import { formatSeconds } from '../../game/utils';
 import { showFeedback } from '../../ui/feedback';
-import { loadWildProfile, saveWildProfile, CHALLENGE_CONFIGS, type WildProfile, type WildEncounter, type ChallengeMode } from './wildState';
+import { loadWildProfile, saveWildProfile, CHALLENGE_CONFIGS, type WildProfile, type WildEncounter } from './wildState';
 import { selectEncounter, selectSessionEncounter, tickCooldowns, setEscapeCooldown } from './ecologyEngine';
 import { getTechniqueMeta, getAutoCastKeys } from './techniqueMeta';
 import { calculateExp, applyExp, expForLevel } from './expSystem';
 import { autoSolve } from './autoSolver';
-import { triggerIntroIfNeeded, triggerFirstKillIfNeeded, triggerMilestoneIfNeeded, triggerFinaleIfNeeded } from './mentorController';
+import {
+  triggerIntroIfNeeded,
+  triggerFirstKillIfNeeded,
+  triggerMilestoneIfNeeded,
+  triggerFinaleIfNeeded,
+} from './mentorController';
 
 // ── Runtime state (non-persisted) ────────────────────────────────────
 
@@ -23,12 +28,16 @@ let _gauntletQueue: WildEncounter[] = [];
 let _gauntletIdx = 0;
 let _gauntletTotalExp = 0;
 
-export function isWildActive(): boolean { return _active; }
+export function isWildActive(): boolean {
+  return _active;
+}
 export function getWildProfile(): WildProfile {
   if (!_profile) _profile = loadWildProfile();
   return _profile;
 }
-export function getCurrentEncounter(): WildEncounter | null { return _encounter; }
+export function getCurrentEncounter(): WildEncounter | null {
+  return _encounter;
+}
 
 // ── Wild-specific gs field reset ─────────────────────────────────────
 
@@ -152,10 +161,12 @@ export async function startWildEncounter(): Promise<void> {
   const sessionLabel = session ? `[${session.round}/10] ` : '';
   const bossLabel = session && session.round === 10 ? ' 【BOSS】' : '';
   const wildLevel: LevelData = {
-    id: -Date.now(),  // negative = Wild mode, unique per encounter
+    id: -Date.now(), // negative = Wild mode, unique per encounter
     stars: 0,
     difficultyName: '世界',
-    displayName: meta ? `${sessionLabel}${meta.name} · ${meta.subtitle}${modeLabel}${bossLabel}` : `${sessionLabel}世界${modeLabel}${bossLabel}`,
+    displayName: meta
+      ? `${sessionLabel}${meta.name} · ${meta.subtitle}${modeLabel}${bossLabel}`
+      : `${sessionLabel}世界${modeLabel}${bossLabel}`,
     puzzle: puzzleToUse,
     solution: _encounter.solution,
     maxTechnique: _encounter.technique,
@@ -186,8 +197,8 @@ export async function startWildEncounter(): Promise<void> {
   // Apply challenge mode settings AFTER initGame
   gs.wildChallengeMode = mode;
   gs.maxErrors = config.maxErrors;
-  gs.wildBlindMode = (mode === 'blind');
-  gs.wildNotesDisabled = !!(config.notesDisabled);
+  gs.wildBlindMode = mode === 'blind';
+  gs.wildNotesDisabled = !!config.notesDisabled;
 
   // Update lives UI after maxErrors change
   const { updateLivesUI } = await import('../../game/core');
@@ -250,7 +261,10 @@ function isGauntletActive(): boolean {
   return _gauntletQueue.length > 0 && _gauntletIdx < _gauntletQueue.length;
 }
 
-async function advanceGauntlet(seconds: number, errors: number): Promise<{ expGained: number; leveledUp: boolean; newLevel: number } | null> {
+async function _advanceGauntlet(
+  seconds: number,
+  errors: number,
+): Promise<{ expGained: number; leveledUp: boolean; newLevel: number } | null> {
   const profile = getWildProfile();
   const meta = getTechniqueMeta(_encounter!.technique);
   const baseExp = meta?.expBase ?? 10;
@@ -354,7 +368,7 @@ function failGauntlet(): void {
   // On failure: award 1.0x EXP for completed puzzles only
   if (_gauntletTotalExp > 0) {
     const profile = getWildProfile();
-    const result = applyExp(profile, _gauntletTotalExp);
+    applyExp(profile, _gauntletTotalExp);
     saveWildProfile(profile);
   }
   _gauntletQueue = [];
@@ -364,7 +378,10 @@ function failGauntlet(): void {
 
 // ── Win handler (called from core.ts checkWin) ───────────────────────
 
-export function onWildComplete(seconds: number, errors: number): { expGained: number; leveledUp: boolean; newLevel: number } {
+export function onWildComplete(
+  seconds: number,
+  errors: number,
+): { expGained: number; leveledUp: boolean; newLevel: number } {
   if (!_encounter || !_active) return { expGained: 0, leveledUp: false, newLevel: 1 };
 
   // Handle gauntlet advancement
@@ -486,7 +503,7 @@ export function onWildComplete(seconds: number, errors: number): { expGained: nu
     }
     // Check if all techniques conquered (finale)
     const totalTechs = 40;
-    const conqueredCount = Object.values(profile.bestiary).filter(e => e.kills > 0).length;
+    const conqueredCount = Object.values(profile.bestiary).filter((e) => e.kills > 0).length;
     await triggerFinaleIfNeeded(conqueredCount >= totalTechs);
   }, 2000);
 

@@ -471,7 +471,8 @@ export function showDuoResult(d: any): void {
 
   // Streak badge
   if (rec.streak >= 2 && rec.streakHolder) {
-    if (streakEl) streakEl.innerHTML = `<div class="duo-streak-badge">\u{1F525} ${rec.streakHolder} 連勝 ${rec.streak} 場！</div>`;
+    if (streakEl)
+      streakEl.innerHTML = `<div class="duo-streak-badge">\u{1F525} ${rec.streakHolder} 連勝 ${rec.streak} 場！</div>`;
   } else {
     if (streakEl) streakEl.innerHTML = '';
   }

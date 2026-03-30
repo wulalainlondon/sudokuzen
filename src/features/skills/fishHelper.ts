@@ -18,12 +18,7 @@ interface FishMeta {
  * @param size 2 = X-Wing, 3 = Swordfish, 4 = Jellyfish
  * @param META skill metadata
  */
-export function evaluateFish(
-  selectedCells: number[],
-  cells: CellData[],
-  size: number,
-  META: FishMeta,
-): SkillPreview {
+export function evaluateFish(selectedCells: number[], cells: CellData[], size: number, META: FishMeta): SkillPreview {
   if (selectedCells.length < size) return makeEmptyPreview(META, '');
 
   // All selected cells must be empty with candidates
@@ -48,17 +43,13 @@ export function evaluateFish(
 
   const rowArr = [...rows];
   const colArr = [...cols];
-  const selSet = new Set(selectedCells);
-
   // Find common candidate digit(s) among all selected cells
   const firstNotes = cells[selectedCells[0]].notes;
-  const commonDigits = firstNotes.filter(d =>
-    selectedCells.every(idx => cells[idx].notes.includes(d)),
-  );
+  const commonDigits = firstNotes.filter((d) => selectedCells.every((idx) => cells[idx].notes.includes(d)));
 
   for (const digit of commonDigits) {
     // Try row-based fish: digit in the selected rows must only appear in the selected cols
-    const rowBased = rowArr.every(r => {
+    const rowBased = rowArr.every((r) => {
       for (let c = 0; c < 9; c++) {
         if (colArr.includes(c)) continue;
         const cell = cells[r * 9 + c];
@@ -95,7 +86,7 @@ export function evaluateFish(
     }
 
     // Try col-based fish: digit in the selected cols must only appear in the selected rows
-    const colBased = colArr.every(c => {
+    const colBased = colArr.every((c) => {
       for (let r = 0; r < 9; r++) {
         if (rowArr.includes(r)) continue;
         const cell = cells[r * 9 + c];

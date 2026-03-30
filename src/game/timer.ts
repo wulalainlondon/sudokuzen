@@ -32,5 +32,19 @@ export function updateTimerUI(): void {
     .toString()
     .padStart(2, '0');
   const secs = (gs.seconds % 60).toString().padStart(2, '0');
+  const isWild = gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
+  if (isWild) {
+    const modeMap: Record<string, string> = {
+      standard: '修行',
+      ironman: '鐵壁',
+      blind: '盲審',
+      timed: '疾風',
+      noNotes: '無念',
+      gauntlet: '百鬼',
+    };
+    const mode = gs.wildChallengeMode ? (modeMap[gs.wildChallengeMode] ?? '修行') : '修行';
+    gs.timerEl.textContent = `世界 ${mode} / ${mins}:${secs}`;
+    return;
+  }
   gs.timerEl.textContent = `${gs.currentLevel.displayName} / ${mins}:${secs}`;
 }

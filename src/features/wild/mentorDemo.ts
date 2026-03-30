@@ -3,32 +3,51 @@
 // then freezes at the final 天劫 steps.
 
 import { renderGrid, updateCellDisplay } from '../../game/board';
-import { gs, type CellData } from '../../game/state';
-import { showFeedback } from '../../ui/feedback';
+import { gs } from '../../game/state';
 
 // ── The real Exocet puzzle (baked in to avoid async loading) ─────────
 // This is generated/exocet_death_blossom.json[19]
 // Solve path: naked_single(46) + hidden_single(9) + locked_candidates(4) +
 //             hidden_pair(1) + naked_pair(1) + naked_triple(1) + exocet(4)
 
-const DEMO_PUZZLE = [6,0,0,0,4,7,0,0,9,0,0,0,2,0,5,0,6,0,0,4,0,0,0,0,0,2,3,0,0,4,1,6,2,9,0,0,9,0,0,3,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,1,0,0,7,0,0,9,2,0,0,3,8,0,0,0,0,0,0,7];
-const DEMO_SOLUTION = [6,2,3,8,4,7,5,1,9,7,9,1,2,3,5,4,6,8,5,4,8,9,1,6,7,2,3,8,3,4,1,6,2,9,7,5,9,7,6,3,5,4,1,8,2,2,1,5,7,9,8,3,4,6,4,6,2,5,7,3,8,9,1,1,5,7,6,8,9,2,3,4,3,8,9,4,2,1,6,5,7];
+const DEMO_PUZZLE = [
+  6, 0, 0, 0, 4, 7, 0, 0, 9, 0, 0, 0, 2, 0, 5, 0, 6, 0, 0, 4, 0, 0, 0, 0, 0, 2, 3, 0, 0, 4, 1, 6, 2, 9, 0, 0, 9, 0, 0,
+  3, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1, 0, 0, 7, 0, 0, 9, 2, 0, 0, 3, 8, 0, 0, 0, 0,
+  0, 0, 7,
+];
+const DEMO_SOLUTION = [
+  6, 2, 3, 8, 4, 7, 5, 1, 9, 7, 9, 1, 2, 3, 5, 4, 6, 8, 5, 4, 8, 9, 1, 6, 7, 2, 3, 8, 3, 4, 1, 6, 2, 9, 7, 5, 9, 7, 6,
+  3, 5, 4, 1, 8, 2, 2, 1, 5, 7, 9, 8, 3, 4, 6, 4, 6, 2, 5, 7, 3, 8, 9, 1, 1, 5, 7, 6, 8, 9, 2, 3, 4, 3, 8, 9, 4, 2, 1,
+  6, 5, 7,
+];
 
 // ── Solver for demo (deterministic, step-by-step) ────────────────────
 
 interface DemoStep {
-  type: 'naked_single' | 'hidden_single' | 'locked_candidates' | 'naked_pair' | 'hidden_pair' | 'naked_triple' | 'exocet';
+  type:
+    | 'naked_single'
+    | 'hidden_single'
+    | 'locked_candidates'
+    | 'naked_pair'
+    | 'hidden_pair'
+    | 'naked_triple'
+    | 'exocet';
   label: string;
-  cells: number[];      // cells involved
-  fillCells?: { idx: number; digit: number }[];  // cells to fill
-  elimCells?: { idx: number; digit: number }[];  // candidates to eliminate
+  cells: number[]; // cells involved
+  fillCells?: { idx: number; digit: number }[]; // cells to fill
+  elimCells?: { idx: number; digit: number }[]; // candidates to eliminate
 }
 
 function getPeers(idx: number): Set<number> {
-  const r = Math.floor(idx / 9), c = idx % 9;
-  const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+  const r = Math.floor(idx / 9),
+    c = idx % 9;
+  const br = Math.floor(r / 3) * 3,
+    bc = Math.floor(c / 3) * 3;
   const peers = new Set<number>();
-  for (let i = 0; i < 9; i++) { peers.add(r * 9 + i); peers.add(i * 9 + c); }
+  for (let i = 0; i < 9; i++) {
+    peers.add(r * 9 + i);
+    peers.add(i * 9 + c);
+  }
   for (let dr = 0; dr < 3; dr++) for (let dc = 0; dc < 3; dc++) peers.add((br + dr) * 9 + (bc + dc));
   peers.delete(idx);
   return peers;
@@ -69,10 +88,19 @@ function generateDemoSteps(puzzle: number[], solution: number[]): DemoStep[] {
 
     // Hidden singles
     const units: number[][] = [];
-    for (let r = 0; r < 9; r++) { const u: number[] = []; for (let c = 0; c < 9; c++) u.push(r * 9 + c); units.push(u); }
-    for (let c = 0; c < 9; c++) { const u: number[] = []; for (let r = 0; r < 9; r++) u.push(r * 9 + c); units.push(u); }
+    for (let r = 0; r < 9; r++) {
+      const u: number[] = [];
+      for (let c = 0; c < 9; c++) u.push(r * 9 + c);
+      units.push(u);
+    }
+    for (let c = 0; c < 9; c++) {
+      const u: number[] = [];
+      for (let r = 0; r < 9; r++) u.push(r * 9 + c);
+      units.push(u);
+    }
     for (let b = 0; b < 9; b++) {
-      const br = Math.floor(b / 3) * 3, bc = (b % 3) * 3;
+      const br = Math.floor(b / 3) * 3,
+        bc = (b % 3) * 3;
       const u: number[] = [];
       for (let dr = 0; dr < 3; dr++) for (let dc = 0; dc < 3; dc++) u.push((br + dr) * 9 + (bc + dc));
       units.push(u);
@@ -83,7 +111,10 @@ function generateDemoSteps(puzzle: number[], solution: number[]): DemoStep[] {
         const positions: number[] = [];
         let found = false;
         for (const c of unit) {
-          if (grid[c] === d) { found = true; break; }
+          if (grid[c] === d) {
+            found = true;
+            break;
+          }
           if (grid[c] === 0 && getCandidates(grid, c).has(d)) positions.push(c);
         }
         if (found) continue;
@@ -102,9 +133,6 @@ function generateDemoSteps(puzzle: number[], solution: number[]): DemoStep[] {
   }
 
   // After singles exhaust, add placeholder steps for mid-tier and exocet
-  const filled = grid.filter(v => v !== 0).length;
-  const remaining = 81 - filled;
-
   // Fill remaining using solution, attributing to appropriate techniques
   const midTierTechs: DemoStep[] = [
     { type: 'locked_candidates', label: '封鎖', cells: [], fillCells: [] },
@@ -132,7 +160,6 @@ function generateDemoSteps(puzzle: number[], solution: number[]): DemoStep[] {
   // First batch: mid-tier techniques solve ~65% of remaining
   const midCount = Math.floor(unfilled.length * 0.65);
   const exocetCount = unfilled.length - midCount;
-
   for (let i = 0; i < midCount; i++) {
     const step = midTierTechs[i % midTierTechs.length];
     const idx = unfilled[i];
@@ -163,16 +190,16 @@ function generateDemoSteps(puzzle: number[], solution: number[]): DemoStep[] {
 
 // ── Demo animation ────────────────────────────────────────────────────
 
-const wait = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
+const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 const TECH_COLORS: Record<string, string> = {
-  '明眼': 'rgba(116, 185, 255, 0.5)',
-  '暗眼': 'rgba(162, 155, 254, 0.5)',
-  '封鎖': 'rgba(0, 206, 201, 0.5)',
-  '雙契': 'rgba(255, 177, 66, 0.5)',
-  '藏雙': 'rgba(253, 121, 168, 0.5)',
-  '編織': 'rgba(85, 239, 196, 0.5)',
-  '天劫': 'rgba(255, 50, 50, 0.7)',
+  明眼: 'rgba(116, 185, 255, 0.5)',
+  暗眼: 'rgba(162, 155, 254, 0.5)',
+  封鎖: 'rgba(0, 206, 201, 0.5)',
+  雙契: 'rgba(255, 177, 66, 0.5)',
+  藏雙: 'rgba(253, 121, 168, 0.5)',
+  編織: 'rgba(85, 239, 196, 0.5)',
+  天劫: 'rgba(255, 50, 50, 0.7)',
 };
 
 /** Run the full mentor demo. Returns when demo is complete. */
@@ -234,11 +261,11 @@ export async function runMentorDemo(): Promise<void> {
   const steps = generateDemoSteps(DEMO_PUZZLE, DEMO_SOLUTION);
 
   // Group steps by phase
-  const singlesSteps = steps.filter(s => s.type === 'naked_single' || s.type === 'hidden_single');
-  const midSteps = steps.filter(s => !['naked_single', 'hidden_single', 'exocet'].includes(s.type));
-  const exocetSteps = steps.filter(s => s.type === 'exocet');
+  const singlesSteps = steps.filter((s) => s.type === 'naked_single' || s.type === 'hidden_single');
+  const midSteps = steps.filter((s) => !['naked_single', 'hidden_single', 'exocet'].includes(s.type));
+  const exocetSteps = steps.filter((s) => s.type === 'exocet');
 
-  let totalFilled = DEMO_PUZZLE.filter(v => v !== 0).length;
+  let totalFilled = DEMO_PUZZLE.filter((v) => v !== 0).length;
   stepCounter.textContent = `${totalFilled}/81`;
 
   // ── Phase 1: Singles blitz (fast) ──
@@ -373,7 +400,6 @@ export async function runMentorDemo(): Promise<void> {
   techLabel.style.opacity = '';
   techLabel.style.transition = '';
 
-  const remaining = 81 - totalFilled;
   stepCounter.textContent = `${totalFilled}/81`;
 
   // Dim the grid slightly
@@ -399,7 +425,7 @@ export async function runMentorDemo(): Promise<void> {
 
   // Clean up any remaining demo classes
   if (gs.gridEl) {
-    Array.from(gs.gridEl.children).forEach(c => {
+    Array.from(gs.gridEl.children).forEach((c) => {
       c.classList.remove('demo-fill-flash', 'demo-skill-pulse', 'demo-exocet-pulse');
     });
   }

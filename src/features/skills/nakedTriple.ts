@@ -64,9 +64,17 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     }
 
     if (targets.length > 0) {
-      return { valid: true, skillId: META.id, skillName: META.name, skillSubtitle: META.subtitle,
-        sweepDirection: META.sweepDirection, digits: tripleDigits, unitLabel: shared[0].label,
-        sourceCells: triple, targets };
+      return {
+        valid: true,
+        skillId: META.id,
+        skillName: META.name,
+        skillSubtitle: META.subtitle,
+        sweepDirection: META.sweepDirection,
+        digits: tripleDigits,
+        unitLabel: shared[0].label,
+        sourceCells: triple,
+        targets,
+      };
     }
   }
   return makeEmptyPreview(META, selectedCells.length >= 3 ? '未構成三連' : '');
@@ -83,7 +91,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const nakedTripleSkill: SkillDetector = { ...META, evaluate, execute };

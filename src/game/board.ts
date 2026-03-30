@@ -75,13 +75,21 @@ export function renderGrid(): void {
       }
     });
     cell.addEventListener('pointerup', () => {
-      if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
+      if (lpTimer) {
+        clearTimeout(lpTimer);
+        lpTimer = null;
+      }
       // Normal tap while skill mode is active → exit skill mode
       if (!lpFired && gs.skillMode.enabled) {
         _onSkillModeExit?.();
       }
     });
-    cell.addEventListener('pointerleave', () => { if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; } });
+    cell.addEventListener('pointerleave', () => {
+      if (lpTimer) {
+        clearTimeout(lpTimer);
+        lpTimer = null;
+      }
+    });
     gs.gridEl!.appendChild(cell);
   });
   updateNumpadState();

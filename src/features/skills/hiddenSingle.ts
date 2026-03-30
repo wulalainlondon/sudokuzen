@@ -76,9 +76,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   // Use first found hidden single
   const best = hiddens[0];
   // Targets: all OTHER candidates in this cell (they will be eliminated)
-  const targets: LitCandidate[] = cell.notes
-    .filter(d => d !== best.digit)
-    .map(d => ({ cell: idx, digit: d }));
+  const targets: LitCandidate[] = cell.notes.filter((d) => d !== best.digit).map((d) => ({ cell: idx, digit: d }));
 
   return {
     valid: true,
@@ -99,7 +97,6 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
   const cell = cells[idx];
   if (!cell || cell.value !== 0) return { ...preview, valid: false, reason: '此格已填入' };
 
-  const keepDigit = preview.digits[0];
   const removed: LitCandidate[] = [];
 
   for (const t of preview.targets) {

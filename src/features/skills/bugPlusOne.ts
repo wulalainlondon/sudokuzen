@@ -42,8 +42,6 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   // would leave every unit with each digit appearing exactly 2 times.
   // The digit that must stay is the BUG+1 solution.
 
-  const [d1, d2, d3] = targetCell.notes;
-
   // Count occurrences of each candidate digit in the target cell's row, col, box
   const row = Math.floor(targetIdx / 9);
   const col = targetIdx % 9;
@@ -88,8 +86,8 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
 
   // Targets: eliminate the other 2 candidates from the target cell
   const targets: LitCandidate[] = targetCell.notes
-    .filter(d => d !== bugDigit)
-    .map(d => ({ cell: targetIdx, digit: d }));
+    .filter((d) => d !== bugDigit)
+    .map((d) => ({ cell: targetIdx, digit: d }));
 
   return {
     valid: true,
@@ -114,7 +112,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const bugPlusOneSkill: SkillDetector = { ...META, evaluate, execute };

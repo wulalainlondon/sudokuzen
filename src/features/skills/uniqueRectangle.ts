@@ -16,15 +16,18 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   }
 
   // Must form a rectangle: exactly 2 rows and 2 cols
-  const rows = new Set(selectedCells.map(i => Math.floor(i / 9)));
-  const cols = new Set(selectedCells.map(i => i % 9));
+  const rows = new Set(selectedCells.map((i) => Math.floor(i / 9)));
+  const cols = new Set(selectedCells.map((i) => i % 9));
   if (rows.size !== 2 || cols.size !== 2) return makeEmptyPreview(META, '需形成矩形（2 列 × 2 欄）');
 
   // Must span exactly 2 boxes
-  const boxes = new Set(selectedCells.map(i => {
-    const r = Math.floor(i / 9), c = i % 9;
-    return Math.floor(r / 3) * 3 + Math.floor(c / 3);
-  }));
+  const boxes = new Set(
+    selectedCells.map((i) => {
+      const r = Math.floor(i / 9),
+        c = i % 9;
+      return Math.floor(r / 3) * 3 + Math.floor(c / 3);
+    }),
+  );
   if (boxes.size !== 2) return makeEmptyPreview(META, '需跨 2 宮');
 
   // UR Type 1: find 2 floor cells with exactly {A,B} and 2 roof cells with {A,B} + extras
@@ -34,17 +37,20 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
       const floorCells = [selectedCells[i], selectedCells[j]];
       const roofCells = selectedCells.filter((_, k) => k !== i && k !== j);
 
-      const f0 = cells[floorCells[0]], f1 = cells[floorCells[1]];
+      const f0 = cells[floorCells[0]],
+        f1 = cells[floorCells[1]];
 
       // Floor cells must have exactly 2 candidates and same pair
       if (f0.notes.length !== 2 || f1.notes.length !== 2) continue;
-      const sf0 = [...f0.notes].sort(), sf1 = [...f1.notes].sort();
+      const sf0 = [...f0.notes].sort(),
+        sf1 = [...f1.notes].sort();
       if (sf0[0] !== sf1[0] || sf0[1] !== sf1[1]) continue;
 
       const [A, B] = sf0;
 
       // Roof cells must contain A and B (plus extras)
-      const r0 = cells[roofCells[0]], r1 = cells[roofCells[1]];
+      const r0 = cells[roofCells[0]],
+        r1 = cells[roofCells[1]];
       if (!r0.notes.includes(A) || !r0.notes.includes(B)) continue;
       if (!r1.notes.includes(A) || !r1.notes.includes(B)) continue;
 
@@ -88,7 +94,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const uniqueRectangleSkill: SkillDetector = { ...META, evaluate, execute };

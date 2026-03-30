@@ -57,7 +57,7 @@ import {
   openTeachFromLibrary,
   closePracticeModal,
 } from '../features/teach-legacy';
-import { openWildLobby, closeWildLobby, toggleWildAutoCast } from '../features/wild/wildLobby';
+import { openWildLobby, closeWildLobby, toggleWildAutoCast, isWorldLobbyOpen } from '../features/wild/wildLobby';
 import { continueWild, exitWild, startWorldSession } from '../features/wild/wildController';
 import { dismissMentor } from '../features/wild/mentorController';
 
@@ -158,6 +158,11 @@ export function bootLegacyRuntime(appVersion: string): void {
   // 12. Pre-level modal buttons
   gs.preLevelStartBtn?.addEventListener('click', () => startLevelFromModal(true, false, null));
   gs.preLevelBackBtn?.addEventListener('click', hidePreLevelModal);
+  const wildEnterBtn = document.getElementById('wild-enter-btn');
+  wildEnterBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    startPoolRandom();
+  });
   if (gs.preLevelModalEl) {
     gs.preLevelModalEl.addEventListener('click', (e) => {
       if (e.target === gs.preLevelModalEl) hidePreLevelModal();
@@ -260,7 +265,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     }
 
     // Wild lobby → stage map
-    if (!document.getElementById('wild-lobby')?.classList.contains('hidden')) {
+    if (isWorldLobbyOpen()) {
       closeWildLobby();
       return;
     }

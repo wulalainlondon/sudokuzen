@@ -59,7 +59,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     }
 
     for (let start = 0; start < n; start++) {
-      if (dfs(start)) return path.map(i => selectedCells[i]);
+      if (dfs(start)) return path.map((i) => selectedCells[i]);
     }
     return null;
   }
@@ -116,7 +116,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const remotePairsSkill: SkillDetector = { ...META, evaluate, execute };

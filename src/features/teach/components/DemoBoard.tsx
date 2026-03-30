@@ -284,8 +284,20 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
               preserveAspectRatio="none"
               key={`cross-${actIndex}`}
             >
-              <line className="demo-cross-line" x1={positions[0].x} y1={positions[0].y} x2={positions[3].x} y2={positions[3].y} />
-              <line className="demo-cross-line demo-cross-line-2" x1={positions[1].x} y1={positions[1].y} x2={positions[2].x} y2={positions[2].y} />
+              <line
+                className="demo-cross-line"
+                x1={positions[0].x}
+                y1={positions[0].y}
+                x2={positions[3].x}
+                y2={positions[3].y}
+              />
+              <line
+                className="demo-cross-line demo-cross-line-2"
+                x1={positions[1].x}
+                y1={positions[1].y}
+                x2={positions[2].x}
+                y2={positions[2].y}
+              />
             </svg>
           );
         })()}

@@ -18,7 +18,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   // Find common candidate digits
   const notesA = cells[selectedCells[0]].notes;
   const notesB = cells[selectedCells[1]].notes;
-  const commonDigits = notesA.filter(d => notesB.includes(d));
+  const commonDigits = notesA.filter((d) => notesB.includes(d));
 
   for (const digit of commonDigits) {
     // Try row-based skyscraper: find two rows each with exactly 2 positions for this digit
@@ -57,20 +57,22 @@ function trySkyscraper(
   }
 
   // Try all pairs of such lines
-  const selSet = new Set(selectedCells);
   for (let i = 0; i < lines.length; i++) {
     for (let j = i + 1; j < lines.length; j++) {
-      const l1 = lines[i], l2 = lines[j];
+      const l1 = lines[i],
+        l2 = lines[j];
       const allFour = [l1.pos[0], l1.pos[1], l2.pos[0], l2.pos[1]];
 
       // Check if selected cells are part of this pattern
-      if (!selectedCells.every(c => allFour.includes(c))) continue;
+      if (!selectedCells.every((c) => allFour.includes(c))) continue;
 
       // Find the "base" — one end from each line that shares the same cross-line
       for (let a = 0; a < 2; a++) {
         for (let b = 0; b < 2; b++) {
-          const base1 = l1.pos[a], base2 = l2.pos[b];
-          const roof1 = l1.pos[1 - a], roof2 = l2.pos[1 - b];
+          const base1 = l1.pos[a],
+            base2 = l2.pos[b];
+          const roof1 = l1.pos[1 - a],
+            roof2 = l2.pos[1 - b];
 
           // Base cells must share the same cross-line (col if row-based, row if col-based)
           const crossBase1 = lineType === 'row' ? base1 % 9 : Math.floor(base1 / 9);
@@ -125,7 +127,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const skyscraperSkill: SkillDetector = { ...META, evaluate, execute };

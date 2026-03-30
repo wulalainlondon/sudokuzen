@@ -17,7 +17,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
 
   const notesA = cells[selectedCells[0]].notes;
   const notesB = cells[selectedCells[1]].notes;
-  const commonDigits = notesA.filter(d => notesB.includes(d));
+  const commonDigits = notesA.filter((d) => notesB.includes(d));
 
   for (const digit of commonDigits) {
     const result = tryTwoStringKite(selectedCells, cells, digit);
@@ -27,11 +27,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   return makeEmptyPreview(META, '未構成雙弦');
 }
 
-function tryTwoStringKite(
-  selectedCells: number[],
-  cells: CellData[],
-  digit: number,
-): SkillPreview | null {
+function tryTwoStringKite(selectedCells: number[], cells: CellData[], digit: number): SkillPreview | null {
   // Find all rows and cols with exactly 2 candidates for this digit
   const rowPairs: { line: number; pos: [number, number] }[] = [];
   const colPairs: { line: number; pos: [number, number] }[] = [];
@@ -48,8 +44,6 @@ function tryTwoStringKite(
     if (rowPositions.length === 2) rowPairs.push({ line: l, pos: [rowPositions[0], rowPositions[1]] });
     if (colPositions.length === 2) colPairs.push({ line: l, pos: [colPositions[0], colPositions[1]] });
   }
-
-  const selSet = new Set(selectedCells);
 
   // Two-string kite: one row-pair + one col-pair, with one cell from each sharing a box
   for (const rp of rowPairs) {
@@ -75,7 +69,7 @@ function tryTwoStringKite(
           if (uniqueFour.length < 4) continue;
 
           // Check if selected cells are part of this pattern
-          if (!selectedCells.every(c => uniqueFour.includes(c))) continue;
+          if (!selectedCells.every((c) => uniqueFour.includes(c))) continue;
 
           // Eliminate: cells that see BOTH rEnd and cEnd (the non-shared endpoints)
           const targets: LitCandidate[] = [];
@@ -120,7 +114,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const twoStringKiteSkill: SkillDetector = { ...META, evaluate, execute };

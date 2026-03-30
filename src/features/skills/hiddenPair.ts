@@ -9,13 +9,16 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
 
   for (let i = 0; i < selectedCells.length; i++) {
     for (let j = i + 1; j < selectedCells.length; j++) {
-      const a = selectedCells[i], b = selectedCells[j];
-      const dA = cells[a], dB = cells[b];
+      const a = selectedCells[i],
+        b = selectedCells[j];
+      const dA = cells[a],
+        dB = cells[b];
       if (!dA || dA.value !== 0 || !dB || dB.value !== 0) continue;
 
       // If both have only 2 candidates and they're the same → that's Naked Pair, skip
       if (dA.notes.length === 2 && dB.notes.length === 2) {
-        const sA = [...dA.notes].sort(), sB = [...dB.notes].sort();
+        const sA = [...dA.notes].sort(),
+          sB = [...dB.notes].sort();
         if (sA[0] === sB[0] && sA[1] === sB[1]) continue;
       }
 
@@ -57,9 +60,17 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
             }
 
             if (targets.length > 0) {
-              return { valid: true, skillId: META.id, skillName: META.name, skillSubtitle: META.subtitle,
-                sweepDirection: META.sweepDirection, digits: pairDigits, unitLabel: unit.label,
-                sourceCells: [a, b], targets };
+              return {
+                valid: true,
+                skillId: META.id,
+                skillName: META.name,
+                skillSubtitle: META.subtitle,
+                sweepDirection: META.sweepDirection,
+                digits: pairDigits,
+                unitLabel: unit.label,
+                sourceCells: [a, b],
+                targets,
+              };
             }
           }
         }
@@ -80,7 +91,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const hiddenPairSkill: SkillDetector = { ...META, evaluate, execute };

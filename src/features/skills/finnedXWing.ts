@@ -1,6 +1,6 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
-import { makeEmptyPreview, cellsSeeEachOther } from './types';
+import { makeEmptyPreview } from './types';
 
 const META = { id: 'finned_x_wing', name: '裂鋒', subtitle: 'Finned X-Wing', sweepDirection: 'outward' as const };
 
@@ -19,9 +19,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
 
   // Find common digits across all selected cells
   const firstNotes = cells[selectedCells[0]].notes;
-  const commonDigits = firstNotes.filter(d =>
-    selectedCells.every(idx => cells[idx].notes.includes(d)),
-  );
+  const commonDigits = firstNotes.filter((d) => selectedCells.every((idx) => cells[idx].notes.includes(d)));
 
   for (const digit of commonDigits) {
     // Try row-based finned X-Wing
@@ -60,16 +58,19 @@ function tryFinnedFish(
   // Try all pairs of lines
   for (let i = 0; i < lines.length; i++) {
     for (let j = i + 1; j < lines.length; j++) {
-      const l1 = lines[i], l2 = lines[j];
+      const l1 = lines[i],
+        l2 = lines[j];
 
       // One line should have exactly 2 (the "clean" line), the other 2 or 3
       // The line with 3 has the fin
       let cleanLine: typeof l1, finnedLine: typeof l1;
 
       if (l1.positions.length === 2 && l2.positions.length === 3) {
-        cleanLine = l1; finnedLine = l2;
+        cleanLine = l1;
+        finnedLine = l2;
       } else if (l2.positions.length === 2 && l1.positions.length === 3) {
-        cleanLine = l2; finnedLine = l1;
+        cleanLine = l2;
+        finnedLine = l1;
       } else if (l1.positions.length === 2 && l2.positions.length === 2) {
         // Could still be finned if selected cells include an extra cell
         // Skip for now — standard X-Wing handles this
@@ -79,12 +80,12 @@ function tryFinnedFish(
       }
 
       // The clean line's 2 cross-positions define the X-Wing columns
-      const getCross = (idx: number) => lineType === 'row' ? idx % 9 : Math.floor(idx / 9);
+      const getCross = (idx: number) => (lineType === 'row' ? idx % 9 : Math.floor(idx / 9));
       const xwingCrosses = cleanLine.positions.map(getCross);
 
       // The finned line must have 2 of its positions matching these crosses
-      const finnedMatching = finnedLine.positions.filter(idx => xwingCrosses.includes(getCross(idx)));
-      const finnedExtra = finnedLine.positions.filter(idx => !xwingCrosses.includes(getCross(idx)));
+      const finnedMatching = finnedLine.positions.filter((idx) => xwingCrosses.includes(getCross(idx)));
+      const finnedExtra = finnedLine.positions.filter((idx) => !xwingCrosses.includes(getCross(idx)));
 
       if (finnedMatching.length !== 2 || finnedExtra.length !== 1) continue;
 
@@ -93,7 +94,7 @@ function tryFinnedFish(
 
       // All selected cells must be part of this pattern
       const allPattern = [...cleanLine.positions, ...finnedLine.positions];
-      if (!selectedCells.every(c => allPattern.includes(c))) continue;
+      if (!selectedCells.every((c) => allPattern.includes(c))) continue;
 
       // Eliminations: in the X-Wing cross-lines (the columns for row-based),
       // outside the defining lines, but ONLY cells that also see the fin (same box as fin)
@@ -145,7 +146,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const finnedXWingSkill: SkillDetector = { ...META, evaluate, execute };

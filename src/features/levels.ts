@@ -8,6 +8,7 @@ import { showFeedback } from '../ui/feedback';
 import { loadPreLevelLeaderboard } from '../firebase/client';
 import { syncLevelCardSize } from '../game/board';
 import { TECH_MAP, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
+import { closeWildLobby } from './wild/wildLobby';
 
 // Route through window so the React bridge can intercept
 function showTeachModal(stars: number, source = 'tier') {
@@ -422,6 +423,7 @@ export function showLevelScreen(returnToTier = false): void {
   gs.overlay!.style.display = 'none';
   import('./replay').then((m) => m.closeReplayModal());
   hidePreLevelModal();
+  closeWildLobby();
   if (gs.isDuoMode) callResetDuoState();
   if (returnToTier && gs.currentTab !== null) {
     enterTier(gs.currentTab);
@@ -449,7 +451,37 @@ export function updateSpeedrunToggleUI(): void {
 
 // ── Random / Pool (Wild mode) ────────────────────────────────────────
 
+let worldLaunchInFlight = false;
+
 export async function startPoolRandom(): Promise<void> {
-  const { startWorldSession } = await import('./wild/wildController');
-  await startWorldSession();
+  if (worldLaunchInFlight) return;
+  worldLaunchInFlight = true;
+
+  const enterBtn = document.getElementById('wild-enter-btn') as HTMLButtonElement | null;
+  if (enterBtn) {
+    enterBtn.classList.add('is-loading');
+    enterBtn.setAttribute('aria-busy', 'true');
+    enterBtn.disabled = true;
+  }
+
+  try {
+    showFeedback('世界載入中...', 'success');
+    const { startWorldSession, continueWild, getWildProfile } = await import('./wild/wildController');
+    const session = getWildProfile().currentSession;
+    if (session && session.round > 0 && session.round < 10) {
+      await continueWild();
+      return;
+    }
+    await startWorldSession();
+  } catch (e) {
+    console.error('[World] start failed:', e);
+    showFeedback('進入世界失敗，請稍後再試', 'error');
+  } finally {
+    worldLaunchInFlight = false;
+    if (enterBtn) {
+      enterBtn.classList.remove('is-loading');
+      enterBtn.removeAttribute('aria-busy');
+      enterBtn.disabled = false;
+    }
+  }
 }

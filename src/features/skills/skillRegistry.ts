@@ -19,16 +19,18 @@ export function evaluateAllSkills(selectedCells: number[], cells: CellData[]): S
     }
   }
 
-  return bestMiss ?? {
-    valid: false,
-    reason: '未構成任何招式',
-    skillId: '',
-    skillName: '',
-    skillSubtitle: '',
-    sourceCells: [],
-    targets: [],
-    sweepDirection: 'outward',
-  };
+  return (
+    bestMiss ?? {
+      valid: false,
+      reason: '未構成任何招式',
+      skillId: '',
+      skillName: '',
+      skillSubtitle: '',
+      sourceCells: [],
+      targets: [],
+      sweepDirection: 'outward',
+    }
+  );
 }
 
 export function getSkillById(id: string): SkillDetector | undefined {

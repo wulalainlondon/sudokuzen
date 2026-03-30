@@ -1,7 +1,7 @@
 // Cast choreography system — per-skill visual sequences during cast.
 // Each skill can register a custom choreography; unregistered skills use the default.
 
-import type { SkillPreview, LitCandidate } from './types';
+import type { SkillPreview } from './types';
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -53,10 +53,20 @@ function createCastSVG(gridEl: HTMLElement): SVGSVGElement {
   return svg;
 }
 
-function addSVGLine(svg: SVGSVGElement, x1: number, y1: number, x2: number, y2: number, cls: string, delay = 0): SVGLineElement {
+function addSVGLine(
+  svg: SVGSVGElement,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  cls: string,
+  delay = 0,
+): SVGLineElement {
   const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  l.setAttribute('x1', String(x1)); l.setAttribute('y1', String(y1));
-  l.setAttribute('x2', String(x2)); l.setAttribute('y2', String(y2));
+  l.setAttribute('x1', String(x1));
+  l.setAttribute('y1', String(y1));
+  l.setAttribute('x2', String(x2));
+  l.setAttribute('y2', String(y2));
   l.setAttribute('class', cls);
   if (delay > 0) l.style.animationDelay = `${delay}ms`;
   svg.appendChild(l);
@@ -68,10 +78,16 @@ function removeCastSVG(): void {
 }
 
 function centroid(gridEl: HTMLElement, cells: number[]): { x: number; y: number } {
-  let sx = 0, sy = 0, n = 0;
+  let sx = 0,
+    sy = 0,
+    n = 0;
   for (const c of cells) {
     const p = getCellCenter(gridEl, c);
-    if (p) { sx += p.x; sy += p.y; n++; }
+    if (p) {
+      sx += p.x;
+      sy += p.y;
+      n++;
+    }
   }
   return n > 0 ? { x: sx / n, y: sy / n } : { x: 0, y: 0 };
 }
@@ -101,10 +117,17 @@ async function strikeTargets(ctx: CastContext, stagger: number, strikeClass: str
 
 function cleanupAll(gridEl: HTMLElement, extraClasses: string[] = []): void {
   const allClasses = [
-    'skill-strike', 'skill-strike-inward', 'skill-source-pulse',
-    'skill-pair-bond', 'skill-lock-digit-ring',
-    'skill-weave-anchor', 'skill-weave-anchor-1', 'skill-weave-anchor-2',
-    'skill-reveal-digit', 'skill-noise-digit', 'skill-purify-pulse',
+    'skill-strike',
+    'skill-strike-inward',
+    'skill-source-pulse',
+    'skill-pair-bond',
+    'skill-lock-digit-ring',
+    'skill-weave-anchor',
+    'skill-weave-anchor-1',
+    'skill-weave-anchor-2',
+    'skill-reveal-digit',
+    'skill-noise-digit',
+    'skill-purify-pulse',
     ...extraClasses,
   ];
   Array.from(gridEl.children).forEach((c) => {

@@ -6,12 +6,26 @@ import type { WildProfile, WildEncounter, ChallengeMode } from './wildState';
 // Techniques with implemented skill detectors. Only these can spawn in wild mode.
 // Update this set as new detectors are added.
 const IMPLEMENTED_SKILLS = new Set([
-  'naked_single', 'hidden_single',
-  'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple',
-  'x_wing', 'swordfish', 'jellyfish',
-  'xy_wing', 'xyz_wing', 'w_wing',
-  'unique_rectangle', 'remote_pairs',
-  'skyscraper', 'two_string_kite', 'empty_rectangle', 'finned_x_wing', 'bug_plus_one',
+  'naked_single',
+  'hidden_single',
+  'locked_candidates',
+  'naked_pair',
+  'hidden_pair',
+  'naked_triple',
+  'hidden_triple',
+  'x_wing',
+  'swordfish',
+  'jellyfish',
+  'xy_wing',
+  'xyz_wing',
+  'w_wing',
+  'unique_rectangle',
+  'remote_pairs',
+  'skyscraper',
+  'two_string_kite',
+  'empty_rectangle',
+  'finned_x_wing',
+  'bug_plus_one',
 ]);
 
 // ── Puzzle JSON cache ────────────────────────────────────────────────
@@ -53,7 +67,7 @@ function getAvailablePool(profile: WildProfile): TechniqueMeta[] {
 // ── Two-step tier-based weighted selection ───────────────────────────
 
 /** Probability of rolling each tier [0..4]. Tunable. */
-export const TIER_PROBABILITIES: readonly number[] = [0.60, 0.20, 0.12, 0.06, 0.02];
+export const TIER_PROBABILITIES: readonly number[] = [0.6, 0.2, 0.12, 0.06, 0.02];
 
 function tieredPick(pool: TechniqueMeta[]): TechniqueMeta {
   // Step 1: Group available pool by tier
@@ -95,11 +109,11 @@ function tieredPick(pool: TechniqueMeta[]): TechniqueMeta {
 
 /** Per-tier mode weights: [standard, ironman, blind, timed, noNotes]. Gauntlet is special-cased. */
 const MODE_WEIGHTS: Record<number, Record<ChallengeMode, number>> = {
-  0: { standard: 0.70, ironman: 0.05, blind: 0.08, timed: 0.10, noNotes: 0.07, gauntlet: 0 },
-  1: { standard: 0.55, ironman: 0.10, blind: 0.10, timed: 0.13, noNotes: 0.12, gauntlet: 0 },
+  0: { standard: 0.7, ironman: 0.05, blind: 0.08, timed: 0.1, noNotes: 0.07, gauntlet: 0 },
+  1: { standard: 0.55, ironman: 0.1, blind: 0.1, timed: 0.13, noNotes: 0.12, gauntlet: 0 },
   2: { standard: 0.45, ironman: 0.15, blind: 0.12, timed: 0.15, noNotes: 0.13, gauntlet: 0 },
-  3: { standard: 0.40, ironman: 0.18, blind: 0.12, timed: 0.15, noNotes: 0.15, gauntlet: 0 },
-  4: { standard: 0.35, ironman: 0.20, blind: 0.15, timed: 0.15, noNotes: 0.15, gauntlet: 0 },
+  3: { standard: 0.4, ironman: 0.18, blind: 0.12, timed: 0.15, noNotes: 0.15, gauntlet: 0 },
+  4: { standard: 0.35, ironman: 0.2, blind: 0.15, timed: 0.15, noNotes: 0.15, gauntlet: 0 },
 };
 
 export function selectChallengeMode(tier: number, profile: WildProfile): ChallengeMode {
@@ -123,10 +137,13 @@ export function selectChallengeMode(tier: number, profile: WildProfile): Challen
 export async function selectSessionEncounter(profile: WildProfile, round: number): Promise<WildEncounter> {
   // Determine max tier based on round
   let maxTier: number;
-  if (round <= 3) maxTier = 1;       // warm-up
-  else if (round <= 6) maxTier = 2;  // normal
-  else if (round <= 9) maxTier = 3;  // challenge
-  else maxTier = 4;                   // boss
+  if (round <= 3)
+    maxTier = 1; // warm-up
+  else if (round <= 6)
+    maxTier = 2; // normal
+  else if (round <= 9)
+    maxTier = 3; // challenge
+  else maxTier = 4; // boss
 
   // Filter pool: implemented, unlocked, not on cooldown, tier <= maxTier
   let pool = TECHNIQUE_TABLE.filter((t) => {
@@ -139,7 +156,9 @@ export async function selectSessionEncounter(profile: WildProfile, round: number
 
   // Fallback if pool is empty
   if (pool.length === 0) {
-    pool = TECHNIQUE_TABLE.filter((t) => IMPLEMENTED_SKILLS.has(t.key) && t.levelGate <= profile.iqLevel && t.tier <= maxTier);
+    pool = TECHNIQUE_TABLE.filter(
+      (t) => IMPLEMENTED_SKILLS.has(t.key) && t.levelGate <= profile.iqLevel && t.tier <= maxTier,
+    );
   }
   if (pool.length === 0) {
     pool = TECHNIQUE_TABLE.filter((t) => IMPLEMENTED_SKILLS.has(t.key) && t.levelGate <= profile.iqLevel);

@@ -40,14 +40,14 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
 
     if (w1Set.has(X) && w2Set.has(Y)) {
       // wing1 = {X, Z}, wing2 = {Y, Z}
-      const z1 = w1Notes.find(d => d !== X);
-      const z2 = w2Notes.find(d => d !== Y);
+      const z1 = w1Notes.find((d) => d !== X);
+      const z2 = w2Notes.find((d) => d !== Y);
       if (z1 !== undefined && z2 !== undefined && z1 === z2) Z = z1;
     }
     if (Z === null && w1Set.has(Y) && w2Set.has(X)) {
       // wing1 = {Y, Z}, wing2 = {X, Z}
-      const z1 = w1Notes.find(d => d !== Y);
-      const z2 = w2Notes.find(d => d !== X);
+      const z1 = w1Notes.find((d) => d !== Y);
+      const z2 = w2Notes.find((d) => d !== X);
       if (z1 !== undefined && z2 !== undefined && z1 === z2) Z = z1;
     }
 
@@ -93,7 +93,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const xyWingSkill: SkillDetector = { ...META, evaluate, execute };

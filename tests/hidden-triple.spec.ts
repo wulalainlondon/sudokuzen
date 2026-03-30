@@ -11,11 +11,11 @@ describe('hidden triple skill', () => {
     const cells = buildEmptyCells();
     // Row 0: cells 0, 3, 6 (different boxes, only share row)
     // Digits 2,5,8 only appear in these 3 cells within row 0
-    cells[0].notes = [2, 1, 9];      // has 2 + extras
-    cells[3].notes = [5, 8, 1, 9];   // has 5,8 + extras
-    cells[6].notes = [2, 5, 8, 9];   // has 2,5,8 + extra
+    cells[0].notes = [2, 1, 9]; // has 2 + extras
+    cells[3].notes = [5, 8, 1, 9]; // has 5,8 + extras
+    cells[6].notes = [2, 5, 8, 9]; // has 2,5,8 + extra
     // Other row-0 cells have NO 2, 5, or 8 — but 9 must appear elsewhere to prevent {2,5,9}
-    cells[1].notes = [1, 9];          // 9 leaks → {2,5,9} is NOT hidden
+    cells[1].notes = [1, 9]; // 9 leaks → {2,5,9} is NOT hidden
     cells[2].notes = [3, 7];
     cells[4].notes = [3, 4];
     cells[5].notes = [1, 7];
@@ -39,10 +39,10 @@ describe('hidden triple skill', () => {
     cells[0].notes = [2, 1, 9];
     cells[3].notes = [5, 8, 1];
     cells[6].notes = [2, 5, 8, 9];
-    cells[1].notes = [2, 4];  // digit 2 leaks!
+    cells[1].notes = [2, 4]; // digit 2 leaks!
     cells[2].notes = [3, 7];
-    cells[4].notes = [5, 4];  // digit 5 leaks!
-    cells[5].notes = [8, 7];  // digit 8 leaks!
+    cells[4].notes = [5, 4]; // digit 5 leaks!
+    cells[5].notes = [8, 7]; // digit 8 leaks!
 
     expect(hiddenTripleSkill.evaluate([0, 3, 6], cells).valid).toBe(false);
   });
@@ -52,7 +52,7 @@ describe('hidden triple skill', () => {
     cells[0].notes = [2, 1, 6];
     cells[3].notes = [5, 8, 4];
     cells[6].notes = [2, 5, 8, 6];
-    cells[1].notes = [1, 6];    // 6 leaks
+    cells[1].notes = [1, 6]; // 6 leaks
     cells[2].notes = [3, 7];
     cells[4].notes = [3, 4];
     cells[5].notes = [1, 7];

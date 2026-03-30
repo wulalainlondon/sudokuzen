@@ -29,11 +29,11 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     const w2Notes = [...w2Data.notes].sort();
 
     // Wings must be subsets of pivot
-    if (!w1Notes.every(d => pNotes.includes(d))) continue;
-    if (!w2Notes.every(d => pNotes.includes(d))) continue;
+    if (!w1Notes.every((d) => pNotes.includes(d))) continue;
+    if (!w2Notes.every((d) => pNotes.includes(d))) continue;
 
     // Z is the common digit in all 3 cells
-    const Z = pNotes.find(d => w1Notes.includes(d) && w2Notes.includes(d));
+    const Z = pNotes.find((d) => w1Notes.includes(d) && w2Notes.includes(d));
     if (Z === undefined) continue;
 
     // Wings must be different pairs (otherwise it's a naked pair, not XYZ-Wing)
@@ -79,7 +79,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const xyzWingSkill: SkillDetector = { ...META, evaluate, execute };

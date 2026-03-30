@@ -8,12 +8,14 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   if (selectedCells.length !== 2) return makeEmptyPreview(META, selectedCells.length < 2 ? '' : '需選 2 格');
 
   const [a, b] = selectedCells;
-  const dA = cells[a], dB = cells[b];
+  const dA = cells[a],
+    dB = cells[b];
   if (!dA || dA.value !== 0 || !dB || dB.value !== 0) return makeEmptyPreview(META, '所選格需為空');
   if (dA.notes.length !== 2 || dB.notes.length !== 2) return makeEmptyPreview(META, '兩格需為雙候選');
 
   // Same bivalue pair
-  const sA = [...dA.notes].sort(), sB = [...dB.notes].sort();
+  const sA = [...dA.notes].sort(),
+    sB = [...dB.notes].sort();
   if (sA[0] !== sB[0] || sA[1] !== sB[1]) return makeEmptyPreview(META, '兩格需相同雙候選');
 
   // Must NOT see each other directly (otherwise it's a naked pair)
@@ -38,7 +40,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     for (const { unitType, unitIndex } of allUnits) {
       const unitCells = getUnitCells(unitType, unitIndex);
       // Find cells in this unit that have linkDigit as candidate
-      const withDigit = unitCells.filter(idx => {
+      const withDigit = unitCells.filter((idx) => {
         if (idx === a || idx === b) return false;
         const cd = cells[idx];
         return cd && cd.value === 0 && cd.notes.includes(linkDigit);
@@ -98,7 +100,12 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     d.notes.splice(idx, 1);
     removed.push(t);
   }
-  return { ...preview, targets: removed, valid: removed.length > 0, reason: removed.length > 0 ? undefined : '沒有可消去候選' };
+  return {
+    ...preview,
+    targets: removed,
+    valid: removed.length > 0,
+    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+  };
 }
 
 export const wWingSkill: SkillDetector = { ...META, evaluate, execute };

@@ -70,8 +70,12 @@ let _preview: SkillPreview | null = null;
 
 // ── UI refs ──────────────────────────────────────────────────────────
 
-function getNumpad(): HTMLElement | null { return document.getElementById('numpad'); }
-function getSkillPanel(): HTMLElement | null { return document.getElementById('skill-panel'); }
+function getNumpad(): HTMLElement | null {
+  return document.getElementById('numpad');
+}
+function getSkillPanel(): HTMLElement | null {
+  return document.getElementById('skill-panel');
+}
 
 // ── Panel swap (numpad ↔ skill panel) ────────────────────────────────
 
@@ -186,8 +190,10 @@ function updateConnectionOverlay(): void {
 
   const addLine = (x1: number, y1: number, x2: number, y2: number, cls: string) => {
     const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    l.setAttribute('x1', String(x1)); l.setAttribute('y1', String(y1));
-    l.setAttribute('x2', String(x2)); l.setAttribute('y2', String(y2));
+    l.setAttribute('x1', String(x1));
+    l.setAttribute('y1', String(y1));
+    l.setAttribute('x2', String(x2));
+    l.setAttribute('y2', String(y2));
     l.setAttribute('class', cls);
     svg.appendChild(l);
   };
@@ -206,7 +212,13 @@ function updateConnectionOverlay(): void {
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
-function recordAction(type: string, detail: string, idx: number | null = null, val: number | null = null, notes: number[] | null = null): void {
+function recordAction(
+  type: string,
+  detail: string,
+  idx: number | null = null,
+  val: number | null = null,
+  notes: number[] | null = null,
+): void {
   gs.actionHistory.push({ t: gs.seconds, type, detail, idx, val, notes: notes ? notes.slice() : null });
   if (gs.actionHistory.length > 1200) gs.actionHistory.shift();
 }
@@ -290,13 +302,22 @@ export function tryQuickCast(cellIdx: number): boolean {
 
 async function doQuickCast(): Promise<void> {
   const skill = sm();
-  if (!_preview?.valid) { exitSkillMode(); return; }
+  if (!_preview?.valid) {
+    exitSkillMode();
+    return;
+  }
 
   const detector = getSkillById(_preview.skillId);
-  if (!detector) { exitSkillMode(); return; }
+  if (!detector) {
+    exitSkillMode();
+    return;
+  }
 
   const result = detector.execute(gs.cellsData, _preview);
-  if (!result.valid) { exitSkillMode(); return; }
+  if (!result.valid) {
+    exitSkillMode();
+    return;
+  }
 
   skill.casting = true;
 
@@ -456,7 +477,15 @@ export function applyGridSkillClass(): void {
 }
 
 // Legacy re-exports for core.ts compatibility
-export function evaluateLockedSkill(): void { /* no-op — skill mode is now on-demand */ }
-export function toggleSkillMode(): void { /* no-op — removed toggle button */ }
-export function handleCandidateProbeTap(): void { /* no-op — replaced by long-press */ }
-export function castLockedSkill(): Promise<void> { return castSkill(); }
+export function evaluateLockedSkill(): void {
+  /* no-op — skill mode is now on-demand */
+}
+export function toggleSkillMode(): void {
+  /* no-op — removed toggle button */
+}
+export function handleCandidateProbeTap(): void {
+  /* no-op — replaced by long-press */
+}
+export function castLockedSkill(): Promise<void> {
+  return castSkill();
+}

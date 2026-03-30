@@ -5,7 +5,7 @@ import type { WildProfile } from './wildState';
 
 /** Cumulative EXP needed to reach level N: 50 * N * (N+1) / 2 */
 export function expForLevel(n: number): number {
-  return 50 * n * (n + 1) / 2;
+  return (50 * n * (n + 1)) / 2;
 }
 
 /** Derive IQ level from total EXP. */

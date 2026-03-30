@@ -16,7 +16,7 @@ type SolverGrid = SolverCell[];
 
 // ── Grid setup ──────────────────────────────────────────────────────
 
-function initGrid(puzzle: number[], solution: number[]): SolverGrid {
+function initGrid(puzzle: number[], _solution: number[]): SolverGrid {
   const grid: SolverGrid = [];
   for (let i = 0; i < 81; i++) {
     if (puzzle[i] !== 0) {
@@ -36,10 +36,16 @@ function initGrid(puzzle: number[], solution: number[]): SolverGrid {
 }
 
 function canPlace(grid: SolverGrid, idx: number, digit: number): boolean {
-  const row = Math.floor(idx / 9), col = idx % 9;
-  const br = Math.floor(row / 3) * 3, bc = Math.floor(col / 3) * 3;
-  for (let c = 0; c < 9; c++) { if (grid[row * 9 + c].value === digit) return false; }
-  for (let r = 0; r < 9; r++) { if (grid[r * 9 + col].value === digit) return false; }
+  const row = Math.floor(idx / 9),
+    col = idx % 9;
+  const br = Math.floor(row / 3) * 3,
+    bc = Math.floor(col / 3) * 3;
+  for (let c = 0; c < 9; c++) {
+    if (grid[row * 9 + c].value === digit) return false;
+  }
+  for (let r = 0; r < 9; r++) {
+    if (grid[r * 9 + col].value === digit) return false;
+  }
   for (let r = br; r < br + 3; r++) {
     for (let c = bc; c < bc + 3; c++) {
       if (grid[r * 9 + c].value === digit) return false;
@@ -52,8 +58,10 @@ function placeDigit(grid: SolverGrid, idx: number, digit: number): void {
   grid[idx].value = digit;
   grid[idx].candidates.clear();
   // Remove from peers
-  const row = Math.floor(idx / 9), col = idx % 9;
-  const br = Math.floor(row / 3) * 3, bc = Math.floor(col / 3) * 3;
+  const row = Math.floor(idx / 9),
+    col = idx % 9;
+  const br = Math.floor(row / 3) * 3,
+    bc = Math.floor(col / 3) * 3;
   for (let c = 0; c < 9; c++) grid[row * 9 + c].candidates.delete(digit);
   for (let r = 0; r < 9; r++) grid[r * 9 + col].candidates.delete(digit);
   for (let r = br; r < br + 3; r++) {
@@ -80,7 +88,7 @@ function solveHiddenSingles(grid: SolverGrid): boolean {
   const units = getAllUnits();
   for (const unit of units) {
     for (let d = 1; d <= 9; d++) {
-      const cells = unit.filter(i => grid[i].value === 0 && grid[i].candidates.has(d));
+      const cells = unit.filter((i) => grid[i].value === 0 && grid[i].candidates.has(d));
       if (cells.length === 1) {
         placeDigit(grid, cells[0], d);
         progress = true;
@@ -94,16 +102,17 @@ function solveLockedCandidates(grid: SolverGrid): boolean {
   let progress = false;
   // Pointing: candidates in a box confined to one row/col → eliminate from rest of row/col
   for (let box = 0; box < 9; box++) {
-    const br = Math.floor(box / 3) * 3, bc = (box % 3) * 3;
+    const br = Math.floor(box / 3) * 3,
+      bc = (box % 3) * 3;
     const boxCells: number[] = [];
     for (let r = br; r < br + 3; r++) for (let c = bc; c < bc + 3; c++) boxCells.push(r * 9 + c);
 
     for (let d = 1; d <= 9; d++) {
-      const cells = boxCells.filter(i => grid[i].value === 0 && grid[i].candidates.has(d));
+      const cells = boxCells.filter((i) => grid[i].value === 0 && grid[i].candidates.has(d));
       if (cells.length < 2) continue;
 
-      const rows = new Set(cells.map(i => Math.floor(i / 9)));
-      const cols = new Set(cells.map(i => i % 9));
+      const rows = new Set(cells.map((i) => Math.floor(i / 9)));
+      const cols = new Set(cells.map((i) => i % 9));
 
       if (rows.size === 1) {
         const row = [...rows][0];
@@ -131,13 +140,17 @@ function solveLockedCandidates(grid: SolverGrid): boolean {
           if (grid[idx].value === 0 && grid[idx].candidates.has(d)) cells.push(idx);
         }
         if (cells.length < 2) continue;
-        const boxes = new Set(cells.map(i => {
-          const r = Math.floor(i / 9), c = i % 9;
-          return Math.floor(r / 3) * 3 + Math.floor(c / 3);
-        }));
+        const boxes = new Set(
+          cells.map((i) => {
+            const r = Math.floor(i / 9),
+              c = i % 9;
+            return Math.floor(r / 3) * 3 + Math.floor(c / 3);
+          }),
+        );
         if (boxes.size === 1) {
           const box = [...boxes][0];
-          const br = Math.floor(box / 3) * 3, bc = (box % 3) * 3;
+          const br = Math.floor(box / 3) * 3,
+            bc = (box % 3) * 3;
           for (let r = br; r < br + 3; r++) {
             for (let c = bc; c < bc + 3; c++) {
               const idx = r * 9 + c;
@@ -155,7 +168,7 @@ function solveNakedSubsets(grid: SolverGrid, size: 2 | 3): boolean {
   let progress = false;
   const units = getAllUnits();
   for (const unit of units) {
-    const emptyCells = unit.filter(i => grid[i].value === 0);
+    const emptyCells = unit.filter((i) => grid[i].value === 0);
     const combos = combinations(emptyCells, size);
     for (const combo of combos) {
       const union = new Set<number>();
@@ -177,16 +190,16 @@ function solveHiddenSubsets(grid: SolverGrid, size: 2 | 3): boolean {
   let progress = false;
   const units = getAllUnits();
   for (const unit of units) {
-    const emptyCells = unit.filter(i => grid[i].value === 0);
+    const emptyCells = unit.filter((i) => grid[i].value === 0);
     // Find digits that still need placing
     const missingDigits: number[] = [];
     for (let d = 1; d <= 9; d++) {
-      if (!unit.some(i => grid[i].value === d)) missingDigits.push(d);
+      if (!unit.some((i) => grid[i].value === d)) missingDigits.push(d);
     }
     const digitCombos = combinations(missingDigits, size);
     for (const digits of digitCombos) {
       // Find cells that contain ANY of these digits
-      const cells = emptyCells.filter(i => digits.some(d => grid[i].candidates.has(d)));
+      const cells = emptyCells.filter((i) => digits.some((d) => grid[i].candidates.has(d)));
       if (cells.length !== size) continue;
       // Remove all OTHER candidates from these cells
       for (const i of cells) {
@@ -216,7 +229,8 @@ function getAllUnits(): number[][] {
     units.push(col);
   }
   for (let b = 0; b < 9; b++) {
-    const br = Math.floor(b / 3) * 3, bc = (b % 3) * 3;
+    const br = Math.floor(b / 3) * 3,
+      bc = (b % 3) * 3;
     const box: number[] = [];
     for (let r = br; r < br + 3; r++) for (let c = bc; c < bc + 3; c++) box.push(r * 9 + c);
     units.push(box);
@@ -225,7 +239,7 @@ function getAllUnits(): number[][] {
 }
 
 function combinations<T>(arr: T[], size: number): T[][] {
-  if (size === 1) return arr.map(x => [x]);
+  if (size === 1) return arr.map((x) => [x]);
   const result: T[][] = [];
   for (let i = 0; i <= arr.length - size; i++) {
     const rest = combinations(arr.slice(i + 1), size - 1);
@@ -238,13 +252,13 @@ function combinations<T>(arr: T[], size: number): T[][] {
 
 // Technique keys in solve order. Each maps to a solver function.
 const SOLVER_STEPS: { key: string; fn: (grid: SolverGrid) => boolean }[] = [
-  { key: 'naked_single',      fn: solveNakedSingles },
-  { key: 'hidden_single',     fn: solveHiddenSingles },
+  { key: 'naked_single', fn: solveNakedSingles },
+  { key: 'hidden_single', fn: solveHiddenSingles },
   { key: 'locked_candidates', fn: solveLockedCandidates },
-  { key: 'naked_pair',        fn: (g) => solveNakedSubsets(g, 2) },
-  { key: 'hidden_pair',       fn: (g) => solveHiddenSubsets(g, 2) },
-  { key: 'naked_triple',      fn: (g) => solveNakedSubsets(g, 3) },
-  { key: 'hidden_triple',     fn: (g) => solveHiddenSubsets(g, 3) },
+  { key: 'naked_pair', fn: (g) => solveNakedSubsets(g, 2) },
+  { key: 'hidden_pair', fn: (g) => solveHiddenSubsets(g, 2) },
+  { key: 'naked_triple', fn: (g) => solveNakedSubsets(g, 3) },
+  { key: 'hidden_triple', fn: (g) => solveHiddenSubsets(g, 3) },
 ];
 
 /**
@@ -260,7 +274,7 @@ export function autoSolve(
   const grid = initGrid(puzzle, solution);
 
   // Only use solvers whose key is in autoCastKeys
-  const activeSolvers = SOLVER_STEPS.filter(s => autoCastKeys.has(s.key));
+  const activeSolvers = SOLVER_STEPS.filter((s) => autoCastKeys.has(s.key));
 
   // Iterate until no solver makes progress
   let changed = true;
@@ -276,7 +290,7 @@ export function autoSolve(
   }
 
   // Extract result
-  const partialPuzzle = grid.map(c => c.value);
-  const notes = grid.map(c => c.value === 0 ? [...c.candidates].sort() : []);
+  const partialPuzzle = grid.map((c) => c.value);
+  const notes = grid.map((c) => (c.value === 0 ? [...c.candidates].sort() : []));
   return { partialPuzzle, notes };
 }
