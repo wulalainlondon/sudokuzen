@@ -3505,6 +3505,29 @@ header h1 {
     z-index: 600;
     animation: emojiFloat 1.4s ease-out forwards;
 }
+/* Duo forfeit button */
+.duo-forfeit-btn {
+    display: block;
+    margin: 8px auto;
+    padding: 6px 20px;
+    background: transparent;
+    border: 1px solid rgba(255, 100, 100, 0.4);
+    color: rgba(255, 100, 100, 0.7);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    cursor: pointer;
+}
+
+/* Duo result win/lose labels */
+.duo-result-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+.duo-result-label.win { color: #FFD700; }
+.duo-result-label.lose { color: #b2bec3; }
+
 /* ===== Teach Modal ===== */
 #teach-modal {
     display: none;

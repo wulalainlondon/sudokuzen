@@ -277,7 +277,7 @@ export function updateDuoPreLevelUI(d: any): void {
   } else {
     if (readyBtn) {
       readyBtn.style.display = d.guestId ? 'inline-block' : 'none';
-      readyBtn.textContent = myReady ? '\u2713 已準備' : '準備完成';
+      readyBtn.textContent = myReady ? '\u2713 已準備' : '我準備好了';
       readyBtn.classList.toggle('is-ready', myReady);
     }
     if (countdownArea) countdownArea.style.display = 'none';
@@ -319,6 +319,22 @@ export async function toggleDuoReady(): Promise<void> {
   }
 }
 
+// ── Countdown Audio ──────────────────────────────────────────────────
+
+function playCountdownBeep(final = false): void {
+  try {
+    const ctx = new ((window as any).AudioContext || (window as any).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = final ? 880 : 440;
+    gain.gain.value = 0.15;
+    osc.start();
+    osc.stop(ctx.currentTime + (final ? 0.3 : 0.15));
+  } catch {}
+}
+
 // ── Countdown ────────────────────────────────────────────────────────
 
 export function startDuoCountdown(startAtTs: any): void {
@@ -343,6 +359,7 @@ export function startDuoCountdown(startAtTs: any): void {
       if (remaining !== lastShown) {
         area!.innerHTML = `<div class="duo-countdown-display">${remaining}</div>`;
         lastShown = remaining;
+        playCountdownBeep();
       }
       requestAnimationFrame(updateCountdownUI);
     }
@@ -358,7 +375,8 @@ export function startDuoCountdown(startAtTs: any): void {
     if (gs.duoRoundLaunched) return;
     gs.duoRoundLaunched = true;
     area!.innerHTML = `<div class="duo-countdown-display">GO!</div>`;
-    setTimeout(() => launchDuoGame(), 300);
+    playCountdownBeep(true);
+    setTimeout(() => launchDuoGame(), 600);
   }, delay) as unknown as ReturnType<typeof setInterval>;
 }
 
@@ -425,7 +443,7 @@ export async function launchDuoGame(): Promise<void> {
 export function updateDuoProgress(): void {
   if (!gs.isDuoMode || !gs.firebaseReady) return;
   const now = Date.now();
-  if (now - gs.duoProgressThrottle < 3000) return; // throttle to every 3s
+  if (now - gs.duoProgressThrottle < 1000) return; // throttle to every 1s
   gs.duoProgressThrottle = now;
   const filled = gs.cellsData.filter((c) => !c.fixed && c.value !== 0).length;
   const field = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
@@ -452,8 +470,23 @@ export function showDuoOpponentFinished(alias: string, timeSec: number, stars: n
   if (gs.duoOpponentNotified) return;
   gs.duoOpponentNotified = true;
   const starsStr = stars ? ' ' + '\u2605'.repeat(stars) : '';
-  showFeedback(`${alias} 已完成！${formatSeconds(timeSec)}${starsStr}`, 'success');
-  if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+  showFeedback(`\u26A1 ${alias} 已完成！${formatSeconds(timeSec)}${starsStr} — 加油！`, 'error');
+  if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 50]);
+
+  // Add forfeit button
+  const existing = document.getElementById('duo-forfeit-btn');
+  if (!existing) {
+    const btn = document.createElement('button');
+    btn.id = 'duo-forfeit-btn';
+    btn.className = 'duo-forfeit-btn';
+    btn.textContent = '\u8A8D\u8F38';
+    btn.onclick = async () => {
+      btn.remove();
+      await submitDuoFinish(9999, 0);
+    };
+    const emojiBar = document.getElementById('duo-emoji-bar');
+    if (emojiBar) emojiBar.insertAdjacentElement('afterend', btn);
+  }
 }
 
 // ── Submit Finish ────────────────────────────────────────────────────
@@ -518,7 +551,9 @@ export function showDuoResult(d: any): void {
   }
 
   function makeCard(alias: string, time: number, stars: number | null, isWinner: boolean): string {
+    const resultLabel = isWinner ? '<div class="duo-result-label win">\u52DD</div>' : (isDraw ? '' : '<div class="duo-result-label lose">\u6557</div>');
     return `<div class="duo-result-card ${isWinner ? 'winner' : ''}">
+                    ${resultLabel}
                     <div class="duo-result-crown">${isWinner ? '\u{1F451}' : ''}</div>
                     <div class="duo-result-alias">${alias || '--'}</div>
                     <div class="duo-result-time">${formatSeconds(time)}</div>
@@ -555,6 +590,51 @@ export function showDuoResult(d: any): void {
   if (emojiBarEl) emojiBarEl.style.display = 'none';
 
   modal.style.display = 'flex';
+
+  // Remove forfeit button if present
+  const forfeitBtn = document.getElementById('duo-forfeit-btn');
+  if (forfeitBtn) forfeitBtn.remove();
+
+  // Celebrate winner or draw
+  const myTime = gs.duoRole === 'host' ? hTime : gTime;
+  const oppTime = gs.duoRole === 'host' ? gTime : hTime;
+  const iWon = myTime < oppTime;
+
+  if (iWon) {
+    if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
+    const layer = document.getElementById('confetti-layer');
+    if (layer) {
+      layer.innerHTML = '';
+      const colors = ['#FFD700', '#FF6B6B', '#74b9ff', '#55efc4', '#a29bfe'];
+      for (let i = 0; i < 30; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti';
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDuration = `${2 + Math.random() * 1.3}s`;
+        piece.style.animationDelay = `${Math.random() * 0.4}s`;
+        layer.appendChild(piece);
+      }
+    }
+  }
+
+  if (isDraw) {
+    if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25]);
+    const layer = document.getElementById('confetti-layer');
+    if (layer) {
+      layer.innerHTML = '';
+      const colors = ['#fd79a8', '#a29bfe', '#74b9ff', '#dfe6e9', '#fab1a0'];
+      for (let i = 0; i < 25; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti';
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDuration = `${2 + Math.random() * 1.3}s`;
+        piece.style.animationDelay = `${Math.random() * 0.4}s`;
+        layer.appendChild(piece);
+      }
+    }
+  }
 }
 
 // ── Duo Records & Streaks ────────────────────────────────────────────
@@ -734,6 +814,8 @@ export function resetDuoState(): void {
   if (progressContainer) progressContainer.style.display = 'none';
   const emojiBar = document.getElementById('duo-emoji-bar');
   if (emojiBar) emojiBar.style.display = 'none';
+  const forfeitBtn = document.getElementById('duo-forfeit-btn');
+  if (forfeitBtn) forfeitBtn.remove();
   gs.duoLastEmojiSeen = '';
 }
 
