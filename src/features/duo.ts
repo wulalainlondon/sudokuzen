@@ -128,6 +128,16 @@ export function handleDuoSnapshot(d: any): void {
   if (d.status === 'waiting') {
     gs.duoRoundLaunched = false;
     gs.duoCountdownStartMs = null;
+
+    // Host: if both players are ready but status is still 'waiting',
+    // trigger countdown now (handles case where guest readied after host)
+    if (gs.duoRole === 'host' && d.hostReady && d.guestReady && d.guestId && !_countdownLaunched) {
+      duoRoomRef().update({
+        status: 'countdown',
+        startAt: firebase.firestore.Timestamp.fromMillis(Date.now() + 4000),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      }).catch(() => {});
+    }
   }
 
   if (d.status === 'countdown' && d.startAt) {
