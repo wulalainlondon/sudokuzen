@@ -13,6 +13,7 @@ declare const firebase: any;
 let _countdownLaunched = false;
 let _duoFinishSubmitted = false;
 let _snapshotRetryCount = 0;
+let _lastSeenLevelId: number | null = null;
 const MAX_SNAPSHOT_RETRIES = 3;
 
 // ── Room Reference ───────────────────────────────────────────────────
@@ -83,7 +84,10 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
         gs.duoRole = null;
       }
     });
-    if (gs.duoRole) subscribeDuoRoom();
+    if (gs.duoRole) {
+      _lastSeenLevelId = levelId;
+      subscribeDuoRoom();
+    }
   } catch (e) {
     console.warn('enterDuoRoom failed:', e);
     gs.duoRole = null;
@@ -135,6 +139,17 @@ export function handleDuoSnapshot(d: any): void {
   if (d.status === 'waiting') {
     gs.duoRoundLaunched = false;
     gs.duoCountdownStartMs = null;
+    _countdownLaunched = false;
+
+    // Detect level change (host switched to a different level)
+    if (d.levelId && _lastSeenLevelId !== null && d.levelId !== _lastSeenLevelId) {
+      gs.duoMyReady = false;
+      // Refresh the pre-level modal with new level info
+      import('../features/levels').then(({ showPreLevelModal }) => {
+        showPreLevelModal(d.levelId, true);
+      }).catch(() => {});
+    }
+    _lastSeenLevelId = d.levelId;
 
     // Host: if both players are ready but status is still 'waiting',
     // trigger countdown now (handles case where guest readied after host)
@@ -672,6 +687,7 @@ export function resetDuoState(): void {
   _countdownLaunched = false;
   _duoFinishSubmitted = false;
   _snapshotRetryCount = 0;
+  _lastSeenLevelId = null;
   gs.duoPenaltySeconds = 0;
   gs.duoCooldownUntil = 0;
   gs.duoLastErrorCell = -1;
