@@ -64,6 +64,32 @@ function getAvailablePool(profile: WildProfile): TechniqueMeta[] {
   });
 }
 
+// ── Newbie zone (Lv.1-20) weighted pick ──────────────────────────────
+
+/** Smooth weight curve for newbie techniques: rise → peak → fade. */
+function newbieWeight(gate: number, level: number): number {
+  if (level < gate) return 0;
+  const age = level - gate;
+  if (age <= 2) return 0.3 + age * 0.35;  // ramp up: 0.3, 0.65, 1.0
+  if (age <= 4) return 1.0;                // peak holds
+  return Math.max(0.3, 1.0 - (age - 4) * 0.1); // gradual fade, min 0.3
+}
+
+/** Weighted pick for newbie zone (Lv.1-20). Each technique has a smooth probability curve. */
+function newbiePick(pool: TechniqueMeta[], iqLevel: number): TechniqueMeta {
+  const weights = pool.map(t => newbieWeight(t.levelGate, iqLevel));
+  const total = weights.reduce((s, w) => s + w, 0);
+  if (total <= 0) return pool[Math.floor(Math.random() * pool.length)];
+
+  const roll = Math.random() * total;
+  let cumulative = 0;
+  for (let i = 0; i < pool.length; i++) {
+    cumulative += weights[i];
+    if (roll < cumulative) return pool[i];
+  }
+  return pool[pool.length - 1];
+}
+
 // ── Two-step tier-based weighted selection ───────────────────────────
 
 /** Base tier probabilities. T0=singles, T4=mythic. */
@@ -228,11 +254,19 @@ export async function selectSessionEncounter(profile: WildProfile, round: number
 export async function selectEncounter(profile: WildProfile): Promise<WildEncounter> {
   const pool = getAvailablePool(profile);
   let picked: TechniqueMeta;
-  if (pool.length === 0) {
+
+  // First ever encounter: force naked_single
+  if (profile.totalEncounters === 0) {
+    picked = TECHNIQUE_TABLE.find(t => t.key === 'naked_single') ?? TECHNIQUE_TABLE[0];
+  } else if (pool.length === 0) {
     // Fallback: all on cooldown — pick from implemented basics ignoring cooldown
     const basics = TECHNIQUE_TABLE.filter((t) => IMPLEMENTED_SKILLS.has(t.key) && t.levelGate <= profile.iqLevel);
     picked = basics.length > 0 ? tieredPick(basics, profile.iqLevel) : TECHNIQUE_TABLE[0];
+  } else if (profile.iqLevel < 21) {
+    // Newbie zone: smooth weighted pick per technique
+    picked = newbiePick(pool, profile.iqLevel);
   } else {
+    // Lv.21+: tier-weighted pick scaled by player level
     picked = tieredPick(pool, profile.iqLevel);
   }
   const mode = selectChallengeMode(picked.tier, profile);
