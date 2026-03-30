@@ -35317,7 +35317,7 @@ const levels = [
   },
   {
     "id": 121,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "光之洗禮",
     "puzzle": [
@@ -35495,7 +35495,7 @@ const levels = [
   },
   {
     "id": 122,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "泉之靈動",
     "puzzle": [
@@ -35673,7 +35673,7 @@ const levels = [
   },
   {
     "id": 123,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "火之考驗",
     "puzzle": [
@@ -35851,7 +35851,7 @@ const levels = [
   },
   {
     "id": 124,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "人之靈氣",
     "puzzle": [
@@ -36029,7 +36029,7 @@ const levels = [
   },
   {
     "id": 125,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "現實投影",
     "puzzle": [
@@ -36207,7 +36207,7 @@ const levels = [
   },
   {
     "id": 126,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "宇宙之心",
     "puzzle": [
@@ -36385,7 +36385,7 @@ const levels = [
   },
   {
     "id": 127,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "志之堅定",
     "puzzle": [
@@ -36563,7 +36563,7 @@ const levels = [
   },
   {
     "id": 128,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "冰之堅韌",
     "puzzle": [
@@ -36741,7 +36741,7 @@ const levels = [
   },
   {
     "id": 129,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "霜之冷傲",
     "puzzle": [
@@ -36919,7 +36919,7 @@ const levels = [
   },
   {
     "id": 130,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "進化階梯",
     "puzzle": [
@@ -37097,7 +37097,7 @@ const levels = [
   },
   {
     "id": 131,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "雷之威嚴",
     "puzzle": [
@@ -37275,7 +37275,7 @@ const levels = [
   },
   {
     "id": 132,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "空之博大",
     "puzzle": [
@@ -37453,7 +37453,7 @@ const levels = [
   },
   {
     "id": 133,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "水之柔情",
     "puzzle": [
@@ -37631,7 +37631,7 @@ const levels = [
   },
   {
     "id": 134,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "生命密碼",
     "puzzle": [
@@ -37809,7 +37809,7 @@ const levels = [
   },
   {
     "id": 135,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "雪之純潔",
     "puzzle": [
@@ -37987,7 +37987,7 @@ const levels = [
   },
   {
     "id": 136,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "地之母體",
     "puzzle": [
@@ -38165,7 +38165,7 @@ const levels = [
   },
   {
     "id": 137,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "神經網路",
     "puzzle": [
@@ -38343,7 +38343,7 @@ const levels = [
   },
   {
     "id": 138,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "基因矩陣",
     "puzzle": [
@@ -38521,7 +38521,7 @@ const levels = [
   },
   {
     "id": 139,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "物之本性",
     "puzzle": [
@@ -38699,7 +38699,7 @@ const levels = [
   },
   {
     "id": 140,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "意之流向",
     "puzzle": [
@@ -38877,7 +38877,7 @@ const levels = [
   },
   {
     "id": 141,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "星之璀璨",
     "puzzle": [
@@ -39055,7 +39055,7 @@ const levels = [
   },
   {
     "id": 142,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "造物法則",
     "puzzle": [
@@ -39233,7 +39233,7 @@ const levels = [
   },
   {
     "id": 143,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "湖之平靜",
     "puzzle": [
@@ -39411,7 +39411,7 @@ const levels = [
   },
   {
     "id": 144,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "金之銳利",
     "puzzle": [
@@ -39589,7 +39589,7 @@ const levels = [
   },
   {
     "id": 145,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "風之自由",
     "puzzle": [
@@ -39767,7 +39767,7 @@ const levels = [
   },
   {
     "id": 146,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "月之溫柔",
     "puzzle": [
@@ -39945,7 +39945,7 @@ const levels = [
   },
   {
     "id": 147,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "霧之迷離",
     "puzzle": [
@@ -40123,7 +40123,7 @@ const levels = [
   },
   {
     "id": 148,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "土之厚重",
     "puzzle": [
@@ -40301,7 +40301,7 @@ const levels = [
   },
   {
     "id": 149,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "虛擬框架",
     "puzzle": [
@@ -40479,7 +40479,7 @@ const levels = [
   },
   {
     "id": 150,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "海之深邃",
     "puzzle": [
@@ -40657,7 +40657,7 @@ const levels = [
   },
   {
     "id": 151,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "雲之縹緲",
     "puzzle": [
@@ -40835,7 +40835,7 @@ const levels = [
   },
   {
     "id": 152,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "日之輝煌",
     "puzzle": [
@@ -41013,7 +41013,7 @@ const levels = [
   },
   {
     "id": 153,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "河之奔流",
     "puzzle": [
@@ -41191,7 +41191,7 @@ const levels = [
   },
   {
     "id": 154,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "木之生機",
     "puzzle": [
@@ -41369,7 +41369,7 @@ const levels = [
   },
   {
     "id": 155,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "靈魂模版",
     "puzzle": [
@@ -41547,7 +41547,7 @@ const levels = [
   },
   {
     "id": 156,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "萬物本源",
     "puzzle": [
@@ -41725,7 +41725,7 @@ const levels = [
   },
   {
     "id": 157,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "意識架構",
     "puzzle": [
@@ -41903,7 +41903,7 @@ const levels = [
   },
   {
     "id": 158,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "情之真切",
     "puzzle": [
@@ -42081,7 +42081,7 @@ const levels = [
   },
   {
     "id": 159,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "山之沉穩",
     "puzzle": [
@@ -42259,7 +42259,7 @@ const levels = [
   },
   {
     "id": 160,
-    "stars": 4,
+    "stars": 1.5,
     "difficultyName": "本源",
     "displayName": "雨之哀傷",
     "puzzle": [
@@ -42437,7 +42437,7 @@ const levels = [
   },
   {
     "id": 161,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不可阻擋",
     "puzzle": [
@@ -42615,7 +42615,7 @@ const levels = [
   },
   {
     "id": 162,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "最後法則",
     "puzzle": [
@@ -42793,7 +42793,7 @@ const levels = [
   },
   {
     "id": 163,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "無苦集滅",
     "puzzle": [
@@ -42971,7 +42971,7 @@ const levels = [
   },
   {
     "id": 164,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不生不滅",
     "puzzle": [
@@ -43149,7 +43149,7 @@ const levels = [
   },
   {
     "id": 165,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "圓滿之寂",
     "puzzle": [
@@ -43327,7 +43327,7 @@ const levels = [
   },
   {
     "id": 166,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "色即是空",
     "puzzle": [
@@ -43505,7 +43505,7 @@ const levels = [
   },
   {
     "id": 167,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "意識消亡",
     "puzzle": [
@@ -43683,7 +43683,7 @@ const levels = [
   },
   {
     "id": 168,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不可回頭",
     "puzzle": [
@@ -43861,7 +43861,7 @@ const levels = [
   },
   {
     "id": 169,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不可更改",
     "puzzle": [
@@ -44039,7 +44039,7 @@ const levels = [
   },
   {
     "id": 170,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "終極一戰",
     "puzzle": [
@@ -44217,7 +44217,7 @@ const levels = [
   },
   {
     "id": 171,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "舍利子",
     "puzzle": [
@@ -44395,7 +44395,7 @@ const levels = [
   },
   {
     "id": 172,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不可置疑",
     "puzzle": [
@@ -44573,7 +44573,7 @@ const levels = [
   },
   {
     "id": 173,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "大一統",
     "puzzle": [
@@ -44751,7 +44751,7 @@ const levels = [
   },
   {
     "id": 174,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不可逾越",
     "puzzle": [
@@ -44929,7 +44929,7 @@ const levels = [
   },
   {
     "id": 175,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "宇宙終局",
     "puzzle": [
@@ -45107,7 +45107,7 @@ const levels = [
   },
   {
     "id": 176,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不可觸摸",
     "puzzle": [
@@ -45285,7 +45285,7 @@ const levels = [
   },
   {
     "id": 177,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不垢不淨",
     "puzzle": [
@@ -45463,7 +45463,7 @@ const levels = [
   },
   {
     "id": 178,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不可言說",
     "puzzle": [
@@ -45641,7 +45641,7 @@ const levels = [
   },
   {
     "id": 179,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不可一世",
     "puzzle": [
@@ -45819,7 +45819,7 @@ const levels = [
   },
   {
     "id": 180,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不增不減",
     "puzzle": [
@@ -45997,7 +45997,7 @@ const levels = [
   },
   {
     "id": 181,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "時間盡頭",
     "puzzle": [
@@ -46175,7 +46175,7 @@ const levels = [
   },
   {
     "id": 182,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "絕對真理",
     "puzzle": [
@@ -46353,7 +46353,7 @@ const levels = [
   },
   {
     "id": 183,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "萬物理論",
     "puzzle": [
@@ -46531,7 +46531,7 @@ const levels = [
   },
   {
     "id": 184,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "現實歸於零",
     "puzzle": [
@@ -46709,7 +46709,7 @@ const levels = [
   },
   {
     "id": 185,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "虛擬終焉",
     "puzzle": [
@@ -46887,7 +46887,7 @@ const levels = [
   },
   {
     "id": 186,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "奇點復歸",
     "puzzle": [
@@ -47065,7 +47065,7 @@ const levels = [
   },
   {
     "id": 187,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "受想行識",
     "puzzle": [
@@ -47243,7 +47243,7 @@ const levels = [
   },
   {
     "id": 188,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "空間極限",
     "puzzle": [
@@ -47421,7 +47421,7 @@ const levels = [
   },
   {
     "id": 189,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "能量回歸",
     "puzzle": [
@@ -47599,7 +47599,7 @@ const levels = [
   },
   {
     "id": 190,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "不可忘卻",
     "puzzle": [
@@ -47777,7 +47777,7 @@ const levels = [
   },
   {
     "id": 191,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "物質解體",
     "puzzle": [
@@ -47955,7 +47955,7 @@ const levels = [
   },
   {
     "id": 192,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "諸法空相",
     "puzzle": [
@@ -48133,7 +48133,7 @@ const levels = [
   },
   {
     "id": 193,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "亦復如是",
     "puzzle": [
@@ -48311,7 +48311,7 @@ const levels = [
   },
   {
     "id": 194,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "主腦核心",
     "puzzle": [
@@ -48489,7 +48489,7 @@ const levels = [
   },
   {
     "id": 195,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "寂滅之終",
     "puzzle": [
@@ -48667,7 +48667,7 @@ const levels = [
   },
   {
     "id": 196,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "無智亦得",
     "puzzle": [
@@ -48845,7 +48845,7 @@ const levels = [
   },
   {
     "id": 197,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "空即是色",
     "puzzle": [
@@ -49023,7 +49023,7 @@ const levels = [
   },
   {
     "id": 198,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "無盡之始",
     "puzzle": [
@@ -49201,7 +49201,7 @@ const levels = [
   },
   {
     "id": 199,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "無眼耳鼻",
     "puzzle": [
@@ -49379,7 +49379,7 @@ const levels = [
   },
   {
     "id": 200,
-    "stars": 5,
+    "stars": 2.5,
     "difficultyName": "寂滅",
     "displayName": "矩陣中心",
     "puzzle": [

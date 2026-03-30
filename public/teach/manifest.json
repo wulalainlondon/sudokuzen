@@ -1,6 +1,6 @@
 {
-  "version": "9ca0c9732fd0",
-  "generatedAt": "2026-03-30T04:20:40.196Z",
+  "version": "b3a3efb3921f",
+  "generatedAt": "2026-03-30T05:58:56.836Z",
   "totalModules": 40,
   "modules": {
     "1": {
@@ -8,35 +8,35 @@
       "name": "啟蒙",
       "subtitle": "先掃裸單，建立節奏",
       "hasPractice": true,
-      "size": 2438
+      "size": 5624
     },
     "2": {
       "technique": "hidden_single",
       "name": "觀照",
       "subtitle": "統計位置，鎖定隱單",
       "hasPractice": true,
-      "size": 3045
+      "size": 6535
     },
     "3": {
       "technique": "locked_candidates",
       "name": "封鎖",
       "subtitle": "宮列互鎖，外圍刪減",
       "hasPractice": true,
-      "size": 3274
+      "size": 6268
     },
     "4": {
       "technique": "naked_pair",
       "name": "雙契",
       "subtitle": "同對成形，旁格排除",
       "hasPractice": true,
-      "size": 4035
+      "size": 7191
     },
     "5": {
       "technique": "hidden_pair",
       "name": "藏雙",
       "subtitle": "先找座位，再清雜訊",
       "hasPractice": true,
-      "size": 4381
+      "size": 7741
     },
     "6": {
       "technique": "naked_triple",
