@@ -125,10 +125,15 @@ function pickBetterSpeed(a: any, b: any): any {
   return ra.time <= rb.time ? ra : rb;
 }
 
-function mergeRecordMaps(localMap: GenericRecordMap, remoteMap: GenericRecordMap, mode: 'classic' | 'speed'): GenericRecordMap {
+function mergeRecordMaps(
+  localMap: GenericRecordMap,
+  remoteMap: GenericRecordMap,
+  mode: 'classic' | 'speed',
+): GenericRecordMap {
   const out: GenericRecordMap = { ...remoteMap };
   for (const [levelId, localRec] of Object.entries(localMap)) {
-    out[levelId] = mode === 'classic' ? pickBetterClassic(localRec, out[levelId]) : pickBetterSpeed(localRec, out[levelId]);
+    out[levelId] =
+      mode === 'classic' ? pickBetterClassic(localRec, out[levelId]) : pickBetterSpeed(localRec, out[levelId]);
   }
   return out;
 }
@@ -187,18 +192,15 @@ async function upsertAliasIndex(playerId: string, alias: string): Promise<void> 
   const aliasKey = aliasKeyOf(alias);
   if (!aliasKey) return;
   try {
-    await gs.db
-      .collection(ALIAS_INDEX_COLLECTION)
-      .doc(aliasKey)
-      .set(
-        {
-          aliasKey,
-          aliasDisplay: alias,
-          playerId,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true },
-      );
+    await gs.db.collection(ALIAS_INDEX_COLLECTION).doc(aliasKey).set(
+      {
+        aliasKey,
+        aliasDisplay: alias,
+        playerId,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
   } catch (e) {
     console.warn('upsert alias index failed:', e);
   }
@@ -272,12 +274,11 @@ export function saveAlias(): void {
   showFeedback(`暱稱已更新：${alias}`);
   const { playerId } = getPlayerIdentity();
   void upsertAliasIndex(playerId, alias);
-  // If hydrate hasn't completed yet, run it now (alias change may map to a different playerId)
-  if (!hydrateComplete) {
-    void hydratePlayerProfileFromCloud().then(() => scheduleProgressSync());
-  } else {
+  // Always re-hydrate on alias change — the new alias may map to a different playerId with existing records
+  hydrateComplete = false;
+  void hydratePlayerProfileFromCloud().then(() => {
     scheduleProgressSync();
-  }
+  });
 }
 
 export async function mergeCloudAchievements(localAchievements: AchievementMap): Promise<AchievementMap | null> {
@@ -337,21 +338,18 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
   const achievements = sanitizeAchievementMap(readJson<AchievementMap>(SK.ACHIEVEMENTS, {}));
   const settings = readLocalSettings();
   try {
-    await gs.db
-      .collection('player_profiles')
-      .doc(playerId)
-      .set(
-        {
-          playerId,
-          alias,
-          records,
-          speedRecords,
-          achievements,
-          settings,
-          progressUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true },
-      );
+    await gs.db.collection('player_profiles').doc(playerId).set(
+      {
+        playerId,
+        alias,
+        records,
+        speedRecords,
+        achievements,
+        settings,
+        progressUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
     await upsertAliasIndex(playerId, alias);
   } catch (e) {
     console.warn('sync player progress failed:', e);
@@ -407,21 +405,16 @@ export async function syncSaveToCloud(saveKey: string, payload: any): Promise<vo
   if (!SAVE_KEY_PATTERN.test(saveKey) || !isPlainObject(payload)) return;
   const { playerId, alias } = getPlayerIdentity();
   try {
-    await gs.db
-      .collection('player_profiles')
-      .doc(playerId)
-      .collection(PROFILE_SAVE_SUBCOLLECTION)
-      .doc(saveKey)
-      .set(
-        {
-          key: saveKey,
-          playerId,
-          alias,
-          payload,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true },
-      );
+    await gs.db.collection('player_profiles').doc(playerId).collection(PROFILE_SAVE_SUBCOLLECTION).doc(saveKey).set(
+      {
+        key: saveKey,
+        playerId,
+        alias,
+        payload,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
   } catch (e) {
     console.warn('sync save failed:', e);
   }
@@ -448,7 +441,12 @@ export async function deleteSaveFromCloud(saveKey: string): Promise<void> {
   }
   const { playerId } = getPlayerIdentity();
   try {
-    await gs.db.collection('player_profiles').doc(playerId).collection(PROFILE_SAVE_SUBCOLLECTION).doc(saveKey).delete();
+    await gs.db
+      .collection('player_profiles')
+      .doc(playerId)
+      .collection(PROFILE_SAVE_SUBCOLLECTION)
+      .doc(saveKey)
+      .delete();
   } catch (e) {
     console.warn('delete cloud save failed:', e);
   }
@@ -458,7 +456,7 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
   if (!gs.firebaseReady || !gs.db) return;
   const identity = getPlayerIdentity();
   let playerId = identity.playerId;
-  let alias = identity.alias;
+  const alias = identity.alias;
   let docRef = gs.db.collection('player_profiles').doc(playerId);
   try {
     let doc = await docRef.get();
@@ -492,7 +490,8 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
     const localSpeedRecords = normalizeRecordMap(readJson<Record<string, any>>(SK.SPEED_RECORDS, {}), 'speed');
     const remoteSpeedRecords = normalizeRecordMap(data.speedRecords, 'speed');
     const mergedSpeedRecords = mergeRecordMaps(localSpeedRecords, remoteSpeedRecords, 'speed');
-    if (JSON.stringify(localSpeedRecords) !== JSON.stringify(mergedSpeedRecords)) writeJson(SK.SPEED_RECORDS, mergedSpeedRecords);
+    if (JSON.stringify(localSpeedRecords) !== JSON.stringify(mergedSpeedRecords))
+      writeJson(SK.SPEED_RECORDS, mergedSpeedRecords);
 
     const localAchievements = sanitizeAchievementMap(readJson<AchievementMap>(SK.ACHIEVEMENTS, {}));
     const remoteAchievements = sanitizeAchievementMap(data.achievements);

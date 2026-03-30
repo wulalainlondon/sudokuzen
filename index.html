@@ -30,7 +30,10 @@
 
     <div id="level-screen">
         <div class="level-screen-header">
-            <h1 class="level-title">SUDOKU ZEN</h1>
+            <div class="level-brand">
+                <h1 class="level-title" id="level-title">SUDOKU ZEN</h1>
+                <span class="level-mode-chip hidden" id="level-mode-chip">WORLD</span>
+            </div>
             <div class="level-header-actions">
                 <button id="library-btn" class="header-icon-btn" onclick="openLibraryOverlay()" title="境界秘笈"
                     aria-label="境界秘笈">📚</button>
@@ -50,7 +53,10 @@
         <div id="stage-view">
             <div class="stage-map" id="stage-map"></div>
             <div class="random-bar">
-                <button class="random-btn" onclick="openWildLobby()">世界</button>
+                <button class="random-btn world-entry-btn" onclick="openWildLobby()">
+                    <span class="world-entry-main">世界</span>
+                    <span class="world-entry-sub">隨機遭遇 · 十輪修行</span>
+                </button>
             </div>
         </div>
         <!-- Wild Mode Lobby -->
@@ -76,6 +82,15 @@
                         <div class="wild-stat"><span class="wild-stat-num" id="wild-encounters">0</span><span class="wild-stat-label">遭遇數</span></div>
                     </div>
                 </div>
+                <div class="wild-session-card">
+                    <div class="wild-session-head">
+                        <div class="wild-session-title">修行輪進度</div>
+                        <div class="wild-session-round" id="wild-session-round">新修行輪</div>
+                    </div>
+                    <div class="wild-session-bar-wrap"><div class="wild-session-bar-fill" id="wild-session-fill"></div></div>
+                    <div class="wild-session-meta" id="wild-session-meta">啟動後將進入 10 輪連續遭遇</div>
+                    <div class="wild-session-tech" id="wild-session-tech">本輪尚未遭遇任何技巧</div>
+                </div>
                 <!-- Auto-Cast Toggle -->
                 <div class="wild-autocast-row">
                     <label class="wild-autocast-label" for="wild-autocast-toggle">
@@ -88,12 +103,25 @@
                 </div>
                 <!-- Enter Button -->
                 <button class="wild-enter-btn" id="wild-enter-btn" onclick="startPoolRandom()">
+                    <span class="wild-enter-chip" id="wild-enter-chip">穩定遭遇池</span>
                     <span class="wild-enter-text">進入世界</span>
-                    <span class="wild-enter-sub">隨機遭遇 · 技巧修煉</span>
+                    <span class="wild-enter-sub" id="wild-enter-sub">隨機遭遇 · 技巧修煉</span>
                 </button>
                 <!-- Bestiary Preview -->
                 <div class="wild-bestiary-section">
                     <div class="wild-bestiary-title">妖獸圖鑑 <span id="wild-bestiary-count">0 / 40</span></div>
+                    <div class="wild-bestiary-controls" id="wild-bestiary-controls">
+                        <button class="wild-filter-btn active" data-filter="all">全部</button>
+                        <button class="wild-filter-btn" data-filter="discovered">已發現</button>
+                        <button class="wild-filter-btn" data-filter="conquered">已討伐</button>
+                    </div>
+                    <div class="wild-rarity-controls" id="wild-rarity-controls">
+                        <button class="wild-rarity-btn active" data-rarity="all">全稀有度</button>
+                        <button class="wild-rarity-btn" data-rarity="common">常見</button>
+                        <button class="wild-rarity-btn" data-rarity="rare">稀有</button>
+                        <button class="wild-rarity-btn" data-rarity="legendary">傳說</button>
+                        <button class="wild-rarity-btn" data-rarity="mythic">神話</button>
+                    </div>
                     <div class="wild-bestiary-grid" id="wild-bestiary-grid"></div>
                 </div>
             </div>
@@ -193,7 +221,10 @@
 
         <!-- 1. 頂部標題與 Quit 按鈕 -->
         <header>
-            <h1>SUDOKU</h1>
+            <div class="game-title-wrap">
+                <h1 id="game-title">SUDOKU</h1>
+                <span class="game-mode-chip hidden" id="game-mode-chip">WORLD</span>
+            </div>
             <div class="header-controls">
                 <button class="header-btn" onclick="pauseGame()" aria-label="Pause Game">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -201,7 +232,7 @@
                         <rect x="14" y="4" width="4" height="16"></rect>
                     </svg>
                 </button>
-                <button class="quit-btn" onclick="showLevelScreen(true)">Quit</button>
+                <button class="quit-btn" id="quit-btn" onclick="showLevelScreen(true)">Quit</button>
             </div>
         </header>
 
@@ -404,7 +435,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.03.30-V11';
+        var INLINE_VER = '2026.03.30-V12';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);
