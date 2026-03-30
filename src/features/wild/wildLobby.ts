@@ -184,16 +184,19 @@ async function studySkill(techKey: string): Promise<void> {
 /** Wait for the teach modal to be closed by the player. */
 function waitForTeachClose(): Promise<void> {
   return new Promise(resolve => {
-    const check = setInterval(() => {
-      const modal = document.getElementById('teach-modal');
-      // Modal is closed when display is none or it doesn't exist
-      if (!modal || modal.style.display === 'none' || modal.classList.contains('hidden')) {
-        clearInterval(check);
-        resolve();
-      }
-    }, 300);
-    // Safety timeout: resolve after 60s even if modal never closes
-    setTimeout(() => { clearInterval(check); resolve(); }, 60000);
+    // Wait a moment for the modal to actually open first
+    setTimeout(() => {
+      const check = setInterval(() => {
+        const modal = document.getElementById('teach-modal');
+        // Teach modal uses .show class to toggle visibility
+        if (!modal || !modal.classList.contains('show')) {
+          clearInterval(check);
+          resolve();
+        }
+      }, 300);
+      // Safety timeout
+      setTimeout(() => { clearInterval(check); resolve(); }, 120000);
+    }, 500);
   });
 }
 

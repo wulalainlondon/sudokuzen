@@ -49,6 +49,11 @@ export function applyExp(
     const allStudied = requiredSkills.every(k => studied.includes(k));
     if (!allStudied) {
       newLevel = 20;
+      // Cap totalExp at Lv.20 threshold to prevent EXP/level desync
+      const lv20Threshold = expForLevel(20);
+      if (profile.totalExp > lv20Threshold) {
+        profile.totalExp = lv20Threshold;
+      }
     }
   }
 

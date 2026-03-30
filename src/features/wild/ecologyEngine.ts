@@ -77,6 +77,7 @@ function newbieWeight(gate: number, level: number): number {
 
 /** Weighted pick for newbie zone (Lv.1-20). Each technique has a smooth probability curve. */
 function newbiePick(pool: TechniqueMeta[], iqLevel: number): TechniqueMeta {
+  if (pool.length === 0) return TECHNIQUE_TABLE[0]; // safety fallback
   const weights = pool.map(t => newbieWeight(t.levelGate, iqLevel));
   const total = weights.reduce((s, w) => s + w, 0);
   if (total <= 0) return pool[Math.floor(Math.random() * pool.length)];
