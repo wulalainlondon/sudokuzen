@@ -104,6 +104,25 @@ export async function triggerFinaleIfNeeded(allConquered: boolean): Promise<void
   await showMentorMessage(MENTOR_FINALE);
 }
 
+/** One-time hint: teach continuous fill on first encounter. */
+export function triggerContinuousFillHint(): void {
+  if (hasSeen('hint_continuous_fill')) return;
+  markSeen('hint_continuous_fill');
+
+  // Pulse the continuous fill button
+  const btn = document.getElementById('continuous-fill-toggle');
+  if (btn) {
+    btn.classList.add('hint-pulse');
+    setTimeout(() => btn.classList.remove('hint-pulse'), 4000);
+  }
+
+  // Show mentor hint after a brief delay (let player see the board first)
+  setTimeout(async () => {
+    const { showFeedback } = await import('../../ui/feedback');
+    showFeedback('提示：長按數字鍵可開啟連續填入', 'success');
+  }, 1500);
+}
+
 /** Get tech note for bestiary display. */
 export function getMentorNote(techKey: string, conquered: boolean): string | null {
   return getTechNote(techKey, conquered);

@@ -383,6 +383,16 @@ header h1 {
     height: 18px;
 }
 
+.mini-btn.hint-pulse {
+    animation: hint-pulse 0.8s ease infinite;
+    z-index: 10;
+}
+
+@keyframes hint-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(116, 185, 255, 0.6); }
+    50%      { box-shadow: 0 0 10px 4px rgba(116, 185, 255, 0.4); }
+}
+
 .mini-btn.active {
     background: var(--accent-strong);
     color: #fff;
@@ -1811,6 +1821,11 @@ header h1 {
     opacity: 0.42;
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cell-border) 60%, transparent);
     border-color: color-mix(in srgb, var(--cell-border) 75%, transparent);
+}
+
+.num-btn:disabled {
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .num-btn.completed::after {

@@ -14,6 +14,7 @@ import {
   triggerFirstKillIfNeeded,
   triggerMilestoneIfNeeded,
   triggerFinaleIfNeeded,
+  triggerContinuousFillHint,
 } from './mentorController';
 
 // ── Runtime state (non-persisted) ────────────────────────────────────
@@ -233,6 +234,11 @@ export async function startWildEncounter(): Promise<void> {
     if (bestiaryEntry && bestiaryEntry.encounters === 1) {
       showFeedback('初遇 — ？？？', 'success');
     }
+  }
+
+  // One-time hint: teach continuous fill on first encounter
+  if (profile.totalEncounters <= 1) {
+    triggerContinuousFillHint();
   }
 }
 
