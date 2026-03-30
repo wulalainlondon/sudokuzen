@@ -243,9 +243,15 @@ export function updateDuoPreLevelUI(d: any): void {
 
   // Ready button state — driven solely by snapshot data
   const myReady = gs.duoRole === 'host' ? d.hostReady : d.guestReady;
+  const startBtn = document.getElementById('pre-level-start-btn');
+  const ghostBtn = document.getElementById('pre-level-ghost-btn');
+  const backBtn = document.getElementById('pre-level-back-btn');
   if (d.status === 'countdown') {
     if (readyBtn) readyBtn.style.display = 'none';
     if (countdownArea) countdownArea.style.display = 'block';
+    if (startBtn) startBtn.style.display = 'none';
+    if (ghostBtn) ghostBtn.style.display = 'none';
+    if (backBtn) backBtn.style.display = 'none';
   } else {
     if (readyBtn) {
       readyBtn.style.display = d.guestId ? 'inline-block' : 'none';
@@ -253,6 +259,8 @@ export function updateDuoPreLevelUI(d: any): void {
       readyBtn.classList.toggle('is-ready', myReady);
     }
     if (countdownArea) countdownArea.style.display = 'none';
+    if (startBtn) startBtn.style.display = '';
+    if (backBtn) backBtn.style.display = '';
   }
 }
 
