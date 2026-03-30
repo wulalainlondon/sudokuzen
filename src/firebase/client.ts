@@ -26,6 +26,7 @@ const PROFILE_SYNC_KEYS: Set<string> = new Set([
 let progressSyncTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingSaveSyncTimers = new Map<string, ReturnType<typeof setTimeout>>();
 let bridgeInstalled = false;
+let hydrateComplete = false;
 
 function isIsoDay(value: unknown): value is string {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -271,7 +272,12 @@ export function saveAlias(): void {
   showFeedback(`暱稱已更新：${alias}`);
   const { playerId } = getPlayerIdentity();
   void upsertAliasIndex(playerId, alias);
-  scheduleProgressSync();
+  // If hydrate hasn't completed yet, run it now (alias change may map to a different playerId)
+  if (!hydrateComplete) {
+    void hydratePlayerProfileFromCloud().then(() => scheduleProgressSync());
+  } else {
+    scheduleProgressSync();
+  }
 }
 
 export async function mergeCloudAchievements(localAchievements: AchievementMap): Promise<AchievementMap | null> {
@@ -323,6 +329,8 @@ export async function syncAchievementsToCloud(achievements: AchievementMap): Pro
 
 export async function syncPlayerProgressToCloud(): Promise<void> {
   if (!gs.firebaseReady || !gs.db) return;
+  // Block sync until hydrate finishes, to prevent overwriting cloud data with empty localStorage
+  if (!hydrateComplete) return;
   const { playerId, alias } = getPlayerIdentity();
   const records = normalizeRecordMap(readJson<Record<string, any>>(SK.RECORDS, {}), 'classic');
   const speedRecords = normalizeRecordMap(readJson<Record<string, any>>(SK.SPEED_RECORDS, {}), 'speed');
@@ -512,6 +520,8 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
     }
   } catch (e) {
     console.warn('hydrate player profile failed:', e);
+  } finally {
+    hydrateComplete = true;
   }
 }
 

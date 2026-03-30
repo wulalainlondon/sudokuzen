@@ -33,8 +33,12 @@ export function bootstrapApp(): void {
 
   bootLegacyRuntime(APP_VERSION);
   if (gs.firebaseReady) {
-    installPlayerCloudSyncBridge();
-    void hydratePlayerProfileFromCloud();
+    // IMPORTANT: hydrate MUST complete before bridge activates.
+    // Otherwise the bridge pushes empty localStorage to cloud,
+    // overwriting the remote profile.
+    hydratePlayerProfileFromCloud().finally(() => {
+      installPlayerCloudSyncBridge();
+    });
   }
   mountReactStrangler();
   installLegacyTeachBridge();
