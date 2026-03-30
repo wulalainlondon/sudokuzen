@@ -69,9 +69,16 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
         });
         gs.duoRole = 'guest';
       } else if (d.status === 'waiting' && d.hostId === playerId) {
-        // Re-opening my own room, update timestamp
-        tx.update(duoRoomRef(), { updatedAt: now, hostAlias: alias });
+        // Re-opening my own room — update level, reset ready states, keep guest
+        tx.update(duoRoomRef(), {
+          levelId,
+          hostAlias: alias,
+          hostReady: false,
+          guestReady: false,
+          updatedAt: now,
+        });
         gs.duoRole = 'host';
+        gs.duoMyReady = false;
       } else {
         gs.duoRole = null;
       }

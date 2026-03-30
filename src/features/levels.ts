@@ -391,7 +391,9 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false): void
 export function hidePreLevelModal(): void {
   gs.preLevelModalEl!.style.display = 'none';
   gs.pendingLevelId = null;
-  if (!gs.isDuoMode && gs.duoRole) callLeaveDuoRoom();
+  // Don't leave duo room when host closes modal — room stays alive for re-selection
+  // Only leave if we're guest and backing out
+  if (!gs.isDuoMode && gs.duoRole === 'guest') callLeaveDuoRoom();
 }
 
 export async function startLevelFromModal(
