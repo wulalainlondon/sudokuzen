@@ -43,6 +43,8 @@ const REALM_ORDER = [
   '空鏡',
   '星潮',
   '玄鏈',
+  '天望',
+  '鋒刃',
   '本源',
   '寂滅',
   '化神',
@@ -71,8 +73,8 @@ const REALM_TEACH_KEY: Record<string, number> = {
   空鏡: 6,
   星潮: 7,
   玄鏈: 8,
-  本源: 9,
-  寂滅: 10,
+  天望: 9,
+  鋒刃: 10,
   化神: 11,
   返虛: 12,
   合道: 13,
@@ -443,17 +445,9 @@ export function updateSpeedrunToggleUI(): void {
   btn.classList.toggle('active', gs.isSpeedrunMode);
 }
 
-// ── Random / Pool ───────────────────────────────────────────────────
+// ── Random / Pool (Wild mode) ────────────────────────────────────────
 
-export function startPoolRandom(): void {
-  const midPoolLevels = getAllLevels().filter((l) => l.hidden);
-  if (!midPoolLevels.length) {
-    showFeedback('今日隨機題庫載入失敗，請稍後重試', 'error');
-    return;
-  }
-  const records = readJson<Record<string, any>>(SK.RECORDS, {});
-  const next = midPoolLevels.find((l) => !records[l.id]) || midPoolLevels[0];
-  if (!next) return;
-  if (records[next.id]) showFeedback('今日題庫已全通，已為你開啟固定挑戰題。', 'success');
-  showPreLevelModal(next.id, true);
+export async function startPoolRandom(): Promise<void> {
+  const { startWildEncounter } = await import('./wild/wildController');
+  await startWildEncounter();
 }
