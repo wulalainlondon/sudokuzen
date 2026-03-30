@@ -36,8 +36,7 @@ service cloud.firestore {
       allow delete: if false;
 
       match /game_saves/{saveKey} {
-        allow get: if true;
-        allow list: if false;
+        allow get, list: if true;
         allow create, update: if request.resource.data.playerId == playerId
                               && request.resource.data.key is string
                               && request.resource.data.key == saveKey
