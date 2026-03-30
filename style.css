@@ -2831,6 +2831,33 @@ header h1 {
     text-align: center;
 }
 
+.wild-beast-frag {
+    font-size: 0.6rem;
+    color: var(--text-sub, #636e72);
+    font-variant-numeric: tabular-nums;
+}
+
+.wild-beast-study-btn {
+    font-size: 0.65rem;
+    padding: 2px 10px;
+    border: 1px solid var(--accent, #0984E3);
+    background: color-mix(in srgb, var(--accent, #0984E3) 15%, transparent);
+    color: var(--accent, #0984E3);
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.wild-beast-study-btn:active {
+    transform: scale(0.95);
+}
+
+.wild-beast-studied {
+    font-size: 0.6rem;
+    color: #00b894;
+    font-weight: 600;
+}
+
 .wild-bestiary-empty {
     grid-column: 1 / -1;
     border: 1px dashed color-mix(in srgb, var(--cell-border) 65%, transparent);

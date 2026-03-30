@@ -100,6 +100,8 @@ export interface WildProfile {
   battlefieldMode: 'knight' | 'monk' | 'ascetic';
   autoCastEnabled: boolean; // true = mastered techniques auto-resolve; false = all manual
   currentSession: WildSession | null;
+  fragments: Record<string, number>;   // technique key → fragment count collected
+  studiedSkills: string[];             // technique keys that have been studied (teach read)
 }
 
 export interface WildEncounter {
@@ -122,6 +124,8 @@ const DEFAULT_PROFILE: WildProfile = {
   battlefieldMode: 'knight',
   autoCastEnabled: true,
   currentSession: null,
+  fragments: {},
+  studiedSkills: [],
 };
 
 export function loadWildProfile(): WildProfile {

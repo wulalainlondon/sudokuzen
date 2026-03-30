@@ -4,6 +4,7 @@ import { loadWildProfile, saveWildProfile } from './wildState';
 import { TECHNIQUE_TABLE, getAutoCastKeys, type Rarity } from './techniqueMeta';
 import { expForLevel } from './expSystem';
 import { getMentorNote } from './mentorController';
+import { showFeedback } from '../../ui/feedback';
 
 // ── Level titles by IQ level range ───────────────────────────────────
 
@@ -127,6 +128,41 @@ function ensureWildFilterBindings(): void {
       renderWildLobby();
     });
   }
+}
+
+// ── Study skill (fragment system) ────────────────────────────────────
+
+async function studySkill(techKey: string): Promise<void> {
+  const profile = loadWildProfile();
+  if (!profile.studiedSkills) profile.studiedSkills = [];
+  if (profile.studiedSkills.includes(techKey)) return;
+
+  const meta = TECHNIQUE_TABLE.find(t => t.key === techKey);
+  if (!meta) return;
+
+  // Mark as studied
+  profile.studiedSkills.push(techKey);
+  saveWildProfile(profile);
+
+  showFeedback(`${meta.name} · ${meta.subtitle} 研習完成！`, 'success');
+
+  // Check if this unlocks Lv.21
+  const requiredSkills = TECHNIQUE_TABLE.filter(t => t.fragmentsRequired > 0).map(t => t.key);
+  const allStudied = requiredSkills.every(k => profile.studiedSkills.includes(k));
+  if (allStudied) {
+    setTimeout(() => {
+      showFeedback('所有基礎技巧研習完成——修行輪已解鎖！', 'success');
+    }, 1500);
+  }
+
+  // If this is locked_candidates, hint about long-press
+  if (techKey === 'locked_candidates') {
+    setTimeout(() => {
+      showFeedback('提示：長按兩個格子可施放技能', 'success');
+    }, 3000);
+  }
+
+  renderWildLobby();
 }
 
 // ── Render lobby ─────────────────────────────────────────────────────
@@ -267,6 +303,36 @@ export function renderWildLobby(): void {
       killsSpan.className = 'wild-beast-kills';
       killsSpan.textContent = `討伐 ${entry.kills} · 遭遇 ${entry.encounters}`;
       card.appendChild(killsSpan);
+    }
+
+    // Fragment display for T0-T1 techniques
+    if (tech.fragmentsRequired > 0) {
+      if (!profile.fragments) profile.fragments = {};
+      if (!profile.studiedSkills) profile.studiedSkills = [];
+      const frags = profile.fragments[tech.key] || 0;
+      const isStudied = profile.studiedSkills.includes(tech.key);
+      const isReady = frags >= tech.fragmentsRequired;
+
+      if (isStudied) {
+        const badge = document.createElement('div');
+        badge.className = 'wild-beast-studied';
+        badge.textContent = '已研習';
+        card.appendChild(badge);
+      } else if (isReady) {
+        const studyBtn = document.createElement('button');
+        studyBtn.className = 'wild-beast-study-btn';
+        studyBtn.textContent = '研習';
+        studyBtn.onclick = (e) => {
+          e.stopPropagation();
+          studySkill(tech.key);
+        };
+        card.appendChild(studyBtn);
+      } else {
+        const fragBar = document.createElement('div');
+        fragBar.className = 'wild-beast-frag';
+        fragBar.textContent = `${frags}/${tech.fragmentsRequired} 碎片`;
+        card.appendChild(fragBar);
+      }
     }
 
     // Mentor note tooltip on tap

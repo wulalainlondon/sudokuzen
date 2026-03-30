@@ -488,6 +488,29 @@ export function onWildComplete(
     session.totalExp += expGained;
   }
 
+  // Award memory fragments (newbie zone only)
+  if (profile.iqLevel < 21) {
+    const fragMeta = getTechniqueMeta(_encounter.technique);
+    if (fragMeta && fragMeta.fragmentsRequired > 0) {
+      if (!profile.fragments) profile.fragments = {};
+      const current = profile.fragments[_encounter.technique] || 0;
+      if (current < fragMeta.fragmentsRequired) {
+        const award = errors === 0 ? 2 : 1;
+        profile.fragments[_encounter.technique] = Math.min(current + award, fragMeta.fragmentsRequired);
+
+        // Check if just reached threshold
+        if (profile.fragments[_encounter.technique] >= fragMeta.fragmentsRequired
+            && current < fragMeta.fragmentsRequired) {
+          const techName = fragMeta.name;
+          setTimeout(async () => {
+            const { showFeedback: fb } = await import('../../ui/feedback');
+            fb(`${techName} 的記憶碎片已集齊——去圖鑑研習`, 'success');
+          }, 2500);
+        }
+      }
+    }
+  }
+
   saveWildProfile(profile);
 
   // Session round 10 complete: apply streak bonus and finalize

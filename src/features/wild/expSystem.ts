@@ -1,6 +1,6 @@
 // EXP calculation, level curve, and level-up detection.
 
-import { RARITY_MULTIPLIER, type Rarity } from './techniqueMeta';
+import { RARITY_MULTIPLIER, TECHNIQUE_TABLE, type Rarity } from './techniqueMeta';
 import type { WildProfile } from './wildState';
 
 /** Cumulative EXP needed to reach level N: 50 * N * (N+1) / 2 */
@@ -40,7 +40,19 @@ export function applyExp(
 ): { newLevel: number; leveledUp: boolean; expGained: number } {
   const oldLevel = profile.iqLevel;
   profile.totalExp += expGained;
-  profile.iqLevel = levelFromExp(profile.totalExp);
+  let newLevel = levelFromExp(profile.totalExp);
+
+  // Gate: can't pass Lv.20 without all basic skills studied
+  if (newLevel >= 21 && profile.iqLevel < 21) {
+    const requiredSkills = TECHNIQUE_TABLE.filter(t => t.fragmentsRequired > 0).map(t => t.key);
+    const studied = profile.studiedSkills || [];
+    const allStudied = requiredSkills.every(k => studied.includes(k));
+    if (!allStudied) {
+      newLevel = 20;
+    }
+  }
+
+  profile.iqLevel = newLevel;
   return {
     newLevel: profile.iqLevel,
     leveledUp: profile.iqLevel > oldLevel,

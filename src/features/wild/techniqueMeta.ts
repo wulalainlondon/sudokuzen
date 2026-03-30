@@ -13,6 +13,7 @@ export interface TechniqueMeta {
   levelGate: number; // min IQ level to unlock spawning
   autoCastGate: number; // IQ level at which this technique auto-resolves (0 = never auto)
   tier: 0 | 1 | 2 | 3 | 4; // spawn-weight tier for ecology engine
+  fragmentsRequired: number; // fragments needed to unlock teach module (0 = no fragments needed)
 }
 
 export const TECHNIQUE_TABLE: TechniqueMeta[] = [
@@ -28,6 +29,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 1,
     autoCastGate: 5,
     tier: 0,
+    fragmentsRequired: 3,
   },
   {
     key: 'hidden_single',
@@ -40,6 +42,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 1,
     autoCastGate: 8,
     tier: 0,
+    fragmentsRequired: 3,
   },
   {
     key: 'locked_candidates',
@@ -52,6 +55,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 1,
     autoCastGate: 11,
     tier: 1,
+    fragmentsRequired: 5,
   },
   {
     key: 'naked_pair',
@@ -64,6 +68,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 11,
     autoCastGate: 21,
     tier: 1,
+    fragmentsRequired: 5,
   },
   {
     key: 'hidden_pair',
@@ -76,6 +81,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 11,
     autoCastGate: 21,
     tier: 1,
+    fragmentsRequired: 5,
   },
   {
     key: 'naked_triple',
@@ -88,6 +94,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 11,
     autoCastGate: 21,
     tier: 1,
+    fragmentsRequired: 7,
   },
   {
     key: 'hidden_triple',
@@ -100,6 +107,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 11,
     autoCastGate: 21,
     tier: 1,
+    fragmentsRequired: 7,
   },
 
   // ── Phase 2a: 中階劍法 — 直覺型 (Lv.21+) ──
@@ -114,6 +122,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 21,
     autoCastGate: 31,
     tier: 2,
+    fragmentsRequired: 0,
   },
   {
     key: 'unique_rectangle',
@@ -126,6 +135,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 21,
     autoCastGate: 31,
     tier: 2,
+    fragmentsRequired: 0,
   },
   {
     key: 'bug_plus_one',
@@ -138,6 +148,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 21,
     autoCastGate: 31,
     tier: 2,
+    fragmentsRequired: 0,
   },
 
   // ── Phase 2b: 中階劍法 — 推理型 (Lv.31+) ──
@@ -152,6 +163,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 31,
     autoCastGate: 41,
     tier: 2,
+    fragmentsRequired: 0,
   },
   {
     key: 'two_string_kite',
@@ -164,6 +176,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 31,
     autoCastGate: 41,
     tier: 2,
+    fragmentsRequired: 0,
   },
   {
     key: 'empty_rectangle',
@@ -176,6 +189,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 31,
     autoCastGate: 41,
     tier: 2,
+    fragmentsRequired: 0,
   },
   {
     key: 'finned_x_wing',
@@ -188,6 +202,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 31,
     autoCastGate: 41,
     tier: 2,
+    fragmentsRequired: 0,
   },
   {
     key: 'xy_wing',
@@ -200,6 +215,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 31,
     autoCastGate: 41,
     tier: 2,
+    fragmentsRequired: 0,
   },
   {
     key: 'xyz_wing',
@@ -212,6 +228,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 31,
     autoCastGate: 41,
     tier: 2,
+    fragmentsRequired: 0,
   },
   {
     key: 'w_wing',
@@ -224,6 +241,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 31,
     autoCastGate: 41,
     tier: 2,
+    fragmentsRequired: 0,
   },
   {
     key: 'remote_pairs',
@@ -236,6 +254,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 31,
     autoCastGate: 41,
     tier: 2,
+    fragmentsRequired: 0,
   },
 
   // ── Phase 3a: 高階 (Lv.41+) ──
@@ -250,6 +269,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 41,
     autoCastGate: 61,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'x_cycle_simple_coloring',
@@ -262,6 +282,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 41,
     autoCastGate: 61,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'finned_swordfish',
@@ -274,6 +295,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 41,
     autoCastGate: 61,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'jellyfish',
@@ -286,6 +308,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 51,
     autoCastGate: 61,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'finned_jellyfish',
@@ -298,6 +321,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 51,
     autoCastGate: 61,
     tier: 3,
+    fragmentsRequired: 0,
   },
 
   // ── Phase 3: 鏈術 (Lv.61+) ──
@@ -312,6 +336,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 61,
     autoCastGate: 71,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'aic_mid_chain',
@@ -324,6 +349,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 61,
     autoCastGate: 71,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'aic_long_chain',
@@ -336,6 +362,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 61,
     autoCastGate: 71,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'grouped_aic_nice_loop',
@@ -348,6 +375,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 61,
     autoCastGate: 71,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'discontinuous_nice_loop',
@@ -360,6 +388,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 61,
     autoCastGate: 71,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'xy_chain',
@@ -372,6 +401,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 61,
     autoCastGate: 71,
     tier: 3,
+    fragmentsRequired: 0,
   },
 
   // ── Phase 3b: 殘集與逼宮 (Lv.71+) ──
@@ -386,6 +416,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 71,
     autoCastGate: 0,
     tier: 4,
+    fragmentsRequired: 0,
   },
   {
     key: 'als_xy',
@@ -398,6 +429,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 71,
     autoCastGate: 0,
     tier: 4,
+    fragmentsRequired: 0,
   },
   {
     key: 'als_w_wing',
@@ -410,6 +442,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 71,
     autoCastGate: 0,
     tier: 4,
+    fragmentsRequired: 0,
   },
   {
     key: 'als_chain',
@@ -422,6 +455,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 71,
     autoCastGate: 0,
     tier: 4,
+    fragmentsRequired: 0,
   },
   {
     key: 'forcing_chain_net',
@@ -434,6 +468,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 71,
     autoCastGate: 0,
     tier: 4,
+    fragmentsRequired: 0,
   },
   {
     key: 'cell_forcing_chain',
@@ -446,6 +481,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 71,
     autoCastGate: 0,
     tier: 3,
+    fragmentsRequired: 0,
   },
   {
     key: 'region_forcing_chain',
@@ -458,6 +494,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 71,
     autoCastGate: 0,
     tier: 3,
+    fragmentsRequired: 0,
   },
 
   // ── Phase 4: 終極 (Lv.80+) ──
@@ -472,6 +509,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 80,
     autoCastGate: 0,
     tier: 4,
+    fragmentsRequired: 0,
   },
   {
     key: 'template',
@@ -484,6 +522,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 80,
     autoCastGate: 0,
     tier: 4,
+    fragmentsRequired: 0,
   },
   {
     key: 'death_blossom',
@@ -496,6 +535,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 80,
     autoCastGate: 0,
     tier: 4,
+    fragmentsRequired: 0,
   },
   {
     key: 'exocet_death_blossom',
@@ -508,6 +548,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
     levelGate: 80,
     autoCastGate: 0,
     tier: 4,
+    fragmentsRequired: 0,
   },
 ];
 
