@@ -122,8 +122,10 @@ export async function startWildEncounter(): Promise<void> {
       _encounter = await selectSessionEncounter(profile, session.round);
     } else {
       _encounter = await selectEncounter(profile);
-      // Free roam (新手村): force standard mode — no ironman/blind for beginners
-      _encounter.challengeMode = 'standard';
+      // Free roam (新手村): only standard or blind — no ironman/noNotes for beginners
+      if (_encounter.challengeMode !== 'blind') {
+        _encounter.challengeMode = 'standard';
+      }
     }
   } catch (e) {
     showFeedback('題庫載入失敗，請稍後重試', 'error');

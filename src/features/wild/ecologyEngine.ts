@@ -175,24 +175,21 @@ function tieredPick(pool: TechniqueMeta[], iqLevel: number): TechniqueMeta {
 
 // ── Challenge mode selection ─────────────────────────────────────────
 
-/** Per-tier mode weights: [standard, ironman, blind, timed, noNotes]. Gauntlet is special-cased. */
+/** Per-tier mode weights: [standard, ironman, blind, noNotes]. */
 const MODE_WEIGHTS: Record<number, Record<ChallengeMode, number>> = {
-  0: { standard: 0.7, ironman: 0.05, blind: 0.08, timed: 0.1, noNotes: 0.07, gauntlet: 0 },
-  1: { standard: 0.55, ironman: 0.1, blind: 0.1, timed: 0.13, noNotes: 0.12, gauntlet: 0 },
-  2: { standard: 0.45, ironman: 0.15, blind: 0.12, timed: 0.15, noNotes: 0.13, gauntlet: 0 },
-  3: { standard: 0.4, ironman: 0.18, blind: 0.12, timed: 0.15, noNotes: 0.15, gauntlet: 0 },
-  4: { standard: 0.35, ironman: 0.2, blind: 0.15, timed: 0.15, noNotes: 0.15, gauntlet: 0 },
+  0: { standard: 0.80, ironman: 0.05, blind: 0.10, timed: 0, noNotes: 0.05, gauntlet: 0 },
+  1: { standard: 0.65, ironman: 0.10, blind: 0.12, timed: 0, noNotes: 0.13, gauntlet: 0 },
+  2: { standard: 0.55, ironman: 0.15, blind: 0.13, timed: 0, noNotes: 0.17, gauntlet: 0 },
+  3: { standard: 0.48, ironman: 0.18, blind: 0.14, timed: 0, noNotes: 0.20, gauntlet: 0 },
+  4: { standard: 0.42, ironman: 0.22, blind: 0.15, timed: 0, noNotes: 0.21, gauntlet: 0 },
 };
 
-export function selectChallengeMode(tier: number, profile: WildProfile): ChallengeMode {
-  // Every 50th encounter triggers gauntlet
-  if (profile.totalEncounters > 0 && profile.totalEncounters % 50 === 0) return 'gauntlet';
-
+export function selectChallengeMode(tier: number, _profile: WildProfile): ChallengeMode {
   const weights = MODE_WEIGHTS[tier] ?? MODE_WEIGHTS[0];
   const roll = Math.random();
   let cumulative = 0;
   for (const [mode, w] of Object.entries(weights) as [ChallengeMode, number][]) {
-    if (mode === 'gauntlet') continue;
+    if (w <= 0) continue;
     cumulative += w;
     if (roll < cumulative) return mode;
   }
