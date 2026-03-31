@@ -53,11 +53,24 @@
         <div id="stage-view">
             <div class="stage-map" id="stage-map"></div>
             <div class="random-bar">
+                <button class="random-btn practice-entry-btn" onclick="openPracticeLobby()">
+                    <span class="practice-entry-main">修行</span>
+                    <span class="practice-entry-sub">41 技法 · 精準磨練</span>
+                </button>
                 <button class="random-btn world-entry-btn" onclick="openWildLobby()">
                     <span class="world-entry-main">世界</span>
                     <span class="world-entry-sub">隨機遭遇 · 十輪修行</span>
                 </button>
             </div>
+        </div>
+        <!-- Practice Mode Lobby -->
+        <div id="practice-lobby" class="hidden">
+            <div class="practice-lobby-header">
+                <button class="tier-back-btn" onclick="closePracticeLobby()">← 返回</button>
+                <div class="practice-lobby-title">修行</div>
+                <div id="practice-lobby-progress">0/41</div>
+            </div>
+            <div class="practice-lobby-body" id="practice-lobby-body"></div>
         </div>
         <!-- Wild Mode Lobby -->
         <div id="wild-lobby" class="hidden">
@@ -202,22 +215,7 @@
                 onclick="showLevelScreen(true)">放棄關卡</button>
         </div>
 
-        <div id="win-celebration">
-            <div class="confetti-layer" id="confetti-layer"></div>
-            <h2>PERFECT FLOW</h2>
-            <p id="win-level-name">LEVEL NAME</p>
-            <div class="win-stars" id="win-stars">★★★</div>
-            <p class="win-time" id="win-time">00:00</p>
-            <div class="leaderboard-card">
-                <div class="leaderboard-title">首通榜 TOP 3</div>
-                <div class="leaderboard-list" id="win-leaderboard-list">載入中...</div>
-            </div>
-            <button class="back-btn btn-replay" id="win-replay-btn" onclick="openReplayModal()">查看回放</button>
-            <button class="resume-btn" id="win-next-btn" onclick="showLevelScreen(true)">下一關</button>
-            <button class="resume-btn wild-continue-btn hidden" id="wild-continue-btn" onclick="continueWild()">繼續世界</button>
-            <button class="back-btn" id="win-back-btn" class="back-btn-light"
-                onclick="showLevelScreen(true)">返回選關</button>
-        </div>
+        <!-- Win celebration is now rendered by React (src/react/win/WinCelebration.tsx) -->
 
         <!-- 1. 頂部標題與 Quit 按鈕 -->
         <header>
@@ -385,6 +383,7 @@
     <!-- Duo Result Modal -->
     <div id="duo-result-modal">
         <div class="duo-result-panel">
+            <div class="confetti-layer" id="duo-confetti-layer"></div>
             <h2>💑 雙人對決結果</h2>
             <div id="duo-result-streak"></div>
             <div class="duo-result-cards" id="duo-result-cards"></div>
@@ -443,7 +442,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.03.31-V29';
+        var INLINE_VER = '2026.03.31-V31';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);

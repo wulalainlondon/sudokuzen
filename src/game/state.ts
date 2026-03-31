@@ -126,6 +126,7 @@ export const gs = {
 
   // ── Practice ──────────────────────────────────────────────────────
   practiceState: null as any,
+  practiceActiveTech: null as string | null,
 
   // ── Skill Mode ───────────────────────────────────────────────────
   // Access through features/skills/skillController.ts — do NOT read/write directly.

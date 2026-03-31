@@ -46,6 +46,9 @@ const ACHIEVEMENTS = [
   { id: 'teach_read_10', name: '書蟲', desc: '研讀 10 本秘笈', icon: '📖' },
   { id: 'teach_read_all', name: '藏經閣主', desc: '研讀全部秘笈', icon: '🏛️' },
   { id: 'practice_10', name: '勤修苦練', desc: '完成 10 個練習題', icon: '🎯' },
+  { id: 'practice_master_1', name: '初悟', desc: '修行模式：全通一個技巧 (25/25)', icon: '🧿' },
+  { id: 'practice_master_10', name: '十全', desc: '修行模式：全通 10 個技巧', icon: '🔟' },
+  { id: 'practice_master_all', name: '萬法歸宗', desc: '修行模式：全通 41 個技巧', icon: '🏆' },
 
   // ── Speed (2) — teaches "fluency comes from practice" ───────────
   { id: 'speed_2min', name: '閃電手', desc: '2 分鐘內通關', icon: '⚡' },
@@ -160,6 +163,22 @@ export function computeStats() {
     return { name, total: tierLevels.length, cleared: tierCleared };
   });
 
+  // Practice mode stats
+  const practiceRecords = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+  const practiceCleared = Object.keys(practiceRecords).length;
+  const practiceTechs = new Set<string>();
+  for (const rec of Object.values(practiceRecords)) {
+    if (rec && rec.techKey) practiceTechs.add(rec.techKey);
+  }
+  // Count fully completed techniques (25/25)
+  const techClearCount = new Map<string, number>();
+  for (const rec of Object.values(practiceRecords)) {
+    if (rec && rec.techKey) {
+      techClearCount.set(rec.techKey, (techClearCount.get(rec.techKey) || 0) + 1);
+    }
+  }
+  const practiceFullTechs = [...techClearCount.entries()].filter(([, count]) => count >= 25).length;
+
   return {
     totalCleared,
     totalLevels: mainLevels.length,
@@ -174,6 +193,10 @@ export function computeStats() {
     tierStats,
     records,
     speedRecords,
+    practiceCleared,
+    practiceTotalLevels: 1025,
+    practiceTechsStarted: practiceTechs.size,
+    practiceFullTechs,
   };
 }
 
@@ -181,11 +204,12 @@ export function computeStats() {
 
 export function checkAllAchievements(): void {
   const stats = computeStats();
-  const { totalCleared, threeStarCount, records, speedRecords, tierStats } = stats;
+  const { totalCleared, threeStarCount, records, speedRecords, tierStats, practiceCleared, practiceFullTechs } = stats;
+  const combinedCleared = totalCleared + practiceCleared;
 
   // ── Journey milestones ──
-  if (totalCleared >= 1) unlockAchievement('first_clear');
-  if (totalCleared >= 50) unlockAchievement('clear_50');
+  if (combinedCleared >= 1) unlockAchievement('first_clear');
+  if (combinedCleared >= 50) unlockAchievement('clear_50');
   const levels = getAllLevels();
   const mainLevels = levels.filter((l) => !l.hidden);
   if (mainLevels.length > 0 && mainLevels.every((l) => records[l.id])) unlockAchievement('clear_all');
@@ -238,6 +262,9 @@ export function checkAllAchievements(): void {
   if (Object.keys(teachRead).length >= 10) unlockAchievement('teach_read_10');
   if (Object.keys(teachRead).length >= 40) unlockAchievement('teach_read_all');
   if (Object.keys(practDone).length >= 10) unlockAchievement('practice_10');
+  if (practiceFullTechs >= 1) unlockAchievement('practice_master_1');
+  if (practiceFullTechs >= 10) unlockAchievement('practice_master_10');
+  if (practiceFullTechs >= 41) unlockAchievement('practice_master_all');
 
   // ── Mode variety ──
   if (Object.keys(speedRecords).length > 0) unlockAchievement('speedrun_first');
@@ -365,6 +392,17 @@ export function renderStatsModal(): void {
         <div class="stat-label">最佳用時總計</div>
     </div>
   `;
+
+  // Practice progress
+  if (stats.practiceCleared > 0) {
+    const practicePct = Math.round((stats.practiceCleared / stats.practiceTotalLevels) * 100);
+    overviewEl.innerHTML += `
+      <div class="stat-item" style="grid-column: 1 / -1; border-top: 1px solid var(--cell-border); padding-top: 8px; margin-top: 4px;">
+        <div class="stat-value">${stats.practiceCleared}<span style="font-size:0.7rem;color:var(--text-light)">/${stats.practiceTotalLevels}</span></div>
+        <div class="stat-label">修行通關 (${practicePct}%) · ${stats.practiceFullTechs}/41 技巧全通</div>
+      </div>
+    `;
+  }
 
   // Tier progress
   tierProgressEl.innerHTML = stats.tierStats

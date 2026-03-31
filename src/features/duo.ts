@@ -404,10 +404,17 @@ export async function launchDuoGame(): Promise<void> {
   // Reset progress throttle so first progress update is immediate
   gs.duoProgressThrottle = 0;
 
-  // Calculate total cells to fill
-  const { getAllLevels } = await import('../data/dataRegistry');
+  // Calculate total cells to fill — check normal levels first, then practice
+  const { getAllLevels, getPracticeLevels } = await import('../data/dataRegistry');
   const levels = getAllLevels();
-  const level = levels.find((l) => l.id === gs.duoRoomData.levelId);
+  let level = levels.find((l) => l.id === gs.duoRoomData.levelId);
+  let overrideData: any = undefined;
+  if (!level) {
+    // Try practice levels (async)
+    const practiceLevels = await getPracticeLevels();
+    level = practiceLevels.find((l) => l.id === gs.duoRoomData.levelId);
+    if (level) overrideData = level;
+  }
   if (level) {
     gs.duoTotalToFill = level.puzzle.filter((v: number) => v === 0).length;
   }
@@ -418,7 +425,7 @@ export async function launchDuoGame(): Promise<void> {
   const levelScreen = document.getElementById('level-screen');
   if (levelScreen) levelScreen.style.display = 'none';
   const { initGame } = await import('../game/core');
-  initGame(gs.duoRoomData.levelId, true, false, null);
+  initGame(gs.duoRoomData.levelId, true, false, null, overrideData);
 
   // Show duo progress bar and emoji bar
   const progressContainer = document.getElementById('duo-progress-container');
@@ -616,7 +623,7 @@ export function showDuoResult(d: any): void {
 
   if (iWon) {
     if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
-    const layer = document.getElementById('confetti-layer');
+    const layer = document.getElementById('duo-confetti-layer');
     if (layer) {
       layer.innerHTML = '';
       const colors = ['#FFD700', '#FF6B6B', '#74b9ff', '#55efc4', '#a29bfe'];
@@ -634,7 +641,7 @@ export function showDuoResult(d: any): void {
 
   if (isDraw) {
     if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25]);
-    const layer = document.getElementById('confetti-layer');
+    const layer = document.getElementById('duo-confetti-layer');
     if (layer) {
       layer.innerHTML = '';
       const colors = ['#fd79a8', '#a29bfe', '#74b9ff', '#dfe6e9', '#fab1a0'];

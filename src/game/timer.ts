@@ -46,5 +46,9 @@ export function updateTimerUI(): void {
     gs.timerEl.textContent = `世界 ${mode} / ${mins}:${secs}`;
     return;
   }
+  if (gs.currentLevel.mode === 'practice') {
+    gs.timerEl.textContent = `修行 / ${mins}:${secs}`;
+    return;
+  }
   gs.timerEl.textContent = `${gs.currentLevel.displayName} / ${mins}:${secs}`;
 }

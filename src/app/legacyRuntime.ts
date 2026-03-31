@@ -61,6 +61,12 @@ import {
 import { openWildLobby, closeWildLobby, toggleWildAutoCast, isWorldLobbyOpen } from '../features/wild/wildLobby';
 import { continueWild, exitWild, startWorldSession } from '../features/wild/wildController';
 import { dismissMentor } from '../features/wild/mentorController';
+import { openPracticeLobby, closePracticeLobby, isPracticeLobbyOpen, backToPracticeLobby } from '../features/practice/practiceLobby';
+import { useWinStore } from '../react/win/winStore';
+
+function isWinCelebrationOpen(): boolean {
+  return useWinStore.getState().visible;
+}
 
 export function bootLegacyRuntime(appVersion: string): void {
   gs.appVersion = appVersion;
@@ -259,13 +265,25 @@ export function bootLegacyRuntime(appVersion: string): void {
       if (pauseScreen?.style.display === 'flex') {
         // Already paused → go back to level screen
         showLevelScreen(true);
-      } else if (overlay?.style.display === 'flex' || winEl?.style.display === 'flex') {
+      } else if (overlay?.style.display === 'flex' || winEl?.style.display === 'flex' || isWinCelebrationOpen()) {
         // Game over or win → back to levels
         showLevelScreen(true);
       } else {
         // Playing → pause
         pauseGame();
       }
+      return;
+    }
+
+    // Practice: tier-view showing a technique's levels → back to practice lobby
+    if (gs.practiceActiveTech && !document.getElementById('tier-view')?.classList.contains('hidden')) {
+      backToPracticeLobby();
+      return;
+    }
+
+    // Practice lobby → stage map
+    if (isPracticeLobbyOpen()) {
+      closePracticeLobby();
       return;
     }
 
@@ -337,5 +355,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     exitWild,
     startWorldSession,
     dismissMentor,
+    openPracticeLobby,
+    closePracticeLobby,
   });
 }

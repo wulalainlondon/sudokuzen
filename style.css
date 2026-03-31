@@ -1246,6 +1246,16 @@ header h1 {
     z-index: 30;
     background: radial-gradient(circle at top, rgba(9, 132, 227, 0.16), var(--bg-color) 60%);
     overflow: hidden;
+    /* React strangler: rendered outside .game-container, needs fixed positioning */
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 #win-celebration p {
@@ -1281,6 +1291,14 @@ header h1 {
     opacity: 0;
     animation: confettiFall var(--ease-zen) forwards;
     filter: blur(0.5px);
+}
+
+.win-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
 }
 
 @keyframes confettiFall {
@@ -1590,6 +1608,197 @@ header h1 {
     font-size: 0.64rem;
     color: var(--text-light);
     letter-spacing: 0.03em;
+}
+
+/* ── Practice Mode Entry Button ────────────────────────────────────── */
+
+.practice-entry-btn {
+    min-width: 176px;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    padding: 10px 18px;
+    background:
+        radial-gradient(120% 140% at 50% 0%, color-mix(in srgb, #a78bfa 30%, transparent), transparent 55%),
+        color-mix(in srgb, var(--btn-bg) 96%, #ffffff 4%);
+}
+
+.practice-entry-main {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.practice-entry-sub {
+    font-size: 0.64rem;
+    color: var(--text-light);
+    letter-spacing: 0.03em;
+}
+
+/* ── Practice Lobby ────────────────────────────────────────────────── */
+
+.practice-lobby-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0 12px;
+}
+
+.practice-lobby-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    flex: 1;
+}
+
+#practice-lobby-progress {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.practice-lobby-body {
+    overflow-y: auto;
+    max-height: calc(100vh - 160px);
+    padding-bottom: 32px;
+}
+
+/* ── Phase blocks ──────────────────────────────────────────────────── */
+
+.practice-phase {
+    margin-bottom: 16px;
+}
+
+.practice-phase-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-light);
+    letter-spacing: 0.05em;
+    padding: 6px 0 4px;
+    border-bottom: 1px solid var(--cell-border);
+    margin-bottom: 6px;
+}
+
+.practice-node-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* ── Branch layout (3 columns) ─────────────────────────────────────── */
+
+.practice-branches {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+}
+
+.practice-branch-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.practice-branch-header {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent-strong);
+    text-align: center;
+    padding: 4px 0;
+}
+
+/* ── Tech nodes ────────────────────────────────────────────────────── */
+
+.practice-node {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+}
+
+.practice-node:active {
+    transform: scale(0.98);
+}
+
+.practice-node.unlocked {
+    background: var(--grid-bg);
+    border-color: var(--cell-border);
+}
+
+.practice-node.partial {
+    background: color-mix(in srgb, var(--accent-soft) 40%, var(--grid-bg));
+    border-color: var(--accent-strong);
+}
+
+.practice-node.completed {
+    background: color-mix(in srgb, var(--success-color) 10%, var(--grid-bg));
+    border-color: var(--success-color);
+}
+
+.practice-node.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.practice-node--compact {
+    padding: 5px 8px;
+    gap: 4px;
+}
+
+.practice-node-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.practice-node--compact .practice-node-name {
+    font-size: 0.68rem;
+}
+
+.practice-mini-bar {
+    width: 40px;
+    height: 4px;
+    background: var(--cell-border);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.practice-node--compact .practice-mini-bar {
+    width: 28px;
+}
+
+.practice-mini-fill {
+    height: 100%;
+    background: var(--accent-strong);
+    border-radius: 2px;
+    transition: width 0.3s;
+}
+
+.practice-node.completed .practice-mini-fill {
+    background: var(--success-color);
+}
+
+.practice-node-count {
+    font-size: 0.68rem;
+    color: var(--text-light);
+    flex-shrink: 0;
+    min-width: 28px;
+    text-align: right;
+}
+
+.practice-node.completed .practice-node-count {
+    color: var(--success-color);
+    font-weight: 600;
 }
 
 .random-btn.ghost {

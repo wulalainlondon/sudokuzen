@@ -558,6 +558,9 @@ export async function loadLevelLeaderboard(levelId: number): Promise<void> {
     const rows = snap.docs.map((d: any) => d.data());
     renderLeaderboard(gs.leaderboardListEl, rows);
     renderLeaderboard(gs.winLeaderboardListEl, rows);
+    // Also update React win store leaderboard
+    const winEl = document.getElementById('win-leaderboard-list');
+    if (winEl) renderLeaderboard(winEl, rows);
   } catch (e) {
     console.warn('load leaderboard failed:', e);
     renderLeaderboard(gs.leaderboardListEl, []);

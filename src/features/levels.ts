@@ -9,6 +9,7 @@ import { loadPreLevelLeaderboard } from '../firebase/client';
 import { syncLevelCardSize } from '../game/board';
 import { TECH_MAP, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
 import { closeWildLobby } from './wild/wildLobby';
+import { closePracticeLobby, enterPracticeTechnique } from './practice/practiceLobby';
 
 // Route through window so the React bridge can intercept
 function showTeachModal(stars: number, source = 'tier') {
@@ -333,12 +334,15 @@ export function renderLevelGrid(): void {
 
 // ── Pre-level modal ─────────────────────────────────────────────────
 
-export function showPreLevelModal(levelId: number, ignoreTierLock = false): void {
+let _pendingLevelData: any = null;
+
+export function showPreLevelModal(levelId: number, ignoreTierLock = false, externalLevel?: any): void {
   closeLibraryOverlay();
   gs.pendingLevelId = levelId;
   const levels = getAllLevels();
-  const level = levels.find((l) => l.id === levelId);
+  const level = externalLevel || levels.find((l) => l.id === levelId);
   if (!level) return;
+  _pendingLevelData = externalLevel || null;
   if (!ignoreTierLock && !canAccessLevel(level)) {
     showFeedback(getTierUnlockMessage(level.difficultyName), 'error');
     return;
@@ -349,7 +353,8 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false): void
   const techTier = level.techTier || '';
   gs.preLevelTechEl!.textContent = `💡 核心技巧: ${techName} ${techTier ? `(${techTier})` : ''}`;
 
-  const recKey = gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
+  const isPractice = level.mode === 'practice';
+  const recKey = isPractice ? SK.PRACTICE_RECORDS : gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
   const records = readJson<Record<string, any>>(recKey, {});
   const record = records[levelId];
 
@@ -391,6 +396,7 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false): void
 export function hidePreLevelModal(): void {
   gs.preLevelModalEl!.style.display = 'none';
   gs.pendingLevelId = null;
+  _pendingLevelData = null;
   // Don't leave duo room when host closes modal — room stays alive for re-selection
   // Only leave if we're guest and backing out
   if (!gs.isDuoMode && gs.duoRole === 'guest') callLeaveDuoRoom();
@@ -403,11 +409,13 @@ export async function startLevelFromModal(
 ): Promise<void> {
   if (gs.pendingLevelId === null) return;
   const levelId = gs.pendingLevelId;
+  const overrideData = _pendingLevelData;
+  _pendingLevelData = null;
   closeLibraryOverlay();
   hidePreLevelModal();
   document.getElementById('level-screen')!.style.display = 'none';
   const { initGame } = await import('../game/core');
-  initGame(levelId, forceReset, playWithGhost, ghostData);
+  initGame(levelId, forceReset, playWithGhost, ghostData, overrideData || undefined);
 }
 
 // ── Navigation ──────────────────────────────────────────────────────
@@ -426,8 +434,12 @@ export function showLevelScreen(returnToTier = false): void {
   import('./replay').then((m) => m.closeReplayModal());
   hidePreLevelModal();
   closeWildLobby();
+  const practiceReturnTech = gs.practiceActiveTech;
+  closePracticeLobby();
   if (gs.isDuoMode) callResetDuoState();
-  if (returnToTier && gs.currentTab !== null) {
+  if (returnToTier && practiceReturnTech) {
+    enterPracticeTechnique(practiceReturnTech);
+  } else if (returnToTier && gs.currentTab !== null) {
     enterTier(gs.currentTab);
   } else {
     document.getElementById('tier-view')!.classList.add('hidden');
@@ -449,6 +461,31 @@ export function updateSpeedrunToggleUI(): void {
   const btn = document.getElementById('speedrun-toggle-btn');
   if (!btn) return;
   btn.classList.toggle('active', gs.isSpeedrunMode);
+}
+
+// ── Advance to next level in current tier ────────────────────────────
+
+export function advanceToNextLevel(): void {
+  if (!gs.currentLevel || !gs.currentTab) {
+    showLevelScreen(true);
+    return;
+  }
+  const levels = getAllLevels();
+  const tierLevels = levels.filter(l => l.difficultyName === gs.currentTab && !l.hidden);
+  const currentIdx = tierLevels.findIndex(l => l.id === gs.currentLevel!.id);
+  const nextIdx = currentIdx + 1;
+
+  if (nextIdx >= tierLevels.length) {
+    showFeedback('本境界已全部通關！', 'success');
+    showLevelScreen(true);
+    return;
+  }
+
+  // Close React win, show level screen, open pre-level modal for next level
+  import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin());
+  document.getElementById('level-screen')!.style.display = 'flex';
+  (document.querySelector('.game-container') as HTMLElement).style.display = 'none';
+  showPreLevelModal(tierLevels[nextIdx].id);
 }
 
 // ── Random / Pool (Wild mode) ────────────────────────────────────────

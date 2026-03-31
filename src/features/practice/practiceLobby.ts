@@ -1,0 +1,498 @@
+// Practice Mode Lobby — technique skill tree + per-technique level grid
+// 41 techniques × 25 levels = 1025 levels in public/data/practice.json
+
+import { gs } from '../../game/state';
+import { SK, readJson } from '../../storage/keys';
+import { getPracticeLevels } from '../../data/dataRegistry';
+import { TECH_MAP } from '../teach-legacy';
+import { showFeedback } from '../../ui/feedback';
+
+import { syncLevelCardSize } from '../../game/board';
+
+// ── Unlock tree definition ────────────────────────────────────────────
+
+interface TreeNode {
+  key: string;
+  prerequisites: string[];
+}
+
+const UNLOCK_TREE: TreeNode[] = [
+  // Phase 1: foundation (linear)
+  { key: 'naked_single', prerequisites: [] },
+  { key: 'hidden_single', prerequisites: ['naked_single'] },
+  { key: 'locked_candidates', prerequisites: ['hidden_single'] },
+  { key: 'naked_pair', prerequisites: ['locked_candidates'] },
+  { key: 'hidden_pair', prerequisites: ['naked_pair'] },
+  { key: 'naked_triple', prerequisites: ['hidden_pair'] },
+  { key: 'hidden_triple', prerequisites: ['naked_triple'] },
+
+  // Phase 2 left: fish/wing branch
+  { key: 'x_wing', prerequisites: ['hidden_triple'] },
+  { key: 'finned_x_wing', prerequisites: ['x_wing'] },
+  { key: 'swordfish', prerequisites: ['finned_x_wing'] },
+  { key: 'finned_swordfish', prerequisites: ['swordfish'] },
+  { key: 'jellyfish', prerequisites: ['finned_swordfish'] },
+  { key: 'finned_jellyfish', prerequisites: ['jellyfish'] },
+  { key: 'skyscraper', prerequisites: ['finned_jellyfish'] },
+  { key: 'two_string_kite', prerequisites: ['skyscraper'] },
+  { key: 'empty_rectangle', prerequisites: ['two_string_kite'] },
+
+  // Phase 2 middle: coloring branch
+  { key: 'x_cycle_simple_coloring', prerequisites: ['hidden_triple'] },
+  { key: 'xy_wing', prerequisites: ['x_cycle_simple_coloring'] },
+  { key: 'xyz_wing', prerequisites: ['xy_wing'] },
+  { key: 'w_wing', prerequisites: ['xyz_wing'] },
+  { key: 'remote_pairs', prerequisites: ['w_wing'] },
+
+  // Phase 2 right: UR/ALS branch
+  { key: 'unique_rectangle', prerequisites: ['hidden_triple'] },
+  { key: 'bug_plus_one', prerequisites: ['unique_rectangle'] },
+  { key: 'als_xz', prerequisites: ['bug_plus_one'] },
+  { key: 'als_xy', prerequisites: ['als_xz'] },
+  { key: 'als_w_wing', prerequisites: ['als_xy'] },
+  { key: 'als_chain', prerequisites: ['als_w_wing'] },
+
+  // Phase 3: convergence
+  { key: 'medusa_3d', prerequisites: ['empty_rectangle', 'remote_pairs', 'als_chain'] },
+
+  // Phase 4: chain arts (linear)
+  { key: 'xy_chain', prerequisites: ['medusa_3d'] },
+  { key: 'aic', prerequisites: ['xy_chain'] },
+  { key: 'aic_mid_chain', prerequisites: ['aic'] },
+  { key: 'aic_long_chain', prerequisites: ['aic_mid_chain'] },
+  { key: 'grouped_aic_nice_loop', prerequisites: ['aic_long_chain'] },
+  { key: 'discontinuous_nice_loop', prerequisites: ['grouped_aic_nice_loop'] },
+
+  // Phase 5: endgame (linear)
+  { key: 'forcing_chain_net', prerequisites: ['discontinuous_nice_loop'] },
+  { key: 'cell_forcing_chain', prerequisites: ['forcing_chain_net'] },
+  { key: 'region_forcing_chain', prerequisites: ['cell_forcing_chain'] },
+  { key: 'sue_de_coq', prerequisites: ['region_forcing_chain'] },
+  { key: 'template', prerequisites: ['sue_de_coq'] },
+  { key: 'death_blossom', prerequisites: ['template'] },
+  { key: 'exocet_death_blossom', prerequisites: ['death_blossom'] },
+];
+
+// Deduplicate tree (als_xz appears twice above — keep first)
+const _seen = new Set<string>();
+const TREE: TreeNode[] = [];
+for (const node of UNLOCK_TREE) {
+  if (!_seen.has(node.key)) {
+    _seen.add(node.key);
+    TREE.push(node);
+  }
+}
+
+// ── Phase layout definition ───────────────────────────────────────────
+
+interface PhaseLinear {
+  type: 'linear';
+  name: string;
+  keys: string[];
+}
+
+interface PhaseBranch {
+  type: 'branch';
+  name: string;
+  branches: { name: string; keys: string[] }[];
+}
+
+type Phase = PhaseLinear | PhaseBranch;
+
+const PHASES: Phase[] = [
+  {
+    type: 'linear',
+    name: '基礎定式流',
+    keys: ['naked_single', 'hidden_single', 'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple'],
+  },
+  {
+    type: 'branch',
+    name: '三流分歧',
+    branches: [
+      {
+        name: '魚翼流',
+        keys: ['x_wing', 'finned_x_wing', 'swordfish', 'finned_swordfish', 'jellyfish', 'finned_jellyfish', 'skyscraper', 'two_string_kite', 'empty_rectangle'],
+      },
+      {
+        name: '著色鏈',
+        keys: ['x_cycle_simple_coloring', 'xy_wing', 'xyz_wing', 'w_wing', 'remote_pairs'],
+      },
+      {
+        name: '唯一·ALS',
+        keys: ['unique_rectangle', 'bug_plus_one', 'als_xz', 'als_xy', 'als_w_wing', 'als_chain'],
+      },
+    ],
+  },
+  {
+    type: 'linear',
+    name: '匯合·著色',
+    keys: ['medusa_3d'],
+  },
+  {
+    type: 'linear',
+    name: '鏈術',
+    keys: ['xy_chain', 'aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop'],
+  },
+  {
+    type: 'linear',
+    name: '終局',
+    keys: ['forcing_chain_net', 'cell_forcing_chain', 'region_forcing_chain', 'sue_de_coq', 'template', 'death_blossom', 'exocet_death_blossom'],
+  },
+];
+
+// ── Unlock computation ─────────────────────────────────────────────────
+
+const UNLOCK_THRESHOLD = 3;
+
+type TechStatus = 'locked' | 'unlocked' | 'partial' | 'completed';
+
+interface TechState {
+  status: TechStatus;
+  cleared: number;
+  total: number;
+}
+
+function computeUnlockState(): Map<string, TechState> {
+  const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+  const result = new Map<string, TechState>();
+
+  // First pass: count cleared levels per technique
+  const clearedCount = new Map<string, number>();
+  for (const key of Object.keys(records)) {
+    const rec = records[key];
+    if (rec && rec.techKey) {
+      clearedCount.set(rec.techKey, (clearedCount.get(rec.techKey) || 0) + 1);
+    }
+  }
+
+  // Second pass: determine unlock state
+  for (const node of TREE) {
+    const cleared = clearedCount.get(node.key) || 0;
+    const total = 25;
+
+    // Check prerequisites
+    const prereqs = node.prerequisites;
+    let allPrereqsMet = true;
+    for (const pre of prereqs) {
+      const preClear = clearedCount.get(pre) || 0;
+      if (preClear < Math.min(UNLOCK_THRESHOLD, 25)) {
+        allPrereqsMet = false;
+        break;
+      }
+    }
+
+    // medusa_3d special: ANY one of three branches completing suffices
+    if (node.key === 'medusa_3d') {
+      const branchEnds = ['empty_rectangle', 'remote_pairs', 'als_chain'];
+      allPrereqsMet = branchEnds.some(k => (clearedCount.get(k) || 0) >= Math.min(UNLOCK_THRESHOLD, 25));
+    }
+
+    let status: TechStatus;
+    if (!allPrereqsMet) {
+      status = 'locked';
+    } else if (cleared >= total) {
+      status = 'completed';
+    } else if (cleared > 0) {
+      status = 'partial';
+    } else {
+      status = 'unlocked';
+    }
+
+    result.set(node.key, { status, cleared, total });
+  }
+
+  return result;
+}
+
+// ── View management ───────────────────────────────────────────────────
+
+let _practiceData: Awaited<ReturnType<typeof getPracticeLevels>> | null = null;
+
+function setPracticeViewActive(active: boolean): void {
+  const levelTitle = document.getElementById('level-title');
+  const levelModeChip = document.getElementById('level-mode-chip');
+  const aliasConfig = document.querySelector('.alias-config') as HTMLElement | null;
+  const stageView = document.getElementById('stage-view');
+  const tierView = document.getElementById('tier-view');
+  const wildLobby = document.getElementById('wild-lobby');
+  const practiceLobby = document.getElementById('practice-lobby');
+  const libraryBtn = document.getElementById('library-btn');
+
+  if (levelTitle) levelTitle.textContent = active ? '修行' : 'SUDOKU ZEN';
+  if (levelModeChip) {
+    levelModeChip.textContent = 'PRACTICE';
+    levelModeChip.classList.toggle('hidden', !active);
+  }
+  if (aliasConfig) aliasConfig.style.display = active ? 'none' : '';
+  if (stageView) stageView.style.display = active ? 'none' : 'flex';
+  if (tierView) tierView.classList.add('hidden');
+  if (wildLobby) wildLobby.classList.add('hidden');
+  if (practiceLobby) practiceLobby.classList.toggle('hidden', !active);
+  if (libraryBtn) libraryBtn.style.display = active ? 'none' : '';
+}
+
+// ── Open / Close / Render ─────────────────────────────────────────────
+
+export async function openPracticeLobby(): Promise<void> {
+  if (!_practiceData) {
+    _practiceData = await getPracticeLevels();
+  }
+  setPracticeViewActive(true);
+  renderPracticeLobby();
+}
+
+export function closePracticeLobby(): void {
+  setPracticeViewActive(false);
+  gs.practiceActiveTech = null;
+}
+
+export function isPracticeLobbyOpen(): boolean {
+  const lobby = document.getElementById('practice-lobby');
+  return !!lobby && !lobby.classList.contains('hidden');
+}
+
+function renderPracticeLobby(): void {
+  const body = document.getElementById('practice-lobby-body');
+  if (!body) return;
+  body.innerHTML = '';
+
+  const state = computeUnlockState();
+
+  // Progress summary
+  const completedCount = [...state.values()].filter(s => s.status === 'completed').length;
+  const progressEl = document.getElementById('practice-lobby-progress');
+  if (progressEl) progressEl.textContent = `${completedCount}/41`;
+
+  for (const phase of PHASES) {
+    const section = document.createElement('div');
+    section.className = 'practice-phase';
+
+    const title = document.createElement('div');
+    title.className = 'practice-phase-title';
+    title.textContent = phase.name;
+    section.appendChild(title);
+
+    if (phase.type === 'linear') {
+      const list = document.createElement('div');
+      list.className = 'practice-node-list';
+      for (const key of phase.keys) {
+        list.appendChild(createTechNode(key, state.get(key), false));
+      }
+      section.appendChild(list);
+    } else {
+      const container = document.createElement('div');
+      container.className = 'practice-branches';
+      for (const branch of phase.branches) {
+        const col = document.createElement('div');
+        col.className = 'practice-branch-col';
+
+        const header = document.createElement('div');
+        header.className = 'practice-branch-header';
+        header.textContent = branch.name;
+        col.appendChild(header);
+
+        for (const key of branch.keys) {
+          col.appendChild(createTechNode(key, state.get(key), true));
+        }
+        container.appendChild(col);
+      }
+      section.appendChild(container);
+    }
+
+    body.appendChild(section);
+  }
+}
+
+function createTechNode(key: string, techState: TechState | undefined, compact: boolean): HTMLElement {
+  const st = techState || { status: 'locked' as TechStatus, cleared: 0, total: 25 };
+  const node = document.createElement('div');
+  node.className = `practice-node ${st.status}${compact ? ' practice-node--compact' : ''}`;
+
+  const name = TECH_MAP[key] || key;
+  const nameEl = document.createElement('div');
+  nameEl.className = 'practice-node-name';
+  nameEl.textContent = st.status === 'locked' ? '🔒 ' + name : name;
+
+  const bar = document.createElement('div');
+  bar.className = 'practice-mini-bar';
+  const fill = document.createElement('div');
+  fill.className = 'practice-mini-fill';
+  fill.style.width = `${(st.cleared / st.total) * 100}%`;
+  bar.appendChild(fill);
+
+  const count = document.createElement('div');
+  count.className = 'practice-node-count';
+  count.textContent = `${st.cleared}/${st.total}`;
+
+  node.appendChild(nameEl);
+  node.appendChild(bar);
+  node.appendChild(count);
+
+  if (st.status === 'locked') {
+    node.onclick = () => {
+      const treeNode = TREE.find(n => n.key === key);
+      if (treeNode && treeNode.prerequisites.length > 0) {
+        const preNames = treeNode.prerequisites.map(k => TECH_MAP[k] || k).join('、');
+        showFeedback(`需先完成：${preNames}（各通 ${UNLOCK_THRESHOLD} 關）`, 'error');
+      } else {
+        showFeedback('此技巧尚未解鎖', 'error');
+      }
+    };
+  } else {
+    node.onclick = () => enterPracticeTechnique(key);
+  }
+
+  return node;
+}
+
+// ── Enter technique level grid (reuses #tier-view) ──────────────────
+
+export function enterPracticeTechnique(techKey: string): void {
+  gs.practiceActiveTech = techKey;
+
+  const stageView = document.getElementById('stage-view');
+  const practiceLobby = document.getElementById('practice-lobby');
+  const tierView = document.getElementById('tier-view');
+
+  if (stageView) stageView.style.display = 'none';
+  if (practiceLobby) practiceLobby.classList.add('hidden');
+  if (tierView) tierView.classList.remove('hidden');
+
+  const techName = TECH_MAP[techKey] || techKey;
+  const titleEl = document.getElementById('tier-title');
+  if (titleEl) titleEl.textContent = techName;
+
+  // Hide teach button (not applicable for practice)
+  const teachBtn = document.getElementById('tier-teach-btn');
+  if (teachBtn) teachBtn.style.display = 'none';
+
+  // Override back button
+  const backBtn = tierView?.querySelector('.tier-back-btn') as HTMLElement | null;
+  if (backBtn) {
+    backBtn.onclick = () => backToPracticeLobby();
+  }
+
+  renderPracticeLevelGrid(techKey);
+}
+
+function renderPracticeLevelGrid(techKey: string): void {
+  const list = document.getElementById('level-list');
+  if (!list || !_practiceData) return;
+  list.innerHTML = '';
+
+  const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+  const techLevels = _practiceData.filter(l => l.maxTechnique === techKey);
+  const cleared = techLevels.filter(l => records[l.id]).length;
+
+  const progressEl = document.getElementById('tier-progress-text');
+  if (progressEl) progressEl.textContent = `${cleared}/${techLevels.length}`;
+
+  techLevels.forEach((l, idx) => {
+    const record = records[l.id];
+    const item = document.createElement('div');
+    item.className = `level-item${record ? ' completed' : ''}`;
+
+    const hasRecord = !!record;
+    const bestTime = hasRecord ? record.time : null;
+    const timeStr = bestTime !== null
+      ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}`
+      : '--:--';
+    const bestStars = hasRecord ? (record.stars || 1) : 0;
+    const starsClass = bestStars > 0 ? 'level-stars' : 'level-stars is-empty';
+    const starsText = bestStars > 0
+      ? '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span>'
+      : '☆☆☆';
+
+    item.innerHTML = `
+      <div class="level-num">${l.displayName || `第 ${idx + 1} 關`}</div>
+      <div class="${starsClass}">${starsText}</div>
+      <div class="level-stats${hasRecord ? '' : ' is-empty'}">${timeStr}</div>
+    `;
+
+    item.onclick = () => {
+      // Route to pre-level modal with practice context, passing level data directly
+      import('../levels').then(m => m.showPreLevelModal(l.id, true, l));
+    };
+
+    list.appendChild(item);
+  });
+
+  requestAnimationFrame(syncLevelCardSize);
+}
+
+export function backToPracticeLobby(): void {
+  gs.practiceActiveTech = null;
+
+  const tierView = document.getElementById('tier-view');
+  const practiceLobby = document.getElementById('practice-lobby');
+
+  if (tierView) tierView.classList.add('hidden');
+  if (practiceLobby) practiceLobby.classList.remove('hidden');
+
+  // Restore tier-view back button to default behavior
+  const backBtn = tierView?.querySelector('.tier-back-btn') as HTMLElement | null;
+  if (backBtn) {
+    backBtn.onclick = () => {
+      import('../levels').then(m => m.backToStageMap());
+    };
+  }
+
+  renderPracticeLobby();
+}
+
+// ── Next practice level ───────────────────────────────────────────────
+
+export async function startNextPracticeLevel(): Promise<void> {
+  if (!_practiceData || !gs.practiceActiveTech || !gs.currentLevel) {
+    // Fallback: go to level screen
+    const { showLevelScreen } = await import('../levels');
+    showLevelScreen(true);
+    return;
+  }
+
+  const techKey = gs.practiceActiveTech;
+  const techLevels = _practiceData.filter(l => l.maxTechnique === techKey);
+  const currentIdx = techLevels.findIndex(l => l.id === gs.currentLevel!.id);
+  const nextIdx = currentIdx + 1;
+
+  if (nextIdx >= techLevels.length) {
+    // All levels in this technique done — go back to level grid
+    showFeedback('本技巧全部通關！', 'success');
+    const { showLevelScreen } = await import('../levels');
+    showLevelScreen(true);
+    return;
+  }
+
+  const nextLevel = techLevels[nextIdx];
+  const { showPreLevelModal } = await import('../levels');
+  // Close React win celebration
+  const { bridgeCloseWin } = await import('../../react/win/winBridge');
+  bridgeCloseWin();
+  // Also hide legacy win element (fallback)
+  const winEl = document.getElementById('win-celebration');
+  if (winEl) winEl.style.display = 'none';
+  document.getElementById('level-screen')!.style.display = 'flex';
+  showPreLevelModal(nextLevel.id, true, nextLevel);
+}
+
+// ── Save practice record ──────────────────────────────────────────────
+
+export function savePracticeRecord(levelId: number, seconds: number, errors: number, techKey: string, replayHistory?: any[]): void {
+  const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+  const existing = records[levelId];
+  const earnedStars = Math.max(1, 3 - errors);
+  const shouldUpdate =
+    !existing ||
+    earnedStars > (existing.stars || 1) ||
+    (earnedStars === (existing.stars || 1) && seconds < (existing.time || Infinity));
+
+  if (shouldUpdate) {
+    records[levelId] = {
+      time: seconds,
+      stars: earnedStars,
+      techKey,
+      ...(replayHistory ? { replayHistory } : {}),
+    };
+    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(records));
+  }
+}

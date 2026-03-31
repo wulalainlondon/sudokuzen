@@ -130,11 +130,16 @@ function updateGameHeaderByMode(isWild: boolean): void {
   const gameModeChip = document.getElementById('game-mode-chip');
   const quitBtn = document.getElementById('quit-btn');
   const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
-  if (gameTitle) gameTitle.textContent = isWild ? 'WORLD BATTLE' : 'SUDOKU';
-  if (gameModeChip) gameModeChip.classList.toggle('hidden', !isWild);
+  const isPractice = gs.currentLevel?.mode === 'practice';
+
+  if (gameTitle) gameTitle.textContent = isWild ? 'WORLD BATTLE' : isPractice ? '修行' : 'SUDOKU';
+  if (gameModeChip) {
+    gameModeChip.textContent = isWild ? 'WORLD' : 'PRACTICE';
+    gameModeChip.classList.toggle('hidden', !isWild && !isPractice);
+  }
   if (gameContainer) gameContainer.classList.toggle('world-play-active', isWild);
   if (quitBtn) {
-    quitBtn.textContent = isWild ? '離開世界' : 'Quit';
+    quitBtn.textContent = isWild ? '離開世界' : isPractice ? '返回修行' : 'Quit';
     quitBtn.setAttribute('onclick', isWild ? 'exitWild(); showLevelScreen(true)' : 'showLevelScreen(true)');
   }
 }
@@ -190,6 +195,7 @@ export function initGame(
   if (gs.overlay) gs.overlay.style.display = 'none';
   document.getElementById('pause-screen')?.style.setProperty('display', 'none');
   if (gs.winCelebrationEl) gs.winCelebrationEl.style.display = 'none';
+  import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin());
   renderGrid();
   applyGridSkillClass();
   evaluateLockedSkill();
@@ -476,6 +482,21 @@ function checkWin(): void {
     return;
   }
 
+  const isPractice = gs.currentLevel?.mode === 'practice';
+
+  // ── Practice mode: save to practice records (skip normal records & leaderboard) ──
+  if (isPractice && gs.currentLevel!.maxTechnique) {
+    import('../features/practice/practiceLobby').then((m) => {
+      m.savePracticeRecord(gs.currentLevel!.id, gs.seconds, gs.errors, gs.currentLevel!.maxTechnique!, gs.actionHistory);
+    });
+    clearGameStatus(gs.currentLevel!.id);
+    const earnedStars = Math.max(1, 3 - gs.errors);
+    showPracticeWinCelebration(earnedStars);
+    if (gs.isDuoMode) callDuoFinish(gs.seconds, earnedStars);
+    setTimeout(() => checkAllAchievements(), 1000);
+    return;
+  }
+
   clearGameStatus(gs.currentLevel!.id);
   const earnedValue = saveProgress();
   showWinCelebration(earnedValue);
@@ -642,6 +663,9 @@ export function showGameOver(): void {
           overlayBackBtn.setAttribute('onclick', 'exitWild(); showLevelScreen(true)');
         }
       });
+    } else if (gs.currentLevel?.mode === 'practice') {
+      overlayBackBtn.textContent = '返回修行';
+      overlayBackBtn.setAttribute('onclick', 'showLevelScreen(true)');
     } else {
       overlayBackBtn.textContent = '返回選關';
       overlayBackBtn.setAttribute('onclick', 'showLevelScreen(true)');
@@ -684,120 +708,60 @@ export function updateLivesUI(): void {
   gs.livesEl.innerHTML = html;
 }
 
+// ── Win celebrations (delegated to React WinCelebration component) ────
+
 function showWinCelebration(earnedValue: number): void {
-  const mins = Math.floor(gs.seconds / 60)
-    .toString()
-    .padStart(2, '0');
-  const secs = (gs.seconds % 60).toString().padStart(2, '0');
-  document.getElementById('win-level-name')!.textContent = gs.currentLevel!.displayName;
-  document.getElementById('win-time')!.textContent = `${mins}:${secs}`;
-  if (gs.isSpeedrunMode) {
-    document.getElementById('win-stars')!.textContent = `⚡ 總提交: ${earnedValue}次`;
-  } else {
-    document.getElementById('win-stars')!.textContent = '★'.repeat(earnedValue) + '☆'.repeat(3 - earnedValue);
-  }
-  // Reset to normal mode buttons
-  const wildBtn = document.getElementById('wild-continue-btn');
-  const nextBtn = document.getElementById('win-next-btn');
-  const replayBtn = document.getElementById('win-replay-btn');
-  const backBtn = document.getElementById('win-back-btn');
-  const leaderboardCard = gs.winCelebrationEl?.querySelector('.leaderboard-card') as HTMLElement | null;
-  if (wildBtn) wildBtn.classList.add('hidden');
-  if (nextBtn) nextBtn.style.display = '';
-  if (replayBtn) replayBtn.style.display = '';
-  if (backBtn) {
-    backBtn.textContent = '返回選關';
-    backBtn.setAttribute('onclick', 'showLevelScreen(true)');
-  }
-  if (leaderboardCard) leaderboardCard.style.display = '';
-  createConfettiBurst(22);
-  gs.winCelebrationEl!.style.display = 'flex';
+  import('../react/win/winBridge').then(({ bridgeShowWin }) => {
+    bridgeShowWin({
+      mode: 'normal',
+      levelName: gs.currentLevel!.displayName,
+      timeSeconds: gs.seconds,
+      stars: gs.isSpeedrunMode ? 0 : earnedValue,
+      isSpeedrun: gs.isSpeedrunMode,
+      submissions: gs.isSpeedrunMode ? earnedValue : 0,
+      showLeaderboard: true,
+      showReplay: true,
+    });
+  });
   showFeedback('完成！太棒了！', 'success');
   playWinSound();
-  if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
+}
+
+function showPracticeWinCelebration(earnedStars: number): void {
+  import('../react/win/winBridge').then(({ bridgeShowWin }) => {
+    bridgeShowWin({
+      mode: 'practice',
+      levelName: gs.currentLevel!.displayName,
+      timeSeconds: gs.seconds,
+      stars: earnedStars,
+      showLeaderboard: false,
+      showReplay: true,
+    });
+  });
+  showFeedback('修行完成！', 'success');
+  playWinSound();
 }
 
 function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number, firstKill?: string | null, firstKillSub?: string | null, beatMentor?: boolean): void {
-  const mins = Math.floor(seconds / 60)
-    .toString()
-    .padStart(2, '0');
-  const secs = (seconds % 60).toString().padStart(2, '0');
-  document.getElementById('win-level-name')!.textContent = firstKill
-    ? `「${firstKill} · ${firstKillSub}」首次討伐！`
-    : gs.currentLevel!.displayName;
-  document.getElementById('win-time')!.textContent = `${mins}:${secs}`;
-
-  // Check for session summary (round 10 complete)
-  import('../features/wild/wildController').then((m) => {
-    const session = m.getSession();
-    const wildBtn = document.getElementById('wild-continue-btn');
-    const nextBtn = document.getElementById('win-next-btn');
-    const replayBtn = document.getElementById('win-replay-btn');
-    const backBtn = document.getElementById('win-back-btn');
-    const leaderboardCard = gs.winCelebrationEl?.querySelector('.leaderboard-card') as HTMLElement | null;
-
-    if (session && session.round >= 10) {
-      // Session complete — show summary
-      const streakMult = session.wins >= 10 ? 1.5 : session.wins >= 8 ? 1.3 : session.wins >= 5 ? 1.1 : 1.0;
-      const starsEl = document.getElementById('win-stars')!;
-      starsEl.innerHTML =
-        `修行輪完成！<br>${session.wins}/10 勝 · +${session.totalExp} EXP` +
-        (streakMult > 1 ? `<br>連勝加成 ×${streakMult}` : '');
-      if (wildBtn) {
-        wildBtn.classList.remove('hidden');
-        wildBtn.textContent = '新的修行輪';
-      }
-    } else if (session) {
-      // Mid-session — show round progress
-      document.getElementById('win-stars')!.textContent = leveledUp
-        ? `+${expGained} EXP — Lv.${newLevel}!`
-        : `+${expGained} EXP`;
-      if (wildBtn) {
-        wildBtn.classList.remove('hidden');
-        wildBtn.textContent = `繼續修行 (${session.round}/10)`;
-      }
-    } else {
-      // Standalone encounter
-      const mentorBonus = beatMentor ? ' ⚡ 超越弈塵！' : '';
-      document.getElementById('win-stars')!.textContent = leveledUp
-        ? `+${expGained} EXP${mentorBonus} — Lv.${newLevel}!`
-        : `+${expGained} EXP${mentorBonus}`;
-      if (wildBtn) {
-        wildBtn.classList.remove('hidden');
-        wildBtn.textContent = '繼續世界';
-      }
-    }
-
-    if (nextBtn) nextBtn.style.display = 'none';
-    if (replayBtn) replayBtn.style.display = 'none';
-    if (backBtn) {
-      backBtn.textContent = '離開世界';
-      backBtn.setAttribute('onclick', 'exitWild(); showLevelScreen(true)');
-    }
-    if (leaderboardCard) leaderboardCard.style.display = 'none';
+  import('../react/win/winBridge').then(({ bridgeShowWildWin, bridgeSetWildSession }) => {
+    bridgeShowWildWin({
+      levelName: gs.currentLevel!.displayName,
+      timeSeconds: seconds,
+      expGained,
+      leveledUp,
+      newLevel,
+      firstKill,
+      firstKillSub,
+      beatMentor,
+    });
+    // Fetch session info async and update store
+    import('../features/wild/wildController').then((m) => {
+      const session = m.getSession();
+      bridgeSetWildSession(session ? { round: session.round, wins: session.wins, totalExp: session.totalExp } : null);
+    });
   });
-
-  createConfettiBurst(leveledUp ? 35 : 22);
-  gs.winCelebrationEl!.style.display = 'flex';
   showFeedback(leveledUp ? `升級！IQ Lv.${newLevel}` : '狩獵成功！', 'success');
   playWinSound();
-  if (navigator.vibrate)
-    navigator.vibrate(leveledUp ? [25, 45, 25, 45, 25, 45, 25, 70, 50] : [25, 45, 25, 45, 25, 70, 50]);
-}
-
-function createConfettiBurst(count = 50): void {
-  gs.confettiLayerEl!.innerHTML = '';
-  const colors = ['#0984E3', '#74B9FF', '#A29BFE', '#DFE6E9', '#B2BEC3'];
-  for (let i = 0; i < count; i++) {
-    const piece = document.createElement('div');
-    piece.className = 'confetti';
-    piece.style.left = `${Math.random() * 100}%`;
-    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-    piece.style.animationDuration = `${2.1 + Math.random() * 1.3}s`;
-    piece.style.animationDelay = `${Math.random() * 0.4}s`;
-    piece.style.transform = `translateY(-20px) rotate(${Math.random() * 180}deg)`;
-    gs.confettiLayerEl!.appendChild(piece);
-  }
 }
 
 function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: boolean; box: boolean }): void {

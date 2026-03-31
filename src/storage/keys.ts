@@ -23,6 +23,7 @@ export const SK = {
   TECHNIQUES_USED: 'sudoku_techniques_used',
   SKILL_MODE: 'sudoku_skill_mode',
   WILD_PROFILE: 'sudoku_wild_profile',
+  PRACTICE_RECORDS: 'sudoku_practice_records',
 
   /** Returns the save-game key for a given level id. */
   save(levelId: number, speedrun: boolean): string {
