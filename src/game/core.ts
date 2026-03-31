@@ -443,7 +443,7 @@ function checkWin(): void {
   if (gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild') {
     import('../features/wild/wildController').then((m) => {
       const result = m.onWildComplete(gs.seconds, gs.errors);
-      showWildWinCelebration(gs.seconds, result.expGained, result.leveledUp, result.newLevel, result.firstKill, result.firstKillSub);
+      showWildWinCelebration(gs.seconds, result.expGained, result.leveledUp, result.newLevel, result.firstKill, result.firstKillSub, result.beatMentor);
     });
     return;
   }
@@ -689,7 +689,7 @@ function showWinCelebration(earnedValue: number): void {
   if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
 }
 
-function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number, firstKill?: string | null, firstKillSub?: string | null): void {
+function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number, firstKill?: string | null, firstKillSub?: string | null, beatMentor?: boolean): void {
   const mins = Math.floor(seconds / 60)
     .toString()
     .padStart(2, '0');
@@ -730,9 +730,10 @@ function showWildWinCelebration(seconds: number, expGained: number, leveledUp: b
       }
     } else {
       // Standalone encounter
+      const mentorBonus = beatMentor ? ' ⚡ 超越弈塵！' : '';
       document.getElementById('win-stars')!.textContent = leveledUp
-        ? `+${expGained} EXP — Lv.${newLevel}!`
-        : `+${expGained} EXP`;
+        ? `+${expGained} EXP${mentorBonus} — Lv.${newLevel}!`
+        : `+${expGained} EXP${mentorBonus}`;
       if (wildBtn) {
         wildBtn.classList.remove('hidden');
         wildBtn.textContent = '繼續世界';

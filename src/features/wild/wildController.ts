@@ -246,6 +246,19 @@ export async function startWildEncounter(): Promise<void> {
     }
   }
 
+  // Show mentor ghost time target
+  if (_encounter.mentorTime > 0) {
+    const mins = Math.floor(_encounter.mentorTime / 60);
+    const secs = _encounter.mentorTime % 60;
+    const timeStr = mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : `${secs}s`;
+    // Show mentor time as a subtle indicator on the timer area
+    const timerEl = gs.timerEl;
+    if (timerEl) {
+      timerEl.setAttribute('data-mentor-time', String(_encounter.mentorTime));
+      timerEl.title = `弈塵的紀錄：${timeStr}`;
+    }
+  }
+
   // One-time hint: teach continuous fill on first encounter
   if (profile.totalEncounters <= 1) {
     triggerContinuousFillHint();
@@ -397,8 +410,8 @@ function failGauntlet(): void {
 export function onWildComplete(
   seconds: number,
   errors: number,
-): { expGained: number; leveledUp: boolean; newLevel: number; firstKill: string | null; firstKillSub: string | null } {
-  if (!_encounter || !_active) return { expGained: 0, leveledUp: false, newLevel: 1, firstKill: null, firstKillSub: null };
+): { expGained: number; leveledUp: boolean; newLevel: number; firstKill: string | null; firstKillSub: string | null; beatMentor: boolean } {
+  if (!_encounter || !_active) return { expGained: 0, leveledUp: false, newLevel: 1, firstKill: null, firstKillSub: null, beatMentor: false };
 
   // Handle gauntlet advancement
   if (isGauntletActive()) {
@@ -433,7 +446,7 @@ export function onWildComplete(
       _active = false;
       resetWildGsFields();
 
-      return { ...result, firstKill: null, firstKillSub: null };
+      return { ...result, firstKill: null, firstKillSub: null, beatMentor: false };
     }
 
     // Not final — advance to next (async, but we still return a partial result)
@@ -456,7 +469,7 @@ export function onWildComplete(
     launchGauntletNext(profile);
 
     // Return 0 exp (not finished yet) — the win celebration should show gauntlet progress
-    return { expGained: 0, leveledUp: false, newLevel: profile.iqLevel, firstKill: null, firstKillSub: null };
+    return { expGained: 0, leveledUp: false, newLevel: profile.iqLevel, firstKill: null, firstKillSub: null, beatMentor: false };
   }
 
   const profile = getWildProfile();
@@ -465,7 +478,14 @@ export function onWildComplete(
 
   // Calculate and apply EXP with challenge multiplier
   const challengeMultiplier = CHALLENGE_CONFIGS[_encounter.challengeMode]?.expMultiplier ?? 1.0;
-  const expGained = calculateExp(baseExp, _encounter.rarity, seconds, errors, challengeMultiplier);
+  let expGained = calculateExp(baseExp, _encounter.rarity, seconds, errors, challengeMultiplier);
+
+  // 弈塵 ghost bonus: beat his time → +50% EXP
+  const beatMentor = _encounter.mentorTime > 0 && seconds <= _encounter.mentorTime;
+  if (beatMentor) {
+    expGained = Math.round(expGained * 1.5);
+  }
+
   const result = applyExp(profile, expGained);
 
   // Update bestiary
@@ -525,7 +545,7 @@ export function onWildComplete(
     // Don't clear session yet — win celebration will read it for summary
     _active = false;
     resetWildGsFields();
-    return { expGained, leveledUp: result.leveledUp, newLevel: result.newLevel, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null };
+    return { expGained, leveledUp: result.leveledUp, newLevel: result.newLevel, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null, beatMentor };
   }
 
   _active = false;
@@ -547,7 +567,7 @@ export function onWildComplete(
     await triggerFinaleIfNeeded(conqueredCount >= totalTechs);
   }, 2000);
 
-  return { ...result, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null };
+  return { ...result, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null, beatMentor };
 }
 
 async function launchGauntletNext(profile: WildProfile): Promise<void> {

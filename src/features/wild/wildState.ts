@@ -112,6 +112,7 @@ export interface WildEncounter {
   solution: number[];
   startedAt: number;
   challengeMode: ChallengeMode;
+  mentorTime: number;  // 弈塵's estimated clear time in seconds (0 = T4, he can't solve)
 }
 
 const DEFAULT_PROFILE: WildProfile = {

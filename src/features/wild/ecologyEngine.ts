@@ -278,6 +278,18 @@ async function buildEncounter(meta: TechniqueMeta, challengeMode: ChallengeMode)
   const puzzles = await loadTechniquePuzzles(meta.key);
   const idx = Math.floor(Math.random() * puzzles.length);
   const p = puzzles[idx];
+  // 弈塵's estimated solve time based on difficulty and tier
+  // He's an expert at T0-T3 but can't solve T4
+  let mentorTime = 0;
+  if (meta.tier <= 3) {
+    const diffScore = p.difficulty_score || 50;
+    // T0: very fast, T1: fast, T2: moderate, T3: slow but capable
+    const tierMultiplier = [1.0, 1.3, 1.8, 2.5][meta.tier] ?? 2.0;
+    mentorTime = Math.round(diffScore * tierMultiplier);
+    // Add slight random variance (±15%) so he's not perfectly predictable
+    mentorTime = Math.round(mentorTime * (0.85 + Math.random() * 0.3));
+  }
+
   return {
     technique: meta.key,
     rarity: meta.rarity,
@@ -286,6 +298,7 @@ async function buildEncounter(meta: TechniqueMeta, challengeMode: ChallengeMode)
     solution: p.solution,
     startedAt: Date.now(),
     challengeMode,
+    mentorTime,
   };
 }
 
