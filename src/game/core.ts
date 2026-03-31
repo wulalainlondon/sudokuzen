@@ -196,6 +196,7 @@ export function initGame(
   document.getElementById('pause-screen')?.style.setProperty('display', 'none');
   if (gs.winCelebrationEl) gs.winCelebrationEl.style.display = 'none';
   import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin());
+  import('../react/gameover/gameOverBridge').then(({ bridgeCloseGameOver }) => bridgeCloseGameOver());
   renderGrid();
   applyGridSkillClass();
   evaluateLockedSkill();
@@ -640,39 +641,28 @@ function saveProgress(): number {
 export function showGameOver(): void {
   clearInterval(gs.timerInterval!);
 
-  // ── Wild mode: beast escapes ──
   const isWild = gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
+  const isPractice = gs.currentLevel?.mode === 'practice';
+
   if (isWild) {
     import('../features/wild/wildController').then((m) => m.onWildEscape());
   } else {
     clearGameStatus(gs.currentLevel!.id);
   }
 
-  // Update overlay button text for wild mode
-  const overlayBackBtn = document.getElementById('overlay-back-btn');
-  if (overlayBackBtn) {
+  // Delegate to React GameOverOverlay
+  const mode = isWild ? 'wild' : isPractice ? 'practice' : 'normal';
+  import('../react/gameover/gameOverBridge').then(({ bridgeShowGameOver, bridgeSetGameOverWildSession }) => {
+    bridgeShowGameOver(mode as any);
     if (isWild) {
-      // Check if in a session with rounds remaining
       import('../features/wild/wildController').then((m) => {
         const session = m.getSession();
-        if (session && session.round < 10) {
-          overlayBackBtn.textContent = `繼續修行 (${session.round}/10)`;
-          overlayBackBtn.setAttribute('onclick', 'continueWild()');
-        } else {
-          overlayBackBtn.textContent = '離開世界';
-          overlayBackBtn.setAttribute('onclick', 'exitWild(); showLevelScreen(true)');
+        if (session) {
+          bridgeSetGameOverWildSession({ round: session.round, hasMore: session.round < 10 });
         }
       });
-    } else if (gs.currentLevel?.mode === 'practice') {
-      overlayBackBtn.textContent = '返回修行';
-      overlayBackBtn.setAttribute('onclick', 'showLevelScreen(true)');
-    } else {
-      overlayBackBtn.textContent = '返回選關';
-      overlayBackBtn.setAttribute('onclick', 'showLevelScreen(true)');
     }
-  }
-
-  gs.overlay!.style.display = 'flex';
+  });
 }
 
 export function resetGame(): void {

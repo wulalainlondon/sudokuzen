@@ -433,17 +433,9 @@ export function renderStatsModal(): void {
 }
 
 export function openStatsModal(): void {
-  try {
-    switchStatsTab('overview');
-    renderStatsModal();
-    // Retroactively check achievements from existing records
-    checkAllAchievements();
-  } catch (e) {
-    console.error('openStatsModal failed:', e);
-  }
-  document.getElementById('stats-modal')!.style.display = 'flex';
+  import('../react/stats/statsBridge').then(({ bridgeOpenStats }) => bridgeOpenStats());
 }
 
 export function closeStatsModal(): void {
-  document.getElementById('stats-modal')!.style.display = 'none';
+  import('../react/stats/statsBridge').then(({ bridgeCloseStats }) => bridgeCloseStats());
 }

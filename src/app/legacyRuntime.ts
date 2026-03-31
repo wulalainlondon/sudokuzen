@@ -63,6 +63,9 @@ import { continueWild, exitWild, startWorldSession } from '../features/wild/wild
 import { dismissMentor } from '../features/wild/mentorController';
 import { openPracticeLobby, closePracticeLobby, isPracticeLobbyOpen, backToPracticeLobby } from '../features/practice/practiceLobby';
 import { useWinStore } from '../react/win/winStore';
+import { useGameOverStore } from '../react/gameover/gameOverStore';
+import { useStatsStore } from '../react/stats/statsStore';
+import { usePreLevelStore } from '../react/prelevel/preLevelStore';
 
 function isWinCelebrationOpen(): boolean {
   return useWinStore.getState().visible;
@@ -239,7 +242,7 @@ export function bootLegacyRuntime(appVersion: string): void {
       closePracticeModal();
       return;
     }
-    if (statsModal?.style.display === 'flex') {
+    if (statsModal?.style.display === 'flex' || useStatsStore.getState().visible) {
       closeStatsModal();
       return;
     }
@@ -255,7 +258,7 @@ export function bootLegacyRuntime(appVersion: string): void {
       closeLibraryOverlay();
       return;
     }
-    if (preLevel?.style.display === 'flex') {
+    if (preLevel?.style.display === 'flex' || usePreLevelStore.getState().visible) {
       hidePreLevelModal();
       return;
     }
@@ -268,7 +271,7 @@ export function bootLegacyRuntime(appVersion: string): void {
       if (pauseScreen?.style.display === 'flex') {
         // Already paused → go back to level screen
         showLevelScreen(true);
-      } else if (overlay?.style.display === 'flex' || winEl?.style.display === 'flex' || isWinCelebrationOpen()) {
+      } else if (overlay?.style.display === 'flex' || winEl?.style.display === 'flex' || isWinCelebrationOpen() || useGameOverStore.getState().visible) {
         // Game over or win → back to levels
         showLevelScreen(true);
       } else {

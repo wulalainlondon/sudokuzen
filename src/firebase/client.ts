@@ -666,18 +666,20 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
       .limit(3)
       .get();
     const rows = snap.docs.map((d: any) => d.data());
-    if (!gs.preLevelLeaderboardEl) return;
-    if (!rows.length) {
-      gs.preLevelLeaderboardEl.textContent = '尚無玩家首通紀錄';
-      return;
-    }
-    gs.preLevelLeaderboardEl.innerHTML = rows
-      .map((r: any, i: number) => {
-        const timeStr = formatSeconds(r.firstTimeSec);
-        if (gs.isSpeedrunMode) return `${i + 1}. ${r.alias}  ${timeStr} (經典)`;
-        return `${i + 1}. ${r.alias}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
-      })
-      .join('<br>');
+    const html = !rows.length
+      ? '尚無玩家首通紀錄'
+      : rows
+          .map((r: any, i: number) => {
+            const timeStr = formatSeconds(r.firstTimeSec);
+            if (gs.isSpeedrunMode) return `${i + 1}. ${r.alias}  ${timeStr} (經典)`;
+            return `${i + 1}. ${r.alias}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
+          })
+          .join('<br>');
+    if (gs.preLevelLeaderboardEl) gs.preLevelLeaderboardEl.innerHTML = html;
+    // Also update React pre-level store
+    import('../react/prelevel/preLevelBridge').then(({ bridgeSetPreLevelLeaderboard }) => {
+      bridgeSetPreLevelLeaderboard(html);
+    });
   } catch (e) {
     console.warn('load pre-level leaderboard failed:', e);
     if (gs.preLevelLeaderboardEl) gs.preLevelLeaderboardEl.textContent = '載入失敗';

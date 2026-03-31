@@ -348,57 +348,54 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false, exter
     return;
   }
 
-  gs.preLevelNameEl!.textContent = level.displayName;
   const techName = TECH_MAP[level.maxTechnique || ''] || level.maxTechnique || '-';
   const techTier = level.techTier || '';
-  gs.preLevelTechEl!.textContent = `💡 核心技巧: ${techName} ${techTier ? `(${techTier})` : ''}`;
-
   const isPractice = level.mode === 'practice';
   const recKey = isPractice ? SK.PRACTICE_RECORDS : gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
   const records = readJson<Record<string, any>>(recKey, {});
   const record = records[levelId];
 
+  let bestRecord = '尚無通關紀錄';
+  let hasRecord = false;
+  let hasReplay = false;
+
   if (record) {
+    hasRecord = true;
     if (gs.isSpeedrunMode) {
-      gs.preLevelBestRecordEl!.textContent = `最佳紀錄：${formatSeconds(record.time)} ⚡ ${record.submissions}次提交`;
+      bestRecord = `最佳紀錄：${formatSeconds(record.time)} ⚡ ${record.submissions}次提交`;
     } else {
       const stars = typeof record === 'number' ? 1 : record.stars || 1;
       const time = typeof record === 'number' ? record : record.time;
-      gs.preLevelBestRecordEl!.textContent = `最佳紀錄：${formatSeconds(time)} 星級：${'★'.repeat(stars)}`;
+      bestRecord = `最佳紀錄：${formatSeconds(time)} 星級：${'★'.repeat(stars)}`;
     }
-    gs.preLevelBestRecordEl!.classList.add('has-record');
-
-    if (record.replayHistory && record.replayHistory.length > 0) {
-      gs.preLevelReplayBtn!.style.display = 'block';
-      (gs.preLevelReplayBtn as HTMLElement).onclick = async () => {
-        const { openHistoricalReplay } = await import('./replay');
-        openHistoricalReplay(levelId, record.replayHistory);
-      };
-      gs.preLevelGhostBtn!.style.display = 'block';
-      (gs.preLevelGhostBtn as HTMLElement).onclick = () => startLevelFromModal(true, true, record.replayHistory);
-    } else {
-      gs.preLevelReplayBtn!.style.display = 'none';
-      gs.preLevelGhostBtn!.style.display = 'none';
-    }
-  } else {
-    gs.preLevelBestRecordEl!.textContent = '尚無通關紀錄';
-    gs.preLevelBestRecordEl!.classList.remove('has-record');
-    gs.preLevelReplayBtn!.style.display = 'none';
-    gs.preLevelGhostBtn!.style.display = 'none';
+    hasReplay = !!(record.replayHistory && record.replayHistory.length > 0);
   }
 
-  gs.preLevelLeaderboardEl!.textContent = '載入中...';
+  // Delegate to React PreLevelModal
+  import('../react/prelevel/preLevelBridge').then(({ bridgeOpenPreLevel }) => {
+    bridgeOpenPreLevel({
+      levelId,
+      displayName: level.displayName,
+      techName,
+      techTier,
+      bestRecord,
+      hasRecord,
+      hasReplay,
+      isPractice,
+      isSpeedrun: gs.isSpeedrunMode,
+    });
+  });
+
   loadPreLevelLeaderboard(levelId);
-  gs.preLevelModalEl!.style.display = 'flex';
   if (gs.firebaseReady) callEnterDuoRoom(levelId);
 }
 
 export function hidePreLevelModal(): void {
-  gs.preLevelModalEl!.style.display = 'none';
+  // Close both legacy and React modals
+  if (gs.preLevelModalEl) gs.preLevelModalEl.style.display = 'none';
+  import('../react/prelevel/preLevelBridge').then(({ bridgeClosePreLevel }) => bridgeClosePreLevel());
   gs.pendingLevelId = null;
   _pendingLevelData = null;
-  // Don't leave duo room when host closes modal — room stays alive for re-selection
-  // Only leave if we're guest and backing out
   if (!gs.isDuoMode && gs.duoRole === 'guest') callLeaveDuoRoom();
 }
 

@@ -163,46 +163,27 @@
         </div>
     </div>
 
-    <div id="pre-level-modal">
-        <div class="pre-level-panel">
-            <h2 id="pre-level-name">LEVEL NAME</h2>
-            <p id="pre-level-best-record" class="pre-level-record">尚無通關紀錄</p>
-            <p id="pre-level-tech" class="pre-level-tech">💡 核心技巧: -</p>
-            <div class="leaderboard-card">
-                <div class="leaderboard-title">首通榜 TOP 3</div>
-                <div class="leaderboard-list" id="pre-level-leaderboard">載入中...</div>
+    <!-- Pre-level Modal is now rendered by React (src/react/prelevel/PreLevelModal.tsx) -->
+    <!-- Duo Ready Zone lives here as hidden DOM; React mounts it via ref when needed -->
+    <div class="duo-ready-zone hidden" id="duo-ready-zone">
+        <div class="duo-zone-title">💑 雙人對決</div>
+        <div class="duo-player-slots">
+            <div class="duo-player-slot" id="duo-slot-host">
+                <div class="duo-slot-alias" id="duo-host-alias">--</div>
+                <div class="duo-slot-status" id="duo-host-status">等待中</div>
             </div>
-            <!-- Duo Ready Zone (hidden by default) -->
-            <div class="duo-ready-zone hidden" id="duo-ready-zone">
-                <div class="duo-zone-title">💑 雙人對決</div>
-                <div class="duo-player-slots">
-                    <div class="duo-player-slot" id="duo-slot-host">
-                        <div class="duo-slot-alias" id="duo-host-alias">--</div>
-                        <div class="duo-slot-status" id="duo-host-status">等待中</div>
-                    </div>
-                    <div class="duo-player-slot empty" id="duo-slot-guest">
-                        <div class="duo-slot-alias" id="duo-guest-alias">等待加入...</div>
-                        <div class="duo-slot-status" id="duo-guest-status"></div>
-                    </div>
-                </div>
-                <div id="duo-pre-streak"></div>
-                <div id="duo-countdown-area" class="hidden"></div>
-                <button class="duo-ready-btn" id="duo-ready-btn" onclick="toggleDuoReady()">準備完成</button>
+            <div class="duo-player-slot empty" id="duo-slot-guest">
+                <div class="duo-slot-alias" id="duo-guest-alias">等待加入...</div>
+                <div class="duo-slot-status" id="duo-guest-status"></div>
             </div>
-            <button class="resume-btn" id="pre-level-start-btn">開始挑戰</button>
-            <button class="resume-btn btn-ghost hidden" id="pre-level-ghost-btn">👻 挑戰本局幽靈</button>
-            <button class="resume-btn btn-replay hidden" id="pre-level-replay-btn">🎬 觀看最佳通關回放</button>
-            <button class="back-btn-light" id="pre-level-back-btn">選擇其他關卡</button>
         </div>
+        <div id="duo-pre-streak"></div>
+        <div id="duo-countdown-area" class="hidden"></div>
+        <button class="duo-ready-btn" id="duo-ready-btn" onclick="toggleDuoReady()">準備完成</button>
     </div>
 
     <div class="game-container">
-        <div id="overlay">
-            <h2>GAME OVER</h2>
-            <p>你犯了 3 次錯誤</p>
-            <button class="retry-btn" onclick="resetGame()">重新開始</button>
-            <button class="back-btn" id="overlay-back-btn" onclick="showLevelScreen(true)">返回選關</button>
-        </div>
+        <!-- Game Over overlay is now rendered by React (src/react/gameover/GameOverOverlay.tsx) -->
 
         <div id="pause-screen">
             <h2 id="pause-level-name">LEVEL NAME</h2>
@@ -343,34 +324,7 @@
         </div>
     </div>
 
-    <!-- Stats & Achievements Modal -->
-    <div id="stats-modal">
-        <div class="stats-panel">
-            <h2>個人統計</h2>
-            <div class="stats-tabs">
-                <button class="stats-tab-btn active" id="stats-tab-overview" onclick="switchStatsTab('overview')">總覽</button>
-                <button class="stats-tab-btn" id="stats-tab-achievement" onclick="switchStatsTab('achievement')">成就</button>
-            </div>
-            <div id="stats-content-overview">
-                <div class="stats-section">
-                    <div class="stats-section-title">遊戲數據</div>
-                    <div class="stats-grid" id="stats-overview"></div>
-                </div>
-                <div class="stats-section" style="margin-top: 14px;">
-                    <div class="stats-section-title">各難度進度</div>
-                    <div id="stats-tier-progress"></div>
-                </div>
-            </div>
-            <div id="stats-content-achievement" style="display: none;">
-                <div class="stats-section">
-                    <div class="stats-section-title">成就徽章</div>
-                    <div class="achievement-counter" id="achievement-counter"></div>
-                    <div class="achievement-grid" id="achievement-grid"></div>
-                </div>
-            </div>
-            <button class="resume-btn" onclick="closeStatsModal()">關閉</button>
-        </div>
-    </div>
+    <!-- Stats & Achievements Modal is now rendered by React (src/react/stats/StatsModal.tsx) -->
 
     <!-- Achievement unlock toast -->
     <div class="achievement-toast" id="achievement-toast">
@@ -443,7 +397,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.03.31-V34';
+        var INLINE_VER = '2026.03.31-V35';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);
