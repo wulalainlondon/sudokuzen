@@ -340,6 +340,21 @@ export function renderWildLobby(): void {
       killsSpan.className = 'wild-beast-kills';
       killsSpan.textContent = `討伐 ${entry.kills} · 遭遇 ${entry.encounters}`;
       card.appendChild(killsSpan);
+
+      if (entry.kills > 0) {
+        const modesCleared = entry.modesCleared || [];
+        const allModes = ['standard', 'blind', 'ironman', 'noNotes'];
+        const modeLabels: Record<string, string> = { standard: '修', blind: '盲', ironman: '鐵', noNotes: '念' };
+        const badgesHtml = allModes.map(m => {
+          const cleared = modesCleared.includes(m);
+          return `<span class="mode-badge ${cleared ? 'cleared' : ''}">${modeLabels[m]}</span>`;
+        }).join('');
+
+        const badgeRow = document.createElement('div');
+        badgeRow.className = 'wild-beast-modes';
+        badgeRow.innerHTML = badgesHtml;
+        card.appendChild(badgeRow);
+      }
     }
 
     // Fragment display for T0-T1 techniques

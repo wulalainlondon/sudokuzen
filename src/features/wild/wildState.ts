@@ -88,6 +88,7 @@ export interface BestiaryEntry {
   kills: number; // successful completions
   escapes: number;
   bestTime: number | null;
+  modesCleared: string[];  // challenge modes cleared for this technique, e.g. ['standard', 'blind']
 }
 
 export interface WildProfile {

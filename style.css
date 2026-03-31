@@ -2834,6 +2834,33 @@ header h1 {
     text-align: center;
 }
 
+.wild-beast-modes {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.mode-badge {
+    font-size: 0.55rem;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--cell-border) 40%, transparent);
+    color: color-mix(in srgb, var(--text-sub) 40%, transparent);
+    background: transparent;
+}
+
+.mode-badge.cleared {
+    border-color: var(--accent, #0984E3);
+    color: var(--accent, #0984E3);
+    background: color-mix(in srgb, var(--accent, #0984E3) 10%, transparent);
+    font-weight: 600;
+}
+
 .wild-beast-frag {
     font-size: 0.6rem;
     color: var(--text-sub, #636e72);

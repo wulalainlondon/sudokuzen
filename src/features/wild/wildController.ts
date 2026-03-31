@@ -152,6 +152,7 @@ export async function startWildEncounter(): Promise<void> {
         kills: 0,
         escapes: 0,
         bestTime: null,
+        modesCleared: [],
       };
     }
     profile.bestiary[_encounter.technique].encounters++;
@@ -362,6 +363,7 @@ async function _advanceGauntlet(
         kills: 0,
         escapes: 0,
         bestTime: null,
+        modesCleared: [],
       };
     }
     profile.bestiary[_encounter.technique].encounters++;
@@ -504,6 +506,11 @@ export function onWildComplete(
     if (entry.bestTime === null || seconds < entry.bestTime) {
       entry.bestTime = seconds;
     }
+    // Record challenge mode cleared
+    if (!entry.modesCleared) entry.modesCleared = [];
+    if (!entry.modesCleared.includes(_encounter.challengeMode)) {
+      entry.modesCleared.push(_encounter.challengeMode);
+    }
   }
 
   // Tick cooldowns (completed a puzzle)
@@ -589,6 +596,7 @@ async function launchGauntletNext(profile: WildProfile): Promise<void> {
         kills: 0,
         escapes: 0,
         bestTime: null,
+        modesCleared: [],
       };
     }
     profile.bestiary[_encounter!.technique].encounters++;

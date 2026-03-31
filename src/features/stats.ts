@@ -55,6 +55,13 @@ const ACHIEVEMENTS = [
   { id: 'speedrun_first', name: '競速初體驗', desc: '競速模式通關', icon: '🏎️' },
   { id: 'ghost_win', name: '鬼影殺手', desc: '幽靈模式下擊敗自己', icon: '👻' },
   { id: 'replay_10', name: '覆盤學者', desc: '觀看 10 次回放', icon: '🎬' },
+
+  // ── Wild challenge modes (5) — teaches "master all combat styles" ──
+  { id: 'mode_blind_first', name: '盲審初體驗', desc: '首次以盲審模式通關', icon: '🙈' },
+  { id: 'mode_ironman_first', name: '鐵壁不倒', desc: '首次以鐵壁模式通關', icon: '🛡️' },
+  { id: 'mode_nonotes_first', name: '無念之境', desc: '首次以無念模式通關', icon: '🧘' },
+  { id: 'mode_all_one_tech', name: '全模式制霸', desc: '某個技巧以所有模式各通關一次', icon: '👑' },
+  { id: 'mode_blind_10', name: '盲審大師', desc: '以盲審模式通關10個不同技巧', icon: '🔮' },
 ];
 export { ACHIEVEMENTS };
 
@@ -236,6 +243,26 @@ export function checkAllAchievements(): void {
   if (Object.keys(speedRecords).length > 0) unlockAchievement('speedrun_first');
   const replayCount = readJson<number>(SK.REPLAY_WATCH_COUNT, 0);
   if (replayCount >= 10) unlockAchievement('replay_10');
+
+  // ── Mode achievements (from Wild bestiary) ──
+  const wildRaw = readJson<any>(SK.WILD_PROFILE, {});
+  const bEntries = Object.values(wildRaw.bestiary || {}) as any[];
+  let hasBlind = false, hasIronman = false, hasNoNotes = false;
+  let blindTechCount = 0, anyAllModes = false;
+  const requiredModes = ['standard', 'blind', 'ironman', 'noNotes'];
+  for (const be of bEntries) {
+    if (!be?.kills) continue;
+    const mc = be.modesCleared || [];
+    if (mc.includes('blind')) { hasBlind = true; blindTechCount++; }
+    if (mc.includes('ironman')) hasIronman = true;
+    if (mc.includes('noNotes')) hasNoNotes = true;
+    if (requiredModes.every(m => mc.includes(m))) anyAllModes = true;
+  }
+  if (hasBlind) unlockAchievement('mode_blind_first');
+  if (hasIronman) unlockAchievement('mode_ironman_first');
+  if (hasNoNotes) unlockAchievement('mode_nonotes_first');
+  if (anyAllModes) unlockAchievement('mode_all_one_tech');
+  if (blindTechCount >= 10) unlockAchievement('mode_blind_10');
 
   processAchievementToasts();
 }
