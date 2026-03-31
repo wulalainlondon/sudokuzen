@@ -8,79 +8,108 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Exocet / Death Blossom（共轭飞数/死亡绽放）：
- * Exocet：两个基格具有相同候选数并指向两个目标格，满足特定约束时可消去目标格多余候选。
- * Death Blossom：茎格有N个候选，每个候选指向一个ALS花瓣，花瓣公共非茎数字可消去。
- * 两种模式都较罕见，不匹配时快速返回null。
+ * Exocet / Death Blossom（飞数/死亡绽放）：
+ *
+ * Exocet (Junior Exocet)：
+ *   Base: 两格在同一宫、同一行（或列），联合候选 2-4 位（base digits）。
+ *   Target: 两格分别在 base 的两列（或两行）上、同 band 不同宫。
+ *   Cross-line 约束：band 内非 base 行（或列）中，每个 base digit
+ *   只能出现在 target 所在的列（或行），确保 base digits 必须流向 target。
+ *   消去：target 格中非 base digit 的候选。
+ *
+ * Death Blossom：
+ *   茎格有 N 个候选，每个候选指向一个 ALS 花瓣，
+ *   花瓣公共非茎数字可从公共 peer 消去。
  */
 export function detectExocetDeathBlossom(board: SolverBoard): DetectionResult | null {
-  // Try Exocet first
   const exocetResult = tryExocet(board);
   if (exocetResult) return exocetResult;
-
-  // Try Death Blossom
   return tryDeathBlossomCompact(board);
 }
 
+// ── Junior Exocet ──────────────────────────────────────────────────
+
 function tryExocet(board: SolverBoard): DetectionResult | null {
-  // Exocet: two base cells in same row with same 2-3 candidates
-  // pointing to two target cells in different boxes in the same band
-  for (let row = 0; row < 9; row++) {
-    const rowCells = SolverBoard.ROW_CELLS[row];
-    const emptiesInRow = rowCells.filter((c) => board.values[c] === 0);
+  // Try row-based Exocet (base cells share a row)
+  const rowResult = tryExocetOrientation(board, 'row');
+  if (rowResult) return rowResult;
+  // Try column-based Exocet (base cells share a column)
+  return tryExocetOrientation(board, 'col');
+}
 
-    for (let i = 0; i < emptiesInRow.length; i++) {
-      for (let j = i + 1; j < emptiesInRow.length; j++) {
-        const base1 = emptiesInRow[i];
-        const base2 = emptiesInRow[j];
+function tryExocetOrientation(
+  board: SolverBoard,
+  orientation: 'row' | 'col',
+): DetectionResult | null {
+  const isRow = orientation === 'row';
 
-        // Must be in same box
-        if (SolverBoard.CELL_BOX[base1] !== SolverBoard.CELL_BOX[base2]) continue;
+  // Iterate each line (row or col)
+  for (let line = 0; line < 9; line++) {
+    const lineCells = isRow ? SolverBoard.ROW_CELLS[line] : SolverBoard.COL_CELLS[line];
+    const empties = lineCells.filter(c => board.values[c] === 0);
 
-        const cands1 = board.candidates[base1];
-        const cands2 = board.candidates[base2];
-        const union = cands1 | cands2;
-        const count = popcount(union);
-        if (count < 2 || count > 3) continue;
+    // Try each pair of empty cells in the same box as base
+    for (let i = 0; i < empties.length; i++) {
+      for (let j = i + 1; j < empties.length; j++) {
+        const b1 = empties[i];
+        const b2 = empties[j];
+        if (SolverBoard.CELL_BOX[b1] !== SolverBoard.CELL_BOX[b2]) continue;
 
-        // Find target cells: same row or band, different boxes
-        const baseBox = SolverBoard.CELL_BOX[base1];
-        const _baseDigits = bitsToDigits(union);
+        const union = board.candidates[b1] | board.candidates[b2];
+        const nBase = popcount(union);
+        if (nBase < 2 || nBase > 4) continue;
 
-        // Look for two target cells in other boxes in the same band
-        const bandStart = Math.floor(row / 3) * 3;
+        const baseBox = SolverBoard.CELL_BOX[b1];
+        const baseDigits = bitsToDigits(union);
+
+        // Cross-axis positions of base cells (columns for row-based, rows for col-based)
+        const cross1 = isRow ? SolverBoard.CELL_COL[b1] : SolverBoard.CELL_ROW[b1];
+        const cross2 = isRow ? SolverBoard.CELL_COL[b2] : SolverBoard.CELL_ROW[b2];
+
+        // Band: group of 3 lines
+        const bandStart = Math.floor(line / 3) * 3;
+
+        // Find target cells: in cross1/cross2 columns (or rows), same band, different boxes
         const targets: number[] = [];
-
-        for (let tr = bandStart; tr < bandStart + 3; tr++) {
-          for (const tc of SolverBoard.ROW_CELLS[tr]) {
+        for (let ln = bandStart; ln < bandStart + 3; ln++) {
+          if (ln === line) continue; // skip base line — targets shouldn't be on base line
+          const lnCells = isRow ? SolverBoard.ROW_CELLS[ln] : SolverBoard.COL_CELLS[ln];
+          for (const tc of lnCells) {
             if (board.values[tc] !== 0) continue;
             if (SolverBoard.CELL_BOX[tc] === baseBox) continue;
-            if (
-              SolverBoard.CELL_COL[tc] === SolverBoard.CELL_COL[base1] ||
-              SolverBoard.CELL_COL[tc] === SolverBoard.CELL_COL[base2]
-            ) {
-              // Target must have at least the base digits as candidates
-              if ((board.candidates[tc] & union) !== 0) {
-                targets.push(tc);
-              }
-            }
+            const tcCross = isRow ? SolverBoard.CELL_COL[tc] : SolverBoard.CELL_ROW[tc];
+            if (tcCross !== cross1 && tcCross !== cross2) continue;
+            // Target must have at least one base digit
+            if ((board.candidates[tc] & union) === 0) continue;
+            targets.push(tc);
           }
         }
 
         if (targets.length < 2) continue;
 
-        // Check if targets in different boxes
+        // Try target pairs: must be in different boxes and on different cross-axes
         for (let ti = 0; ti < targets.length; ti++) {
           for (let tj = ti + 1; tj < targets.length; tj++) {
             const t1 = targets[ti];
             const t2 = targets[tj];
             if (SolverBoard.CELL_BOX[t1] === SolverBoard.CELL_BOX[t2]) continue;
 
-            // Eliminate non-base digits from target cells
+            const t1Cross = isRow ? SolverBoard.CELL_COL[t1] : SolverBoard.CELL_ROW[t1];
+            const t2Cross = isRow ? SolverBoard.CELL_COL[t2] : SolverBoard.CELL_ROW[t2];
+            // Targets should be on the two different cross-axes of the base
+            if (t1Cross === t2Cross) continue;
+            if (!((t1Cross === cross1 && t2Cross === cross2) || (t1Cross === cross2 && t2Cross === cross1))) continue;
+
+            // ── Cross-line verification ──
+            // For each non-base line in the band, check that each base digit
+            // can only appear in the cross-axis columns/rows of the base cells
+            // within the boxes of the targets.
+            if (!verifyCrossLines(board, baseDigits, union, b1, b2, t1, t2, bandStart, line, isRow)) continue;
+
+            // ── Build eliminations: remove non-base digits from targets ──
             const actions: DetectionAction[] = [];
             for (const t of [t1, t2]) {
-              const tDigits = bitsToDigits(board.candidates[t]);
-              for (const d of tDigits) {
+              for (const d of bitsToDigits(board.candidates[t])) {
                 if ((union & digitBit(d)) === 0) {
                   actions.push({ kind: 'eliminate', cell: t, digit: d });
                 }
@@ -88,11 +117,12 @@ function tryExocet(board: SolverBoard): DetectionResult | null {
             }
 
             if (actions.length > 0) {
+              const orientLabel = isRow ? '行' : '列';
               return {
                 technique: 'exocet_death_blossom',
                 actions,
-                patternCells: [base1, base2, t1, t2],
-                description: `Exocet：基格 ${cellRef(base1)},${cellRef(base2)} 指向目标 ${cellRef(t1)},${cellRef(t2)}，消去 ${actions.length} 处多余候选`,
+                patternCells: [b1, b2, t1, t2],
+                description: `Exocet（${orientLabel}）：基格 ${cellRef(b1)},${cellRef(b2)}（base digits ${baseDigits.join(',')}）指向目标 ${cellRef(t1)},${cellRef(t2)}，消去 ${actions.length} 处多余候选`,
               };
             }
           }
@@ -103,6 +133,65 @@ function tryExocet(board: SolverBoard): DetectionResult | null {
 
   return null;
 }
+
+/**
+ * Cross-line verification for Junior Exocet.
+ *
+ * For each non-base line in the band, and for each base digit d:
+ *   In the target boxes, d must be confined to the cross-axis positions
+ *   of the base cells (i.e., it can only appear in columns cross1/cross2
+ *   for row-based, or rows cross1/cross2 for col-based).
+ *
+ * This ensures the base digits are "funneled" through the target cells.
+ */
+function verifyCrossLines(
+  board: SolverBoard,
+  baseDigits: number[],
+  _union: number,
+  b1: number,
+  b2: number,
+  t1: number,
+  t2: number,
+  bandStart: number,
+  baseLine: number,
+  isRow: boolean,
+): boolean {
+  const cross1 = isRow ? SolverBoard.CELL_COL[b1] : SolverBoard.CELL_ROW[b1];
+  const cross2 = isRow ? SolverBoard.CELL_COL[b2] : SolverBoard.CELL_ROW[b2];
+  const t1Box = SolverBoard.CELL_BOX[t1];
+  const t2Box = SolverBoard.CELL_BOX[t2];
+
+  for (let ln = bandStart; ln < bandStart + 3; ln++) {
+    if (ln === baseLine) continue;
+
+    const lnCells = isRow ? SolverBoard.ROW_CELLS[ln] : SolverBoard.COL_CELLS[ln];
+
+    for (const d of baseDigits) {
+      const dBit = digitBit(d);
+
+      // Check cells in this line that are in the target boxes
+      for (const cell of lnCells) {
+        if (board.values[cell] !== 0) continue;
+        const cellBox = SolverBoard.CELL_BOX[cell];
+        if (cellBox !== t1Box && cellBox !== t2Box) continue;
+
+        const cellCross = isRow ? SolverBoard.CELL_COL[cell] : SolverBoard.CELL_ROW[cell];
+
+        // If this cell has base digit d as candidate,
+        // it must be on cross1 or cross2 (the target columns/rows)
+        if ((board.candidates[cell] & dBit) !== 0) {
+          if (cellCross !== cross1 && cellCross !== cross2) {
+            return false; // base digit leaks outside target columns → not a valid Exocet
+          }
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+// ── Death Blossom ──────────────────────────────────────────────────
 
 function tryDeathBlossomCompact(board: SolverBoard): DetectionResult | null {
   const allALS = findAllALS(board, 4);

@@ -6,7 +6,7 @@
 
 import { gs, initDom } from '../game/state';
 import { SK } from '../storage/keys';
-import { getAllLevels, warmTeachManifest } from '../data/dataRegistry';
+import { getAllLevels, warmTeachManifest, warmManifest } from '../data/dataRegistry';
 import { bindLegacyFacade } from '../facade/windowFacade';
 
 import { initFirebase, loadAliasToInput, saveAlias } from '../firebase/client';
@@ -71,8 +71,9 @@ export function bootLegacyRuntime(appVersion: string): void {
   // 2. Ensure merged levels array is ready
   getAllLevels();
 
-  // 2b. Pre-fetch teach manifest (async, non-blocking)
+  // 2b. Pre-fetch manifests (async, non-blocking)
   warmTeachManifest();
+  warmManifest();
 
   // 3. Restore persisted settings
   gs.isSpeedrunMode = localStorage.getItem(SK.SPEEDRUN) === 'true';

@@ -25,6 +25,7 @@ const TECHNIQUE_SCORES: Record<TechniqueName, number> = {
   w_wing: 26,
   unique_rectangle: 22,
   x_cycle_simple_coloring: 30,
+  medusa_3d: 35,
   swordfish: 35,
   finned_swordfish: 40,
   remote_pairs: 28,

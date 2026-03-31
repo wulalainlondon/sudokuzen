@@ -54,9 +54,9 @@ export function detectTwoStringKite(board: SolverBoard): DetectionResult | null 
             // 4 格應互不相同
             if (rShared === cShared || rShared === cFree || rFree === cShared) continue;
 
-            // 消去目標：rFree 所在行 與 cFree 所在列 的交叉格
-            const targetRow = SolverBoard.CELL_ROW[rFree];
-            const targetCol = SolverBoard.CELL_COL[cFree];
+            // 消去目標：cFree 所在行 與 rFree 所在列 的交叉格
+            const targetRow = SolverBoard.CELL_ROW[cFree];
+            const targetCol = SolverBoard.CELL_COL[rFree];
             const target = targetRow * 9 + targetCol;
 
             if (target === rFree || target === cFree) continue;

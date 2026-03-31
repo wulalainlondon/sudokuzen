@@ -19,6 +19,8 @@ export interface SkillModeState {
   preview: import('../features/skills/types').SkillPreview | null;
 }
 
+export type GameMode = 'normal' | 'practice' | 'world';
+
 export interface LevelData {
   id: number;
   stars: number;
@@ -28,6 +30,10 @@ export interface LevelData {
   solution: number[];
   maxTechnique?: string;
   techTier?: string;
+  difficultyScore?: number;
+  logicSolvable?: boolean;
+  singleRatio?: number;
+  mode?: GameMode;
   hidden?: boolean;
   source?: string;
 }

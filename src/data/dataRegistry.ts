@@ -1,33 +1,207 @@
-// Data access layer — single entry point for all data globals.
-// Data files are loaded via <script> tags (levels.js, mid_pool.js)
-// or lazily fetched as JSON shards (teach data).
-// Only this module touches globals; consumers import typed accessors.
+// Data access layer — lazy-loading JSON shards.
+// All level data is fetched on demand from public/data/*.json shards.
+// Manifest (public/data/manifest.json) describes available shards.
+// Only this module handles fetching; consumers import typed async accessors.
 
-import type { LevelData } from '../game/state';
+import type { LevelData, GameMode } from '../game/state';
 
-// Ambient declarations for script-tag globals
-declare const levels: LevelData[];
-declare const midPool: LevelData[];
+// ── Types ──────────────────────────────────────────────────────────
+
+interface ShardMeta {
+  file: string;
+  count: number;
+  size: number;
+}
+
+interface DataManifest {
+  version: string;
+  totalLevels: number;
+  shards: Record<string, ShardMeta>;
+}
+
+// Compact shard format (short keys to save bandwidth)
+interface CompactLevel {
+  id: number;
+  s: number;       // stars
+  dn: string;      // difficultyName
+  dp: string;      // displayName
+  p: number[];     // puzzle
+  sl: number[];    // solution
+  mt: string;      // maxTechnique
+  tt: string;      // techTier
+  ds: number;      // difficultyScore
+  ls: boolean;     // logicSolvable
+  sr: number;      // singleRatio
+  src: string;     // source
+}
+
+// ── Internal state ─────────────────────────────────────────────────
+
+let _manifest: DataManifest | null = null;
+let _manifestPromise: Promise<DataManifest | null> | null = null;
+const _shardCache = new Map<string, LevelData[]>();
+
+// Legacy globals (backward compat — will be removed)
+declare const levels: LevelData[] | undefined;
+declare const midPool: LevelData[] | undefined;
+
+// ── Helpers ────────────────────────────────────────────────────────
+
+function resolveDataPath(file: string): string {
+  try {
+    const base = new URL(import.meta.env.BASE_URL, window.location.origin).href;
+    return new URL(`data/${file}`, base).href;
+  } catch {
+    return `data/${file}`;
+  }
+}
+
+function expandLevel(c: CompactLevel, mode: GameMode): LevelData {
+  return {
+    id: c.id,
+    stars: c.s,
+    difficultyName: c.dn,
+    displayName: c.dp,
+    puzzle: c.p,
+    solution: c.sl,
+    maxTechnique: c.mt || undefined,
+    techTier: c.tt || undefined,
+    difficultyScore: c.ds,
+    logicSolvable: c.ls,
+    singleRatio: c.sr,
+    mode,
+    source: c.src || undefined,
+  };
+}
+
+// ── Manifest ───────────────────────────────────────────────────────
+
+/** Fetch data manifest (cached). Call warmManifest() at app startup. */
+export async function getDataManifest(): Promise<DataManifest | null> {
+  if (_manifest) return _manifest;
+  if (_manifestPromise) return _manifestPromise;
+  _manifestPromise = fetch(resolveDataPath('manifest.json'))
+    .then(r => {
+      if (!r.ok) throw new Error(`data manifest ${r.status}`);
+      return r.json() as Promise<DataManifest>;
+    })
+    .then(m => { _manifest = m; return m; })
+    .catch(() => null);
+  return _manifestPromise;
+}
+
+/** Pre-fetch manifest on app startup. */
+export function warmManifest(): void {
+  getDataManifest();
+}
+
+// ── Shard loading ──────────────────────────────────────────────────
+
+/** Fetch a single data shard by name (lazy, cached). */
+async function loadShard(name: string, mode: GameMode): Promise<LevelData[]> {
+  if (_shardCache.has(name)) return _shardCache.get(name)!;
+
+  const manifest = await getDataManifest();
+  if (!manifest || !manifest.shards[name]) return [];
+
+  try {
+    const meta = manifest.shards[name];
+    const url = resolveDataPath(meta.file) + `?v=${manifest.version}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`shard ${name}: ${r.status}`);
+    const compact: CompactLevel[] = await r.json();
+    const expanded = compact.map(c => expandLevel(c, mode));
+    _shardCache.set(name, expanded);
+    return expanded;
+  } catch {
+    return [];
+  }
+}
+
+// ── Public API ─────────────────────────────────────────────────────
+
+/** Get normal mode levels (async, cached). */
+export async function getNormalLevels(): Promise<LevelData[]> {
+  return loadShard('normal', 'normal');
+}
+
+/** Get practice mode levels (async, cached). */
+export async function getPracticeLevels(): Promise<LevelData[]> {
+  return loadShard('practice', 'practice');
+}
+
+/** Get world mode levels for a specific tier (async, cached). */
+export async function getWorldTierLevels(tier: string): Promise<LevelData[]> {
+  return loadShard(`world-${tier}`, 'world');
+}
+
+/** Get ALL world mode levels (fetches all world shards). */
+export async function getAllWorldLevels(): Promise<LevelData[]> {
+  const manifest = await getDataManifest();
+  if (!manifest) return [];
+
+  const worldShards = Object.keys(manifest.shards).filter(k => k.startsWith('world-'));
+  const results = await Promise.all(worldShards.map(name => loadShard(name, 'world')));
+  return results.flat();
+}
+
+/**
+ * Get all levels across all modes (async).
+ * Replaces the old synchronous getAllLevels().
+ */
+export async function getAllLevelsAsync(): Promise<LevelData[]> {
+  const [normal, practice, world] = await Promise.all([
+    getNormalLevels(),
+    getPracticeLevels(),
+    getAllWorldLevels(),
+  ]);
+  return [...normal, ...practice, ...world];
+}
+
+// ── Legacy sync compat (for gradual migration) ────────────────────
+
+let _legacyMerged: LevelData[] | null = null;
+
+/**
+ * Synchronous getAllLevels() — legacy compat.
+ * Returns levels from script-tag globals (normal mode only).
+ * ⚠️ Deprecated: migrate to getNormalLevels() / getAllLevelsAsync().
+ */
+export function getAllLevels(): LevelData[] {
+  if (_legacyMerged) return _legacyMerged;
+  // Try cached shards first
+  if (_shardCache.has('normal')) {
+    _legacyMerged = _shardCache.get('normal')!;
+    return _legacyMerged;
+  }
+  // Fall back to script-tag globals
+  const main = typeof levels !== 'undefined' ? levels : [];
+  const mid = typeof midPool !== 'undefined'
+    ? midPool.map(l => ({ ...l, hidden: true }) as LevelData)
+    : [];
+  const existingIds = new Set(main.map(l => l.id));
+  mid.forEach(l => { if (!existingIds.has(l.id)) main.push(l); });
+  _legacyMerged = main;
+  return _legacyMerged;
+}
+
+/**
+ * Pre-load a mode's data into the shard cache.
+ * Call after manifest is warm for instant sync access.
+ */
+export async function preloadMode(mode: GameMode): Promise<void> {
+  if (mode === 'normal') await getNormalLevels();
+  else if (mode === 'practice') await getPracticeLevels();
+  else if (mode === 'world') await getAllWorldLevels();
+}
+
+// ── Teach data (unchanged) ─────────────────────────────────────────
+
 declare const TEACH_DATA: Record<string, unknown>;
 
-let _merged: LevelData[] | null = null;
-
-/** Raw main level array (920 levels). */
-export function getLevels(): LevelData[] {
-  return typeof levels !== 'undefined' ? levels : [];
-}
-
-/** Raw mid-pool array (practice puzzles). */
-export function getMidPool(): LevelData[] {
-  return typeof midPool !== 'undefined' ? midPool : [];
-}
-
-/** Teaching data keyed by stars/book number (synchronous — full blob). */
 export function getTeachData(): Record<string, any> {
   return typeof TEACH_DATA !== 'undefined' ? TEACH_DATA : {};
 }
-
-// ── Teach lazy-load (Phase 3) ────────────────────────────────────
 
 export interface TeachModuleMeta {
   technique: string;
@@ -43,13 +217,12 @@ export interface TeachManifest {
   modules: Record<string, TeachModuleMeta>;
 }
 
-let _manifest: TeachManifest | null = null;
-let _manifestPromise: Promise<TeachManifest | null> | null = null;
-const _shardCache = new Map<string, any>();
+let _teachManifest: TeachManifest | null = null;
+let _teachManifestPromise: Promise<TeachManifest | null> | null = null;
+const _teachShardCache = new Map<string, any>();
 
 function resolveTeachPath(file: string): string {
   try {
-    // import.meta.env.BASE_URL is set by Vite at build time (e.g. '/sudokuzen/' for GitHub Pages)
     const base = new URL(import.meta.env.BASE_URL, window.location.origin).href;
     return new URL(`teach/${file}`, base).href;
   } catch {
@@ -57,76 +230,39 @@ function resolveTeachPath(file: string): string {
   }
 }
 
-/** Fetch teach manifest (cached). */
 export async function getTeachManifest(): Promise<TeachManifest | null> {
-  if (_manifest) return _manifest;
-  if (_manifestPromise) return _manifestPromise;
-  _manifestPromise = fetch(resolveTeachPath('manifest.json'))
-    .then((r) => {
-      if (!r.ok) throw new Error(`manifest ${r.status}`);
-      return r.json() as Promise<TeachManifest>;
-    })
-    .then((m) => {
-      _manifest = m;
-      return m;
-    })
+  if (_teachManifest) return _teachManifest;
+  if (_teachManifestPromise) return _teachManifestPromise;
+  _teachManifestPromise = fetch(resolveTeachPath('manifest.json'))
+    .then(r => { if (!r.ok) throw new Error(`manifest ${r.status}`); return r.json() as Promise<TeachManifest>; })
+    .then(m => { _teachManifest = m; return m; })
     .catch(() => null);
-  return _manifestPromise;
+  return _teachManifestPromise;
 }
 
-/** Fetch a single teach module by stars key (lazy, cached). */
 export async function getTeachShard(stars: string | number): Promise<any | null> {
   const key = String(stars);
-  if (_shardCache.has(key)) return _shardCache.get(key);
-
-  // Verify manifest version to avoid stale shard/main mismatch
+  if (_teachShardCache.has(key)) return _teachShardCache.get(key);
   const manifest = await getTeachManifest();
   if (!manifest || !manifest.modules[key]) return null;
-
   try {
     const url = resolveTeachPath(`${key}.json`) + `?v=${manifest.version}`;
     const r = await fetch(url);
     if (!r.ok) throw new Error(`shard ${key}: ${r.status}`);
     const data = await r.json();
-    _shardCache.set(key, data);
+    _teachShardCache.set(key, data);
     return data;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
-/**
- * Pre-fetch manifest on app startup so sync checks work.
- * Call once from main.ts or legacyRuntime init.
- */
 export function warmTeachManifest(): void {
   getTeachManifest();
 }
 
-/** Check if teach data exists for a given stars key (sync). */
 export function hasTeachModule(stars: string | number): boolean {
   const key = String(stars);
-  // Check shard cache
-  if (_shardCache.has(key)) return true;
-  // Check manifest (sync — available after warmTeachManifest resolves)
-  if (_manifest?.modules[key]) return true;
-  // Fall back to full blob (legacy compat)
+  if (_teachShardCache.has(key)) return true;
+  if (_teachManifest?.modules[key]) return true;
   const td = getTeachData();
   return !!td[key];
-}
-
-/**
- * Merged level array: main levels + mid-pool (marked hidden).
- * Computed once, cached thereafter.
- */
-export function getAllLevels(): LevelData[] {
-  if (_merged) return _merged;
-  const main = getLevels();
-  const mid = getMidPool().map((l) => ({ ...l, hidden: true }) as LevelData);
-  const existingIds = new Set(main.map((l) => l.id));
-  mid.forEach((l) => {
-    if (!existingIds.has(l.id)) main.push(l);
-  });
-  _merged = main;
-  return _merged;
 }

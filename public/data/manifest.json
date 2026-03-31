@@ -1,0 +1,77 @@
+{
+  "version": "b3e10de39108",
+  "generatedAt": "2026-03-31T11:09:44.417Z",
+  "totalLevels": 9437,
+  "shards": {
+    "normal": {
+      "file": "normal.json",
+      "count": 1080,
+      "size": 505028
+    },
+    "practice": {
+      "file": "practice.json",
+      "count": 1025,
+      "size": 492279
+    },
+    "world-T07": {
+      "file": "world-T07.json",
+      "count": 450,
+      "size": 215032
+    },
+    "world-T08": {
+      "file": "world-T08.json",
+      "count": 450,
+      "size": 219867
+    },
+    "world-T09": {
+      "file": "world-T09.json",
+      "count": 600,
+      "size": 288111
+    },
+    "world-T04": {
+      "file": "world-T04.json",
+      "count": 450,
+      "size": 216297
+    },
+    "world-T10": {
+      "file": "world-T10.json",
+      "count": 450,
+      "size": 220281
+    },
+    "world-T12": {
+      "file": "world-T12.json",
+      "count": 300,
+      "size": 146185
+    },
+    "world-T05": {
+      "file": "world-T05.json",
+      "count": 1200,
+      "size": 576878
+    },
+    "world-T06": {
+      "file": "world-T06.json",
+      "count": 900,
+      "size": 435114
+    },
+    "world-T02": {
+      "file": "world-T02.json",
+      "count": 582,
+      "size": 271113
+    },
+    "world-T01": {
+      "file": "world-T01.json",
+      "count": 1350,
+      "size": 625776
+    },
+    "world-T03": {
+      "file": "world-T03.json",
+      "count": 300,
+      "size": 143693
+    },
+    "world-T11": {
+      "file": "world-T11.json",
+      "count": 300,
+      "size": 144135
+    }
+  }
+}

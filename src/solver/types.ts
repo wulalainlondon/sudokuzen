@@ -38,7 +38,8 @@ export type TechniqueName =
   | 'als_xy'
   | 'als_w_wing'
   | 'sue_de_coq'
-  | 'death_blossom';
+  | 'death_blossom'
+  | 'medusa_3d';
 
 export type ActionKind = 'fill' | 'eliminate';
 

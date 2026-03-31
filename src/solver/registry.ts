@@ -20,6 +20,7 @@ import { detectXYZWing } from './detectors/phase2/xyzWing';
 import { detectWWing } from './detectors/phase2/wWing';
 import { detectUniqueRectangle } from './detectors/phase2/uniqueRectangle';
 import { detectXCycleSimpleColoring } from './detectors/phase2/xCycleSimpleColoring';
+import { detectMedusa3d } from './detectors/phase2/medusa3d';
 import { detectSwordfish } from './detectors/phase2/swordfish';
 import { detectFinnedSwordfish } from './detectors/phase2/finnedSwordfish';
 import { detectRemotePairs } from './detectors/phase2/remotePairs';
@@ -66,6 +67,7 @@ export const DETECTOR_REGISTRY: DetectorFn[] = [
   detectWWing,
   detectUniqueRectangle,
   detectXCycleSimpleColoring,
+  detectMedusa3d,
   detectSwordfish,
   detectFinnedSwordfish,
   detectRemotePairs,

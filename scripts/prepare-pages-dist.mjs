@@ -10,13 +10,13 @@ if (!fs.existsSync(distDir)) {
 
 // Files that need manual copy (NOT in public/, so Vite doesn't handle them)
 const requiredFiles = [
-  'levels.js',
+  'levels.js',        // legacy compat (normal only) — will be removed after full migration
+  // mid_pool.js removed — merged into levels-data.json
   // techniques.js removed — teach data now lazy-loads via public/teach/*.json shards
-  'mid_pool.js',
+  // Level data now lazy-loads via public/data/*.json shards (Vite copies public/ automatically)
   'firebase-config.js',
   'sw.js',
   'style.css',
-  // manifest.json, icons are in public/ → Vite copies them automatically
 ];
 
 for (const rel of requiredFiles) {

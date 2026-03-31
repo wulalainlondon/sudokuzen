@@ -1,0 +1,126 @@
+{
+  "naked_single": [],
+  "hidden_single": [
+    "naked_single"
+  ],
+  "locked_candidates": [
+    "hidden_single"
+  ],
+  "naked_pair": [
+    "locked_candidates"
+  ],
+  "hidden_pair": [
+    "naked_pair"
+  ],
+  "naked_triple": [
+    "hidden_pair"
+  ],
+  "hidden_triple": [
+    "naked_triple"
+  ],
+  "x_wing": [
+    "hidden_triple"
+  ],
+  "finned_x_wing": [
+    "x_wing"
+  ],
+  "swordfish": [
+    "finned_x_wing"
+  ],
+  "finned_swordfish": [
+    "swordfish"
+  ],
+  "jellyfish": [
+    "finned_swordfish"
+  ],
+  "finned_jellyfish": [
+    "jellyfish"
+  ],
+  "xy_wing": [
+    "finned_jellyfish"
+  ],
+  "xyz_wing": [
+    "xy_wing"
+  ],
+  "w_wing": [
+    "xyz_wing"
+  ],
+  "skyscraper": [
+    "hidden_triple"
+  ],
+  "two_string_kite": [
+    "skyscraper"
+  ],
+  "empty_rectangle": [
+    "two_string_kite"
+  ],
+  "x_cycle_simple_coloring": [
+    "empty_rectangle"
+  ],
+  "remote_pairs": [
+    "x_cycle_simple_coloring"
+  ],
+  "unique_rectangle": [
+    "hidden_triple"
+  ],
+  "bug_plus_one": [
+    "unique_rectangle"
+  ],
+  "als_xz": [
+    "bug_plus_one"
+  ],
+  "als_chain": [
+    "als_xz"
+  ],
+  "als_xy": [
+    "als_chain"
+  ],
+  "als_w_wing": [
+    "als_xy"
+  ],
+  "sue_de_coq": [
+    "als_w_wing"
+  ],
+  "medusa_3d": [
+    "w_wing",
+    "remote_pairs",
+    "unique_rectangle"
+  ],
+  "xy_chain": [
+    "w_wing"
+  ],
+  "aic": [
+    "medusa_3d"
+  ],
+  "aic_mid_chain": [
+    "aic"
+  ],
+  "grouped_aic_nice_loop": [
+    "aic_mid_chain"
+  ],
+  "aic_long_chain": [
+    "grouped_aic_nice_loop"
+  ],
+  "discontinuous_nice_loop": [
+    "aic_long_chain"
+  ],
+  "forcing_chain_net": [
+    "discontinuous_nice_loop",
+    "sue_de_coq"
+  ],
+  "cell_forcing_chain": [
+    "forcing_chain_net"
+  ],
+  "region_forcing_chain": [
+    "cell_forcing_chain"
+  ],
+  "template": [
+    "region_forcing_chain"
+  ],
+  "exocet_death_blossom": [
+    "template"
+  ],
+  "death_blossom": [
+    "exocet_death_blossom"
+  ]
+}

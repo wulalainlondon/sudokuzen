@@ -443,7 +443,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.03.31-V27';
+        var INLINE_VER = '2026.03.31-V29';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);
@@ -468,13 +468,11 @@
         } catch(e) {}
       })();
     </script>
-    <script src="mid_pool.js"></script>
+    <!-- Level data now lazy-loads via public/data/*.json shards -->
+    <!-- Legacy fallback: normal-only levels.js for gradual migration -->
     <script src="levels.js"></script>
-    <!-- techniques.js removed — teach data now lazy-loads via shards (public/teach/*.json) -->
     <script>
-      // Expose script-tag globals to window for React bridge access
       if (typeof levels !== 'undefined') window.levels = levels;
-      if (typeof midPool !== 'undefined') window.midPool = midPool;
     </script>
     <script type="module" src="/src/main.ts"></script>
 </body>
