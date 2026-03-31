@@ -81,6 +81,7 @@
             <div class="wild-lobby-body">
                 <!-- Profile Card -->
                 <div class="wild-profile-card">
+                    <div class="wild-online-indicator" id="wild-online-count"></div>
                     <div class="wild-profile-level">
                         <span class="wild-level-badge" id="wild-level">Lv.1</span>
                         <span class="wild-level-title" id="wild-level-title">見習修士</span>
@@ -442,7 +443,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.03.31-V32';
+        var INLINE_VER = '2026.03.31-V34';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);

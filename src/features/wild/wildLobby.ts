@@ -5,6 +5,7 @@ import { TECHNIQUE_TABLE, getAutoCastKeys, type Rarity } from './techniqueMeta';
 import { expForLevel } from './expSystem';
 import { getMentorNote } from './mentorController';
 import { showFeedback } from '../../ui/feedback';
+import { getOnlineCount } from '../../firebase/client';
 
 // ── Level titles by IQ level range ───────────────────────────────────
 
@@ -233,6 +234,19 @@ export function renderWildLobby(): void {
   const conquered = Object.values(profile.bestiary).filter((entry) => entry.kills > 0).length;
   const autoKeys = getAutoCastKeys(profile.iqLevel);
   const sessionSummary = getSessionSummary(profile);
+
+  // Online presence indicator
+  const onlineEl = document.getElementById('wild-online-count');
+  if (onlineEl) {
+    void getOnlineCount().then((count) => {
+      if (count > 0) {
+        onlineEl.textContent = `\u{1F7E2} ${count} 位修士在線`;
+        onlineEl.style.display = '';
+      } else {
+        onlineEl.style.display = 'none';
+      }
+    });
+  }
 
   if (levelEl) levelEl.textContent = `Lv.${profile.iqLevel}`;
   if (titleEl) titleEl.textContent = getLevelTitle(profile.iqLevel);

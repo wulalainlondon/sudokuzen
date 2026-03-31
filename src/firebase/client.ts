@@ -226,6 +226,90 @@ function isProfileSyncKey(key: string): boolean {
   return PROFILE_SYNC_KEYS.has(key);
 }
 
+// ── Presence ────────────────────────────────────────────────────────
+
+const PRESENCE_COLLECTION = 'presence';
+const PRESENCE_HEARTBEAT_MS = 60_000;
+const PRESENCE_TTL_MS = 3 * 60_000; // 3 minutes
+const ONLINE_COUNT_CACHE_MS = 30_000;
+
+let _presenceDocId: string | null = null;
+let _presenceHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
+let _onlineCountCache: { count: number; ts: number } | null = null;
+
+async function _setPresenceDoc(): Promise<void> {
+  if (!gs.firebaseReady || !gs.db || !_presenceDocId) return;
+  try {
+    await gs.db.collection(PRESENCE_COLLECTION).doc(_presenceDocId).set({
+      playerId: _presenceDocId,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (e) {
+    console.warn('presence set failed:', e);
+  }
+}
+
+async function _removePresenceDoc(): Promise<void> {
+  if (!gs.firebaseReady || !gs.db || !_presenceDocId) return;
+  try {
+    await gs.db.collection(PRESENCE_COLLECTION).doc(_presenceDocId).delete();
+  } catch (e) {
+    console.warn('presence remove failed:', e);
+  }
+}
+
+export function initPresence(): void {
+  if (!gs.firebaseReady || !gs.db) return;
+  const { playerId } = getPlayerIdentity();
+  _presenceDocId = playerId;
+
+  // Initial heartbeat
+  void _setPresenceDoc();
+
+  // Periodic heartbeat
+  if (_presenceHeartbeatTimer) clearInterval(_presenceHeartbeatTimer);
+  _presenceHeartbeatTimer = setInterval(() => {
+    void _setPresenceDoc();
+  }, PRESENCE_HEARTBEAT_MS);
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    void _removePresenceDoc();
+  });
+
+  // Visibility change: remove on hidden, re-add on visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      void _removePresenceDoc();
+    } else {
+      void _setPresenceDoc();
+    }
+  });
+}
+
+export async function getOnlineCount(): Promise<number> {
+  if (!gs.firebaseReady || !gs.db) return 0;
+
+  // Return cached value if fresh enough
+  if (_onlineCountCache && Date.now() - _onlineCountCache.ts < ONLINE_COUNT_CACHE_MS) {
+    return _onlineCountCache.count;
+  }
+
+  try {
+    const cutoff = new Date(Date.now() - PRESENCE_TTL_MS);
+    const snap = await gs.db
+      .collection(PRESENCE_COLLECTION)
+      .where('timestamp', '>', cutoff)
+      .get();
+    const count = snap.size;
+    _onlineCountCache = { count, ts: Date.now() };
+    return count;
+  } catch (e) {
+    console.warn('getOnlineCount failed:', e);
+    return _onlineCountCache ? _onlineCountCache.count : 0;
+  }
+}
+
 // ── Init ────────────────────────────────────────────────────────────
 
 export function initFirebase(): void {

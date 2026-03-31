@@ -2764,6 +2764,14 @@ header h1 {
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
 }
 
+.wild-online-indicator {
+    font-size: 0.78rem;
+    color: var(--text-secondary, #888);
+    text-align: right;
+    margin-bottom: -4px;
+    line-height: 1;
+}
+
 .wild-profile-level {
     display: flex;
     align-items: baseline;

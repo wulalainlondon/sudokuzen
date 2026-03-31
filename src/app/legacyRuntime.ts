@@ -9,7 +9,7 @@ import { SK } from '../storage/keys';
 import { getAllLevels, warmTeachManifest, warmManifest } from '../data/dataRegistry';
 import { bindLegacyFacade } from '../facade/windowFacade';
 
-import { initFirebase, loadAliasToInput, saveAlias } from '../firebase/client';
+import { initFirebase, initPresence, loadAliasToInput, saveAlias } from '../firebase/client';
 import {
   handleInput,
   erase,
@@ -129,7 +129,10 @@ export function bootLegacyRuntime(appVersion: string): void {
 
   // 9. Firebase
   initFirebase();
-  if (gs.firebaseReady) startDuoGlowListener();
+  if (gs.firebaseReady) {
+    startDuoGlowListener();
+    initPresence();
+  }
 
   // 10. Alias
   loadAliasToInput();
