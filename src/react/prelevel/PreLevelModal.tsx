@@ -4,7 +4,7 @@ import { usePreLevelStore } from './preLevelStore';
 export function PreLevelModal(): ReactElement | null {
   const {
     visible, displayName, techName, techTier, bestRecord, hasRecord,
-    hasReplay, leaderboardHtml, isPractice, isSpeedrun,
+    hasReplay, leaderboardHtml,
   } = usePreLevelStore();
   const close = usePreLevelStore((s) => s.close);
   const duoZoneRef = useRef<HTMLDivElement>(null);
@@ -24,10 +24,6 @@ export function PreLevelModal(): ReactElement | null {
 
   const handleStart = useCallback(() => {
     import('../../features/levels').then((m) => m.startLevelFromModal(true, false, null));
-  }, []);
-
-  const handleGhost = useCallback(() => {
-    import('../../features/levels').then((m) => m.startLevelFromModal(true, true, null));
   }, []);
 
   const handleReplay = useCallback(async () => {
