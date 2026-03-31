@@ -133,7 +133,12 @@ export function handleDuoSnapshot(d: any): void {
   if (!d || !gs.duoRole) return;
 
   if (d.status === 'waiting' || d.status === 'countdown') {
-    updateDuoPreLevelUI(d);
+    // Only update pre-level UI if player is on the level screen, not mid-game
+    const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
+    const isInGame = gameContainer && gameContainer.style.display !== 'none' && !gs.isDuoMode;
+    if (!isInGame) {
+      updateDuoPreLevelUI(d);
+    }
   }
 
   if (d.status === 'waiting') {
@@ -142,12 +147,16 @@ export function handleDuoSnapshot(d: any): void {
     _countdownLaunched = false;
 
     // Detect level change (host switched to a different level)
+    // Only refresh if player is NOT mid-game (don't pull them out)
     if (d.levelId && _lastSeenLevelId !== null && d.levelId !== _lastSeenLevelId) {
       gs.duoMyReady = false;
-      // Refresh the pre-level modal with new level info
-      import('../features/levels').then(({ showPreLevelModal }) => {
-        showPreLevelModal(d.levelId, true);
-      }).catch(() => {});
+      const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
+      const isInGame = gameContainer && gameContainer.style.display !== 'none';
+      if (!isInGame) {
+        import('../features/levels').then(({ showPreLevelModal }) => {
+          showPreLevelModal(d.levelId, true);
+        }).catch(() => {});
+      }
     }
     _lastSeenLevelId = d.levelId;
 
@@ -163,7 +172,12 @@ export function handleDuoSnapshot(d: any): void {
   }
 
   if (d.status === 'countdown' && d.startAt) {
-    startDuoCountdown(d.startAt);
+    // Don't start countdown if player is mid-game (solo/world)
+    const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
+    const isInGame = gameContainer && gameContainer.style.display !== 'none' && !gs.isDuoMode;
+    if (!isInGame) {
+      startDuoCountdown(d.startAt);
+    }
   }
 
   if (d.status === 'playing') {
