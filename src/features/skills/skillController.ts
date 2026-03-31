@@ -260,6 +260,10 @@ export function enterSkillMode(cellIdx: number, prevSelected?: number): void {
     return;
   }
 
+  // Skill mode is only available in World mode
+  const isWild = gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
+  if (!isWild) return;
+
   // Enter skill mode with 2 cells: the previously selected + long-pressed
   const firstCell = prevSelected ?? gs.selectedIdx;
   skill.enabled = true;
