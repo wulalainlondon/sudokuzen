@@ -22,6 +22,7 @@ import {
   toggleContinuousFill,
   setContinuousDigit,
   fillAllCandidates,
+  undoAction,
 } from '../game/core';
 import { exitSkillMode, castSkill } from '../features/skills/skillController';
 import {
@@ -203,7 +204,10 @@ export function bootLegacyRuntime(appVersion: string): void {
   });
 
   // 14. Android back button — navigate within app, never leave
+  // Keep an extra guard entry so the first Back always triggers popstate
+  // instead of exiting the standalone PWA/webview.
   history.replaceState({ screen: 'stage' }, '');
+  history.pushState({ screen: 'nav' }, '');
   window.addEventListener('popstate', () => {
     // Always push state back so we never run out of history
     history.pushState({ screen: 'nav' }, '');
@@ -302,6 +306,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     exitSkillMode,
     castSkill,
     erase,
+    undoAction,
     fillAllCandidates,
     sendDuoEmoji,
     replayReset,

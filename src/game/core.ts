@@ -213,6 +213,7 @@ function resetGameState(): void {
   gs.seconds = 0;
   gs.submissionCount = 0;
   gs.actionHistory = [];
+  gs.undoStack = [];
   gs.cellsData = gs.currentLevel!.puzzle.map((val: number) => ({
     value: val,
     fixed: val !== 0,
@@ -220,6 +221,13 @@ function resetGameState(): void {
     isError: false,
   }));
   resetSkillState();
+
+  // Show undo button only in speedrun/blind modes
+  const undoBtn = document.getElementById('undo-btn');
+  if (undoBtn) {
+    const showUndo = gs.isSpeedrunMode || gs.wildBlindMode;
+    undoBtn.classList.toggle('hidden', !showUndo);
+  }
 }
 
 // ── Save / Load ─────────────────────────────────────────────────────
@@ -290,6 +298,8 @@ export function handleInput(num: number): void {
     if (navigator.vibrate) navigator.vibrate(5);
   } else {
     if (gs.isSpeedrunMode) {
+      // Push to undo stack before changing
+      gs.undoStack.push({ idx: gs.selectedIdx, prevValue: data.value, prevNotes: data.notes.slice() });
       data.value = num;
       data.notes = [];
       data.isError = false;
@@ -306,6 +316,7 @@ export function handleInput(num: number): void {
 
     // ── Blind mode: skip error check, just fill ──
     if (gs.wildBlindMode) {
+      gs.undoStack.push({ idx: gs.selectedIdx, prevValue: data.value, prevNotes: data.notes.slice() });
       data.value = num;
       data.notes = [];
       recordAction('fill', `${cellLabel(gs.selectedIdx)} (盲審) 填入 ${num}`, gs.selectedIdx, num);
@@ -405,6 +416,23 @@ export function handleInput(num: number): void {
   updateNumpadState();
   selectCell(gs.selectedIdx);
   evaluateLockedSkill();
+}
+
+export function undoAction(): void {
+  if (gs.undoStack.length === 0) return;
+  const action = gs.undoStack.pop()!;
+  const cell = gs.cellsData[action.idx];
+  if (cell.fixed) return;
+  cell.value = action.prevValue;
+  cell.notes = action.prevNotes;
+  cell.isError = false;
+  const cellEl = gs.gridEl!.children[action.idx] as HTMLElement;
+  cellEl.classList.remove('error');
+  updateCellDisplay(cellEl, cell);
+  recordAction('undo', `${cellLabel(action.idx)} 撤銷`, action.idx, action.prevValue);
+  saveGameStatus();
+  updateNumpadState();
+  if (navigator.vibrate) navigator.vibrate(5);
 }
 
 export function erase(): void {

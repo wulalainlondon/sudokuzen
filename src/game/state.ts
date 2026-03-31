@@ -74,6 +74,7 @@ export const gs = {
   currentLevel: null as LevelData | null,
   cellsData: [] as CellData[],
   actionHistory: [] as any[],
+  undoStack: [] as { idx: number; prevValue: number; prevNotes: number[] }[],
   replayFilter: 'all',
   numButtons: [] as HTMLButtonElement[],
 
