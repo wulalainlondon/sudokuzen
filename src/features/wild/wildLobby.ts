@@ -306,7 +306,6 @@ export function renderWildLobby(): void {
   ];
 
   const techByKey = new Map(TECHNIQUE_TABLE.map(t => [t.key, t]));
-  let totalDiscovered = 0;
   let shownAnyPhase = false;
 
   for (const phase of PHASES) {
@@ -332,7 +331,6 @@ export function renderWildLobby(): void {
     const phaseHeader = document.createElement('div');
     phaseHeader.className = 'wild-bestiary-phase';
     const phaseDiscovered = phase.keys.filter(k => profile.bestiary[k]).length;
-    totalDiscovered += phaseDiscovered;
     phaseHeader.textContent = `── ${phase.name} (${phaseDiscovered}/${phase.keys.length}) ──`;
     grid.appendChild(phaseHeader);
 

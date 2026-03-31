@@ -4,7 +4,6 @@ import {
   getTechniqueMeta,
   getAutoCastKeys,
   RARITY_MULTIPLIER,
-  type TechniqueMeta,
 } from '../src/features/wild/techniqueMeta';
 
 describe('TECHNIQUE_TABLE structure', () => {
