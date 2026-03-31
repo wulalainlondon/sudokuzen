@@ -122,8 +122,14 @@ export async function startWildEncounter(): Promise<void> {
       _encounter = await selectSessionEncounter(profile, session.round);
     } else {
       _encounter = await selectEncounter(profile);
-      // Free roam (新手村): only standard or blind — no ironman/noNotes for beginners
-      if (_encounter.challengeMode !== 'blind') {
+    }
+
+    // Only allow non-standard modes on techniques the player has mastered
+    // Mastered = studied (T0-T1) or conquered at least once (T2+)
+    if (_encounter.challengeMode !== 'standard') {
+      const studied = (profile.studiedSkills || []).includes(_encounter.technique);
+      const conquered = profile.bestiary[_encounter.technique]?.kills > 0;
+      if (!studied && !conquered) {
         _encounter.challengeMode = 'standard';
       }
     }
