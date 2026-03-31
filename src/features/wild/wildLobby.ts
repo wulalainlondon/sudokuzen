@@ -294,31 +294,77 @@ export function renderWildLobby(): void {
     btn.classList.toggle('active', rarity === _rarityFilter);
   });
 
-  const visibleTechniques = TECHNIQUE_TABLE.filter((tech) => {
-    const entry = profile.bestiary[tech.key];
-    if (_bestiaryFilter === 'discovered' && !entry) return false;
-    if (_bestiaryFilter === 'conquered' && !(entry && entry.kills > 0)) return false;
-    if (_rarityFilter !== 'all' && tech.rarity !== _rarityFilter) return false;
-    return true;
-  }).sort((a, b) => {
-    const aEntry = profile.bestiary[a.key];
-    const bEntry = profile.bestiary[b.key];
-    if (!!aEntry !== !!bEntry) return aEntry ? -1 : 1;
-    const aKills = aEntry?.kills ?? 0;
-    const bKills = bEntry?.kills ?? 0;
-    if (aKills !== bKills) return bKills - aKills;
-    return a.weight - b.weight;
-  });
+  // ── Phase-based bestiary display ──
+  const PHASES: { name: string; minGate: number; keys: string[] }[] = [
+    { name: '基礎心法', minGate: 1, keys: ['naked_single','hidden_single','locked_candidates','naked_pair','hidden_pair','naked_triple','hidden_triple'] },
+    { name: '中階劍法·直覺型', minGate: 21, keys: ['x_wing','unique_rectangle','bug_plus_one'] },
+    { name: '中階劍法·推理型', minGate: 31, keys: ['skyscraper','two_string_kite','empty_rectangle','finned_x_wing','xy_wing','xyz_wing','w_wing','remote_pairs'] },
+    { name: '高階', minGate: 41, keys: ['swordfish','x_cycle_simple_coloring','finned_swordfish','jellyfish','finned_jellyfish'] },
+    { name: '鏈術', minGate: 61, keys: ['aic','aic_mid_chain','aic_long_chain','grouped_aic_nice_loop','discontinuous_nice_loop','xy_chain'] },
+    { name: '殘集與逼宮', minGate: 71, keys: ['als_xz','als_xy','als_w_wing','als_chain','forcing_chain_net','cell_forcing_chain','region_forcing_chain'] },
+    { name: '終極', minGate: 80, keys: ['sue_de_coq','template','death_blossom','exocet_death_blossom'] },
+  ];
 
-  if (visibleTechniques.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'wild-bestiary-empty';
-    empty.textContent = '目前篩選下沒有符合的妖獸';
-    grid.appendChild(empty);
-    return;
-  }
+  const techByKey = new Map(TECHNIQUE_TABLE.map(t => [t.key, t]));
+  let totalDiscovered = 0;
+  let shownAnyPhase = false;
 
-  for (const tech of visibleTechniques) {
+  for (const phase of PHASES) {
+    const isUnlocked = profile.iqLevel >= phase.minGate;
+    const isPreviousPhase = shownAnyPhase;
+
+    // Current phase: show all techniques (discovered or "?")
+    // Next phase (first locked): show as locked teaser
+    // Phases 2+ away: hide completely
+    if (!isUnlocked && isPreviousPhase) {
+      // Show locked teaser for the NEXT phase only
+      const nextHint = document.createElement('div');
+      nextHint.className = 'wild-bestiary-locked';
+      nextHint.textContent = `🔒 Lv.${phase.minGate} 解鎖「${phase.name}」`;
+      grid.appendChild(nextHint);
+      break; // Don't show phases beyond the next
+    }
+
+    if (!isUnlocked) continue;
+    shownAnyPhase = true;
+
+    // Phase header
+    const phaseHeader = document.createElement('div');
+    phaseHeader.className = 'wild-bestiary-phase';
+    const phaseDiscovered = phase.keys.filter(k => profile.bestiary[k]).length;
+    totalDiscovered += phaseDiscovered;
+    phaseHeader.textContent = `── ${phase.name} (${phaseDiscovered}/${phase.keys.length}) ──`;
+    grid.appendChild(phaseHeader);
+
+    // Filter techniques in this phase
+    const phaseTechs = phase.keys
+      .map(k => techByKey.get(k)!)
+      .filter(t => {
+        if (!t) return false;
+        const entry = profile.bestiary[t.key];
+        if (_bestiaryFilter === 'discovered' && !entry) return false;
+        if (_bestiaryFilter === 'conquered' && !(entry && entry.kills > 0)) return false;
+        if (_rarityFilter !== 'all' && t.rarity !== _rarityFilter) return false;
+        // Only show techniques whose levelGate is <= player level
+        return t.levelGate <= profile.iqLevel;
+      });
+
+    if (phaseTechs.length === 0 && _bestiaryFilter === 'all') {
+      // Show placeholder for techniques not yet unlocked within this phase
+      const pending = phase.keys.filter(k => {
+        const t = techByKey.get(k);
+        return t && t.levelGate > profile.iqLevel;
+      });
+      if (pending.length > 0) {
+        const hint = document.createElement('div');
+        hint.className = 'wild-bestiary-hint';
+        const nextGate = Math.min(...pending.map(k => techByKey.get(k)!.levelGate));
+        hint.textContent = `Lv.${nextGate} 解鎖更多`;
+        grid.appendChild(hint);
+      }
+    }
+
+    for (const tech of phaseTechs) {
     const entry = profile.bestiary[tech.key];
     const card = document.createElement('div');
     card.className = `wild-beast-card rarity-${tech.rarity}`;
@@ -409,6 +455,13 @@ export function renderWildLobby(): void {
 
     grid.appendChild(card);
   }
+  } // end phase loop
+
+  // Total discovered footer
+  const footer = document.createElement('div');
+  footer.className = 'wild-bestiary-footer';
+  footer.textContent = `已發現 ${discovered} / ${TECHNIQUE_TABLE.length}`;
+  grid.appendChild(footer);
 }
 
 // ── Toggle auto-cast ─────────────────────────────────────────────────

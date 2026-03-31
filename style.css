@@ -2898,6 +2898,46 @@ header h1 {
     font-size: 0.76rem;
 }
 
+.wild-bestiary-phase {
+    grid-column: 1 / -1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-sub, #636e72);
+    text-align: center;
+    padding: 8px 0 4px;
+    letter-spacing: 0.05em;
+}
+
+.wild-bestiary-locked {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 0.78rem;
+    color: var(--text-sub, #636e72);
+    border-top: 1px dashed color-mix(in srgb, var(--cell-border) 40%, transparent);
+    margin-top: 4px;
+}
+
+.wild-bestiary-hint {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 0.7rem;
+    color: var(--text-sub, #636e72);
+    font-style: italic;
+}
+
+.wild-bestiary-footer {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 10px 0 4px;
+    font-size: 0.72rem;
+    color: var(--text-sub, #636e72);
+    border-top: 1px solid color-mix(in srgb, var(--cell-border) 30%, transparent);
+    margin-top: 6px;
+    font-variant-numeric: tabular-nums;
+}
+
 /* Bestiary Note Popup (弈塵's notes) */
 .beast-note-popup {
     position: fixed;
