@@ -13,6 +13,9 @@ export function bridgeShowWin(payload: {
   submissions?: number;
   showLeaderboard?: boolean;
   showReplay?: boolean;
+  practiceTechName?: string | null;
+  practiceCleared?: number;
+  practiceTotal?: number;
 }): void {
   useWinStore.getState().open({
     mode: payload.mode,
@@ -23,6 +26,9 @@ export function bridgeShowWin(payload: {
     submissions: payload.submissions ?? 0,
     showLeaderboard: payload.showLeaderboard ?? false,
     showReplay: payload.showReplay ?? true,
+    practiceTechName: payload.practiceTechName ?? null,
+    practiceCleared: payload.practiceCleared ?? 0,
+    practiceTotal: payload.practiceTotal ?? 25,
   });
 }
 

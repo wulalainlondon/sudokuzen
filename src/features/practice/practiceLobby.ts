@@ -6,8 +6,8 @@ import { SK, readJson } from '../../storage/keys';
 import { getPracticeLevels } from '../../data/dataRegistry';
 import { TECH_MAP } from '../teach-legacy';
 import { showFeedback } from '../../ui/feedback';
-
 import { syncLevelCardSize } from '../../game/board';
+import { playZenMentor, playZenEncounter, playZenDiscover, playZenLevelUp, playZenSessionComplete } from '../../game/zenAudio';
 
 // ── Unlock tree definition ────────────────────────────────────────────
 
@@ -243,6 +243,10 @@ export async function openPracticeLobby(): Promise<void> {
   }
   setPracticeViewActive(true);
   renderPracticeLobby();
+  playZenMentor();
+  // Initialize completion tracking for change detection on return
+  const state = computeUnlockState();
+  _prevCompletedCount = [...state.values()].filter(s => s.status === 'completed').length;
 }
 
 export function closePracticeLobby(): void {
@@ -353,6 +357,7 @@ function createTechNode(key: string, techState: TechState | undefined, compact: 
 
 export function enterPracticeTechnique(techKey: string): void {
   gs.practiceActiveTech = techKey;
+  playZenEncounter();
 
   const stageView = document.getElementById('stage-view');
   const practiceLobby = document.getElementById('practice-lobby');
@@ -424,7 +429,11 @@ function renderPracticeLevelGrid(techKey: string): void {
   requestAnimationFrame(syncLevelCardSize);
 }
 
+// Track previous state to detect changes on return
+let _prevCompletedCount = -1;
+
 export function backToPracticeLobby(): void {
+  const prevTech = gs.practiceActiveTech;
   gs.practiceActiveTech = null;
 
   const tierView = document.getElementById('tier-view');
@@ -442,6 +451,43 @@ export function backToPracticeLobby(): void {
   }
 
   renderPracticeLobby();
+
+  // Detect technique completion or full mastery
+  const state = computeUnlockState();
+  const completedCount = [...state.values()].filter(s => s.status === 'completed').length;
+
+  if (_prevCompletedCount >= 0 && completedCount > _prevCompletedCount) {
+    // A technique was just completed
+    if (completedCount >= 41) {
+      // All 41 completed — 出關
+      playZenSessionComplete();
+      setTimeout(() => {
+        import('../../react/mentor/mentorBridge').then(({ bridgeShowMentor }) => {
+          bridgeShowMentor(
+            '你走完了三十九道坎，\n還多走了兩道我沒留記號的。\n\n修行圓滿。但劍沒有盡頭。',
+            '── 弈塵',
+          );
+        });
+      }, 3500);
+    } else {
+      // Single technique completed
+      const techName = prevTech ? (TECH_MAP[prevTech] || prevTech) : '';
+      if (techName) showFeedback(`【${techName}】修行圓滿`, 'success');
+      playZenLevelUp();
+    }
+  }
+
+  // Detect newly unlocked techniques
+  if (_prevCompletedCount >= 0) {
+    const newlyUnlocked = [...state.entries()].filter(
+      ([, s]) => s.status === 'unlocked' && s.cleared === 0,
+    );
+    if (newlyUnlocked.length > 0 && completedCount > _prevCompletedCount) {
+      setTimeout(() => playZenDiscover(), 600);
+    }
+  }
+
+  _prevCompletedCount = completedCount;
 }
 
 // ── Next practice level ───────────────────────────────────────────────

@@ -1858,6 +1858,55 @@ header h1 {
     font-weight: 600;
 }
 
+/* ── Practice node atmosphere animations ──────────────────────────── */
+
+.practice-node.unlocked {
+    animation: practice-node-breathe 4s ease-in-out infinite;
+}
+@keyframes practice-node-breathe {
+    0%, 100% { border-color: var(--cell-border); }
+    50% { border-color: var(--accent-light); }
+}
+
+.practice-node.partial .practice-mini-fill {
+    background: linear-gradient(90deg, var(--accent-strong), var(--accent-light), var(--accent-strong));
+    background-size: 200% 100%;
+    animation: practice-flow 2s linear infinite;
+}
+@keyframes practice-flow {
+    0% { background-position: 200% 0; }
+    100% { background-position: 0 0; }
+}
+
+.practice-node.completed {
+    animation: practice-glint 8s ease-in-out infinite;
+}
+@keyframes practice-glint {
+    0%, 90%, 100% { box-shadow: none; }
+    95% { box-shadow: 0 0 8px rgba(61, 153, 112, 0.15); }
+}
+
+/* ── Practice win progress bar ────────────────────────────────────── */
+
+.win-practice-progress {
+    width: 180px;
+    height: 4px;
+    background: var(--cell-border);
+    border-radius: 2px;
+    margin: 6px auto 0;
+}
+.win-practice-progress-fill {
+    height: 100%;
+    background: var(--accent-strong);
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(.2,.8,.2,1);
+}
+.win-practice-sub {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    margin-top: 2px;
+}
+
 .random-btn.ghost {
     background: transparent;
 }

@@ -38,6 +38,11 @@ export interface WinState {
   showLeaderboard: boolean;
   leaderboardHtml: string;
 
+  // Practice progress
+  practiceTechName: string | null;
+  practiceCleared: number;
+  practiceTotal: number;
+
   // Replay
   showReplay: boolean;
 
@@ -64,6 +69,9 @@ const INITIAL: Omit<WinState, 'open' | 'close' | 'setLeaderboard' | 'setWildSess
   beatMentor: false,
   mentorNote: null,
   wildSession: null,
+  practiceTechName: null,
+  practiceCleared: 0,
+  practiceTotal: 25,
   showLeaderboard: false,
   leaderboardHtml: '',
   showReplay: false,

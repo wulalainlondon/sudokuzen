@@ -166,7 +166,7 @@ function Leaderboard(): ReactElement | null {
 // ── Main component ─────────────────────────────────────────────────────
 
 export function WinCelebration(): ReactElement {
-  const { visible, mode, levelName, timeSeconds, firstKill, firstKillSub, leveledUp, mentorNote } = useWinStore();
+  const { visible, mode, levelName, timeSeconds, firstKill, firstKillSub, leveledUp, mentorNote, practiceTechName, practiceCleared, practiceTotal } = useWinStore();
   const close = useWinStore((s) => s.close);
   const prevVisibleRef = useRef(false);
 
@@ -196,6 +196,14 @@ export function WinCelebration(): ReactElement {
         <p id="win-level-name">{displayName}</p>
         <MetricDisplay />
         <p className="win-time"><ZenCountUp value={timeSeconds} /></p>
+        {mode === 'practice' && practiceTechName && (
+          <div>
+            <div className="win-practice-sub">{practiceTechName} · {practiceCleared}/{practiceTotal}</div>
+            <div className="win-practice-progress">
+              <div className="win-practice-progress-fill" style={{ width: `${(practiceCleared / practiceTotal) * 100}%` }} />
+            </div>
+          </div>
+        )}
         {mode === 'wild' && firstKill && mentorNote && (
           <div className="win-mentor-note">
             <div className="win-mentor-note-title">── 弈塵《殘篇》──</div>

@@ -741,7 +741,21 @@ function showWinCelebration(earnedValue: number): void {
 }
 
 function showPracticeWinCelebration(earnedStars: number): void {
-  import('../react/win/winBridge').then(({ bridgeShowWin }) => {
+  // Compute practice progress for this technique
+  const techKey = gs.currentLevel?.maxTechnique || '';
+  import('../features/practice/practiceLobby').then(async (pMod) => {
+    const { TECH_MAP } = await import('../features/teach-legacy');
+    const { SK, readJson } = await import('../storage/keys');
+    const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+    // Count how many levels of this technique are cleared (including the one just won)
+    let cleared = 0;
+    for (const rec of Object.values(records)) {
+      if (rec && rec.techKey === techKey) cleared++;
+    }
+    // The current win may not be saved yet, so add 1 if not already counted
+    if (!records[gs.currentLevel!.id]) cleared++;
+
+    const { bridgeShowWin } = await import('../react/win/winBridge');
     bridgeShowWin({
       mode: 'practice',
       levelName: gs.currentLevel!.displayName,
@@ -749,10 +763,13 @@ function showPracticeWinCelebration(earnedStars: number): void {
       stars: earnedStars,
       showLeaderboard: false,
       showReplay: true,
+      practiceTechName: TECH_MAP[techKey] || techKey,
+      practiceCleared: cleared,
+      practiceTotal: 25,
     });
   });
-  showFeedback('修行完成！', 'success');
-  playWinSound();
+  // Play softer zen complete sound for practice
+  import('./zenAudio').then(({ playZenComplete }) => playZenComplete(0.03));
 }
 
 function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number, firstKill?: string | null, firstKillSub?: string | null, beatMentor?: boolean): void {
