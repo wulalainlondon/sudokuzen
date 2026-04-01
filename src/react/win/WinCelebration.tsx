@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, type ReactElement } from 'react';
 import { useWinStore, type WinMode } from './winStore';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -179,6 +180,7 @@ function Leaderboard(): ReactElement | null {
 
 export function WinCelebration(): ReactElement | null {
   const { visible, mode, levelName, timeSeconds, firstKill, firstKillSub, leveledUp } = useWinStore();
+  const trapRef = useFocusTrap(visible);
   const prevVisibleRef = useRef(false);
 
   // Trigger vibration on open
@@ -207,7 +209,7 @@ export function WinCelebration(): ReactElement | null {
       : levelName;
 
   return (
-    <div id="win-celebration" style={{ display: 'flex' }}>
+    <div id="win-celebration" style={{ display: 'flex' }} ref={trapRef}>
       <ConfettiLayer count={confettiCount} />
       <h2>{headingText(mode)}</h2>
       <p id="win-level-name">{displayName}</p>

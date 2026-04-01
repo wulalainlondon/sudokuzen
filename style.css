@@ -716,10 +716,8 @@ header h1 {
     75% { transform: translateX(-0.5px); }
 }
 
-/* 遊戲、暫停結束遮罩 */
-#overlay,
-#pause-screen,
-#win-celebration {
+/* Pause screen — stays inside .game-container (absolute positioning) */
+#pause-screen {
     position: absolute;
     top: 0;
     left: 0;
@@ -732,6 +730,22 @@ header h1 {
     align-items: center;
     z-index: 10;
     border-radius: 12px;
+    text-align: center;
+}
+
+/* React-managed overlays — fixed positioning (rendered in #react-strangler-root) */
+#overlay,
+#win-celebration {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-color);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 30;
     text-align: center;
 }
 
@@ -1243,25 +1257,13 @@ header h1 {
 }
 
 #win-celebration {
-    z-index: 30;
     background: radial-gradient(circle at top, rgba(9, 132, 227, 0.16), var(--bg-color) 60%);
     overflow: hidden;
-    /* React strangler: rendered outside .game-container, needs fixed positioning */
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
 }
 
-/* React strangler overrides — these overlays render outside .game-container */
-#react-strangler-root #overlay,
-#react-strangler-root #stats-modal,
-#react-strangler-root #pre-level-modal {
+/* React-managed modals — fixed positioning (rendered in #react-strangler-root) */
+#stats-modal,
+#pre-level-modal {
     position: fixed;
     inset: 0;
     width: 100%;

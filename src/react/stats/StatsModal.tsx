@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type ReactElement } from 'react';
 import { useStatsStore } from './statsStore';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 // Import data functions from legacy stats module
 // These are pure computation — no DOM side effects
@@ -128,6 +129,7 @@ export function StatsModal(): ReactElement | null {
   const { visible, tab } = useStatsStore();
   const close = useStatsStore((s) => s.close);
   const setTab = useStatsStore((s) => s.setTab);
+  const trapRef = useFocusTrap(visible);
 
   const [stats, setStats] = useState<StatsData | null>(null);
   const [achievements, setAchievements] = useState<AchievementDef[]>([]);
@@ -152,7 +154,7 @@ export function StatsModal(): ReactElement | null {
   if (!visible || !stats) return null;
 
   return (
-    <div id="stats-modal" style={{ display: 'flex' }} onClick={handleBackdrop}>
+    <div id="stats-modal" style={{ display: 'flex' }} onClick={handleBackdrop} ref={trapRef}>
       <div className="stats-panel">
         <h2>個人統計</h2>
         <div className="stats-tabs">

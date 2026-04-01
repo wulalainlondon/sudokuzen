@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, type ReactElement } from 'react';
 import { usePreLevelStore } from './preLevelStore';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export function PreLevelModal(): ReactElement | null {
   const {
@@ -7,15 +8,24 @@ export function PreLevelModal(): ReactElement | null {
     hasReplay, leaderboardHtml,
   } = usePreLevelStore();
   const close = usePreLevelStore((s) => s.close);
+  const trapRef = useFocusTrap(visible);
   const duoZoneRef = useRef<HTMLDivElement>(null);
 
-  // Move legacy duo-ready-zone DOM into our container when visible
+  // Move legacy duo-ready-zone DOM into our container when visible;
+  // return it to <body> when modal closes to prevent orphaning.
   useEffect(() => {
     if (!visible || !duoZoneRef.current) return;
     const legacyDuoZone = document.getElementById('duo-ready-zone');
     if (legacyDuoZone && !duoZoneRef.current.contains(legacyDuoZone)) {
       duoZoneRef.current.appendChild(legacyDuoZone);
     }
+    return () => {
+      // Return duo zone to body so it's not lost when React unmounts
+      if (legacyDuoZone && legacyDuoZone.parentElement !== document.body) {
+        legacyDuoZone.classList.add('hidden');
+        document.body.appendChild(legacyDuoZone);
+      }
+    };
   }, [visible]);
 
   const handleBackdrop = useCallback((e: React.MouseEvent) => {
@@ -61,7 +71,7 @@ export function PreLevelModal(): ReactElement | null {
   const techDisplay = techTier ? `💡 核心技巧: ${techName} (${techTier})` : `💡 核心技巧: ${techName}`;
 
   return (
-    <div id="pre-level-modal" style={{ display: 'flex' }} onClick={handleBackdrop}>
+    <div id="pre-level-modal" style={{ display: 'flex' }} onClick={handleBackdrop} ref={trapRef}>
       <div className="pre-level-panel">
         <h2>{displayName}</h2>
         <p className={`pre-level-record${hasRecord ? ' has-record' : ''}`}>{bestRecord}</p>

@@ -262,7 +262,12 @@ export function saveGameStatus(): void {
 
 function loadGameStatus(levelId: number): any {
   const saved = localStorage.getItem(SK.save(levelId, gs.isSpeedrunMode));
-  return saved ? JSON.parse(saved) : null;
+  if (!saved) return null;
+  try {
+    return JSON.parse(saved);
+  } catch {
+    return null;
+  }
 }
 
 function clearGameStatus(levelId: number): void {

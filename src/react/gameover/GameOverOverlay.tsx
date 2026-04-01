@@ -1,5 +1,6 @@
 import { useCallback, type ReactElement } from 'react';
 import { useGameOverStore } from './gameOverStore';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 function backText(mode: string, wildSession: { round: number; hasMore: boolean } | null): string {
   if (mode === 'wild' && wildSession?.hasMore) return `繼續修行 (${wildSession.round}/10)`;
@@ -11,6 +12,7 @@ function backText(mode: string, wildSession: { round: number; hasMore: boolean }
 export function GameOverOverlay(): ReactElement | null {
   const { visible, mode, wildSession } = useGameOverStore();
   const close = useGameOverStore((s) => s.close);
+  const trapRef = useFocusTrap(visible);
 
   const handleRetry = useCallback(() => {
     (window as any).resetGame?.();
@@ -32,7 +34,7 @@ export function GameOverOverlay(): ReactElement | null {
   if (!visible) return null;
 
   return (
-    <div id="overlay" style={{ display: 'flex' }}>
+    <div id="overlay" style={{ display: 'flex' }} ref={trapRef}>
       <h2>GAME OVER</h2>
       <p>你犯了 3 次錯誤</p>
       <button className="retry-btn" onClick={handleRetry}>重新開始</button>
