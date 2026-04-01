@@ -5,6 +5,7 @@ import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds, normalizeAlias, ALIAS_MIN_LEN } from '../game/utils';
 import { showFeedback } from '../ui/feedback';
 import { getAllLevels } from '../data/dataRegistry';
+import { t } from '../i18n/t';
 
 declare const firebase: any;
 type AchievementMap = Record<string, { date: string }>;
@@ -352,12 +353,12 @@ export function loadAliasToInput(): void {
 export function saveAlias(): void {
   const alias = normalizeAlias(gs.aliasInputEl ? gs.aliasInputEl.value : '');
   if (alias.length < ALIAS_MIN_LEN) {
-    showFeedback('暱稱至少 1 個字');
+    showFeedback(t('alias.tooShort'));
     return;
   }
   localStorage.setItem(SK.PLAYER_ALIAS, alias);
   if (gs.aliasInputEl) gs.aliasInputEl.value = alias;
-  showFeedback(`暱稱已更新：${alias}`);
+  showFeedback(t('alias.updated', { alias }));
   const { playerId } = getPlayerIdentity();
   void upsertAliasIndex(playerId, alias);
   // Always re-hydrate on alias change — the new alias may map to a different playerId with existing records
@@ -558,7 +559,7 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
           localStorage.setItem(SK.PLAYER_ID, mappedPlayerId);
           localStorage.setItem(SK.PLAYER_ALIAS, alias);
           if (gs.aliasInputEl) gs.aliasInputEl.value = alias;
-          showFeedback(`已依暱稱「${alias}」恢復雲端進度`);
+          showFeedback(t('alias.cloudRestore', { alias }));
         }
       }
     }
@@ -615,11 +616,11 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
 export function renderLeaderboard(el: HTMLElement | null, rows: any[]): void {
   if (!el) return;
   if (!gs.firebaseReady) {
-    el.textContent = '尚未啟用 Firebase 排行。';
+    el.textContent = t('firebase.disabled');
     return;
   }
   if (!rows.length) {
-    el.textContent = '尚無玩家首通紀錄';
+    el.textContent = t('firebase.noRecords');
     return;
   }
   el.innerHTML = rows
@@ -657,7 +658,7 @@ export async function loadLevelLeaderboard(levelId: number): Promise<void> {
 export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
   if (!gs.firebaseReady) {
     const _plEl = document.getElementById('pre-level-leaderboard');
-    if (_plEl) _plEl.textContent = '尚未啟用 Firebase 排行。';
+    if (_plEl) _plEl.textContent = t('firebase.disabled');
     return;
   }
   try {
@@ -670,7 +671,7 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
       .get();
     const rows = snap.docs.map((d: any) => d.data());
     const html = !rows.length
-      ? '尚無玩家首通紀錄'
+      ? t('firebase.noRecords')
       : rows
           .map((r: any, i: number) => {
             const timeStr = formatSeconds(r.firstTimeSec);
@@ -687,7 +688,7 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
   } catch (e) {
     console.warn('load pre-level leaderboard failed:', e);
     const _plEl = document.getElementById('pre-level-leaderboard');
-    if (_plEl) _plEl.textContent = '載入失敗';
+    if (_plEl) _plEl.textContent = t('firebase.loadFailed');
   }
 }
 

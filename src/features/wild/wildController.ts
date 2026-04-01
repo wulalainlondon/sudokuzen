@@ -18,6 +18,7 @@ import {
 } from './mentorController';
 import { bridgeShowEncounterTransition } from '../../react/wild/encounterTransitionBridge';
 import { playZenEnter, playZenEncounter, playZenBoss } from '../../game/zenAudio';
+import { t } from '../../i18n/t';
 
 // ── Runtime state (non-persisted) ────────────────────────────────────
 
@@ -117,7 +118,7 @@ export async function startWildEncounter(): Promise<void> {
     saveWildProfile(profile);
   }
 
-  showFeedback(session ? `修行輪 ${session.round}/10` : '遭遇中...', 'success');
+  showFeedback(session ? t('wild.sessionRound', { round: String(session.round) }) : t('wild.encounterLoading'), 'success');
 
   try {
     if (session) {
@@ -136,7 +137,7 @@ export async function startWildEncounter(): Promise<void> {
       }
     }
   } catch (e) {
-    showFeedback('題庫載入失敗，請稍後重試', 'error');
+    showFeedback(t('wild.poolLoadError'), 'error');
     console.error('[Wild] selectEncounter failed:', e);
     return;
   }
@@ -271,11 +272,11 @@ export async function startWildEncounter(): Promise<void> {
 
   // First encounter indicator / boss indicator
   if (session && session.round === 10) {
-    showFeedback('Boss 遭遇！', 'success');
+    showFeedback(t('wild.bossEncounter'), 'success');
   } else {
     const bestiaryEntry = profile.bestiary[_encounter.technique];
     if (bestiaryEntry && bestiaryEntry.encounters === 1) {
-      showFeedback('初遇 — ？？？', 'success');
+      showFeedback(t('wild.firstEncounter'), 'success');
     }
   }
 
@@ -422,7 +423,7 @@ async function _advanceGauntlet(
   const { updateLivesUI } = await import('../../game/core');
   updateLivesUI();
 
-  showFeedback(`百鬼夜行 ${_gauntletIdx + 1}/5`, 'success');
+  showFeedback(t('wild.gauntletCount', { idx: String(_gauntletIdx + 1) }), 'success');
 
   return null; // Not done yet
 }
@@ -651,7 +652,7 @@ async function launchGauntletNext(profile: WildProfile): Promise<void> {
   gs.wildNotesDisabled = false;
   updateLivesUI();
 
-  showFeedback(`百鬼夜行 ${_gauntletIdx + 1}/5`, 'success');
+  showFeedback(t('wild.gauntletCount', { idx: String(_gauntletIdx + 1) }), 'success');
 }
 
 // ── Fail / escape handler (called from core.ts showGameOver) ─────────
