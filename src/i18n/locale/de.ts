@@ -157,6 +157,10 @@ export const de: Widen<Locale> = {
     longPressHint: 'Tipp: Zwei Zellen lang dr\u00FCcken, um eine Technik zu wirken',
     continuousFillHint: 'Tipp: Aktivieren, um leere Zellen direkt mit der gew\u00E4hlten Ziffer zu f\u00FCllen',
     worldLoadError: 'Welt konnte nicht betreten werden. Bitte erneut versuchen.',
+    resumeEncounter: 'Begegnung fortsetzen',
+    savedEncounterInfo: 'Letzte Begegnung: {tech} · {time}',
+    abandonEncounter: 'Begegnung aufgeben',
+    abandonConfirm: 'Aufgeben gilt als Flucht (Abklingzeit wird ausgelöst)',
   },
 
   // ── Timer & game chrome ─────────────────────────────────────────────

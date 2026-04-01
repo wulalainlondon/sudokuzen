@@ -156,6 +156,10 @@ export const zhTW = {
     longPressHint: '提示：長按兩個格子可施放技能',
     continuousFillHint: '提示：開啟後可直接點擊空格填入選取中的數字',
     worldLoadError: '進入世界失敗，請稍後再試',
+    resumeEncounter: '繼續遭遇',
+    savedEncounterInfo: '上次遭遇：{tech} · {time}',
+    abandonEncounter: '放棄遭遇',
+    abandonConfirm: '放棄將視為逃脫（觸發冷卻）',
   },
 
   // ── Timer & game chrome ─────────────────────────────────────────────

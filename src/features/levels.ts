@@ -507,7 +507,16 @@ export async function startPoolRandom(): Promise<void> {
 
   try {
     showFeedback(t('misc.worldLoadingFeedback'), 'success');
-    const { startWorldSession, continueWild, getWildProfile } = await import('./wild/wildController');
+    const { startWorldSession, continueWild, getWildProfile, resumeWildEncounter } = await import('./wild/wildController');
+    const { loadWildSave } = await import('./wild/wildState');
+
+    // Check for saved encounter first (pause/resume)
+    const savedEncounter = loadWildSave();
+    if (savedEncounter) {
+      await resumeWildEncounter();
+      return;
+    }
+
     const session = getWildProfile().currentSession;
     if (session && session.round > 0 && session.round < 10) {
       await continueWild();

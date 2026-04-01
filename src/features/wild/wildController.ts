@@ -4,7 +4,7 @@
 import { gs, type LevelData } from '../../game/state';
 import { formatSeconds } from '../../game/utils';
 import { showFeedback } from '../../ui/feedback';
-import { loadWildProfile, saveWildProfile, CHALLENGE_CONFIGS, type WildProfile, type WildEncounter } from './wildState';
+import { loadWildProfile, saveWildProfile, CHALLENGE_CONFIGS, saveWildEncounter, loadWildSave, clearWildSave, type WildProfile, type WildEncounter, type WildSaveData, type ChallengeMode } from './wildState';
 import { selectEncounter, selectSessionEncounter, tickCooldowns, setEscapeCooldown } from './ecologyEngine';
 import { getTechniqueMeta, getAutoCastKeys } from './techniqueMeta';
 import { calculateExp, applyExp, expForLevel } from './expSystem';
@@ -42,6 +42,108 @@ export function getWildProfile(): WildProfile {
 }
 export function getCurrentEncounter(): WildEncounter | null {
   return _encounter;
+}
+
+// ── Save / Resume (pause mid-encounter) ─────────────────────────────
+
+export function saveCurrentEncounter(): void {
+  if (!_encounter || !_active) return;
+  if (!gs.currentLevel) return;
+
+  const saveData: WildSaveData = {
+    encounter: { ..._encounter },
+    levelData: {
+      id: gs.currentLevel.id,
+      displayName: gs.currentLevel.displayName,
+      puzzle: gs.currentLevel.puzzle,
+      solution: gs.currentLevel.solution,
+      maxTechnique: gs.currentLevel.maxTechnique || '',
+    },
+    cellsData: gs.cellsData.map(c => ({ value: c.value, fixed: c.fixed, notes: [...c.notes], isError: false })),
+    seconds: gs.seconds,
+    errors: gs.errors,
+    challengeMode: _encounter.challengeMode,
+    actionHistory: gs.actionHistory,
+    savedAt: Date.now(),
+  };
+  saveWildEncounter(saveData);
+}
+
+export async function resumeWildEncounter(): Promise<void> {
+  const save = loadWildSave();
+  if (!save) return;
+
+  _encounter = save.encounter;
+  _active = true;
+
+  const meta = getTechniqueMeta(_encounter.technique);
+  applyRarityTint(_encounter.rarity);
+
+  // Build a LevelData for the game core
+  const config = CHALLENGE_CONFIGS[save.challengeMode];
+  const modeLabel = save.challengeMode !== 'standard' ? ` [${config.displayName}]` : '';
+  const wildLevel: LevelData = {
+    id: save.levelData.id,
+    stars: 0,
+    difficultyName: t('wildRuntime.difficultyWorld'),
+    displayName: meta
+      ? `${meta.name} · ${meta.subtitle}${modeLabel}`
+      : `${t('wildRuntime.difficultyWorld')}${modeLabel}`,
+    puzzle: save.levelData.puzzle,
+    solution: save.levelData.solution,
+    maxTechnique: save.levelData.maxTechnique,
+    source: 'wild',
+  };
+
+  // Write to normal save key so initGame(forceReset=false) can load it
+  const { SK } = await import('../../storage/keys');
+  const saveKey = SK.save(wildLevel.id, false);
+  localStorage.setItem(saveKey, JSON.stringify({
+    levelId: wildLevel.id,
+    cellsData: save.cellsData,
+    seconds: save.seconds,
+    errors: save.errors,
+    submissionCount: 0,
+    actionHistory: save.actionHistory,
+  }));
+
+  // Launch game — initGame with forceReset=false will pick up the save
+  document.getElementById('level-screen')?.style.setProperty('display', 'none');
+  const { initGame, updateLivesUI } = await import('../../game/core');
+  initGame(wildLevel.id, false, false, null, wildLevel);
+
+  // Remove temp save key (initGame already consumed it)
+  localStorage.removeItem(saveKey);
+
+  // Apply challenge mode settings AFTER initGame
+  gs.wildChallengeMode = save.challengeMode as ChallengeMode;
+  gs.maxErrors = config.maxErrors;
+  gs.wildBlindMode = save.challengeMode === 'blind';
+  gs.wildNotesDisabled = !!config.notesDisabled;
+  updateLivesUI();
+
+  // For timed mode: start countdown with remaining time
+  if (save.challengeMode === 'timed' && config.timerCountdown) {
+    if (gs.timerInterval) {
+      clearInterval(gs.timerInterval);
+      gs.timerInterval = null;
+    }
+    // Calculate remaining time: original countdown minus elapsed seconds
+    const elapsed = save.seconds;
+    const remaining = Math.max(1, config.timerCountdown - elapsed);
+    startCountdown(remaining);
+  }
+}
+
+export function abandonWildEncounter(): void {
+  const save = loadWildSave();
+  if (!save) return;
+
+  // Treat as escape — apply cooldown
+  _encounter = save.encounter;
+  _active = true;
+  onWildEscape();
+  clearWildSave();
 }
 
 // ── Wild-specific gs field reset ─────────────────────────────────────
@@ -593,11 +695,13 @@ export function onWildComplete(
     // Don't clear session yet — win celebration will read it for summary
     _active = false;
     resetWildGsFields();
+    clearWildSave();
     return { expGained, leveledUp: result.leveledUp, newLevel: result.newLevel, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null, beatMentor };
   }
 
   _active = false;
   resetWildGsFields();
+  clearWildSave();
 
   // Mentor triggers (async, non-blocking — fire after win celebration)
   setTimeout(async () => {
@@ -692,6 +796,7 @@ export function onWildEscape(): void {
   saveWildProfile(profile);
   _active = false;
   resetWildGsFields();
+  clearWildSave();
 }
 
 // ── Continue to next encounter ───────────────────────────────────────
@@ -713,6 +818,11 @@ export async function continueWild(): Promise<void> {
 // ── Exit Wild (return to level screen) ───────────────────────────────
 
 export function exitWild(): void {
+  // Save encounter state for resume (if mid-encounter and not gauntlet)
+  if (_active && _encounter && _gauntletQueue.length === 0) {
+    saveCurrentEncounter();
+  }
+
   _active = false;
   _encounter = null;
   _gauntletQueue = [];

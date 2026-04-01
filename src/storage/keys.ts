@@ -25,6 +25,7 @@ export const SK = {
   WILD_PROFILE: 'sudoku_wild_profile',
   PRACTICE_RECORDS: 'sudoku_practice_records',
   PLAYER_TITLE: 'sudoku_player_title',
+  WILD_SAVE: 'sudoku_wild_save',
 
   /** Returns the save-game key for a given level id. */
   save(levelId: number, speedrun: boolean): string {

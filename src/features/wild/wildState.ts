@@ -139,3 +139,36 @@ export function loadWildProfile(): WildProfile {
 export function saveWildProfile(profile: WildProfile): void {
   writeJson(SK.WILD_PROFILE, profile);
 }
+
+// ── Wild Save (pause/resume) ────────────────────────────────────────
+
+export interface WildSaveData {
+  encounter: WildEncounter;
+  levelData: {
+    id: number;
+    displayName: string;
+    puzzle: number[];
+    solution: number[];
+    maxTechnique: string;
+  };
+  cellsData: import('../../game/state').CellData[];
+  seconds: number;
+  errors: number;
+  challengeMode: ChallengeMode;
+  actionHistory: unknown[];
+  savedAt: number; // timestamp
+}
+
+export function saveWildEncounter(data: WildSaveData): void {
+  writeJson(SK.WILD_SAVE, data);
+}
+
+export function loadWildSave(): WildSaveData | null {
+  const raw = readJson<WildSaveData | null>(SK.WILD_SAVE, null);
+  if (!raw || !raw.encounter || !raw.levelData) return null;
+  return raw;
+}
+
+export function clearWildSave(): void {
+  localStorage.removeItem(SK.WILD_SAVE);
+}

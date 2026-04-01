@@ -159,6 +159,10 @@ export const en: Widen<Locale> = {
     longPressHint: 'Tip: long-press two cells to cast a skill',
     continuousFillHint: 'Tip: enable to directly tap empty cells to fill the selected digit',
     worldLoadError: 'Failed to enter World. Please retry.',
+    resumeEncounter: 'Resume Encounter',
+    savedEncounterInfo: 'Last encounter: {tech} · {time}',
+    abandonEncounter: 'Abandon Encounter',
+    abandonConfirm: 'Abandoning counts as escape (cooldown applies)',
   },
 
   // ── Timer & game chrome ─────────────────────────────────────────────

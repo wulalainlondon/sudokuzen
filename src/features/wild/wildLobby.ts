@@ -1,7 +1,7 @@
 // Wild Lobby UI — profile display, bestiary grid, entry point.
 
-import { loadWildProfile, saveWildProfile } from './wildState';
-import { TECHNIQUE_TABLE, getAutoCastKeys, type Rarity } from './techniqueMeta';
+import { loadWildProfile, saveWildProfile, loadWildSave } from './wildState';
+import { TECHNIQUE_TABLE, getAutoCastKeys, getTechniqueMeta, type Rarity } from './techniqueMeta';
 import { expForLevel } from './expSystem';
 import { getMentorNote } from './mentorController';
 import { showFeedback } from '../../ui/feedback';
@@ -273,8 +273,43 @@ export function renderWildLobby(): void {
   if (sessionMetaEl) sessionMetaEl.textContent = sessionSummary.metaText;
   if (sessionTechEl) sessionTechEl.textContent = sessionSummary.techText;
   if (enterChipEl) enterChipEl.textContent = getEnterChip(profile.iqLevel);
-  if (enterTextEl) enterTextEl.textContent = sessionSummary.enterText;
-  if (enterSubEl) enterSubEl.textContent = sessionSummary.enterSub;
+
+  // Check for saved encounter (pause/resume)
+  const wildSave = loadWildSave();
+  if (wildSave && enterTextEl) {
+    const savedMeta = getTechniqueMeta(wildSave.encounter.technique);
+    const savedName = savedMeta ? savedMeta.name : '???';
+    const mins = Math.floor(wildSave.seconds / 60);
+    const secs = wildSave.seconds % 60;
+    const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+    enterTextEl.textContent = t('wild.resumeEncounter');
+    if (enterSubEl) enterSubEl.textContent = t('wild.savedEncounterInfo', { tech: savedName, time: timeStr });
+  } else {
+    if (enterTextEl) enterTextEl.textContent = sessionSummary.enterText;
+    if (enterSubEl) enterSubEl.textContent = sessionSummary.enterSub;
+  }
+
+  // Abandon button for saved encounter
+  let abandonBtn = document.getElementById('wild-abandon-btn');
+  if (wildSave) {
+    if (!abandonBtn && enterBtn) {
+      abandonBtn = document.createElement('button');
+      abandonBtn.id = 'wild-abandon-btn';
+      abandonBtn.className = 'wild-abandon-btn';
+      abandonBtn.textContent = t('wild.abandonEncounter');
+      abandonBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm(t('wild.abandonConfirm'))) return;
+        const { abandonWildEncounter } = await import('./wildController');
+        abandonWildEncounter();
+        renderWildLobby();
+        showFeedback(t('wild.abandonEncounter'), 'success');
+      });
+      enterBtn.parentElement?.insertBefore(abandonBtn, enterBtn.nextSibling);
+    }
+  } else if (abandonBtn) {
+    abandonBtn.remove();
+  }
 
   // Auto-cast toggle (hidden in newbie zone)
   const autocastRow = document.querySelector('.wild-autocast-row') as HTMLElement | null;

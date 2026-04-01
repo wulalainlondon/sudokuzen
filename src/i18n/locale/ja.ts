@@ -154,6 +154,10 @@ export const ja: Widen<Locale> = {
     longPressHint: 'ヒント：2つのセルを長押しでスキル発動',
     continuousFillHint: 'ヒント：有効にすると空セルをタップで選択中の数字を入力できます',
     worldLoadError: '世界への接続に失敗しました。再試行してください',
+    resumeEncounter: '遭遇を再開',
+    savedEncounterInfo: '前回の遭遇：{tech} · {time}',
+    abandonEncounter: '遭遇を放棄',
+    abandonConfirm: '放棄は逃走として扱われます（クールダウン発生）',
   },
 
   // ── Timer & game chrome ─────────────────────────────────────────────
