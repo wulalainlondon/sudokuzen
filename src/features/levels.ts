@@ -387,7 +387,8 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false, exter
   });
 
   loadPreLevelLeaderboard(levelId);
-  if (gs.firebaseReady) callEnterDuoRoom(levelId);
+  // Duo not supported for practice levels
+  if (gs.firebaseReady && !isPractice) callEnterDuoRoom(levelId);
 }
 
 export function hidePreLevelModal(): void {

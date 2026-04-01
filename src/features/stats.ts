@@ -254,10 +254,9 @@ export function checkAllAchievements(): void {
 
   // ── Learning ──
   const teachRead = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
-  const practDone = readJson<Record<string, boolean>>(SK.PRACTICE_DONE, {});
   if (Object.keys(teachRead).length >= 10) unlockAchievement('teach_read_10');
   if (Object.keys(teachRead).length >= 40) unlockAchievement('teach_read_all');
-  if (Object.keys(practDone).length >= 10) unlockAchievement('practice_10');
+  if (practiceCleared >= 10) unlockAchievement('practice_10');
   if (practiceFullTechs >= 1) unlockAchievement('practice_master_1');
   if (practiceFullTechs >= 10) unlockAchievement('practice_master_10');
   if (practiceFullTechs >= 41) unlockAchievement('practice_master_all');

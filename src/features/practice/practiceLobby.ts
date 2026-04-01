@@ -237,6 +237,10 @@ export async function openPracticeLobby(): Promise<void> {
   if (!_practiceData) {
     _practiceData = await getPracticeLevels();
   }
+  if (!_practiceData || _practiceData.length === 0) {
+    showFeedback('修行資料載入失敗，請重試', 'error');
+    return;
+  }
   setPracticeViewActive(true);
   renderPracticeLobby();
 }
