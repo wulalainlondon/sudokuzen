@@ -5,12 +5,14 @@ import { useCallback, type ReactElement } from 'react';
 import { useMentorStore } from './mentorStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
+import type { SudokuWindow } from '../../facade/windowTypes';
 
 export function MentorOverlay(): ReactElement {
   const { visible, text, subText } = useMentorStore();
 
   const handleDismiss = useCallback(() => {
-    (window as any).dismissMentor?.();
+    const win = window as unknown as SudokuWindow;
+    win.dismissMentor?.();
   }, []);
 
   return (

@@ -1,6 +1,7 @@
 // Shared types for the skill system.
 
 import type { CellData } from '../../game/state';
+import { t } from '../../i18n/t';
 
 export type LitCandidate = { cell: number; digit: number };
 
@@ -57,9 +58,9 @@ export function getSharedUnits(
   const boxA = Math.floor(rowA / 3) * 3 + Math.floor(colA / 3);
   const boxB = Math.floor(rowB / 3) * 3 + Math.floor(colB / 3);
   const shared: { unitIndex: number; unitType: 'row' | 'col' | 'box'; label: string }[] = [];
-  if (rowA === rowB) shared.push({ unitIndex: rowA, unitType: 'row', label: `第 ${rowA + 1} 列` });
-  if (colA === colB) shared.push({ unitIndex: colA, unitType: 'col', label: `第 ${colA + 1} 欄` });
-  if (boxA === boxB) shared.push({ unitIndex: boxA, unitType: 'box', label: `第 ${boxA + 1} 宮` });
+  if (rowA === rowB) shared.push({ unitIndex: rowA, unitType: 'row', label: t('skills.unitRow', { n: String(rowA + 1) }) });
+  if (colA === colB) shared.push({ unitIndex: colA, unitType: 'col', label: t('skills.unitCol', { n: String(colA + 1) }) });
+  if (boxA === boxB) shared.push({ unitIndex: boxA, unitType: 'box', label: t('skills.unitBox', { n: String(boxA + 1) }) });
   return shared;
 }
 

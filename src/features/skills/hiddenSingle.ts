@@ -6,20 +6,21 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { makeEmptyPreview, getUnitCells } from './types';
+import { t } from '../../i18n/t';
 
 const META = {
   id: 'hidden_single',
-  name: '暗眼',
+  get name() { return t('skills.hiddenSingleName'); },
   subtitle: 'Hidden Single',
   sweepDirection: 'inward' as const,
 };
 
 type UnitType = 'row' | 'col' | 'box';
 
-const UNIT_LABELS: Record<UnitType, (n: number) => string> = {
-  row: (n) => `第 ${n + 1} 列`,
-  col: (n) => `第 ${n + 1} 欄`,
-  box: (n) => `第 ${n + 1} 宮`,
+const UNIT_LABEL_KEYS: Record<UnitType, string> = {
+  row: 'skills.unitRow',
+  col: 'skills.unitCol',
+  box: 'skills.unitBox',
 };
 
 /** Find hidden singles for a cell: digits that appear only in this cell within some unit. */
@@ -67,11 +68,11 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
 
   const idx = selectedCells[0];
   const cell = cells[idx];
-  if (!cell || cell.value !== 0) return makeEmptyPreview(META, '此格已填入');
-  if (cell.notes.length < 2) return makeEmptyPreview(META, '候選數不足');
+  if (!cell || cell.value !== 0) return makeEmptyPreview(META, t('skills.cellFilled'));
+  if (cell.notes.length < 2) return makeEmptyPreview(META, t('skills.candidatesInsufficient'));
 
   const hiddens = findHiddenSingles(idx, cells);
-  if (hiddens.length === 0) return makeEmptyPreview(META, '此格無暗眼');
+  if (hiddens.length === 0) return makeEmptyPreview(META, t('skills.noHiddenSingle'));
 
   // Use first found hidden single
   const best = hiddens[0];
@@ -87,7 +88,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     sourceCells: [idx],
     targets,
     digits: [best.digit],
-    unitLabel: UNIT_LABELS[best.unitType](best.unitIndex),
+    unitLabel: t(UNIT_LABEL_KEYS[best.unitType], { n: String(best.unitIndex + 1) }),
   };
 }
 
@@ -95,7 +96,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
   if (!preview.valid || !preview.digits?.length) return { ...preview, valid: false };
   const idx = preview.sourceCells[0];
   const cell = cells[idx];
-  if (!cell || cell.value !== 0) return { ...preview, valid: false, reason: '此格已填入' };
+  if (!cell || cell.value !== 0) return { ...preview, valid: false, reason: t('skills.cellFilled') };
 
   const removed: LitCandidate[] = [];
 
@@ -111,7 +112,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

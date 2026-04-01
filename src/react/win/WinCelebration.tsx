@@ -8,6 +8,7 @@ import { ZenStagger } from '../motion/ZenStagger';
 import { ZenStarReveal } from '../motion/ZenStarReveal';
 import { ZenCountUp } from '../motion/ZenCountUp';
 import { t } from '../../i18n/t';
+import type { SudokuWindow } from '../../facade/windowTypes';
 
 // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -94,7 +95,8 @@ function ActionButtons(): ReactElement {
   const close = useWinStore((s) => s.close);
 
   const handleReplay = useCallback(() => {
-    (window as any).openReplayModal?.();
+    const win = window as unknown as SudokuWindow;
+    win.openReplayModal?.();
   }, []);
 
   const handleNext = useCallback(() => {
@@ -107,15 +109,17 @@ function ActionButtons(): ReactElement {
   }, [mode, close]);
 
   const handleWildContinue = useCallback(() => {
-    (window as any).continueWild?.();
+    const win = window as unknown as SudokuWindow;
+    win.continueWild?.();
     close();
   }, [close]);
 
   const handleBack = useCallback(() => {
+    const win = window as unknown as SudokuWindow;
     if (mode === 'wild') {
-      (window as any).exitWild?.();
+      win.exitWild?.();
     }
-    (window as any).showLevelScreen?.(true);
+    win.showLevelScreen?.(true);
     close();
   }, [mode, close]);
 

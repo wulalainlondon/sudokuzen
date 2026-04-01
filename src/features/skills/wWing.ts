@@ -1,25 +1,26 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther, getCommonPeers, getUnitCells } from './types';
 
-const META = { id: 'w_wing', name: '鏡花', subtitle: 'W-Wing', sweepDirection: 'outward' as const };
+const META = { id: 'w_wing', get name() { return t('skills.wWingName'); }, subtitle: 'W-Wing', sweepDirection: 'outward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 2) return makeEmptyPreview(META, selectedCells.length < 2 ? '' : '需選 2 格');
+  if (selectedCells.length !== 2) return makeEmptyPreview(META, selectedCells.length < 2 ? '' : t('skills.needSelectN', { n: '2' }));
 
   const [a, b] = selectedCells;
   const dA = cells[a],
     dB = cells[b];
-  if (!dA || dA.value !== 0 || !dB || dB.value !== 0) return makeEmptyPreview(META, '所選格需為空');
-  if (dA.notes.length !== 2 || dB.notes.length !== 2) return makeEmptyPreview(META, '兩格需為雙候選');
+  if (!dA || dA.value !== 0 || !dB || dB.value !== 0) return makeEmptyPreview(META, t('skills.selectedMustBeEmpty'));
+  if (dA.notes.length !== 2 || dB.notes.length !== 2) return makeEmptyPreview(META, t('skills.bothMustBeBivalue'));
 
   // Same bivalue pair
   const sA = [...dA.notes].sort(),
     sB = [...dB.notes].sort();
-  if (sA[0] !== sB[0] || sA[1] !== sB[1]) return makeEmptyPreview(META, '兩格需相同雙候選');
+  if (sA[0] !== sB[0] || sA[1] !== sB[1]) return makeEmptyPreview(META, t('skills.bothMustSameBivalue'));
 
   // Must NOT see each other directly (otherwise it's a naked pair)
-  if (cellsSeeEachOther(a, b)) return makeEmptyPreview(META, 'W-Wing 兩端不可互見');
+  if (cellsSeeEachOther(a, b)) return makeEmptyPreview(META, t('skills.wWingEndsMustNotSee'));
 
   const [digitA, digitB] = sA;
 
@@ -86,7 +87,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     }
   }
 
-  return makeEmptyPreview(META, '未找到連接強鏈');
+  return makeEmptyPreview(META, t('skills.noStrongLink'));
 }
 
 function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
@@ -104,7 +105,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

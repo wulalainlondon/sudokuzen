@@ -10,6 +10,53 @@ export interface CellData {
   isError: boolean;
 }
 
+export interface ActionRecord {
+  t: number;
+  type: string;
+  detail: string;
+  idx: number | null;
+  val: number | null;
+  notes: number[] | null;
+}
+
+export interface ReplayCellState {
+  value: number;
+  fixed: boolean;
+  notes: number[];
+  _mistake?: boolean;
+  _mistakeVal?: number | null;
+}
+
+export interface AchievementToastItem {
+  icon: string;
+  name: string;
+}
+
+export interface DuoRoomData {
+  levelId: number;
+  status: 'idle' | 'waiting' | 'countdown' | 'playing' | 'finished';
+  hostId: string;
+  hostAlias: string;
+  hostTitle: string | null;
+  hostReady: boolean;
+  hostProgress: number;
+  hostFinishTime: number | null;
+  hostStars: number | null;
+  guestId: string | null;
+  guestAlias: string | null;
+  guestTitle: string | null;
+  guestReady: boolean;
+  guestProgress: number;
+  guestFinishTime: number | null;
+  guestStars: number | null;
+  startAt: { toMillis?: () => number; seconds?: number } | null;
+  updatedAt: { toDate?: () => Date } | null;
+  hostEmoji?: string | null;
+  hostEmojiTs?: number | null;
+  guestEmoji?: string | null;
+  guestEmojiTs?: number | null;
+}
+
 export interface SkillModeState {
   enabled: boolean;
   selectedCells: number[];
@@ -47,12 +94,8 @@ export const gs = {
   timerEl: null as HTMLElement | null,
   leaderboardListEl: null as HTMLElement | null,
   aliasInputEl: null as HTMLInputElement | null,
-  replayModalEl: null as HTMLElement | null,
-  replaySummaryEl: null as HTMLElement | null,
-  replayListEl: null as HTMLElement | null,
-  replayFilterAllBtn: null as HTMLElement | null,
-  replayFilterMistakeBtn: null as HTMLElement | null,
-  replayFilterKeyBtn: null as HTMLElement | null,
+  // Note: replayModalEl, replaySummaryEl, replayListEl, replayFilter*Btn
+  // are now React-managed — their refs have been removed.
   // Note: libraryOverlayEl, libraryListEl are now React-managed — their refs have been removed.
 
   // ── Core game state ───────────────────────────────────────────────
@@ -67,18 +110,19 @@ export const gs = {
   timerInterval: null as ReturnType<typeof setInterval> | null,
   currentLevel: null as LevelData | null,
   cellsData: [] as CellData[],
-  actionHistory: [] as any[],
+  actionHistory: [] as ActionRecord[],
   undoStack: [] as { idx: number; prevValue: number; prevNotes: number[] }[],
   replayFilter: 'all',
   numButtons: [] as HTMLButtonElement[],
 
   // ── Firebase ──────────────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Firebase Firestore instance, typed in firebase/client.ts
   db: null as any,
   firebaseReady: false,
 
   // ── Ghost mode ────────────────────────────────────────────────────
   isGhostMode: false,
-  ghostHistory: [] as any[],
+  ghostHistory: [] as ActionRecord[],
   ghostIdx: 0,
   playerFilledCount: 0,
   ghostFilledCount: 0,
@@ -88,7 +132,7 @@ export const gs = {
   duoUnsubscribe: null as (() => void) | null,
   duoGlowUnsubscribe: null as (() => void) | null,
   duoRole: null as 'host' | 'guest' | null,
-  duoRoomData: null as any,
+  duoRoomData: null as DuoRoomData | null,
   duoCountdownTimer: null as ReturnType<typeof setInterval> | null,
   duoCountdownStartMs: null as number | null,
   duoRoundLaunched: false,
@@ -107,12 +151,15 @@ export const gs = {
 
   // ── Teach (legacy) ────────────────────────────────────────────────
   teachCurrentStep: 0,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- complex teach data, typed in features/teach/
   teachSteps: [] as any[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- complex teach data, typed in features/teach/
   teachData: null as any,
   teachStarsKey: null as string | null,
   teachLaunchSource: 'tier',
 
   // ── Practice ──────────────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- complex practice state, typed in features/teach/
   practiceState: null as any,
   practiceActiveTech: null as string | null,
 
@@ -135,7 +182,7 @@ export const gs = {
   wildTimerInterval: null as ReturnType<typeof setInterval> | null,
 
   // ── Visual replay ─────────────────────────────────────────────────
-  rbState: [] as any[],
+  rbState: [] as ReplayCellState[],
   rbStepIdx: 0,
   rbIsPlaying: false,
   rbTimer: null as ReturnType<typeof setInterval> | null,
@@ -146,7 +193,7 @@ export const gs = {
   feedbackToast: null as HTMLDivElement | null,
   currentTab: null as string | null,
   pendingLevelId: null as number | null,
-  achievementToastQueue: [] as any[],
+  achievementToastQueue: [] as AchievementToastItem[],
   achievementToastActive: false,
 
   // ── Audio ─────────────────────────────────────────────────────────
@@ -167,12 +214,7 @@ export function initDom(): void {
   gs.timerEl = document.getElementById('timer');
   gs.leaderboardListEl = document.getElementById('leaderboard-list');
   gs.aliasInputEl = document.getElementById('alias-input') as HTMLInputElement | null;
-  gs.replayModalEl = document.getElementById('replay-modal');
-  gs.replaySummaryEl = document.getElementById('replay-summary');
-  gs.replayListEl = document.getElementById('replay-list');
-  gs.replayFilterAllBtn = document.getElementById('replay-filter-all');
-  gs.replayFilterMistakeBtn = document.getElementById('replay-filter-mistake');
-  gs.replayFilterKeyBtn = document.getElementById('replay-filter-key');
+  // Replay modal DOM refs are now React-managed
   // libraryOverlayEl and libraryListEl are now React-managed
 
   const toast = document.createElement('div');

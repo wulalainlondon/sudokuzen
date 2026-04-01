@@ -8,9 +8,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * ALS-XZ（几乎锁定集 XZ 规则）：
- * 找两个ALS（A和B），它们共享一个受限公共数字x（x在A和B中的候选格互相全部可见）。
- * 对于另一个公共数字z，从同时看到A和B中所有z候选格的外部格消去z。
+ * ALS-XZ (Almost Locked Set XZ rule):
+ * Find two ALS (A and B) sharing a restricted common digit x (all x-candidate cells in A and B see each other).
+ * For another common digit z, eliminate z from external cells that see all z-candidate cells in both A and B.
  */
 export function detectAlsXz(board: SolverBoard): DetectionResult | null {
   const allALS = findAllALS(board);
@@ -71,7 +71,7 @@ export function detectAlsXz(board: SolverBoard): DetectionResult | null {
               technique: 'als_xz',
               actions,
               patternCells,
-              description: `ALS-XZ：ALS_A{${alsA.cells.map(cellRef).join(',')}} 与 ALS_B{${alsB.cells.map(cellRef).join(',')}}，受限公共数 ${x}，消去数字 ${z} 共 ${actions.length} 处`,
+              description: `ALS-XZ: ALS_A{${alsA.cells.map(cellRef).join(',')}} and ALS_B{${alsB.cells.map(cellRef).join(',')}}, restricted common digit ${x}, eliminate digit ${z} in ${actions.length} cells`,
             };
           }
         }

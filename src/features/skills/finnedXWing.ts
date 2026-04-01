@@ -1,19 +1,20 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 
-const META = { id: 'finned_x_wing', name: '裂鋒', subtitle: 'Finned X-Wing', sweepDirection: 'outward' as const };
+const META = { id: 'finned_x_wing', get name() { return t('skills.finnedXWingName'); }, subtitle: 'Finned X-Wing', sweepDirection: 'outward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   // Finned X-Wing needs at least 4 cells (the 4 X-Wing corners), possibly 5 with the fin
   if (selectedCells.length < 4) return makeEmptyPreview(META, selectedCells.length < 4 ? '' : '');
-  if (selectedCells.length > 5) return makeEmptyPreview(META, '需選 4~5 格');
+  if (selectedCells.length > 5) return makeEmptyPreview(META, t('skills.needSelect4to5'));
 
   // All must be empty with candidates
   for (const idx of selectedCells) {
     const d = cells[idx];
     if (!d || d.value !== 0 || d.notes.length === 0) {
-      return makeEmptyPreview(META, '所選格需為空且含候選');
+      return makeEmptyPreview(META, t('skills.selectedCellsMustBeEmpty'));
     }
   }
 
@@ -31,7 +32,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     if (result2) return result2;
   }
 
-  return makeEmptyPreview(META, '未構成裂鋒');
+  return makeEmptyPreview(META, t('skills.noFinnedXWing'));
 }
 
 function tryFinnedFish(
@@ -150,7 +151,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

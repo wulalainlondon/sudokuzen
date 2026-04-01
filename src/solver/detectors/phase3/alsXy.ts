@@ -8,10 +8,10 @@ function cellRef(idx: number): string {
 }
 
 /**
- * ALS-XY（双受限公共数 ALS）：
- * 两个ALS共享两个受限公共数字x和y。
- * 对ALS_A中不属于{x,y}的数字z，从同时看到ALS_A中所有z候选格的外部格消去z。
- * 对ALS_B同理。
+ * ALS-XY (Doubly Restricted Common ALS):
+ * Two ALS share two restricted common digits x and y.
+ * For digit z in ALS_A not in {x,y}, eliminate z from external cells that see all z-candidate cells in ALS_A.
+ * Same applies to ALS_B.
  */
 export function detectAlsXy(board: SolverBoard): DetectionResult | null {
   const allALS = findAllALS(board);
@@ -76,7 +76,7 @@ export function detectAlsXy(board: SolverBoard): DetectionResult | null {
               technique: 'als_xy',
               actions: uniqueActions,
               patternCells: allCells,
-              description: `ALS-XY：ALS_A{${alsA.cells.map(cellRef).join(',')}} 与 ALS_B{${alsB.cells.map(cellRef).join(',')}}，双受限公共数 ${x},${y}，消去 ${uniqueActions.length} 处`,
+              description: `ALS-XY: ALS_A{${alsA.cells.map(cellRef).join(',')}} and ALS_B{${alsB.cells.map(cellRef).join(',')}}, doubly restricted common digits ${x},${y}, eliminate ${uniqueActions.length} candidates`,
             };
           }
         }

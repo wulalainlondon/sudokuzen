@@ -6,6 +6,7 @@ import type {
   TeachStepModel,
 } from '../../../entities/teach';
 import { getTeachData, getTeachShard } from '../../../data/dataRegistry';
+import { t } from '../../../i18n/t';
 
 function normalizeIntArray(raw: any): number[] {
   return Array.isArray(raw) ? raw.map(Number).filter((x) => Number.isFinite(x)) : [];
@@ -85,7 +86,7 @@ function normalizeModule(key: string, raw: any): TeachModuleModel {
   return {
     stars: Number(key),
     technique: String(raw.technique ?? ''),
-    name: String(raw.name ?? `第 ${key} 秘笈`),
+    name: String(raw.name ?? t('miscRuntime.defaultBookName', { key })),
     subtitle: String(raw.subtitle ?? ''),
     explanation: Array.isArray(raw.explanation) ? raw.explanation.map(String) : [],
     example: normalizeExample(raw.example),

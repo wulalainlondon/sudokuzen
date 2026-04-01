@@ -24,8 +24,8 @@ function getModeChar(mode: string): string {
     blind: t('encounter.modeStamp.blind'),
     ironman: t('encounter.modeStamp.ironman'),
     noNotes: t('encounter.modeStamp.noNotes'),
-    timed: '限',
-    gauntlet: '百',
+    timed: t('miscRuntime.timedBadge'),
+    gauntlet: t('miscRuntime.gauntletBadge'),
   };
   return modeMap[mode] || t('encounter.modeStamp.standard');
 }

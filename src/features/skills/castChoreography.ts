@@ -2,6 +2,7 @@
 // Each skill can register a custom choreography; unregistered skills use the default.
 
 import type { SkillPreview } from './types';
+import { t } from '../../i18n/t';
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -96,8 +97,8 @@ function centroid(gridEl: HTMLElement, cells: number[]): { x: number; y: number 
 
 function recordTargets(ctx: CastContext): void {
   const { result, cellLabel: cl, recordAction, recordElimination } = ctx;
-  for (const t of result.targets) {
-    recordAction('skill_eliminate', `${cl(t.cell)} ${result.skillName}消去候選 ${t.digit}`, t.cell, t.digit, null);
+  for (const tgt of result.targets) {
+    recordAction('skill_eliminate', t('skills.skillEliminate', { cell: cl(tgt.cell), skill: result.skillName, digit: String(tgt.digit) }), tgt.cell, tgt.digit, null);
     recordElimination();
   }
 }
@@ -105,11 +106,11 @@ function recordTargets(ctx: CastContext): void {
 async function strikeTargets(ctx: CastContext, stagger: number, strikeClass: string, elimClass: string): Promise<void> {
   const { gridEl, result, findNoteSpan, wait } = ctx;
   for (let i = 0; i < result.targets.length; i++) {
-    const t = result.targets[i];
-    const cellEl = gridEl.children[t.cell] as HTMLElement | undefined;
+    const tgt = result.targets[i];
+    const cellEl = gridEl.children[tgt.cell] as HTMLElement | undefined;
     if (!cellEl) continue;
     cellEl.classList.add(strikeClass);
-    const noteSpan = findNoteSpan(cellEl, t.digit);
+    const noteSpan = findNoteSpan(cellEl, tgt.digit);
     if (noteSpan) noteSpan.classList.add(elimClass);
     if (i < result.targets.length - 1) await wait(stagger);
   }
@@ -195,8 +196,8 @@ const nakedPairChoreography: CastChoreography = async (ctx) => {
   // Phase 2: Sweep lines from midpoint to targets
   const mid = centroid(gridEl, [a, b]);
   for (let i = 0; i < result.targets.length; i++) {
-    const t = result.targets[i];
-    const pt = getCellCenter(gridEl, t.cell);
+    const tgt = result.targets[i];
+    const pt = getCellCenter(gridEl, tgt.cell);
     if (pt) addSVGLine(svg, mid.x, mid.y, pt.x, pt.y, 'skill-line skill-line-sweep', i * 60);
   }
   await wait(200);
@@ -248,8 +249,8 @@ const nakedTripleChoreography: CastChoreography = async (ctx) => {
   // Phase 4: Sweep from triangle centroid to targets
   const center = centroid(gridEl, [a, b, c]);
   for (let i = 0; i < result.targets.length; i++) {
-    const t = result.targets[i];
-    const pt = getCellCenter(gridEl, t.cell);
+    const tgt = result.targets[i];
+    const pt = getCellCenter(gridEl, tgt.cell);
     if (pt) addSVGLine(svg, center.x, center.y, pt.x, pt.y, 'skill-line skill-line-sweep', i * 50);
   }
   await wait(200);
@@ -284,10 +285,10 @@ const hiddenPairChoreography: CastChoreography = async (ctx) => {
   await wait(400);
 
   // Phase 2: Mark noise digits (amber warning)
-  for (const t of result.targets) {
-    const cellEl = gridEl.children[t.cell] as HTMLElement | undefined;
+  for (const tgt of result.targets) {
+    const cellEl = gridEl.children[tgt.cell] as HTMLElement | undefined;
     if (!cellEl) continue;
-    const span = findNoteSpan(cellEl, t.digit);
+    const span = findNoteSpan(cellEl, tgt.digit);
     if (span) span.classList.add('skill-noise-digit');
   }
   await wait(300);
@@ -343,10 +344,10 @@ const hiddenTripleChoreography: CastChoreography = async (ctx) => {
   await wait(400);
 
   // Phase 3: Mark noise digits
-  for (const t of result.targets) {
-    const cellEl = gridEl.children[t.cell] as HTMLElement | undefined;
+  for (const tgt of result.targets) {
+    const cellEl = gridEl.children[tgt.cell] as HTMLElement | undefined;
     if (!cellEl) continue;
-    const span = findNoteSpan(cellEl, t.digit);
+    const span = findNoteSpan(cellEl, tgt.digit);
     if (span) span.classList.add('skill-noise-digit');
   }
   await wait(300);
@@ -400,8 +401,8 @@ const hiddenSingleChoreography: CastChoreography = async (ctx) => {
   await wait(300);
 
   // Phase 2: Mark noise digits (the ones being eliminated)
-  for (const t of result.targets) {
-    const span = findNoteSpan(cellEl, t.digit);
+  for (const tgt of result.targets) {
+    const span = findNoteSpan(cellEl, tgt.digit);
     if (span) span.classList.add('skill-noise-digit');
   }
   await wait(200);

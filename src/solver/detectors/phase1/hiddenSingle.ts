@@ -6,9 +6,9 @@ function cellRef(idx: number): string {
 }
 
 function unitName(unitIdx: number): string {
-  if (unitIdx < 9) return `第 ${unitIdx + 1} 行`;
-  if (unitIdx < 18) return `第 ${unitIdx - 9 + 1} 列`;
-  return `第 ${unitIdx - 18 + 1} 宮`;
+  if (unitIdx < 9) return `Row ${unitIdx + 1}`;
+  if (unitIdx < 18) return `Col ${unitIdx - 9 + 1}`;
+  return `Box ${unitIdx - 18 + 1}`;
 }
 
 export function detectHiddenSingle(board: SolverBoard): DetectionResult | null {
@@ -21,7 +21,7 @@ export function detectHiddenSingle(board: SolverBoard): DetectionResult | null {
           technique: 'hidden_single',
           actions: [{ kind: 'fill', cell: idx, digit: d }],
           patternCells: [idx],
-          description: `${cellRef(idx)} 為${unitName(u)}中的隱單，數字 ${d} 在該單元僅此一格`,
+          description: `${cellRef(idx)} is a Hidden Single in ${unitName(u)}, digit ${d} appears only in this cell`,
         };
       }
     }

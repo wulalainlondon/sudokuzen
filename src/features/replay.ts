@@ -1,11 +1,13 @@
 // Replay engine — visual replay board + text replay list
 
-import { gs } from '../game/state';
+import { gs, type ActionRecord, type ReplayCellState } from '../game/state';
 import { formatSeconds } from '../game/utils';
 import { getAllLevels } from '../data/dataRegistry';
 import { detectTechnique } from '../solver/techniqueDetector';
 import { computeReplayScore } from '../solver/scoring';
+import type { TechniqueName } from '../solver/types';
 import { recordReplayWatch } from './stats';
+import { t } from '../i18n/t';
 import {
   bridgeOpenReplay,
   bridgeCloseReplay,
@@ -18,14 +20,14 @@ import {
 const RB_BASE_INTERVAL = 700;
 
 // Score tracking during replay
-let replayTechniqueLog: { type: string; technique?: string | null }[] = [];
+let replayTechniqueLog: { type: string; technique?: TechniqueName | null }[] = [];
 
-export function isKeyReplayAction(a: any): boolean {
+export function isKeyReplayAction(a: ActionRecord): boolean {
   return ['fill', 'mistake', 'eliminate', 'quick_note'].includes(a.type);
 }
 
-export function getFilteredReplayActions(): any[] {
-  if (gs.replayFilter === 'mistake') return gs.actionHistory.filter((a: any) => a.type === 'mistake');
+export function getFilteredReplayActions(): ActionRecord[] {
+  if (gs.replayFilter === 'mistake') return gs.actionHistory.filter((a) => a.type === 'mistake');
   if (gs.replayFilter === 'key') return gs.actionHistory.filter(isKeyReplayAction);
   return gs.actionHistory;
 }
@@ -42,16 +44,16 @@ export function setReplayFilter(filterKey: 'all' | 'mistake' | 'key'): void {
 
 export function renderReplayList(): void {
   const filtered = getFilteredReplayActions();
-  const filterLabel = gs.replayFilter === 'mistake' ? '錯誤步驟' : gs.replayFilter === 'key' ? '關鍵步驟' : '全部步驟';
+  const filterLabel = gs.replayFilter === 'mistake' ? t('replayRuntime.filterLabelMistake') : gs.replayFilter === 'key' ? t('replayRuntime.filterLabelKey') : t('replayRuntime.filterLabelAll');
   const summaryText = `${gs.currentLevel!.displayName} / 用時 ${formatSeconds(gs.seconds)} / ${filterLabel} ${filtered.length}/${gs.actionHistory.length}`;
   bridgeSetReplaySummary(summaryText);
 
   if (!filtered.length) {
-    bridgeSetReplayListHtml('<div class="replay-item">此篩選下暫無步驟</div>');
+    bridgeSetReplayListHtml(`<div class="replay-item">${t('replayRuntime.noStepsForFilter')}</div>`);
     return;
   }
   const html = filtered
-    .map((a: any, i: number) => {
+    .map((a: ActionRecord, i: number) => {
       const isMistake = a.type === 'mistake';
       const isElim = a.type === 'eliminate';
       const cls = isMistake
@@ -77,7 +79,7 @@ export function openReplayModal(): void {
   bridgeOpenReplay();
 }
 
-export function openHistoricalReplay(levelId: number, savedHistory: any[]): void {
+export function openHistoricalReplay(levelId: number, savedHistory: ActionRecord[]): void {
   const levels = getAllLevels();
   gs.currentLevel = levels.find((l) => l.id === levelId) || levels[0];
   gs.actionHistory = savedHistory;
@@ -99,7 +101,7 @@ export function closeReplayModal(): void {
 
 export function replayOpen(): void {
   replayTechniqueLog = [];
-  gs.rbState = gs.currentLevel!.puzzle.map((v: number) => ({ value: v, fixed: v !== 0, notes: [] }));
+  gs.rbState = gs.currentLevel!.puzzle.map((v: number): ReplayCellState => ({ value: v, fixed: v !== 0, notes: [] }));
   gs.rbStepIdx = 0;
   gs.rbIsPlaying = false;
   gs.rbSpeed = 1;
@@ -109,19 +111,19 @@ export function replayOpen(): void {
   replayUpdateButtons();
 }
 
-export function replayBuildStateAtStep(targetStep: number): any[] {
-  const state = gs.currentLevel!.puzzle.map((v: number) => ({ value: v, fixed: v !== 0, notes: [] }));
+export function replayBuildStateAtStep(targetStep: number): ReplayCellState[] {
+  const state: ReplayCellState[] = gs.currentLevel!.puzzle.map((v: number): ReplayCellState => ({ value: v, fixed: v !== 0, notes: [] }));
   for (let i = 0; i < targetStep && i < gs.actionHistory.length; i++) {
     replayApplyActionToState(state, gs.actionHistory[i]);
   }
   return state;
 }
 
-export function replayApplyActionToState(state: any[], action: any): void {
+export function replayApplyActionToState(state: ReplayCellState[], action: ActionRecord): void {
   const { type, idx, val, notes } = action;
   if (idx === null || idx === undefined) return;
   if (type === 'fill') {
-    state[idx].value = val;
+    state[idx].value = val ?? 0;
     state[idx].notes = [];
   } else if (type === 'erase') {
     state[idx].value = 0;
@@ -140,7 +142,7 @@ export function replayApplyActionToState(state: any[], action: any): void {
   }
 }
 
-export function replayRenderBoard(highlightIdx: number, _action: any | null): void {
+export function replayRenderBoard(highlightIdx: number, _action: ActionRecord | null): void {
   const boardEl = document.getElementById('replay-board');
   if (!boardEl) return;
 
@@ -151,7 +153,7 @@ export function replayRenderBoard(highlightIdx: number, _action: any | null): vo
     boardEl.innerHTML = '';
   }
 
-  gs.rbState.forEach((cell: any, i: number) => {
+  gs.rbState.forEach((cell: ReplayCellState, i: number) => {
     let div: HTMLElement;
     if (needsFullRender) {
       div = document.createElement('div');
@@ -208,7 +210,7 @@ function updateProgressBar(): void {
 }
 
 export function replayUpdateStepInfo(technique = ''): void {
-  const stepText = `步驟 ${gs.rbStepIdx} / ${gs.actionHistory.length}`;
+  const stepText = t('replayRuntime.stepLabel', { current: String(gs.rbStepIdx), total: String(gs.actionHistory.length) });
   let html: string;
   if (technique) {
     html = `${stepText}<span class="replay-technique">${technique}</span>`;
@@ -238,12 +240,12 @@ export function replayStepForward(): void {
 
   // Detect technique BEFORE applying the action (on the pre-move state)
   let techniqueName = '';
-  let detectedTechnique: string | null = null;
+  let detectedTechnique: TechniqueName | null = null;
   if ((action.type === 'fill' || action.type === 'eliminate') && action.idx != null && action.val != null) {
     const prevState = replayBuildStateAtStep(gs.rbStepIdx);
     const kind = action.type === 'fill' ? 'fill' : 'eliminate';
     const answer = detectTechnique(
-      prevState.map((c: any) => ({ value: c.value, fixed: c.fixed, notes: c.notes || [], isError: false })),
+      prevState.map((c) => ({ value: c.value, fixed: c.fixed, notes: c.notes || [], isError: false })),
       { kind, cell: action.idx, digit: action.val },
     );
     if (answer) {
@@ -313,7 +315,7 @@ export function replayTogglePlay(): void {
 export function replayReset(): void {
   replayPause();
   gs.rbStepIdx = 0;
-  gs.rbState = gs.currentLevel!.puzzle.map((v: number) => ({ value: v, fixed: v !== 0, notes: [] }));
+  gs.rbState = gs.currentLevel!.puzzle.map((v: number): ReplayCellState => ({ value: v, fixed: v !== 0, notes: [] }));
   replayRenderBoard(-1, null);
   replayUpdateStepInfo();
   replayUpdateButtons();
@@ -356,8 +358,8 @@ function highlightReplayListItem(): void {
 // ── Animated score reveal at end of replay ──────────────────────
 
 function showReplayScore(): void {
-  const errors = gs.actionHistory.filter((a: any) => a.type === 'mistake').length;
-  const score = computeReplayScore(replayTechniqueLog as any, gs.seconds, errors);
+  const errors = gs.actionHistory.filter((a) => a.type === 'mistake').length;
+  const score = computeReplayScore(replayTechniqueLog, gs.seconds, errors);
 
   const gradeColors: Record<string, string> = {
     S: 'var(--star-color)',
@@ -371,11 +373,11 @@ function showReplayScore(): void {
   // Build rows for staggered reveal
   const rows: { label: string; points: number; penalty: boolean }[] = [];
   for (const b of score.breakdown.slice(0, 6)) {
-    const label = b.technique === 'guess' ? '猜測' : b.technique === 'mistake' ? '失誤' : b.technique;
+    const label = b.technique === 'guess' ? t('replayRuntime.scoreGuess') : b.technique === 'mistake' ? t('replayRuntime.scoreMistake') : b.technique;
     rows.push({ label: `${label} ×${b.count}`, points: b.points, penalty: b.points < 0 });
   }
-  if (score.speedBonus > 0) rows.push({ label: '速度加成', points: score.speedBonus, penalty: false });
-  if (score.accuracyBonus > 0) rows.push({ label: '零失誤加成', points: score.accuracyBonus, penalty: false });
+  if (score.speedBonus > 0) rows.push({ label: t('replayRuntime.scoreSpeedBonus'), points: score.speedBonus, penalty: false });
+  if (score.accuracyBonus > 0) rows.push({ label: t('replayRuntime.scoreAccuracyBonus'), points: score.accuracyBonus, penalty: false });
 
   const rowsHtml = rows
     .map(
@@ -443,7 +445,7 @@ function animateCounter(target: number, duration: number): void {
     // Ease out cubic
     const eased = 1 - Math.pow(1 - progress, 3);
     const current = Math.round(from + (target - from) * eased);
-    el!.textContent = `${current} 分`;
+    el!.textContent = t('replayRuntime.scorePoints', { points: String(current) });
     if (progress < 1) requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);

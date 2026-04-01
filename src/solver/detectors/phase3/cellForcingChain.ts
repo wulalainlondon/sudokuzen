@@ -7,9 +7,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Cell Forcing Chain（格强制链）：
- * 对候选数2-4个的格子，假设每个候选为真并传播（唯余法+区块唯余）。
- * 若所有分支都同意某个结论（填入或消去），则该结论成立。
+ * Cell Forcing Chain:
+ * For cells with 2-4 candidates, assume each candidate is true and propagate (naked singles + hidden singles).
+ * If all branches agree on a conclusion (fill or eliminate), that conclusion holds.
  */
 export function detectCellForcingChain(board: SolverBoard): DetectionResult | null {
   const targets = board.emptyCells.filter((c) => {
@@ -32,7 +32,7 @@ export function detectCellForcingChain(board: SolverBoard): DetectionResult | nu
           technique: 'cell_forcing_chain',
           actions: [{ kind: 'eliminate', cell, digit: d }],
           patternCells: [cell],
-          description: `Cell Forcing Chain：假设 ${cellRef(cell)}=${d} 产生矛盾，消去该候选`,
+          description: `Cell Forcing Chain: assuming ${cellRef(cell)}=${d} leads to contradiction, eliminate this candidate`,
         };
       }
       branchResults.push(result);
@@ -61,7 +61,7 @@ export function detectCellForcingChain(board: SolverBoard): DetectionResult | nu
         technique: 'cell_forcing_chain',
         actions,
         patternCells: [cell],
-        description: `Cell Forcing Chain：${cellRef(cell)} 所有候选 {${digits.join(',')}} 均推出 ${cellRef(tCell)} ${val === 1 ? '填入' : '消去'} ${tDigit}`,
+        description: `Cell Forcing Chain: all candidates {${digits.join(',')}} of ${cellRef(cell)} lead to ${cellRef(tCell)} ${val === 1 ? 'fill' : 'eliminate'} ${tDigit}`,
       };
     }
   }

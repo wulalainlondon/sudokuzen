@@ -7,10 +7,35 @@ import { showFeedback } from '../ui/feedback';
 import { getAllLevels } from '../data/dataRegistry';
 import { t } from '../i18n/t';
 import { getEquippedTitleDisplay } from '../features/titles';
+import type { FirestoreDoc, FirestoreSnap, FirestoreTransaction } from './types';
+import type { SudokuWindow } from '../facade/windowTypes';
 
-declare const firebase: any;
+interface FirestoreNamespace {
+  (): unknown;
+  FieldValue: { serverTimestamp(): unknown };
+  Timestamp: { fromMillis(ms: number): unknown };
+}
+
+interface FirebaseCompat {
+  apps: unknown[];
+  initializeApp(config: Record<string, string>): void;
+  firestore: FirestoreNamespace;
+}
+
+declare const firebase: FirebaseCompat;
+
 type AchievementMap = Record<string, { date: string }>;
-type GenericRecordMap = Record<string, any>;
+
+interface ClassicRecord { time: number; stars: number; replayHistory: unknown[] }
+interface SpeedRecord { time: number; submissions: number; replayHistory: unknown[] }
+type GenericRecordMap = Record<string, ClassicRecord | SpeedRecord>;
+
+interface LeaderboardRow {
+  alias: string;
+  title?: string;
+  firstTimeSec: number;
+  firstStars: number;
+}
 const SAVE_KEY_PATTERN = /^sudoku_(speed_)?save_(\d+)$/;
 const PROFILE_SAVE_SUBCOLLECTION = 'game_saves';
 const ALIAS_INDEX_COLLECTION = 'alias_player_index';
@@ -39,9 +64,9 @@ function isIsoDay(value: unknown): value is string {
 function sanitizeAchievementMap(raw: unknown): AchievementMap {
   if (!raw || typeof raw !== 'object') return {};
   const out: AchievementMap = {};
-  for (const [id, meta] of Object.entries(raw as Record<string, any>)) {
+  for (const [id, meta] of Object.entries(raw as Record<string, unknown>)) {
     if (!meta || typeof meta !== 'object') continue;
-    const date = (meta as any).date;
+    const date = (meta as Record<string, unknown>).date;
     if (!isIsoDay(date)) continue;
     out[id] = { date };
   }
@@ -72,7 +97,7 @@ function sameAchievementMaps(a: AchievementMap, b: AchievementMap): boolean {
   return true;
 }
 
-function isPlainObject(value: unknown): value is Record<string, any> {
+function isPlainObject(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
@@ -82,26 +107,26 @@ function toInt(value: unknown, fallback = 0): number {
   return Math.floor(n);
 }
 
-function normalizeClassicRecord(raw: any): { time: number; stars: number; replayHistory: any[] } | null {
+function normalizeClassicRecord(raw: unknown): ClassicRecord | null {
   if (typeof raw === 'number') {
     return { time: Math.max(0, toInt(raw)), stars: 1, replayHistory: [] };
   }
   if (!isPlainObject(raw)) return null;
   const time = Math.max(0, toInt(raw.time));
   const stars = Math.min(3, Math.max(1, toInt(raw.stars, 1)));
-  const replayHistory = Array.isArray(raw.replayHistory) ? raw.replayHistory : [];
+  const replayHistory = Array.isArray(raw.replayHistory) ? (raw.replayHistory as unknown[]) : [];
   return { time, stars, replayHistory };
 }
 
-function normalizeSpeedRecord(raw: any): { time: number; submissions: number; replayHistory: any[] } | null {
+function normalizeSpeedRecord(raw: unknown): SpeedRecord | null {
   if (!isPlainObject(raw)) return null;
   const time = Math.max(0, toInt(raw.time));
   const submissions = Math.max(1, toInt(raw.submissions, 1));
-  const replayHistory = Array.isArray(raw.replayHistory) ? raw.replayHistory : [];
+  const replayHistory = Array.isArray(raw.replayHistory) ? (raw.replayHistory as unknown[]) : [];
   return { time, submissions, replayHistory };
 }
 
-function normalizeRecordMap(raw: any, mode: 'classic' | 'speed'): GenericRecordMap {
+function normalizeRecordMap(raw: unknown, mode: 'classic' | 'speed'): GenericRecordMap {
   if (!isPlainObject(raw)) return {};
   const out: GenericRecordMap = {};
   for (const [levelId, rec] of Object.entries(raw)) {
@@ -111,7 +136,7 @@ function normalizeRecordMap(raw: any, mode: 'classic' | 'speed'): GenericRecordM
   return out;
 }
 
-function pickBetterClassic(a: any, b: any): any {
+function pickBetterClassic(a: unknown, b: unknown): ClassicRecord | null {
   const ra = normalizeClassicRecord(a);
   const rb = normalizeClassicRecord(b);
   if (!ra) return rb;
@@ -120,7 +145,7 @@ function pickBetterClassic(a: any, b: any): any {
   return ra.time <= rb.time ? ra : rb;
 }
 
-function pickBetterSpeed(a: any, b: any): any {
+function pickBetterSpeed(a: unknown, b: unknown): SpeedRecord | null {
   const ra = normalizeSpeedRecord(a);
   const rb = normalizeSpeedRecord(b);
   if (!ra) return rb;
@@ -136,8 +161,8 @@ function mergeRecordMaps(
 ): GenericRecordMap {
   const out: GenericRecordMap = { ...remoteMap };
   for (const [levelId, localRec] of Object.entries(localMap)) {
-    out[levelId] =
-      mode === 'classic' ? pickBetterClassic(localRec, out[levelId]) : pickBetterSpeed(localRec, out[levelId]);
+    const better = mode === 'classic' ? pickBetterClassic(localRec, out[levelId]) : pickBetterSpeed(localRec, out[levelId]);
+    if (better) out[levelId] = better;
   }
   return out;
 }
@@ -161,7 +186,7 @@ function readLocalSettings(): {
   };
 }
 
-function applyRemoteSettingsIfMissing(remote: any): void {
+function applyRemoteSettingsIfMissing(remote: unknown): void {
   if (!isPlainObject(remote)) return;
   if (localStorage.getItem(SK.SPEEDRUN) === null && typeof remote.speedrun === 'boolean') {
     localStorage.setItem(SK.SPEEDRUN, String(remote.speedrun));
@@ -177,11 +202,13 @@ function applyRemoteSettingsIfMissing(remote: any): void {
   }
 }
 
-function getLocalSavePayload(saveKey: string): any | null {
+function getLocalSavePayload(saveKey: string): Record<string, unknown> | null {
   const raw = localStorage.getItem(saveKey);
   if (!raw) return null;
   try {
-    return JSON.parse(raw);
+    const parsed: unknown = JSON.parse(raw);
+    if (isPlainObject(parsed)) return parsed;
+    return null;
   } catch {
     return null;
   }
@@ -319,8 +346,9 @@ export async function getOnlineCount(): Promise<number> {
 
 export function initFirebase(): void {
   try {
-    if (!(window as any).firebase || !(window as any).SUDOKU_FIREBASE_CONFIG) return;
-    if (!firebase.apps.length) firebase.initializeApp((window as any).SUDOKU_FIREBASE_CONFIG);
+    const win = window as unknown as SudokuWindow;
+    if (!win.firebase || !win.SUDOKU_FIREBASE_CONFIG) return;
+    if (!firebase.apps.length) firebase.initializeApp(win.SUDOKU_FIREBASE_CONFIG);
     gs.db = firebase.firestore();
     gs.firebaseReady = true;
   } catch (e) {
@@ -422,8 +450,8 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
   // Block sync until hydrate finishes, to prevent overwriting cloud data with empty localStorage
   if (!hydrateComplete) return;
   const { playerId, alias } = getPlayerIdentity();
-  const records = normalizeRecordMap(readJson<Record<string, any>>(SK.RECORDS, {}), 'classic');
-  const speedRecords = normalizeRecordMap(readJson<Record<string, any>>(SK.SPEED_RECORDS, {}), 'speed');
+  const records = normalizeRecordMap(readJson<Record<string, unknown>>(SK.RECORDS, {}), 'classic');
+  const speedRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.SPEED_RECORDS, {}), 'speed');
   const achievements = sanitizeAchievementMap(readJson<AchievementMap>(SK.ACHIEVEMENTS, {}));
   const settings = readLocalSettings();
   try {
@@ -489,7 +517,7 @@ export function installPlayerCloudSyncBridge(): void {
   bridgeInstalled = true;
 }
 
-export async function syncSaveToCloud(saveKey: string, payload: any): Promise<void> {
+export async function syncSaveToCloud(saveKey: string, payload: Record<string, unknown>): Promise<void> {
   if (!gs.firebaseReady || !gs.db) return;
   if (!SAVE_KEY_PATTERN.test(saveKey) || !isPlainObject(payload)) return;
   const { playerId, alias } = getPlayerIdentity();
@@ -509,7 +537,7 @@ export async function syncSaveToCloud(saveKey: string, payload: any): Promise<vo
   }
 }
 
-export function scheduleSaveSync(saveKey: string, payload: any, delayMs = SAVE_SYNC_DEBOUNCE_MS): void {
+export function scheduleSaveSync(saveKey: string, payload: Record<string, unknown>, delayMs = SAVE_SYNC_DEBOUNCE_MS): void {
   if (!gs.firebaseReady || !gs.db) return;
   const oldTimer = pendingSaveSyncTimers.get(saveKey);
   if (oldTimer) clearTimeout(oldTimer);
@@ -571,12 +599,12 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
     }
     const data = doc.data() || {};
 
-    const localRecords = normalizeRecordMap(readJson<Record<string, any>>(SK.RECORDS, {}), 'classic');
+    const localRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.RECORDS, {}), 'classic');
     const remoteRecords = normalizeRecordMap(data.records, 'classic');
     const mergedRecords = mergeRecordMaps(localRecords, remoteRecords, 'classic');
     if (JSON.stringify(localRecords) !== JSON.stringify(mergedRecords)) writeJson(SK.RECORDS, mergedRecords);
 
-    const localSpeedRecords = normalizeRecordMap(readJson<Record<string, any>>(SK.SPEED_RECORDS, {}), 'speed');
+    const localSpeedRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.SPEED_RECORDS, {}), 'speed');
     const remoteSpeedRecords = normalizeRecordMap(data.speedRecords, 'speed');
     const mergedSpeedRecords = mergeRecordMaps(localSpeedRecords, remoteSpeedRecords, 'speed');
     if (JSON.stringify(localSpeedRecords) !== JSON.stringify(mergedSpeedRecords))
@@ -590,7 +618,7 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
     applyRemoteSettingsIfMissing(data.settings);
 
     const saveSnap = await docRef.collection(PROFILE_SAVE_SUBCOLLECTION).get();
-    saveSnap.docs.forEach((saveDoc: any) => {
+    saveSnap.docs.forEach((saveDoc: FirestoreDoc) => {
       const saveData = saveDoc.data() || {};
       const key = typeof saveData.key === 'string' ? saveData.key : saveDoc.id;
       if (!SAVE_KEY_PATTERN.test(key) || !isPlainObject(saveData.payload)) return;
@@ -615,7 +643,7 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
 
 // ── Leaderboard ─────────────────────────────────────────────────────
 
-export function renderLeaderboard(el: HTMLElement | null, rows: any[]): void {
+export function renderLeaderboard(el: HTMLElement | null, rows: LeaderboardRow[]): void {
   if (!el) return;
   if (!gs.firebaseReady) {
     el.textContent = t('firebase.disabled');
@@ -647,7 +675,7 @@ export async function loadLevelLeaderboard(levelId: number): Promise<void> {
       .orderBy('firstTimeSec', 'asc')
       .limit(3)
       .get();
-    const rows = snap.docs.map((d: any) => d.data());
+    const rows = snap.docs.map((d: FirestoreDoc) => d.data() as unknown as LeaderboardRow);
     renderLeaderboard(gs.leaderboardListEl, rows);
     renderLeaderboard(document.getElementById('win-leaderboard-list'), rows);
     // Also update React win store leaderboard
@@ -674,11 +702,11 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
       .orderBy('firstTimeSec', 'asc')
       .limit(3)
       .get();
-    const rows = snap.docs.map((d: any) => d.data());
+    const rows = snap.docs.map((d: FirestoreDoc) => d.data() as unknown as LeaderboardRow);
     const html = !rows.length
       ? t('firebase.noRecords')
       : rows
-          .map((r: any, i: number) => {
+          .map((r: LeaderboardRow, i: number) => {
             const timeStr = formatSeconds(r.firstTimeSec);
             const titleStr = r.title ? r.title : '';
             if (gs.isSpeedrunMode) return `${i + 1}. ${r.alias}${titleStr}  ${timeStr} ${t('miscRuntime.speedrunClassic')}`;
@@ -719,7 +747,7 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
     : null;
   const docRef = gs.db.collection('level_first_clears').doc(String(levelId)).collection('players').doc(playerId);
   try {
-    await gs.db.runTransaction(async (tx: any) => {
+    await gs.db.runTransaction(async (tx: FirestoreTransaction) => {
       const doc = await tx.get(docRef);
       if (doc.exists) return;
       const title = getEquippedTitleDisplay();

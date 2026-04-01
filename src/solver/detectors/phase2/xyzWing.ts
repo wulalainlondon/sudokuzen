@@ -7,9 +7,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * XYZ-Wing（XYZ 翼）：
- * 樞紐格 {a,b,c}（3 個候選），翼格1 {a,c} 看到樞紐，翼格2 {b,c} 看到樞紐。
- * 同時看到樞紐和兩個翼格的格子可消去候選數 c。
+ * XYZ-Wing:
+ * Pivot cell {a,b,c} (3 candidates), wing1 {a,c} sees pivot, wing2 {b,c} sees pivot.
+ * Cells that see the pivot and both wings can eliminate candidate c.
  */
 export function detectXYZWing(board: SolverBoard): DetectionResult | null {
   const bivals = board.bivalueCells;
@@ -19,7 +19,7 @@ export function detectXYZWing(board: SolverBoard): DetectionResult | null {
     const pivotMask = board.candidates[pivot];
     const pivotDigits = bitsToDigits(pivotMask);
 
-    // 嘗試每一對候選數字作為 (a,b)，剩下的就是 c
+    // Try each pair of candidates as (a,b), the remaining one is c
     for (let ci = 0; ci < 3; ci++) {
       const c = pivotDigits[ci];
       const cBit = digitBit(c);
@@ -27,21 +27,21 @@ export function detectXYZWing(board: SolverBoard): DetectionResult | null {
       const a = others[0];
       const b = others[1];
 
-      // 找 wing1 = bivalue {a,c}
+      // Find wing1 = bivalue {a,c}
       for (const wing1 of bivals) {
         if (wing1 === pivot) continue;
         if (!board.seesCell(pivot, wing1)) continue;
         const w1 = board.candidates[wing1];
         if (w1 !== (digitBit(a) | cBit)) continue;
 
-        // 找 wing2 = bivalue {b,c}
+        // Find wing2 = bivalue {b,c}
         for (const wing2 of bivals) {
           if (wing2 === pivot || wing2 === wing1) continue;
           if (!board.seesCell(pivot, wing2)) continue;
           const w2 = board.candidates[wing2];
           if (w2 !== (digitBit(b) | cBit)) continue;
 
-          // 消去：同時看到 pivot、wing1、wing2 且含候選 c 的格子
+          // Eliminate: cells that see pivot, wing1, and wing2 with candidate c
           const commonPeers = board.commonPeers([pivot, wing1, wing2]);
           const actions: DetectionAction[] = [];
           for (const cell of commonPeers) {
@@ -55,7 +55,7 @@ export function detectXYZWing(board: SolverBoard): DetectionResult | null {
             technique: 'xyz_wing',
             actions,
             patternCells: [pivot, wing1, wing2],
-            description: `XYZ-Wing：樞紐 ${cellRef(pivot)}{${a},${b},${c}}，翼 ${cellRef(wing1)} 與 ${cellRef(wing2)}，消去候選數 ${c} 共 ${actions.length} 處`,
+            description: `XYZ-Wing: pivot ${cellRef(pivot)}{${a},${b},${c}}, wings ${cellRef(wing1)} and ${cellRef(wing2)}, eliminate candidate ${c} in ${actions.length} cells`,
           };
         }
       }

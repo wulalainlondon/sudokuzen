@@ -8,9 +8,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * AIC Long Chain（长交替推理链）：
- * 与普通AIC相同逻辑，但允许最多14个节点的长链搜索，
- * 可发现更深层的逻辑推理。
+ * AIC Long Chain:
+ * Same logic as standard AIC, but allows chain search up to 14 nodes,
+ * enabling discovery of deeper logical deductions.
  */
 export function detectAicLongChain(board: SolverBoard): DetectionResult | null {
   if (board.emptyCells.length < 4) return null;
@@ -34,6 +34,6 @@ export function detectAicLongChain(board: SolverBoard): DetectionResult | null {
     technique: 'aic_long_chain',
     actions: result.eliminations.map((e) => ({ kind: 'eliminate', cell: e.cell, digit: e.digit })),
     patternCells,
-    description: `AIC Long Chain：长链 ${chainDesc}，消去 ${result.eliminations.length} 处候选数`,
+    description: `AIC Long Chain: ${chainDesc}, eliminate ${result.eliminations.length} candidates`,
   };
 }

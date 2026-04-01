@@ -5,6 +5,7 @@ import { useCallback, useMemo, type ReactElement } from 'react';
 import { useDuoResultStore } from './duoResultStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { t } from '../../i18n/t';
+import type { SudokuWindow } from '../../facade/windowTypes';
 
 const CONFETTI_COLORS_WIN = ['#FFD700', '#FF6B6B', '#74b9ff', '#55efc4', '#a29bfe'];
 const CONFETTI_COLORS_DRAW = ['#fd79a8', '#a29bfe', '#74b9ff', '#dfe6e9', '#fab1a0'];
@@ -42,7 +43,8 @@ export function DuoResultModal(): ReactElement {
   const { visible, contentHtml, iWon, isDraw } = useDuoResultStore();
 
   const handleClose = useCallback(() => {
-    (window as any).closeDuoResult?.();
+    const win = window as unknown as SudokuWindow;
+    win.closeDuoResult?.();
   }, []);
 
   const showConfetti = iWon || isDraw;

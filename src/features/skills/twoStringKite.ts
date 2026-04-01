@@ -1,17 +1,18 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther } from './types';
 
-const META = { id: 'two_string_kite', name: '雙弦', subtitle: 'Two-String Kite', sweepDirection: 'outward' as const };
+const META = { id: 'two_string_kite', get name() { return t('skills.twoStringKiteName'); }, subtitle: 'Two-String Kite', sweepDirection: 'outward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 2) return makeEmptyPreview(META, selectedCells.length < 2 ? '' : '需選 2 格');
+  if (selectedCells.length !== 2) return makeEmptyPreview(META, selectedCells.length < 2 ? '' : t('skills.needSelectN', { n: '2' }));
 
   // Both must be empty with candidates
   for (const idx of selectedCells) {
     const d = cells[idx];
     if (!d || d.value !== 0 || d.notes.length === 0) {
-      return makeEmptyPreview(META, '所選格需為空且含候選');
+      return makeEmptyPreview(META, t('skills.selectedCellsMustBeEmpty'));
     }
   }
 
@@ -24,7 +25,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     if (result) return result;
   }
 
-  return makeEmptyPreview(META, '未構成雙弦');
+  return makeEmptyPreview(META, t('skills.noTwoStringKite'));
 }
 
 function tryTwoStringKite(selectedCells: number[], cells: CellData[], digit: number): SkillPreview | null {
@@ -118,7 +119,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

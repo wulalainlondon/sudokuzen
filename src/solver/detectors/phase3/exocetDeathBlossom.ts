@@ -8,18 +8,18 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Exocet / Death Blossom（飞数/死亡绽放）：
+ * Exocet / Death Blossom:
  *
- * Exocet (Junior Exocet)：
- *   Base: 两格在同一宫、同一行（或列），联合候选 2-4 位（base digits）。
- *   Target: 两格分别在 base 的两列（或两行）上、同 band 不同宫。
- *   Cross-line 约束：band 内非 base 行（或列）中，每个 base digit
- *   只能出现在 target 所在的列（或行），确保 base digits 必须流向 target。
- *   消去：target 格中非 base digit 的候选。
+ * Exocet (Junior Exocet):
+ *   Base: two cells in the same box and same row (or column), combined candidates 2-4 digits (base digits).
+ *   Target: two cells in the base's two columns (or rows), same band but different boxes.
+ *   Cross-line constraint: in non-base rows (or columns) within the band, each base digit
+ *   can only appear in the target's columns (or rows), ensuring base digits must flow to targets.
+ *   Elimination: non-base-digit candidates from target cells.
  *
- * Death Blossom：
- *   茎格有 N 个候选，每个候选指向一个 ALS 花瓣，
- *   花瓣公共非茎数字可从公共 peer 消去。
+ * Death Blossom:
+ *   Stem cell has N candidates, each pointing to an ALS petal.
+ *   Common non-stem digits across petals can be eliminated from common peers.
  */
 export function detectExocetDeathBlossom(board: SolverBoard): DetectionResult | null {
   const exocetResult = tryExocet(board);
@@ -117,12 +117,12 @@ function tryExocetOrientation(
             }
 
             if (actions.length > 0) {
-              const orientLabel = isRow ? '行' : '列';
+              const orientLabel = isRow ? 'row' : 'col';
               return {
                 technique: 'exocet_death_blossom',
                 actions,
                 patternCells: [b1, b2, t1, t2],
-                description: `Exocet（${orientLabel}）：基格 ${cellRef(b1)},${cellRef(b2)}（base digits ${baseDigits.join(',')}）指向目标 ${cellRef(t1)},${cellRef(t2)}，消去 ${actions.length} 处多余候选`,
+                description: `Exocet (${orientLabel}): base cells ${cellRef(b1)},${cellRef(b2)} (base digits ${baseDigits.join(',')}) target ${cellRef(t1)},${cellRef(t2)}, eliminate ${actions.length} excess candidates`,
               };
             }
           }
@@ -277,7 +277,7 @@ function tryDeathBlossomCompact(board: SolverBoard): DetectionResult | null {
           technique: 'exocet_death_blossom',
           actions,
           patternCells: [stem, ...allPetalCells],
-          description: `Death Blossom：茎格 ${cellRef(stem)}，${petalArr.length} 个花瓣 ALS，消去数字 ${z} 共 ${actions.length} 处`,
+          description: `Death Blossom: stem cell ${cellRef(stem)}, ${petalArr.length} petal ALS, eliminate digit ${z} in ${actions.length} cells`,
         };
       }
     }

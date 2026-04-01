@@ -8,10 +8,10 @@ function _cellRef(idx: number): string {
 }
 
 /**
- * X-Cycle / Simple Coloring（簡單著色）：
- * 對於數字 d，從共軛對建立著色圖。交替塗 A/B 兩色。
- * 規則 1（同色衝突）：若同色的兩格互相看到 → 該色全假，消去該色所有格的 d。
- * 規則 2（雙色可見）：若某格看到 A 色和 B 色各一格 → 該格消去 d。
+ * X-Cycle / Simple Coloring:
+ * For digit d, build a coloring graph from conjugate pairs. Alternate A/B colors.
+ * Rule 1 (same-color conflict): If two same-color cells see each other -> that color is all false, eliminate d from all cells of that color.
+ * Rule 2 (both-color visible): If a cell sees one A-color and one B-color cell -> eliminate d from that cell.
  */
 export function detectXCycleSimpleColoring(board: SolverBoard): DetectionResult | null {
   const allPairs = findConjugatePairs(board);
@@ -21,7 +21,7 @@ export function detectXCycleSimpleColoring(board: SolverBoard): DetectionResult 
     const pairs = allPairs.filter((p) => p.digit === d);
     if (pairs.length === 0) continue;
 
-    // 建立鄰接表
+    // Build adjacency list
     const adj = new Map<number, Set<number>>();
     for (const p of pairs) {
       if (!adj.has(p.cellA)) adj.set(p.cellA, new Set());
@@ -30,7 +30,7 @@ export function detectXCycleSimpleColoring(board: SolverBoard): DetectionResult 
       adj.get(p.cellB)!.add(p.cellA);
     }
 
-    // BFS 著色各連通分量
+    // BFS color each connected component
     const color = new Map<number, number>(); // cell → 0 or 1
     const nodes = [...adj.keys()];
 
@@ -56,7 +56,7 @@ export function detectXCycleSimpleColoring(board: SolverBoard): DetectionResult 
 
       if (cluster[0].length + cluster[1].length < 2) continue;
 
-      // 規則 1：同色衝突
+      // Rule 1: same-color conflict
       for (const colorIdx of [0, 1] as const) {
         const group = cluster[colorIdx];
         let conflict = false;
@@ -77,17 +77,17 @@ export function detectXCycleSimpleColoring(board: SolverBoard): DetectionResult 
               technique: 'x_cycle_simple_coloring',
               actions,
               patternCells: [...cluster[0], ...cluster[1]],
-              description: `簡單著色（同色衝突）：數字 ${d}，同色格互相看到，消去 ${actions.length} 個候選`,
+              description: `Simple Coloring (same-color conflict): digit ${d}, same-color cells see each other, eliminate ${actions.length} candidates`,
             };
           }
         }
       }
 
-      // 規則 2：格子同時看到兩色
+      // Rule 2: cell sees both colors
       const actions: DetectionAction[] = [];
       for (const cell of board.emptyCells) {
         if ((board.candidates[cell] & bit) === 0) continue;
-        if (color.has(cell)) continue; // 已在著色圖中
+        if (color.has(cell)) continue; // already in coloring graph
 
         const seesColor0 = cluster[0].some((c) => board.seesCell(cell, c));
         const seesColor1 = cluster[1].some((c) => board.seesCell(cell, c));
@@ -100,7 +100,7 @@ export function detectXCycleSimpleColoring(board: SolverBoard): DetectionResult 
           technique: 'x_cycle_simple_coloring',
           actions,
           patternCells: [...cluster[0], ...cluster[1]],
-          description: `簡單著色（雙色可見）：數字 ${d}，外部格看到兩色，消去 ${actions.length} 個候選`,
+          description: `Simple Coloring (both-color visible): digit ${d}, external cell sees both colors, eliminate ${actions.length} candidates`,
         };
       }
     }

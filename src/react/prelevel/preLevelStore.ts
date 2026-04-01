@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { t } from '../../i18n/t';
 
 export interface PreLevelState {
   visible: boolean;
@@ -24,17 +25,17 @@ export const usePreLevelStore = create<PreLevelState>((set) => ({
   displayName: '',
   techName: '',
   techTier: '',
-  bestRecord: '尚無通關紀錄',
+  bestRecord: t('miscRuntime.preLevelNoRecord'),
   hasRecord: false,
   hasReplay: false,
   isPractice: false,
   isSpeedrun: false,
-  leaderboardHtml: '載入中...',
+  leaderboardHtml: t('miscRuntime.preLevelLoading'),
 
   open: (payload) =>
     set({
       visible: true,
-      leaderboardHtml: '載入中...',
+      leaderboardHtml: t('miscRuntime.preLevelLoading'),
       ...payload,
     }),
 

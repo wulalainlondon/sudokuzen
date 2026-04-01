@@ -20,9 +20,9 @@ function isRestrictedCommon(board: SolverBoard, alsA: AlmostLockedSet, alsB: Alm
 }
 
 /**
- * ALS Chain（ALS 链）：
- * 3个或更多ALS通过受限公共数字依次连接。
- * 链首尾ALS的公共非链接数字可从同时看到两端该数字所有候选格的外部格消去。
+ * ALS Chain:
+ * 3 or more ALS connected sequentially via restricted common digits.
+ * Common non-linking digits of the first and last ALS can be eliminated from external cells that see all candidate cells of that digit in both ends.
  */
 export function detectAlsChain(board: SolverBoard): DetectionResult | null {
   const allALS = findAllALS(board);
@@ -87,7 +87,7 @@ export function detectAlsChain(board: SolverBoard): DetectionResult | null {
               technique: 'als_chain',
               actions,
               patternCells: [...chainCellSet],
-              description: `ALS Chain：${chain.length} 个 ALS 组成链，消去数字 ${z} 共 ${actions.length} 处`,
+              description: `ALS Chain: ${chain.length} ALS forming chain, eliminate digit ${z} in ${actions.length} cells`,
             };
           }
         }

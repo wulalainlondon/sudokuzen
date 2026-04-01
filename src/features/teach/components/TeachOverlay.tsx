@@ -8,6 +8,7 @@ import { DemoBoard } from './DemoBoard';
 import { PracticeBoard } from './PracticeBoard';
 import { TeachBoard } from './TeachBoard';
 import { useTeachStore } from '../state/teachStore';
+import { t } from '../../../i18n/t';
 
 function resultToneClass(tone: 'success' | 'partial' | 'error' | 'neutral'): string {
   if (tone === 'success') return 'practice-result success';
@@ -17,12 +18,12 @@ function resultToneClass(tone: 'success' | 'partial' | 'error' | 'neutral'): str
 }
 
 function getTeachStageLabel(stars: number | undefined): string {
-  if (!Number.isFinite(stars)) return '研習中';
-  if ((stars ?? 0) <= 7) return '入門';
-  if ((stars ?? 0) <= 17) return '進階';
-  if ((stars ?? 0) <= 25) return '高階';
-  if ((stars ?? 0) <= 35) return '專家';
-  return '神級';
+  if (!Number.isFinite(stars)) return t('teachOverlay.stageStudying');
+  if ((stars ?? 0) <= 7) return t('teachOverlay.stageBeginner');
+  if ((stars ?? 0) <= 17) return t('teachOverlay.stageIntermediate');
+  if ((stars ?? 0) <= 25) return t('teachOverlay.stageAdvanced');
+  if ((stars ?? 0) <= 35) return t('teachOverlay.stageExpert');
+  return t('teachOverlay.stageGodlike');
 }
 
 export function TeachOverlay(): ReactElement {
@@ -94,7 +95,7 @@ export function TeachOverlay(): ReactElement {
             key="teach-dialog"
             role="dialog"
             aria-modal="true"
-            aria-label={module?.name ?? '教學'}
+            aria-label={module?.name ?? t('teachOverlay.defaultTitle')}
             initial={{ opacity: 0, y: 24, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.98 }}
@@ -118,13 +119,13 @@ export function TeachOverlay(): ReactElement {
             <div className="relative overflow-hidden rounded-card bg-surface p-4">
               {policy.allowCanvasFx ? <StepPulseCanvas active={flow === 'stepping'} /> : null}
 
-              <h2 className="teach-title relative z-10">{module?.name ?? '教學'}</h2>
+              <h2 className="teach-title relative z-10">{module?.name ?? t('teachOverlay.defaultTitle')}</h2>
               <p className="teach-subtitle relative z-10">
                 【{stage}】{module?.subtitle ?? ''}
               </p>
 
               <div className="teach-explanation relative z-10">
-                <p className="teach-level-note">章節定位：{stage}層</p>
+                <p className="teach-level-note">{t('teachOverlay.chapterLabel', { stage })}</p>
                 {(module?.explanation ?? []).map((line, idx) => (
                   <p key={`${idx}-${line}`}>{line}</p>
                 ))}
@@ -136,17 +137,17 @@ export function TeachOverlay(): ReactElement {
                 <>
                   <TeachBoard example={module?.example ?? null} step={step} />
                   <p ref={stepTextRef} className="teach-step-text whitespace-pre-line">
-                    {step?.text ?? module?.explanation?.[0] ?? '載入教學內容中...'}
+                    {step?.text ?? module?.explanation?.[0] ?? t('teachOverlay.loading')}
                   </p>
                   <div className="teach-nav">
                     <button className="rz-focus-ring" onClick={prevStep} disabled={stepIndex <= 0}>
-                      ← 上一步
+                      {t('teachOverlay.prevStep')}
                     </button>
                     <span id="teach-step-indicator">
                       {stepIndex + 1}/{stepsTotal}
                     </span>
                     <button className="rz-focus-ring" onClick={nextStep} disabled={stepIndex >= stepsTotal - 1}>
-                      下一步 →
+                      {t('teachOverlay.nextStep')}
                     </button>
                   </div>
                 </>
@@ -158,13 +159,13 @@ export function TeachOverlay(): ReactElement {
                     <span className="practice-tech-name">
                       {module?.name} · {module?.technique}
                     </span>
-                    <span className="practice-instruction">點擊要消去的候選數</span>
+                    <span className="practice-instruction">{t('teachOverlay.practiceInstruction')}</span>
                   </div>
                   <PracticeBoard item={practiceItem} practice={practice} onToggle={toggleSelection} />
                   <div className="practice-status">
-                    <span id="practice-counter">已選 {practice.selected.size} 個</span>
+                    <span id="practice-counter">{t('teachOverlay.selectedCount', { count: String(practice.selected.size) })}</span>
                     <button className="rz-focus-ring" onClick={showHint}>
-                      💡 提示
+                      {t('teachOverlay.hint')}
                     </button>
                   </div>
                   <p className={`${resultToneClass(practice.tone)} whitespace-pre-line`}>{practice.message}</p>
@@ -176,45 +177,45 @@ export function TeachOverlay(): ReactElement {
               {flow === 'demo' ? (
                 <>
                   <button className="teach-done-btn rz-focus-ring" onClick={closeTeach}>
-                    跳過
+                    {t('teachOverlay.skip')}
                   </button>
                   <button className="practice-confirm-btn rz-focus-ring" onClick={startStepping}>
-                    分解動作 →
+                    {t('teachOverlay.breakdown')}
                   </button>
                 </>
               ) : null}
               {flow === 'stepping' ? (
                 <>
                   <button className="teach-done-btn rz-focus-ring" onClick={closeTeach}>
-                    先跳過
+                    {t('teachOverlay.skipStepping')}
                   </button>
                   <button className="teach-done-btn rz-focus-ring" onClick={startPractice}>
-                    馬上練習 →
+                    {t('teachOverlay.startPractice')}
                   </button>
                 </>
               ) : null}
               {flow === 'practice' ? (
                 <>
                   <button className="practice-reveal-btn rz-focus-ring" onClick={revealPractice}>
-                    看答案
+                    {t('teachOverlay.revealAnswer')}
                   </button>
                   <button className="practice-confirm-btn rz-focus-ring" onClick={submitPractice}>
-                    確認消去
+                    {t('teachOverlay.confirmElim')}
                   </button>
                 </>
               ) : null}
               {flow === 'result' ? (
                 <>
                   <button className="practice-reveal-btn rz-focus-ring" onClick={backToSteps}>
-                    返回步驟
+                    {t('teachOverlay.backToSteps')}
                   </button>
                   {(module?.practice.length ?? 0) > 0 ? (
                     <button className="practice-confirm-btn rz-focus-ring" onClick={retryPractice}>
-                      再來一題
+                      {t('teachOverlay.retryPractice')}
                     </button>
                   ) : null}
                   <button className="practice-reveal-btn rz-focus-ring" onClick={closeTeach}>
-                    關閉
+                    {t('teachOverlay.close')}
                   </button>
                 </>
               ) : null}

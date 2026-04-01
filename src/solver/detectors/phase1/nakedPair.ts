@@ -8,9 +8,9 @@ function cellRef(idx: number): string {
 }
 
 function unitName(unitIdx: number): string {
-  if (unitIdx < 9) return `第 ${unitIdx + 1} 行`;
-  if (unitIdx < 18) return `第 ${unitIdx - 9 + 1} 列`;
-  return `第 ${unitIdx - 18 + 1} 宮`;
+  if (unitIdx < 9) return `Row ${unitIdx + 1}`;
+  if (unitIdx < 18) return `Col ${unitIdx - 9 + 1}`;
+  return `Box ${unitIdx - 18 + 1}`;
 }
 
 export function detectNakedPair(board: SolverBoard): DetectionResult | null {
@@ -40,7 +40,7 @@ export function detectNakedPair(board: SolverBoard): DetectionResult | null {
           technique: 'naked_pair',
           actions,
           patternCells: pair,
-          description: `${unitName(u)}的 Naked Pair {${digitStr}} 在 ${pair.map(cellRef).join('、')}，消去同單元其他格的 ${digitStr}`,
+          description: `Naked Pair {${digitStr}} in ${unitName(u)} at ${pair.map(cellRef).join(', ')}, eliminate ${digitStr} from other cells`,
         };
       }
     }

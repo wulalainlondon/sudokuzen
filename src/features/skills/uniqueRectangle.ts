@@ -1,24 +1,25 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 
-const META = { id: 'unique_rectangle', name: '空鏡', subtitle: 'Unique Rectangle', sweepDirection: 'inward' as const };
+const META = { id: 'unique_rectangle', get name() { return t('skills.uniqueRectangleName'); }, subtitle: 'Unique Rectangle', sweepDirection: 'inward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 4) return makeEmptyPreview(META, selectedCells.length < 4 ? '' : '需選 4 格');
+  if (selectedCells.length !== 4) return makeEmptyPreview(META, selectedCells.length < 4 ? '' : t('skills.needSelectN', { n: '4' }));
 
   // All must be empty with candidates
   for (const idx of selectedCells) {
     const d = cells[idx];
     if (!d || d.value !== 0 || d.notes.length < 2) {
-      return makeEmptyPreview(META, '所選格需為空且至少有 2 候選');
+      return makeEmptyPreview(META, t('skills.selectedCellsMustBeEmptyWith2'));
     }
   }
 
   // Must form a rectangle: exactly 2 rows and 2 cols
   const rows = new Set(selectedCells.map((i) => Math.floor(i / 9)));
   const cols = new Set(selectedCells.map((i) => i % 9));
-  if (rows.size !== 2 || cols.size !== 2) return makeEmptyPreview(META, '需形成矩形（2 列 × 2 欄）');
+  if (rows.size !== 2 || cols.size !== 2) return makeEmptyPreview(META, t('skills.needRectangle'));
 
   // Must span exactly 2 boxes
   const boxes = new Set(
@@ -28,7 +29,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
       return Math.floor(r / 3) * 3 + Math.floor(c / 3);
     }),
   );
-  if (boxes.size !== 2) return makeEmptyPreview(META, '需跨 2 宮');
+  if (boxes.size !== 2) return makeEmptyPreview(META, t('skills.needSpan2Boxes'));
 
   // UR Type 1: find 2 floor cells with exactly {A,B} and 2 roof cells with {A,B} + extras
   // Try all pairs as floor
@@ -80,7 +81,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     }
   }
 
-  return makeEmptyPreview(META, '未構成空鏡');
+  return makeEmptyPreview(META, t('skills.noUniqueRectangle'));
 }
 
 function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
@@ -98,7 +99,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

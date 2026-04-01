@@ -8,9 +8,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Sue de Coq（交叉区域分解）：
- * 在宫与行（或列）的交叉区域（2-3格），若其候选数可分解为：
- * 行剩余部分的ALS + 宫剩余部分的ALS，则可从行和宫的其他格消去对应候选数。
+ * Sue de Coq (Cross-region decomposition):
+ * In the intersection of a box and a row (or column) with 2-3 cells, if the candidates can be decomposed into:
+ * an ALS from the remaining line cells + an ALS from the remaining box cells, then eliminate corresponding candidates from other cells in the line and box.
  */
 export function detectSueDeCoq(board: SolverBoard): DetectionResult | null {
   // For each box-line intersection
@@ -112,7 +112,7 @@ export function detectSueDeCoq(board: SolverBoard): DetectionResult | null {
                   technique: 'sue_de_coq',
                   actions,
                   patternCells,
-                  description: `Sue de Coq：交叉区 {${intersection.map(cellRef).join(',')}}，行ALS{${lineSub.map(cellRef).join(',')}}，宫ALS{${boxSub.map(cellRef).join(',')}}，消去 ${actions.length} 处`,
+                  description: `Sue de Coq: intersection {${intersection.map(cellRef).join(',')}}, line ALS{${lineSub.map(cellRef).join(',')}}, box ALS{${boxSub.map(cellRef).join(',')}}, eliminate ${actions.length} candidates`,
                 };
               }
             }

@@ -67,6 +67,7 @@ import { useStatsStore } from '../react/stats/statsStore';
 import { usePreLevelStore } from '../react/prelevel/preLevelStore';
 import { useDuoResultStore } from '../react/duoresult/duoResultStore';
 import { useLibraryStore } from '../react/library/libraryStore';
+import { useReplayStore } from '../react/replay/replayStore';
 
 function isWinCelebrationOpen(): boolean {
   return useWinStore.getState().visible;
@@ -147,11 +148,7 @@ export function bootLegacyRuntime(appVersion: string): void {
   }
 
   // 11. Modal backdrop-click handlers
-  if (gs.replayModalEl) {
-    gs.replayModalEl.addEventListener('click', (e) => {
-      if (e.target === gs.replayModalEl) closeReplayModal();
-    });
-  }
+  // Replay modal backdrop click is now React-managed
   const statsModalEl = document.getElementById('stats-modal');
   if (statsModalEl) {
     statsModalEl.addEventListener('click', (e) => {
@@ -219,8 +216,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     const teachModal = document.getElementById('teach-modal');
     const practiceModal = document.getElementById('practice-modal');
     const statsModal = document.getElementById('stats-modal');
-    const replayModal = gs.replayModalEl;
-    // duo-result-modal and library-overlay are now React-managed (checked via stores below)
+    // replay-modal, duo-result-modal and library-overlay are now React-managed (checked via stores below)
 
     if (teachModal?.classList.contains('show')) {
       hideTeachModal();
@@ -234,7 +230,7 @@ export function bootLegacyRuntime(appVersion: string): void {
       closeStatsModal();
       return;
     }
-    if (replayModal?.classList.contains('show')) {
+    if (useReplayStore.getState().visible) {
       closeReplayModal();
       return;
     }

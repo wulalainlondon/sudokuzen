@@ -8,10 +8,10 @@ function cellRef(idx: number): string {
 }
 
 /**
- * ALS W-Wing（ALS 双翼）：
- * 两个双值格 {a,b}，它们不互相可见，但通过一个包含数字a的ALS连接。
- * ALS作为强链桥梁：若ALS中a的所有候选格都能看到两个双值格之一，
- * 则数字b可从同时看到两个双值格的外部格消去。
+ * ALS W-Wing:
+ * Two bivalue cells {a,b} that don't see each other, linked through an ALS containing digit a.
+ * The ALS acts as a strong link bridge: if all candidate cells of a in the ALS can see one of the two bivalue cells,
+ * then digit b can be eliminated from external cells that see both bivalue cells.
  */
 export function detectAlsWWing(board: SolverBoard): DetectionResult | null {
   const bivals = board.bivalueCells;
@@ -98,7 +98,7 @@ export function detectAlsWWing(board: SolverBoard): DetectionResult | null {
               technique: 'als_w_wing',
               actions,
               patternCells: [...patternSet],
-              description: `ALS W-Wing：双值格 ${cellRef(cell1)},${cellRef(cell2)}{${a},${b}}，ALS{${als.cells.map(cellRef).join(',')}} 连接数字 ${connectDigit}，消去 ${elimDigit} 共 ${actions.length} 处`,
+              description: `ALS W-Wing: bivalue cells ${cellRef(cell1)},${cellRef(cell2)}{${a},${b}}, ALS{${als.cells.map(cellRef).join(',')}} links digit ${connectDigit}, eliminate ${elimDigit} in ${actions.length} cells`,
             };
           }
         }

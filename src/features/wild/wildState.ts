@@ -1,6 +1,7 @@
 // Wild mode state — types + persistence.
 
 import { SK, readJson, writeJson } from '../../storage/keys';
+import { t } from '../../i18n/t';
 import type { Rarity } from './techniqueMeta';
 
 // ── Challenge Modes ──────────────────────────────────────────────────
@@ -22,51 +23,51 @@ export interface ChallengeModeConfig {
 export const CHALLENGE_CONFIGS: Record<ChallengeMode, ChallengeModeConfig> = {
   standard: {
     mode: 'standard',
-    displayName: '修行',
+    displayName: t('challenge.standardName'),
     subtitle: 'Standard',
-    description: '三條命，穩紮穩打',
+    description: t('challenge.standardDesc'),
     expMultiplier: 1.0,
     maxErrors: 3,
   },
   ironman: {
     mode: 'ironman',
-    displayName: '鐵壁',
+    displayName: t('challenge.ironmanName'),
     subtitle: 'Iron Man',
-    description: '零容錯，一招定勝負',
+    description: t('challenge.ironmanDesc'),
     expMultiplier: 1.5,
     maxErrors: 1,
   },
   blind: {
     mode: 'blind',
-    displayName: '盲審',
+    displayName: t('challenge.blindName'),
     subtitle: 'Blind Judge',
-    description: '全部填完才揭曉對錯',
+    description: t('challenge.blindDesc'),
     expMultiplier: 1.3,
     maxErrors: 81,
   },
   timed: {
     mode: 'timed',
-    displayName: '疾風',
+    displayName: t('challenge.timedName'),
     subtitle: 'Time Attack',
-    description: '限時挑戰，分秒必爭',
+    description: t('challenge.timedDesc'),
     expMultiplier: 1.2,
     maxErrors: 3,
     timerCountdown: 300,
   },
   noNotes: {
     mode: 'noNotes',
-    displayName: '無念',
+    displayName: t('challenge.noNotesName'),
     subtitle: 'No Notes',
-    description: '禁用筆記，全靠心算',
+    description: t('challenge.noNotesDesc'),
     expMultiplier: 1.8,
     maxErrors: 3,
     notesDisabled: true,
   },
   gauntlet: {
     mode: 'gauntlet',
-    displayName: '百鬼夜行',
+    displayName: t('challenge.gauntletName'),
     subtitle: 'Gauntlet',
-    description: '連斬五題，一氣呵成',
+    description: t('challenge.gauntletDesc'),
     expMultiplier: 3.0,
     maxErrors: 3,
     consecutiveCount: 5,

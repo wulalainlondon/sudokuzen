@@ -1,10 +1,11 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { makeEmptyPreview } from './types';
+import { t } from '../../i18n/t';
 
 const META = {
   id: 'locked_candidates',
-  name: '封鎖',
+  get name() { return t('skills.lockedCandidatesName'); },
   subtitle: 'Locked Candidates',
   sweepDirection: 'outward' as const,
 };
@@ -87,7 +88,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
               skillSubtitle: META.subtitle,
               sweepDirection: META.sweepDirection,
               digits: [digit],
-              unitLabel: `第 ${rowA + 1} 列`,
+              unitLabel: t('skills.unitRow', { n: String(rowA + 1) }),
               sourceCells: [a, b],
               targets,
             };
@@ -106,7 +107,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
               skillSubtitle: META.subtitle,
               sweepDirection: META.sweepDirection,
               digits: [digit],
-              unitLabel: `第 ${colA + 1} 欄`,
+              unitLabel: t('skills.unitCol', { n: String(colA + 1) }),
               sourceCells: [a, b],
               targets,
             };
@@ -115,7 +116,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
       }
     }
   }
-  return makeEmptyPreview(META, selectedCells.length >= 2 ? '未構成封鎖脈衝' : '');
+  return makeEmptyPreview(META, selectedCells.length >= 2 ? t('skills.noLockedPulse') : '');
 }
 
 function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
@@ -133,7 +134,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

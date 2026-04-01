@@ -7,11 +7,11 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Discontinuous Nice Loop（不连续好环）：
- * 闭合的交替推理链在起始节点处存在不连续性。
- * 若起始节点的强链最终回到自身，则起始状态被证实。
- * 类型1：起点被证明为真（填入）。
- * 类型2：起点被证明为假（消去）。
+ * Discontinuous Nice Loop:
+ * A closed alternating inference chain with a discontinuity at the starting node.
+ * If the strong link from the start ultimately returns to itself, the starting state is proven.
+ * Type 1: Start node proven true (fill).
+ * Type 2: Start node proven false (eliminate).
  */
 export function detectDiscontinuousNiceLoop(board: SolverBoard): DetectionResult | null {
   if (board.emptyCells.length < 4) return null;
@@ -69,7 +69,7 @@ export function detectDiscontinuousNiceLoop(board: SolverBoard): DetectionResult
                 technique: 'discontinuous_nice_loop',
                 actions,
                 patternCells: [...new Set(path.map((n) => decodeNode(n).cell))],
-                description: `Discontinuous Nice Loop：环证明 ${cellRef(startDecoded.cell)}=${startDecoded.digit}`,
+                description: `Discontinuous Nice Loop: loop proves ${cellRef(startDecoded.cell)}=${startDecoded.digit}`,
               };
             }
           } else {
@@ -85,7 +85,7 @@ export function detectDiscontinuousNiceLoop(board: SolverBoard): DetectionResult
                 technique: 'discontinuous_nice_loop',
                 actions,
                 patternCells: [...new Set(path.map((n) => decodeNode(n).cell))],
-                description: `Discontinuous Nice Loop：环证明 ${cellRef(startDecoded.cell)} 消去候选 ${startDecoded.digit}`,
+                description: `Discontinuous Nice Loop: loop proves eliminate candidate ${startDecoded.digit} from ${cellRef(startDecoded.cell)}`,
               };
             }
           }

@@ -1,11 +1,12 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther, getCommonPeers } from './types';
 
-const META = { id: 'xyz_wing', name: '三翼', subtitle: 'XYZ-Wing', sweepDirection: 'outward' as const };
+const META = { id: 'xyz_wing', get name() { return t('skills.xyzWingName'); }, subtitle: 'XYZ-Wing', sweepDirection: 'outward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 3) return makeEmptyPreview(META, selectedCells.length < 3 ? '' : '需選 3 格');
+  if (selectedCells.length !== 3) return makeEmptyPreview(META, selectedCells.length < 3 ? '' : t('skills.needSelectN', { n: '3' }));
 
   // Try each cell as pivot (the one with 3 candidates)
   for (let pi = 0; pi < 3; pi++) {
@@ -65,7 +66,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     }
   }
 
-  return makeEmptyPreview(META, '未構成三翼');
+  return makeEmptyPreview(META, t('skills.noXYZWing'));
 }
 
 function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
@@ -83,7 +84,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

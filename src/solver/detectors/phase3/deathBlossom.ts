@@ -8,9 +8,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Death Blossom（死亡绽放）：
- * 茎格有N个候选数。对每个候选d，找一个ALS花瓣，花瓣包含d且与茎格在同一单元。
- * 所有花瓣的公共非茎数字z，可从同时看到所有花瓣中z候选格的外部格消去。
+ * Death Blossom:
+ * Stem cell has N candidates. For each candidate d, find an ALS petal containing d in the same unit as the stem.
+ * Common non-stem digit z across all petals can be eliminated from external cells that see all z-candidate cells in all petals.
  */
 export function detectDeathBlossom(board: SolverBoard): DetectionResult | null {
   const allALS = findAllALS(board, 4);
@@ -157,7 +157,7 @@ function checkEliminations(
         technique: 'death_blossom',
         actions,
         patternCells: [stem, ...allPetalCells],
-        description: `Death Blossom：茎格 ${cellRef(stem)}{${stemDigits.join(',')}}，${petals.length} 个花瓣，消去数字 ${z} 共 ${actions.length} 处`,
+        description: `Death Blossom: stem cell ${cellRef(stem)}{${stemDigits.join(',')}}, ${petals.length} petals, eliminate digit ${z} in ${actions.length} cells`,
       };
     }
   }

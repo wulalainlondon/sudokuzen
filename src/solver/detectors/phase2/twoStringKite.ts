@@ -7,16 +7,16 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Two-String Kite（雙線風箏）：
- * 對於數字 d，在某行有一組共軛對，在某列有一組共軛對，
- * 兩組共軛對各有一端在同一宮中。
- * 另外兩端（不在共享宮中的端點）的交叉格可消去 d。
+ * Two-String Kite:
+ * For digit d, one conjugate pair in a row and one in a column,
+ * with one end of each pair sharing the same box.
+ * The cross-cell of the other two ends (not in the shared box) can eliminate d.
  */
 export function detectTwoStringKite(board: SolverBoard): DetectionResult | null {
   for (let d = 1; d <= 9; d++) {
     const _bit = digitBit(d);
 
-    // 收集行共軛對
+    // Collect row conjugate pairs
     const rowPairs: { cells: [number, number]; row: number }[] = [];
     for (let r = 0; r < 9; r++) {
       const cells = board.digitCellsInUnit(r, d); // unitIdx 0..8 = rows
@@ -25,7 +25,7 @@ export function detectTwoStringKite(board: SolverBoard): DetectionResult | null 
       }
     }
 
-    // 收集列共軛對
+    // Collect column conjugate pairs
     const colPairs: { cells: [number, number]; col: number }[] = [];
     for (let c = 0; c < 9; c++) {
       const cells = board.digitCellsInUnit(9 + c, d); // unitIdx 9..17 = cols
@@ -36,7 +36,7 @@ export function detectTwoStringKite(board: SolverBoard): DetectionResult | null 
 
     for (const rp of rowPairs) {
       for (const cp of colPairs) {
-        // 嘗試每種端點配對
+        // Try each endpoint pairing
         for (const [rShared, rFree] of [
           [rp.cells[0], rp.cells[1]],
           [rp.cells[1], rp.cells[0]],
@@ -45,16 +45,16 @@ export function detectTwoStringKite(board: SolverBoard): DetectionResult | null 
             [cp.cells[0], cp.cells[1]],
             [cp.cells[1], cp.cells[0]],
           ] as [number, number][]) {
-            // rShared 和 cShared 必須在同一宮中
+            // rShared and cShared must be in the same box
             if (SolverBoard.CELL_BOX[rShared] !== SolverBoard.CELL_BOX[cShared]) continue;
 
-            // rFree 和 cFree 不能是同一格
+            // rFree and cFree cannot be the same cell
             if (rFree === cFree) continue;
 
-            // 4 格應互不相同
+            // All 4 cells must be distinct
             if (rShared === cShared || rShared === cFree || rFree === cShared) continue;
 
-            // 消去目標：cFree 所在行 與 rFree 所在列 的交叉格
+            // Elimination target: intersection of cFree's row and rFree's column
             const targetRow = SolverBoard.CELL_ROW[cFree];
             const targetCol = SolverBoard.CELL_COL[rFree];
             const target = targetRow * 9 + targetCol;
@@ -68,7 +68,7 @@ export function detectTwoStringKite(board: SolverBoard): DetectionResult | null 
               technique: 'two_string_kite',
               actions,
               patternCells: [rShared, rFree, cShared, cFree],
-              description: `雙線風箏：數字 ${d}，行對 ${cellRef(rShared)}–${cellRef(rFree)} 與列對 ${cellRef(cShared)}–${cellRef(cFree)} 透過宮連接，消去 ${cellRef(target)} 的 ${d}`,
+              description: `Two-String Kite: digit ${d}, row pair ${cellRef(rShared)}-${cellRef(rFree)} and col pair ${cellRef(cShared)}-${cellRef(cFree)} linked via box, eliminate ${d} from ${cellRef(target)}`,
             };
           }
         }

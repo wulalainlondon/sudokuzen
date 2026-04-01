@@ -1,6 +1,6 @@
 // Level selection screen, tier/realm system, stage map, progression
 
-import { gs } from '../game/state';
+import { gs, type LevelData, type ActionRecord } from '../game/state';
 import { getAllLevels, hasTeachModule } from '../data/dataRegistry';
 import { SK, readJson } from '../storage/keys';
 import { formatSeconds } from '../game/utils';
@@ -99,7 +99,7 @@ const REALM_TEACH_KEY: Record<string, number> = {
 
 export function getDifficultyTiers(): string[] {
   const levels = getAllLevels();
-  const present = new Set(levels.filter((l) => !l.hidden).map((l) => l.difficultyName || '未命名境界'));
+  const present = new Set(levels.filter((l) => !l.hidden).map((l) => l.difficultyName || t('levelGrid.unnamedRealm')));
   const ordered = REALM_ORDER.filter((name) => present.has(name));
   const extras = [...present].filter((name) => !REALM_ORDER.includes(name));
   return ordered.concat(extras);
@@ -149,13 +149,13 @@ export function getTierUnlockMessage(tierName: string, unlockState?: ReturnType<
   return t('stage.unlockRequired', { prev: prev.name, cleared: String(prev.cleared), needed: String(needed) });
 }
 
-export function canAccessLevel(level: any, unlockState?: ReturnType<typeof getRealmUnlockState>): boolean {
+export function canAccessLevel(level: LevelData | null | undefined, unlockState?: ReturnType<typeof getRealmUnlockState>): boolean {
   if (!level || level.hidden) return false;
   const state = unlockState || getRealmUnlockState();
   return state.unlockedTiers.has(level.difficultyName);
 }
 
-export function getFilteredLevels(): any[] {
+export function getFilteredLevels(): LevelData[] {
   return getAllLevels().filter((l) => l.difficultyName === gs.currentTab);
 }
 
@@ -296,7 +296,7 @@ export function renderLevelGrid(): void {
     let starsClass: string, starsText: string;
     if (gs.isSpeedrunMode) {
       starsClass = hasRecord ? 'level-stars speedrun-stars' : 'level-stars is-empty';
-      starsText = hasRecord ? `⚡ ${submissions}次提交` : '⚡ 未通關';
+      starsText = hasRecord ? t('levelGrid.speedrunSubmissions', { submissions: String(submissions) }) : t('levelGrid.speedrunNotCleared');
     } else {
       starsClass = bestStars > 0 ? 'level-stars' : 'level-stars is-empty';
       starsText =
@@ -322,12 +322,13 @@ export function renderLevelGrid(): void {
   });
   requestAnimationFrame(syncLevelCardSize);
 
-  if (gs.duoRoomData && gs.duoRoomData.status === 'waiting' && gs.duoRoomData.levelId) {
+  const roomData = gs.duoRoomData;
+  if (roomData && roomData.status === 'waiting' && roomData.levelId) {
     const { playerId } = getPlayerIdentity();
-    if (gs.duoRoomData.hostId !== playerId) {
+    if (roomData.hostId !== playerId) {
       const items = document.querySelectorAll('#level-list .level-item');
       filtered.forEach((l, i) => {
-        if (l.id === gs.duoRoomData.levelId && items[i]) items[i].classList.add('duo-glow');
+        if (l.id === roomData.levelId && items[i]) items[i].classList.add('duo-glow');
       });
     }
   }
@@ -335,9 +336,9 @@ export function renderLevelGrid(): void {
 
 // ── Pre-level modal ─────────────────────────────────────────────────
 
-let _pendingLevelData: any = null;
+let _pendingLevelData: LevelData | null = null;
 
-export function showPreLevelModal(levelId: number, ignoreTierLock = false, externalLevel?: any): void {
+export function showPreLevelModal(levelId: number, ignoreTierLock = false, externalLevel?: LevelData): void {
   closeLibraryOverlay();
   gs.pendingLevelId = levelId;
   const levels = getAllLevels();
@@ -402,7 +403,7 @@ export function hidePreLevelModal(): void {
 export async function startLevelFromModal(
   forceReset = false,
   playWithGhost = false,
-  ghostData: any = null,
+  ghostData: ActionRecord[] | null = null,
 ): Promise<void> {
   if (gs.pendingLevelId === null) return;
   const levelId = gs.pendingLevelId;

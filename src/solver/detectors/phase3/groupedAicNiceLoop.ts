@@ -8,9 +8,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Grouped AIC / Nice Loop（分组交替推理链）：
- * 同一单元中多格作为一个逻辑节点构成分组链，
- * 使用 findAIC 搜索最大长度10的链。
+ * Grouped AIC / Nice Loop:
+ * Multiple cells in the same unit act as a single logical node forming a grouped chain.
+ * Uses findAIC to search for chains up to length 10.
  */
 export function detectGroupedAicNiceLoop(board: SolverBoard): DetectionResult | null {
   if (board.emptyCells.length < 4) return null;
@@ -64,6 +64,6 @@ export function detectGroupedAicNiceLoop(board: SolverBoard): DetectionResult | 
     technique: 'grouped_aic_nice_loop',
     actions: result.eliminations.map((e) => ({ kind: 'eliminate', cell: e.cell, digit: e.digit })),
     patternCells,
-    description: `Grouped AIC / Nice Loop：链 ${chainDesc}，消去 ${result.eliminations.length} 处候选数`,
+    description: `Grouped AIC / Nice Loop: chain ${chainDesc}, eliminate ${result.eliminations.length} candidates`,
   };
 }

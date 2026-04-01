@@ -1,8 +1,9 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther, getCommonPeers } from './types';
 
-const META = { id: 'remote_pairs', name: '遙對雙珠', subtitle: 'Remote Pairs', sweepDirection: 'outward' as const };
+const META = { id: 'remote_pairs', get name() { return t('skills.remotePairsName'); }, subtitle: 'Remote Pairs', sweepDirection: 'outward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   if (selectedCells.length < 3) return makeEmptyPreview(META, '');
@@ -10,18 +11,18 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   // All must be bivalue with same 2 digits
   const first = cells[selectedCells[0]];
   if (!first || first.value !== 0 || first.notes.length !== 2) {
-    return makeEmptyPreview(META, '所有格需為相同雙候選');
+    return makeEmptyPreview(META, t('skills.allMustSameBivalue'));
   }
   const pair = [...first.notes].sort();
 
   for (const idx of selectedCells) {
     const d = cells[idx];
     if (!d || d.value !== 0 || d.notes.length !== 2) {
-      return makeEmptyPreview(META, '所有格需為相同雙候選');
+      return makeEmptyPreview(META, t('skills.allMustSameBivalue'));
     }
     const s = [...d.notes].sort();
     if (s[0] !== pair[0] || s[1] !== pair[1]) {
-      return makeEmptyPreview(META, '所有格需為相同雙候選');
+      return makeEmptyPreview(META, t('skills.allMustSameBivalue'));
     }
   }
 
@@ -65,11 +66,11 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   }
 
   const chain = findChain();
-  if (!chain) return makeEmptyPreview(META, '未構成鏈');
+  if (!chain) return makeEmptyPreview(META, t('skills.noChain'));
 
   // Chain length must be odd (even number of links) so first and last have same "color"
   // An odd number of cells = even number of links
-  if (chain.length % 2 === 0) return makeEmptyPreview(META, '鏈長需為奇數格');
+  if (chain.length % 2 === 0) return makeEmptyPreview(META, t('skills.chainLengthMustBeOdd'));
 
   // Eliminate both digits from cells that see BOTH first and last
   const first_cell = chain[0];
@@ -102,7 +103,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     };
   }
 
-  return makeEmptyPreview(META, '未找到可消候選');
+  return makeEmptyPreview(META, t('skills.noElimCandidates'));
 }
 
 function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
@@ -120,7 +121,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

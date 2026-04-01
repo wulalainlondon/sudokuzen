@@ -29,7 +29,7 @@ export function detectLockedCandidates(board: SolverBoard): DetectionResult | nu
             technique: 'locked_candidates',
             actions,
             patternCells: cells,
-            description: `第 ${box + 1} 宮的數字 ${d} 皆在第 ${row + 1} 行（Pointing），消去同行宮外的 ${d}`,
+            description: `Box ${box + 1} digit ${d} confined to Row ${row + 1} (Pointing), eliminate ${d} outside box in same row`,
           };
         }
       }
@@ -50,7 +50,7 @@ export function detectLockedCandidates(board: SolverBoard): DetectionResult | nu
             technique: 'locked_candidates',
             actions,
             patternCells: cells,
-            description: `第 ${box + 1} 宮的數字 ${d} 皆在第 ${col + 1} 列（Pointing），消去同列宮外的 ${d}`,
+            description: `Box ${box + 1} digit ${d} confined to Col ${col + 1} (Pointing), eliminate ${d} outside box in same col`,
           };
         }
       }
@@ -76,12 +76,12 @@ export function detectLockedCandidates(board: SolverBoard): DetectionResult | nu
           }
         }
         if (actions.length > 0) {
-          const lineName = isRow ? `第 ${lineIdx + 1} 行` : `第 ${lineIdx + 1} 列`;
+          const lineName = isRow ? `Row ${lineIdx + 1}` : `Col ${lineIdx + 1}`;
           return {
             technique: 'locked_candidates',
             actions,
             patternCells: cells,
-            description: `${lineName}的數字 ${d} 皆在第 ${box + 1} 宮（Claiming），消去同宮行列外的 ${d}`,
+            description: `${lineName} digit ${d} confined to Box ${box + 1} (Claiming), eliminate ${d} outside line in same box`,
           };
         }
       }

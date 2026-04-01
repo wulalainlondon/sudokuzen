@@ -1,7 +1,7 @@
 // Practice Mode Lobby — technique skill tree + per-technique level grid
 // 41 techniques × 25 levels = 1025 levels in public/data/practice.json
 
-import { gs } from '../../game/state';
+import { gs, type ActionRecord } from '../../game/state';
 import { SK, readJson } from '../../storage/keys';
 import { getPracticeLevels } from '../../data/dataRegistry';
 import { TECH_MAP } from '../teach-legacy';
@@ -405,7 +405,7 @@ export async function startNextPracticeLevel(): Promise<void> {
 
 // ── Save practice record ──────────────────────────────────────────────
 
-export function savePracticeRecord(levelId: number, seconds: number, errors: number, techKey: string, replayHistory?: any[]): void {
+export function savePracticeRecord(levelId: number, seconds: number, errors: number, techKey: string, replayHistory?: ActionRecord[]): void {
   const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
   const existing = records[levelId];
   const earnedStars = Math.max(1, 3 - errors);

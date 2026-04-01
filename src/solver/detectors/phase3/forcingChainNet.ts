@@ -7,9 +7,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Forcing Chain / Net（强制链网络）：
- * 对候选数2-3个的格子，假设每个候选为真，用唯余法传播。
- * 若所有假设都导致相同结论（某格填某数或某格消去某候选），该结论成立。
+ * Forcing Chain / Net:
+ * For cells with 2-3 candidates, assume each candidate is true and propagate using singles.
+ * If all assumptions lead to the same conclusion (a cell fills a digit or eliminates a candidate), that conclusion holds.
  */
 export function detectForcingChainNet(board: SolverBoard): DetectionResult | null {
   // Collect cells with 2-3 candidates
@@ -36,7 +36,7 @@ export function detectForcingChainNet(board: SolverBoard): DetectionResult | nul
           technique: 'forcing_chain_net',
           actions,
           patternCells: [cell],
-          description: `Forcing Chain：假设 ${cellRef(cell)}=${d} 产生矛盾，消去该候选数`,
+          description: `Forcing Chain: assuming ${cellRef(cell)}=${d} leads to contradiction, eliminate this candidate`,
         };
       }
       branchResults.push(result);
@@ -75,7 +75,7 @@ export function detectForcingChainNet(board: SolverBoard): DetectionResult | nul
           technique: 'forcing_chain_net',
           actions,
           patternCells: [cell],
-          description: `Forcing Chain：${cellRef(cell)} 所有候选 {${digits.join(',')}} 均推出 ${cellRef(targetCell)} ${val === 1 ? '填入' : '消去'} ${targetDigit}`,
+          description: `Forcing Chain: all candidates {${digits.join(',')}} of ${cellRef(cell)} lead to ${cellRef(targetCell)} ${val === 1 ? 'fill' : 'eliminate'} ${targetDigit}`,
         };
       }
     }

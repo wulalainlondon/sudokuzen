@@ -7,9 +7,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Region Forcing Chain（区域强制链）：
- * 对每个单元中每个数字d，若d只有2-4个位置，则分别假设d在每个位置。
- * 传播后若所有分支同意某结论，该结论成立。
+ * Region Forcing Chain:
+ * For each digit d in each unit, if d has only 2-4 positions, assume d at each position.
+ * If all branches agree on a conclusion after propagation, that conclusion holds.
  */
 export function detectRegionForcingChain(board: SolverBoard): DetectionResult | null {
   for (let unitIdx = 0; unitIdx < 27; unitIdx++) {
@@ -28,7 +28,7 @@ export function detectRegionForcingChain(board: SolverBoard): DetectionResult | 
             technique: 'region_forcing_chain',
             actions: [{ kind: 'eliminate', cell, digit: d }],
             patternCells: cells,
-            description: `Region Forcing Chain：假设 ${cellRef(cell)}=${d} 产生矛盾，消去该候选`,
+            description: `Region Forcing Chain: assuming ${cellRef(cell)}=${d} leads to contradiction, eliminate this candidate`,
           };
         }
         branchResults.push(result);
@@ -52,13 +52,13 @@ export function detectRegionForcingChain(board: SolverBoard): DetectionResult | 
 
         const actions: DetectionAction[] = [{ kind: val === 1 ? 'fill' : 'eliminate', cell: tCell, digit: tDigit }];
 
-        const unitName = unitIdx < 9 ? `行${unitIdx + 1}` : unitIdx < 18 ? `列${unitIdx - 8}` : `宫${unitIdx - 17}`;
+        const unitName = unitIdx < 9 ? `Row ${unitIdx + 1}` : unitIdx < 18 ? `Col ${unitIdx - 8}` : `Box ${unitIdx - 17}`;
 
         return {
           technique: 'region_forcing_chain',
           actions,
           patternCells: cells,
-          description: `Region Forcing Chain：${unitName} 中数字 ${d} 所有位置均推出 ${cellRef(tCell)} ${val === 1 ? '填入' : '消去'} ${tDigit}`,
+          description: `Region Forcing Chain: all positions of digit ${d} in ${unitName} lead to ${cellRef(tCell)} ${val === 1 ? 'fill' : 'eliminate'} ${tDigit}`,
         };
       }
     }

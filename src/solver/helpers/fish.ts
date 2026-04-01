@@ -16,9 +16,9 @@ const FISH_NAMES: Record<number, { name: TechniqueName; label: string }> = {
 };
 
 const FINNED_NAMES: Record<number, { name: TechniqueName; label: string }> = {
-  2: { name: 'finned_x_wing', label: '帶鰭 X-Wing' },
-  3: { name: 'finned_swordfish', label: '帶鰭 Swordfish' },
-  4: { name: 'finned_jellyfish', label: '帶鰭 Jellyfish' },
+  2: { name: 'finned_x_wing', label: 'Finned X-Wing' },
+  3: { name: 'finned_swordfish', label: 'Finned Swordfish' },
+  4: { name: 'finned_jellyfish', label: 'Finned Jellyfish' },
 };
 
 /**
@@ -93,7 +93,7 @@ function tryFish(
       technique: meta.name,
       actions,
       patternCells,
-      description: `${meta.label}：數字 ${d} 形成 ${size} 線魚型，消去 ${actions.length} 個候選`,
+      description: `${meta.label}: digit ${d} forms a ${size}-line fish, eliminate ${actions.length} candidates`,
     };
   }
   return null;
@@ -186,7 +186,7 @@ function tryFinnedFish(
         technique: meta.name,
         actions,
         patternCells: [...patternCells, ...fins],
-        description: `${meta.label}：數字 ${d} 帶鰭魚型，消去 ${actions.length} 個候選`,
+        description: `${meta.label}: digit ${d} finned fish, eliminate ${actions.length} candidates`,
       };
     }
   }

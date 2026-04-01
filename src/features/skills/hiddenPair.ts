@@ -1,8 +1,9 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview, getSharedUnits, getUnitCells } from './types';
 
-const META = { id: 'hidden_pair', name: '藏雙', subtitle: 'Hidden Pair', sweepDirection: 'inward' as const };
+const META = { id: 'hidden_pair', get name() { return t('skills.hiddenPairName'); }, subtitle: 'Hidden Pair', sweepDirection: 'inward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   if (selectedCells.length < 2) return makeEmptyPreview(META, '');
@@ -77,7 +78,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
       }
     }
   }
-  return makeEmptyPreview(META, selectedCells.length >= 2 ? '未構成暗雙' : '');
+  return makeEmptyPreview(META, selectedCells.length >= 2 ? t('skills.noHiddenPair') : '');
 }
 
 function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
@@ -95,7 +96,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

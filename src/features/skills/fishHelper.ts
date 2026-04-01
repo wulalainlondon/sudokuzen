@@ -3,6 +3,7 @@
 import type { CellData } from '../../game/state';
 import type { SkillPreview, LitCandidate } from './types';
 import { makeEmptyPreview } from './types';
+import { t } from '../../i18n/t';
 
 interface FishMeta {
   id: string;
@@ -25,7 +26,7 @@ export function evaluateFish(selectedCells: number[], cells: CellData[], size: n
   for (const idx of selectedCells) {
     const d = cells[idx];
     if (!d || d.value !== 0 || d.notes.length === 0) {
-      return makeEmptyPreview(META, '所選格需為空且含候選');
+      return makeEmptyPreview(META, t('skills.selectedCellsMustBeEmpty'));
     }
   }
 
@@ -38,7 +39,7 @@ export function evaluateFish(selectedCells: number[], cells: CellData[], size: n
   }
 
   if (rows.size !== size || cols.size !== size) {
-    return makeEmptyPreview(META, `需選跨 ${size} 列 ${size} 欄`);
+    return makeEmptyPreview(META, t('skills.needRowsCols', { n: String(size) }));
   }
 
   const rowArr = [...rows];
@@ -123,5 +124,5 @@ export function evaluateFish(selectedCells: number[], cells: CellData[], size: n
     }
   }
 
-  return makeEmptyPreview(META, `未構成${META.name}`);
+  return makeEmptyPreview(META, t('skills.noFishPattern', { name: META.name }));
 }

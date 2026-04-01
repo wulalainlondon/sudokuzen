@@ -7,11 +7,11 @@ function _cellRef(idx: number): string {
 }
 
 /**
- * Template（模板法）：
- * 对每个数字d，用回溯法生成所有合法放置方案（模板）。
- * 若某格在所有模板中都有d → 填入d。
- * 若某格在零个模板中有d → 消去d。
- * 仅处理空位 <= 25 的数字以控制性能。
+ * Template:
+ * For each digit d, generate all valid placement patterns (templates) using backtracking.
+ * If a cell has d in ALL templates -> fill d.
+ * If a cell has d in ZERO templates -> eliminate d.
+ * Only processes digits with <= 25 empty positions for performance.
  */
 export function detectTemplate(board: SolverBoard): DetectionResult | null {
   for (let d = 1; d <= 9; d++) {
@@ -119,7 +119,7 @@ export function detectTemplate(board: SolverBoard): DetectionResult | null {
         technique: 'template',
         actions,
         patternCells,
-        description: `Template：数字 ${d} 共 ${templates.length} 个有效模板，推出 ${actions.length} 个结论`,
+        description: `Template: digit ${d}, ${templates.length} valid templates, ${actions.length} conclusions`,
       };
     }
   }

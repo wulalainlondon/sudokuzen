@@ -8,9 +8,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * AIC（交替推理链）：
- * 利用强弱链交替构成推理链（最多8个节点），
- * 链两端同数字且互相可见时，可消去公共同伴格的该候选数。
+ * AIC (Alternating Inference Chain):
+ * Uses alternating strong and weak links to form an inference chain (up to 8 nodes).
+ * When both ends share the same digit and see each other, eliminate that candidate from common peer cells.
  */
 export function detectAic(board: SolverBoard): DetectionResult | null {
   if (board.emptyCells.length < 4) return null;
@@ -34,6 +34,6 @@ export function detectAic(board: SolverBoard): DetectionResult | null {
     technique: 'aic',
     actions: result.eliminations.map((e) => ({ kind: 'eliminate', cell: e.cell, digit: e.digit })),
     patternCells,
-    description: `AIC：推理链 ${chainDesc}，消去 ${result.eliminations.length} 处候选数`,
+    description: `AIC: chain ${chainDesc}, eliminate ${result.eliminations.length} candidates`,
   };
 }

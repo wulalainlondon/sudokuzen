@@ -5,6 +5,7 @@ import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
 import { ZEN, isReducedMotion } from '../motion/zenMotion';
 import { t } from '../../i18n/t';
+import type { SudokuWindow } from '../../facade/windowTypes';
 
 function backText(mode: string, wildSession: { round: number; hasMore: boolean } | null): string {
   if (mode === 'wild' && wildSession?.hasMore) return t('nav.continueSession', { round: wildSession.round });
@@ -29,18 +30,20 @@ export function GameOverOverlay(): ReactElement {
   const close = useGameOverStore((s) => s.close);
 
   const handleRetry = useCallback(() => {
-    (window as any).resetGame?.();
+    const win = window as unknown as SudokuWindow;
+    win.resetGame?.();
     close();
   }, [close]);
 
   const handleBack = useCallback(() => {
+    const win = window as unknown as SudokuWindow;
     if (mode === 'wild' && wildSession?.hasMore) {
-      (window as any).continueWild?.();
+      win.continueWild?.();
     } else if (mode === 'wild') {
-      (window as any).exitWild?.();
-      (window as any).showLevelScreen?.(true);
+      win.exitWild?.();
+      win.showLevelScreen?.(true);
     } else {
-      (window as any).showLevelScreen?.(true);
+      win.showLevelScreen?.(true);
     }
     close();
   }, [mode, wildSession, close]);

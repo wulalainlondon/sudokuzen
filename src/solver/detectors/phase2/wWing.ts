@@ -8,10 +8,10 @@ function cellRef(idx: number): string {
 }
 
 /**
- * W-Wing：
- * 兩個相同的雙值格 {a,b}（不互相看到），透過數字 a（或 b）的強鏈連接。
- * 強鏈的一端看到第一個雙值格，另一端看到第二個雙值格。
- * 可從兩個雙值格的公共 peers 中消去另一個數字 b（或 a）。
+ * W-Wing:
+ * Two identical bivalue cells {a,b} (not seeing each other), linked by a strong link on digit a (or b).
+ * One end of the strong link sees the first bivalue cell, the other end sees the second.
+ * Eliminate the other digit b (or a) from common peers of the two bivalue cells.
  */
 export function detectWWing(board: SolverBoard): DetectionResult | null {
   const bivals = board.bivalueCells;
@@ -22,17 +22,17 @@ export function detectWWing(board: SolverBoard): DetectionResult | null {
       const c1 = bivals[i];
       const c2 = bivals[j];
       if (board.candidates[c1] !== board.candidates[c2]) continue;
-      // 兩格不應互相看到（否則就是 naked pair）
+      // Two cells must not see each other (otherwise it's a naked pair)
       if (board.seesCell(c1, c2)) continue;
 
       const digits = bitsToDigits(board.candidates[c1]);
       const [a, b] = digits;
 
-      // 嘗試用每個數字的強鏈連接
+      // Try linking via each digit's strong link
       for (const linkDigit of [a, b]) {
         const elimDigit = linkDigit === a ? b : a;
 
-        // 找一條強鏈：其一端看到 c1，另一端看到 c2
+        // Find a strong link where one end sees c1 and the other sees c2
         for (const pair of conjugates) {
           if (pair.digit !== linkDigit) continue;
           const { cellA, cellB } = pair;
@@ -43,7 +43,7 @@ export function detectWWing(board: SolverBoard): DetectionResult | null {
           const bSeesC1 = board.seesCell(cellB, c1) && cellB !== c1 && cellB !== c2;
 
           if ((aSeesC1 && bSeesC2) || (aSeesC2 && bSeesC1)) {
-            // 消去 elimDigit 從 c1 和 c2 的公共 peers
+            // Eliminate elimDigit from common peers of c1 and c2
             const commonPeers = board.commonPeers([c1, c2]);
             const actions: DetectionAction[] = [];
             for (const cell of commonPeers) {
@@ -57,7 +57,7 @@ export function detectWWing(board: SolverBoard): DetectionResult | null {
               technique: 'w_wing',
               actions,
               patternCells: [c1, c2, cellA, cellB],
-              description: `W-Wing：雙值格 ${cellRef(c1)} 與 ${cellRef(c2)}{${a},${b}}，透過數字 ${linkDigit} 的強鏈 ${cellRef(cellA)}–${cellRef(cellB)} 連接，消去候選數 ${elimDigit} 共 ${actions.length} 處`,
+              description: `W-Wing: bivalue cells ${cellRef(c1)} and ${cellRef(c2)}{${a},${b}}, linked by strong link on ${linkDigit} at ${cellRef(cellA)}-${cellRef(cellB)}, eliminate candidate ${elimDigit} in ${actions.length} cells`,
             };
           }
         }

@@ -1,8 +1,9 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview, getSharedUnits, getUnitCells } from './types';
 
-const META = { id: 'naked_triple', name: '編織', subtitle: 'Naked Triple', sweepDirection: 'outward' as const };
+const META = { id: 'naked_triple', get name() { return t('skills.nakedTripleName'); }, subtitle: 'Naked Triple', sweepDirection: 'outward' as const };
 
 /** Find all combinations of size k from an array. */
 function combinations<T>(arr: T[], k: number): T[][] {
@@ -77,7 +78,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
       };
     }
   }
-  return makeEmptyPreview(META, selectedCells.length >= 3 ? '未構成三連' : '');
+  return makeEmptyPreview(META, selectedCells.length >= 3 ? t('skills.noNakedTriple') : '');
 }
 
 function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
@@ -95,7 +96,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

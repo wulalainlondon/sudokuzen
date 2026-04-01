@@ -1,15 +1,28 @@
 // Duo (2-player) mode — Firebase real-time room state for 2-player competition
 // Extracted from legacyRuntime.ts
 
-import { gs } from '../game/state';
+import { gs, type LevelData, type DuoRoomData } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds } from '../game/utils';
 import { getPlayerIdentity } from '../firebase/client';
 import { showFeedback } from '../ui/feedback';
 import { t } from '../i18n/t';
 import { getEquippedTitleDisplay } from './titles';
+import type { FirestoreDoc, FirestoreTransaction } from '../firebase/types';
+import type { SudokuWindow } from '../facade/windowTypes';
 
-declare const firebase: any;
+declare const firebase: {
+  firestore: {
+    FieldValue: { serverTimestamp(): unknown };
+    Timestamp: { fromMillis(ms: number): unknown };
+  };
+};
+
+interface DuoRecords {
+  wins: Record<string, number>;
+  streak: number;
+  streakHolder: string;
+}
 
 // ── Module-level guard flags ─────────────────────────────────────────
 let _countdownLaunched = false;
@@ -30,9 +43,9 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
   if (!gs.firebaseReady) return;
   const { playerId, alias } = getPlayerIdentity();
   try {
-    await gs.db.runTransaction(async (tx: any) => {
+    await gs.db.runTransaction(async (tx: FirestoreTransaction) => {
       const doc = await tx.get(duoRoomRef());
-      const d = doc.exists ? doc.data() : null;
+      const d = doc.exists ? (doc.data() as unknown as DuoRoomData) : null;
       const now = firebase.firestore.FieldValue.serverTimestamp();
 
       // Check staleness (>2 min old waiting rooms can be overwritten)
@@ -108,16 +121,16 @@ export function subscribeDuoRoom(): void {
 
 function _attachSnapshotListener(): void {
   gs.duoUnsubscribe = duoRoomRef().onSnapshot(
-    (snap: any) => {
+    (snap: FirestoreDoc) => {
       _snapshotRetryCount = 0; // reset on success
       if (!snap.exists) {
         resetDuoState();
         return;
       }
-      gs.duoRoomData = snap.data();
-      handleDuoSnapshot(gs.duoRoomData);
+      gs.duoRoomData = (snap.data() ?? null) as DuoRoomData | null;
+      if (gs.duoRoomData) handleDuoSnapshot(gs.duoRoomData);
     },
-    (err: any) => {
+    (err: unknown) => {
       console.warn('duo snapshot error:', err);
       _snapshotRetryCount++;
       if (_snapshotRetryCount <= MAX_SNAPSHOT_RETRIES) {
@@ -135,7 +148,7 @@ function _attachSnapshotListener(): void {
 
 // ── Snapshot Handler ─────────────────────────────────────────────────
 
-export function handleDuoSnapshot(d: any): void {
+export function handleDuoSnapshot(d: DuoRoomData): void {
   if (!d || !gs.duoRole) return;
 
   if (d.status === 'waiting' || d.status === 'countdown') {
@@ -221,7 +234,7 @@ export function handleDuoSnapshot(d: any): void {
 
 // ── Pre-Level UI ─────────────────────────────────────────────────────
 
-export function updateDuoPreLevelUI(d: any): void {
+export function updateDuoPreLevelUI(d: DuoRoomData): void {
   const zone = document.getElementById('duo-ready-zone');
   const readyBtn = document.getElementById('duo-ready-btn');
   const countdownArea = document.getElementById('duo-countdown-area');
@@ -326,11 +339,11 @@ export async function toggleDuoReady(): Promise<void> {
   const newReady = !gs.duoMyReady;
 
   try {
-    await gs.db.runTransaction(async (tx: any) => {
+    await gs.db.runTransaction(async (tx: FirestoreTransaction) => {
       const doc = await tx.get(duoRoomRef());
       if (!doc.exists) return;
-      const d = doc.data();
-      const update: any = { [field]: newReady, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+      const d = doc.data() as unknown as DuoRoomData;
+      const update: Record<string, unknown> = { [field]: newReady, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
 
       // Only the HOST can set status='countdown' to prevent race condition
       if (gs.duoRole === 'host') {
@@ -355,7 +368,10 @@ export async function toggleDuoReady(): Promise<void> {
 
 function playCountdownBeep(final = false): void {
   try {
-    const ctx = new ((window as any).AudioContext || (window as any).webkitAudioContext)();
+    const win = window as unknown as SudokuWindow;
+    const AudioCtx = win.AudioContext || win.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -369,12 +385,12 @@ function playCountdownBeep(final = false): void {
 
 // ── Countdown ────────────────────────────────────────────────────────
 
-export function startDuoCountdown(startAtTs: any): void {
+export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?: number }): void {
   if (gs.duoRoundLaunched || _countdownLaunched) return;
   const area = document.getElementById('duo-countdown-area');
   if (!area) return;
 
-  const targetMs = startAtTs.toMillis ? startAtTs.toMillis() : startAtTs.seconds * 1000;
+  const targetMs = startAtTs.toMillis ? startAtTs.toMillis() : (startAtTs.seconds ?? 0) * 1000;
   if (gs.duoCountdownTimer && gs.duoCountdownStartMs === targetMs) return; // same countdown instance
   if (gs.duoCountdownTimer && gs.duoCountdownStartMs !== targetMs) {
     clearTimeout(gs.duoCountdownTimer as ReturnType<typeof setTimeout>);
@@ -425,12 +441,12 @@ export async function launchDuoGame(): Promise<void> {
   // Calculate total cells to fill — check normal levels first, then practice
   const { getAllLevels, getPracticeLevels } = await import('../data/dataRegistry');
   const levels = getAllLevels();
-  let level = levels.find((l) => l.id === gs.duoRoomData.levelId);
-  let overrideData: any = undefined;
+  let level = levels.find((l) => l.id === gs.duoRoomData!.levelId);
+  let overrideData: LevelData | undefined = undefined;
   if (!level) {
     // Try practice levels (async)
     const practiceLevels = await getPracticeLevels();
-    level = practiceLevels.find((l) => l.id === gs.duoRoomData.levelId);
+    level = practiceLevels.find((l) => l.id === gs.duoRoomData!.levelId);
     if (level) overrideData = level;
   }
   if (level) {
@@ -453,7 +469,7 @@ export async function launchDuoGame(): Promise<void> {
 
   // Both host and guest update status to 'playing' via merge write
   // Whoever writes first wins; second write is a no-op (same value)
-  const statusUpdate: any = {
+  const statusUpdate: Record<string, unknown> = {
     status: 'playing',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
@@ -552,7 +568,7 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
 // ── Result Modal ─────────────────────────────────────────────────────
 
 let duoResultShown = false;
-export function showDuoResult(d: any): void {
+export function showDuoResult(d: DuoRoomData): void {
   if (duoResultShown) return;
   duoResultShown = true;
 
@@ -566,12 +582,12 @@ export function showDuoResult(d: any): void {
   const diff = Math.abs(hTime - gTime);
 
   // Record win/draw
-  let rec: any;
+  let rec: DuoRecords;
   if (isDraw) {
     rec = recordDuoDraw();
   } else {
-    const winner = hWin ? d.hostAlias : d.guestAlias;
-    const loser = hWin ? d.guestAlias : d.hostAlias;
+    const winner = hWin ? d.hostAlias : (d.guestAlias || '');
+    const loser = hWin ? (d.guestAlias || '') : d.hostAlias;
     rec = recordDuoWin(winner, loser);
   }
 
@@ -594,12 +610,12 @@ export function showDuoResult(d: any): void {
                 </div>`;
   }
 
-  contentHtml += `<div class="duo-result-cards" id="duo-result-cards">${makeCard(d.hostAlias, hTime, d.hostStars, hWin)}${makeCard(d.guestAlias, gTime, d.guestStars, gWin)}</div>`;
+  contentHtml += `<div class="duo-result-cards" id="duo-result-cards">${makeCard(d.hostAlias, hTime, d.hostStars, hWin)}${makeCard(d.guestAlias || '', gTime, d.guestStars, gWin)}</div>`;
 
   if (isDraw) {
     contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultDraw')}</div>`;
   } else {
-    const winnerAlias = hWin ? d.hostAlias : d.guestAlias;
+    const winnerAlias = hWin ? d.hostAlias : (d.guestAlias || '');
     contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultFaster', { winner: winnerAlias, diff: formatSeconds(diff) })}</div>`;
   }
 
@@ -640,15 +656,15 @@ export function showDuoResult(d: any): void {
 
 // ── Duo Records & Streaks ────────────────────────────────────────────
 
-export function loadDuoRecords(): any {
-  return readJson(SK.DUO_RECORDS, { wins: {}, streak: 0, streakHolder: '' });
+export function loadDuoRecords(): DuoRecords {
+  return readJson<DuoRecords>(SK.DUO_RECORDS, { wins: {}, streak: 0, streakHolder: '' });
 }
 
-export function saveDuoRecords(data: any): void {
+export function saveDuoRecords(data: DuoRecords): void {
   writeJson(SK.DUO_RECORDS, data);
 }
 
-export function recordDuoWin(winnerAlias: string, loserAlias: string): any {
+export function recordDuoWin(winnerAlias: string, loserAlias: string): DuoRecords {
   const rec = loadDuoRecords();
   if (!rec.wins) rec.wins = {};
   rec.wins[winnerAlias] = (rec.wins[winnerAlias] || 0) + 1;
@@ -664,7 +680,7 @@ export function recordDuoWin(winnerAlias: string, loserAlias: string): any {
   return rec;
 }
 
-export function recordDuoDraw(): any {
+export function recordDuoDraw(): DuoRecords {
   const rec = loadDuoRecords();
   rec.streak = 0;
   rec.streakHolder = '';
@@ -691,7 +707,7 @@ export function sendDuoEmoji(emoji: string): void {
   spawnEmojiFloat(emoji, true);
 }
 
-export function handleDuoEmoji(d: any): void {
+export function handleDuoEmoji(d: DuoRoomData): void {
   if (!gs.isDuoMode) return;
   const emojiField = gs.duoRole === 'host' ? 'guestEmoji' : 'hostEmoji';
   const tsField = gs.duoRole === 'host' ? 'guestEmojiTs' : 'hostEmojiTs';
@@ -825,12 +841,12 @@ export function startDuoGlowListener(): void {
   if (!gs.firebaseReady) return;
   if (gs.duoGlowUnsubscribe) gs.duoGlowUnsubscribe();
   gs.duoGlowUnsubscribe = duoRoomRef().onSnapshot(
-    async (snap: any) => {
+    async (snap: FirestoreDoc) => {
       // Remove old glow
       document.querySelectorAll('.level-item.duo-glow').forEach((el) => el.classList.remove('duo-glow'));
       document.querySelectorAll('.stage-node.duo-waiting').forEach((el) => el.classList.remove('duo-waiting'));
       if (!snap.exists) return;
-      const d = snap.data();
+      const d = snap.data() as unknown as DuoRoomData;
       if (d.status !== 'waiting' || !d.levelId) return;
       const { playerId } = getPlayerIdentity();
       if (d.hostId === playerId) return; // Don't glow my own room
@@ -853,8 +869,8 @@ export function startDuoGlowListener(): void {
 
       // Find the matching level card and make it glow
       const items = document.querySelectorAll('#level-list .level-item');
-      const filtered = getFilteredLevels().filter((l: any) => !l.hidden);
-      filtered.forEach((l: any, i: number) => {
+      const filtered = getFilteredLevels().filter((l: { hidden?: boolean }) => !l.hidden);
+      filtered.forEach((l: { id: number }, i: number) => {
         if (l.id === d.levelId && items[i]) {
           items[i].classList.add('duo-glow');
         }

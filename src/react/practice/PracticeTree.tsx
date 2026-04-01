@@ -3,10 +3,10 @@
 
 import { useCallback, type ReactElement } from 'react';
 import { usePracticeTreeStore, type TechNodeState, type TechStatus } from './practiceTreeStore';
+import { t } from '../../i18n/t';
 import { TreeNode } from './TreeNode';
 import { TreeSpine } from './TreeSpine';
 import { TreeFork } from './TreeFork';
-import { t } from '../../i18n/t';
 
 // ── Tree structure definition (must match practiceLobby.ts) ──────────
 
@@ -35,7 +35,7 @@ function PhaseLabel({ text }: { text: string }): ReactElement {
 // ── Convergence hint ──────────────────────────────────────────────────
 
 function ConvergeHint(): ReactElement {
-  return <div className="tree-converge-hint">三路匯合</div>;
+  return <div className="tree-converge-hint">{t('miscRuntime.convergeHint')}</div>;
 }
 
 // ── Main component ────────────────────────────────────────────────────

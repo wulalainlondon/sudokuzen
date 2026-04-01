@@ -1,7 +1,7 @@
 // Core game logic — init, input, win detection, save/load
 // Skill mode logic lives in features/skills/skillController.ts.
 
-import { gs, type LevelData } from './state';
+import { gs, type LevelData, type ActionRecord } from './state';
 import { getAllLevels } from '../data/dataRegistry';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds, cellLabel, normalizeSavedCells } from './utils';
@@ -149,7 +149,7 @@ export function initGame(
   levelId = 1,
   forceReset = false,
   playWithGhost = false,
-  ghostData: any = null,
+  ghostData: ActionRecord[] | null = null,
   overrideLevelData?: LevelData,
 ): void {
   callCloseLibrary();
@@ -261,7 +261,18 @@ export function saveGameStatus(): void {
   }
 }
 
-export function loadGameStatus(levelId: number): any {
+export interface SavedGameState {
+  levelId: number;
+  cellsData: import('./state').CellData[];
+  seconds: number;
+  errors: number;
+  submissionCount: number;
+  actionHistory: ActionRecord[];
+  isGhostMode: boolean;
+  ghostHistory: ActionRecord[] | null;
+}
+
+export function loadGameStatus(levelId: number): SavedGameState | null {
   const saved = localStorage.getItem(SK.save(levelId, gs.isSpeedrunMode));
   if (!saved) return null;
   try {
@@ -673,10 +684,10 @@ export function showGameOver(): void {
               techSubtitle: meta?.subtitle ?? '',
               isIronman: gs.wildChallengeMode === 'ironman',
             };
-            bridgeShowGameOver(mode as any, wildInfo);
+            bridgeShowGameOver(mode, wildInfo);
           });
         } else {
-          bridgeShowGameOver(mode as any);
+          bridgeShowGameOver(mode);
         }
         const session = wc.getSession();
         if (session) {
@@ -684,7 +695,7 @@ export function showGameOver(): void {
         }
       });
     } else {
-      bridgeShowGameOver(mode as any);
+      bridgeShowGameOver(mode);
     }
   });
 }

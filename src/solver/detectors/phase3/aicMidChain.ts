@@ -8,10 +8,10 @@ function cellRef(idx: number): string {
 }
 
 /**
- * AIC Mid-Chain（链中矛盾消去）：
- * 假设某格某候选数为真，沿强链传播，若在深度6内产生矛盾
- * （同格两个候选同时为真，或同单元同数字两处为真），
- * 则该候选数为假，可消去。
+ * AIC Mid-Chain (contradiction elimination):
+ * Assume a candidate is true and propagate along strong links. If a contradiction occurs within depth 6
+ * (two candidates true in the same cell, or same digit true in two places in a unit),
+ * then the assumption is false and the candidate can be eliminated.
  */
 export function detectAicMidChain(board: SolverBoard): DetectionResult | null {
   if (board.emptyCells.length < 4) return null;
@@ -91,7 +91,7 @@ export function detectAicMidChain(board: SolverBoard): DetectionResult | null {
           technique: 'aic_mid_chain',
           actions,
           patternCells: [cell],
-          description: `AIC Mid-Chain：假设 ${cellRef(cell)} 为 ${d} 产生矛盾，消去该候选数`,
+          description: `AIC Mid-Chain: assuming ${cellRef(cell)}=${d} leads to contradiction, eliminate this candidate`,
         };
       }
     }

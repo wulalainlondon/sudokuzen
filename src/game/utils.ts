@@ -23,24 +23,24 @@ export function hashStringToSeed(str: string): number {
   return h >>> 0;
 }
 
-export function clampDigit(v: any): number {
+export function clampDigit(v: unknown): number {
   const n = Number(v);
   if (!Number.isFinite(n)) return 0;
   const rounded = Math.round(n);
   return rounded >= 1 && rounded <= 9 ? rounded : 0;
 }
 
-export function normalizeNotes(rawNotes: any): number[] {
+export function normalizeNotes(rawNotes: unknown): number[] {
   if (!Array.isArray(rawNotes)) return [];
   const uniq = new Set<number>();
-  rawNotes.forEach((n: any) => {
+  rawNotes.forEach((n: unknown) => {
     const d = clampDigit(n);
     if (d !== 0) uniq.add(d);
   });
   return Array.from(uniq).sort((a, b) => a - b);
 }
 
-export function normalizeSavedCells(rawCells: any, puzzle: number[]): import('./state').CellData[] | null {
+export function normalizeSavedCells(rawCells: unknown, puzzle: number[]): import('./state').CellData[] | null {
   if (!Array.isArray(rawCells) || !Array.isArray(puzzle) || puzzle.length !== 81) return null;
   const safe: import('./state').CellData[] = [];
   for (let i = 0; i < 81; i++) {
@@ -49,12 +49,12 @@ export function normalizeSavedCells(rawCells: any, puzzle: number[]): import('./
       safe.push({ value: clue, fixed: true, notes: [], isError: false });
       continue;
     }
-    const raw = rawCells[i];
-    const value = clampDigit(raw && raw.value);
+    const raw = (rawCells as Record<string, unknown>[])[i] as Record<string, unknown> | undefined;
+    const value = clampDigit(raw?.value);
     safe.push({
       value,
       fixed: false,
-      notes: value === 0 ? normalizeNotes(raw && raw.notes) : [],
+      notes: value === 0 ? normalizeNotes(raw?.notes) : [],
       isError: false,
     });
   }
@@ -64,7 +64,7 @@ export function normalizeSavedCells(rawCells: any, puzzle: number[]): import('./
 export const ALIAS_MIN_LEN = 1;
 export const ALIAS_MAX_LEN = 24;
 
-export function normalizeAlias(raw: any): string {
+export function normalizeAlias(raw: unknown): string {
   if (typeof raw !== 'string') return '';
   return raw.trim().slice(0, ALIAS_MAX_LEN);
 }

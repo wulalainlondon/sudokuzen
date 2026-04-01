@@ -7,10 +7,10 @@ function cellRef(idx: number): string {
 }
 
 /**
- * BUG+1（雙值全盤缺陷 +1）：
- * 所有未填格都恰好有 2 個候選，除了一格有 3 個候選。
- * 在那個例外格中，出現 3 次於某單元的那個額外數字就是正確填入值。
- * （若非如此，盤面會陷入 BUG 致命模式 → 多解。）
+ * BUG+1 (Bivalue Universal Grave +1):
+ * All empty cells have exactly 2 candidates, except one cell with 3 candidates.
+ * In that exception cell, the extra digit appearing 3 times in some unit is the correct fill value.
+ * (Otherwise the board would fall into a BUG deadly pattern -> multiple solutions.)
  */
 export function detectBugPlusOne(board: SolverBoard): DetectionResult | null {
   const empty = board.emptyCells;
@@ -23,13 +23,13 @@ export function detectBugPlusOne(board: SolverBoard): DetectionResult | null {
     if (cnt === 3 && triCell === -1) {
       triCell = cell;
     } else {
-      // 多於一個非雙值格，或有 >3 候選的格 → 不是 BUG+1
+      // More than one non-bivalue cell, or cell with >3 candidates -> not BUG+1
       return null;
     }
   }
   if (triCell === -1) return null;
 
-  // 找例外格中哪個數字在某單元中出現 3 次
+  // Find which digit in the exception cell appears 3 times in some unit
   const triDigits = bitsToDigits(board.candidates[triCell]);
   const units = SolverBoard.CELL_UNITS[triCell]; // [rowUnit, colUnit, boxUnit]
 
@@ -37,12 +37,12 @@ export function detectBugPlusOne(board: SolverBoard): DetectionResult | null {
     for (const unitIdx of units) {
       const count = board.digitCellsInUnit(unitIdx, d).length;
       if (count === 3) {
-        // 這個數字就是要填的
+        // This digit is the one to fill
         return {
           technique: 'bug_plus_one',
           actions: [{ kind: 'fill', cell: triCell, digit: d }],
           patternCells: empty,
-          description: `BUG+1：所有空格皆雙值，僅 ${cellRef(triCell)} 有 3 候選。數字 ${d} 在單元中出現 3 次，填入 ${d}`,
+          description: `BUG+1: all empty cells bivalue, only ${cellRef(triCell)} has 3 candidates. Digit ${d} appears 3 times in a unit, fill ${d}`,
         };
       }
     }

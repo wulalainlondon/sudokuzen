@@ -7,6 +7,7 @@ import { showFeedback } from '../../ui/feedback';
 import { updateCellDisplay } from '../../game/board';
 import { cellLabel } from '../../game/utils';
 import { recordElimination } from '../stats';
+import { t } from '../../i18n/t';
 import { registerSkill, evaluateAllSkills, getSkillById } from './skillRegistry';
 import { nakedSingleSkill } from './nakedSingle';
 import { hiddenSingleSkill } from './hiddenSingle';
@@ -107,24 +108,24 @@ function updatePanelUI(): void {
 
   if (skill.casting && p) {
     subtitle.textContent = `${p.skillName} · {${p.digits?.join(',') ?? '-'}}`;
-    status.textContent = skill.castMessage || '演算中...';
+    status.textContent = skill.castMessage || t('skills.computing');
     castBtn.disabled = true;
     fillBtn.disabled = true;
-    castBtn.textContent = '施放中...';
+    castBtn.textContent = t('skills.casting');
     return;
   }
 
   fillBtn.disabled = false;
   if (p?.valid) {
     subtitle.textContent = `${p.skillName} · {${p.digits?.join(',') ?? ''}}`;
-    status.textContent = `可施放：${p.unitLabel} 可消去 ${p.targets.length} 個`;
+    status.textContent = t('skills.canCast', { unit: p.unitLabel ?? '', count: String(p.targets.length) });
     castBtn.disabled = false;
     castBtn.textContent = `${p.skillName}（-${p.targets.length}）`;
   } else {
-    subtitle.textContent = p?.reason || '未構成任何招式';
-    status.textContent = `已選 ${skill.selectedCells.length} 格 · 可長按更多格`;
+    subtitle.textContent = p?.reason || t('skills.noSkillFormed');
+    status.textContent = t('skills.selectedCount', { count: String(skill.selectedCells.length) });
     castBtn.disabled = true;
-    castBtn.textContent = '施放';
+    castBtn.textContent = t('skills.castLabel');
   }
 }
 
@@ -372,7 +373,7 @@ async function quickCastFill(idx: number, digit: number): Promise<void> {
   cellData.value = digit;
   cellData.notes = [];
   cellData.isError = false;
-  recordAction('quickcast_fill', `${cellLabel(idx)} 快斬填入 ${digit}`, idx, digit, null);
+  recordAction('quickcast_fill', t('skills.quickCastFill', { cell: cellLabel(idx), digit: String(digit) }), idx, digit, null);
 
   // Auto-eliminate from peers
   const { updateCellDisplay, getUnitIndices } = await import('../../game/board');
@@ -423,7 +424,7 @@ export async function castSkill(): Promise<void> {
   if (!skill.enabled || skill.casting) return;
 
   if (!_preview?.valid) {
-    showFeedback(_preview?.reason || '條件未成立', 'error');
+    showFeedback(_preview?.reason || t('skills.conditionNotMet'), 'error');
     return;
   }
 
@@ -432,7 +433,7 @@ export async function castSkill(): Promise<void> {
 
   const result = detector.execute(gs.cellsData, _preview);
   if (!result.valid || !result.targets.length) {
-    showFeedback(result.reason || '沒有可消去候選', 'error');
+    showFeedback(result.reason || t('skills.noElimTargets'), 'error');
     exitSkillMode();
     return;
   }
@@ -463,7 +464,7 @@ export async function castSkill(): Promise<void> {
   }
 
   // Phase 3: Done — show count + exit
-  showFeedback(`−${result.targets.length} 候選`, 'success');
+  showFeedback(t('skills.elimCount', { count: String(result.targets.length) }), 'success');
   exitSkillMode();
 
   const { saveGameStatus } = await import('../../game/core');

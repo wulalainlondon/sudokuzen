@@ -1,5 +1,6 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview } from './types';
+import { t } from '../../i18n/t';
 
 const registry: SkillDetector[] = [];
 
@@ -22,7 +23,7 @@ export function evaluateAllSkills(selectedCells: number[], cells: CellData[]): S
   return (
     bestMiss ?? {
       valid: false,
-      reason: '未構成任何招式',
+      reason: t('skills.noSkillFormed'),
       skillId: '',
       skillName: '',
       skillSubtitle: '',

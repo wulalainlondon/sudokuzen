@@ -5,53 +5,19 @@ import { gs } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { getTeachData, getTeachManifest, getTeachShard, hasTeachModule } from '../data/dataRegistry';
 import type { TeachModuleMeta } from '../data/dataRegistry';
+import { t } from '../i18n/t';
 
 // ── Tech name mapping ─────────────────────────────────────────────
 
-export const TECH_MAP: Record<string, string> = {
-  naked_single: '顯性單數',
-  hidden_single: '隱藏單數',
-  locked_candidates: '鎖定候選數',
-  naked_pair: '顯性數對',
-  hidden_pair: '隱藏數對',
-  naked_triple: '顯性三數組',
-  hidden_triple: '隱藏三數組',
-  x_wing: 'X-Wing',
-  w_wing: 'W-Wing',
-  x_cycle_simple_coloring: 'X-Cycle / Simple Coloring',
-  skyscraper: '摩天樓 (Skyscraper)',
-  two_string_kite: '雙線風箏 (Two-String Kite)',
-  empty_rectangle: '空矩形 (Empty Rectangle)',
-  unique_rectangle: '唯一矩形 (UR)',
-  bug_plus_one: 'BUG+1',
-  xy_wing: 'XY-Wing',
-  xyz_wing: 'XYZ-Wing',
-  swordfish: '劍魚跡 (Swordfish)',
-  finned_swordfish: '帶鰭劍魚',
-  finned_x_wing: '帶鰭 X-Wing',
-  jellyfish: '水母跡 (Jellyfish)',
-  finned_jellyfish: '帶鰭水母',
-  remote_pairs: '遠程數對 (Remote Pairs)',
-  medusa_3d: '3D Medusa',
-  xy_chain: 'XY-Chain',
-  aic: 'AIC 強弱鏈',
-  aic_mid_chain: 'AIC 中鏈',
-  grouped_aic_nice_loop: 'Grouped AIC / Nice Loop',
-  aic_long_chain: 'AIC 長鏈',
-  discontinuous_nice_loop: '斷續 Nice Loop',
-  als_xz: 'ALS-XZ',
-  als_xy: 'ALS-XY',
-  als_w_wing: 'ALS-W-Wing',
-  als_chain: 'ALS Chain',
-  forcing_chain_net: 'Forcing Chain / Net',
-  cell_forcing_chain: '格逼鏈 (Cell Forcing)',
-  region_forcing_chain: '區逼鏈 (Region Forcing)',
-  sue_de_coq: 'Sue de Coq',
-  template: '模板法 (Template)',
-  death_blossom: '死亡綻放 (Death Blossom)',
-  exocet_death_blossom: 'Exocet / Death Blossom',
-  unknown: '綜合技巧',
-};
+/** Localised technique name map — reads from i18n at access time via Proxy. */
+export const TECH_MAP: Record<string, string> = new Proxy({} as Record<string, string>, {
+  get(_target, prop: string) {
+    const val = t(`techMap.${prop}`);
+    // t() returns the key itself when missing — fall back to prop
+    return val === `techMap.${prop}` ? prop : val;
+  },
+  has() { return true; },
+});
 
 // ── Learning order & group definitions ────────────────────────────
 
@@ -60,39 +26,22 @@ const LEARNING_ORDER = [
   22, 23, 37, 38, 39, 36, 25, 40,
 ];
 
-const GROUPS = [
-  { id: 'foundation', name: '第一層・基礎定式', hint: '先建立基本觀念與候選數紀律', ids: [1, 2, 3, 4, 5, 6, 7] },
-  {
-    id: 'candidate',
-    name: '第二層・候選數結構',
-    hint: '看懂線上/宮內候選關係與初階刪減',
-    ids: [8, 10, 11, 13, 12, 14, 27, 29],
-  },
-  {
-    id: 'pattern',
-    name: '第三層・圖形與刪減',
-    hint: '翼型、魚型與鎖定鏈的實戰應用',
-    ids: [9, 16, 17, 30, 31, 26, 28, 32],
-  },
-  {
-    id: 'chain',
-    name: '第四層・鏈式推理',
-    hint: '進入顏色鏈、唯一矩形與高階魚型',
-    ids: [15, 18, 19, 20, 33, 21, 24, 34, 35],
-  },
-  {
-    id: 'master',
-    name: '第五層・高階整合',
-    hint: 'ALS、Template、Sue de Coq 等高階可訓練整合技',
-    ids: [22, 23, 37, 38, 39, 36],
-  },
-  {
-    id: 'legend',
-    name: '第六層・宗師結構',
-    hint: 'Exocet / Death Blossom 等超高難結構技巧',
-    ids: [25, 40],
-  },
+const GROUP_DEFS = [
+  { id: 'foundation', ids: [1, 2, 3, 4, 5, 6, 7] },
+  { id: 'candidate', ids: [8, 10, 11, 13, 12, 14, 27, 29] },
+  { id: 'pattern', ids: [9, 16, 17, 30, 31, 26, 28, 32] },
+  { id: 'chain', ids: [15, 18, 19, 20, 33, 21, 24, 34, 35] },
+  { id: 'master', ids: [22, 23, 37, 38, 39, 36] },
+  { id: 'legend', ids: [25, 40] },
 ];
+
+function getGroups() {
+  return GROUP_DEFS.map((g) => ({
+    ...g,
+    name: t(`learnGroups.${g.id}`),
+    hint: t(`learnGroups.${g.id}Hint`),
+  }));
+}
 
 // ── Library functions ─────────────────────────────────────────────
 
@@ -166,7 +115,7 @@ export function getLibraryLearningGroups(items: LibraryItem[]) {
   const byId = new Map(items.map((item) => [item.book, item]));
   const used = new Set<number>();
 
-  const groups = GROUPS.map((group) => {
+  const groups = getGroups().map((group) => {
     const groupItems = group.ids.map((id) => byId.get(id)).filter(Boolean) as LibraryItem[];
     groupItems.forEach((item) => used.add(item.book));
     return { ...group, items: groupItems };
@@ -176,8 +125,8 @@ export function getLibraryLearningGroups(items: LibraryItem[]) {
   if (ungrouped.length) {
     groups.push({
       id: 'extra',
-      name: '補充・延伸秘笈',
-      hint: '額外補充的技巧，建議在前面路徑完成後再讀',
+      name: t('learnGroups.extra'),
+      hint: t('learnGroups.extraHint'),
       ids: [],
       items: ungrouped,
     });
@@ -188,12 +137,12 @@ export function getLibraryLearningGroups(items: LibraryItem[]) {
 
 export function getTeachStageLabel(stars: number | string): string {
   const n = Number(stars);
-  if (!Number.isFinite(n)) return '研習中';
-  if (n <= 7) return '入門';
-  if (n <= 17) return '進階';
-  if (n <= 25) return '高階';
-  if (n <= 35) return '專家';
-  return '神級';
+  if (!Number.isFinite(n)) return t('stageLabels.studying');
+  if (n <= 7) return t('stageLabels.beginner');
+  if (n <= 17) return t('stageLabels.intermediate');
+  if (n <= 25) return t('stageLabels.advanced');
+  if (n <= 35) return t('stageLabels.expert');
+  return t('stageLabels.godlike');
 }
 
 export function renderLibraryCards(): void {

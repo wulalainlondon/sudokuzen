@@ -14,7 +14,7 @@ export function detectNakedSingle(board: SolverBoard): DetectionResult | null {
         technique: 'naked_single',
         actions: [{ kind: 'fill', cell: idx, digit }],
         patternCells: [idx],
-        description: `${cellRef(idx)} 為裸單，唯一候選為 ${digit}`,
+        description: `${cellRef(idx)} is a Naked Single, only candidate is ${digit}`,
       };
     }
   }

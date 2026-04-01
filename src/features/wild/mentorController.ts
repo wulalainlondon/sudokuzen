@@ -4,6 +4,7 @@
 import { readJson, writeJson } from '../../storage/keys';
 import type { MentorLine } from './mentorDialogue';
 import { MENTOR_INTRO, MENTOR_POST_DEMO, MENTOR_FINALE, getMilestoneForLevel, getTechNote } from './mentorDialogue';
+import { t } from '../../i18n/t';
 
 // ── Seen state persistence ───────────────────────────────────────────
 
@@ -87,7 +88,7 @@ export async function triggerMilestoneIfNeeded(newLevel: number): Promise<void> 
 export async function triggerFirstKillIfNeeded(): Promise<void> {
   const key = 'first_kill';
   if (hasSeen(key)) return;
-  await showMentorMessage({ key, text: '第一次斬落，記住這個感覺。\n邏輯不會騙人，但它會藏起來。', sub: '—— 弈塵' });
+  await showMentorMessage({ key, text: t('miscRuntime.firstKillText'), sub: t('miscRuntime.firstKillSub') });
 }
 
 /** Show finale message after defeating exocet or collecting all. */
@@ -112,7 +113,7 @@ export function triggerContinuousFillHint(): void {
   // Show mentor hint after a brief delay (let player see the board first)
   setTimeout(async () => {
     const { showFeedback } = await import('../../ui/feedback');
-    showFeedback('提示：開啟後可直接點擊空格填入選取中的數字', 'success');
+    showFeedback(t('miscRuntime.continuousFillHint'), 'success');
   }, 1500);
 }
 

@@ -7,9 +7,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * XY-Chain（XY 链）：
- * 由双值格组成的链，相邻格共享一个候选数。
- * 若链首格有 {a,b}，链尾格有 {c,a}，则同时看到首尾的格子可消去候选数 a。
+ * XY-Chain:
+ * A chain of bivalue cells where adjacent cells share one candidate.
+ * If the first cell has {a,b} and the last has {c,a}, cells seeing both ends can eliminate candidate a.
  */
 export function detectXyChain(board: SolverBoard): DetectionResult | null {
   const bivals = board.bivalueCells;
@@ -91,7 +91,7 @@ function dfsChain(
         technique: 'xy_chain',
         actions,
         patternCells: [...chain],
-        description: `XY-Chain：链 ${chain.map(cellRef).join('-')}，消去候选数 ${exitDigit} 共 ${actions.length} 处`,
+        description: `XY-Chain: chain ${chain.map(cellRef).join('-')}, eliminate candidate ${exitDigit} in ${actions.length} cells`,
       };
     }
   }

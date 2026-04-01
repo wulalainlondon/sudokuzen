@@ -3,6 +3,8 @@
 import { gs } from './state';
 import type { CellData } from './state';
 import { playCellSelectSound } from './audio';
+import { showFeedback } from '../ui/feedback';
+import { t } from '../i18n/t';
 
 // ── Callback hooks (injected by core.ts to avoid circular imports) ───
 let _onContinuousCellClick: ((idx: number) => boolean) | null = null;
@@ -198,21 +200,25 @@ export function updateNumpadState(): void {
   if (!gs.numButtons.length || !gs.cellsData.length) return;
   const counts = new Array(10).fill(0);
   for (const c of gs.cellsData) {
-    const v = Number((c as any).value);
+    const v = c.value;
     if (!Number.isFinite(v)) continue;
     const d = Math.round(v);
     if (d >= 1 && d <= 9) counts[d] += 1;
   }
   gs.numButtons.forEach((btn, i) => {
     const n = i + 1;
-    btn.classList.toggle('completed', counts[n] >= 9);
+    const done = counts[n] >= 9;
+    btn.classList.toggle('completed', done);
+    btn.disabled = done;
+    btn.setAttribute('aria-disabled', String(done));
   });
-  // Auto-cancel continuous fill when the locked digit is fully placed
+  // When the locked digit is fully placed, keep continuous mode on
+  // but return to "no locked digit" (0) to avoid breaking input flow.
   if (gs.continuousFillDigit !== null && gs.continuousFillDigit >= 1 && counts[gs.continuousFillDigit] >= 9) {
-    gs.continuousFillDigit = null;
-    const btn = document.getElementById('continuous-fill-toggle');
-    if (btn) btn.classList.remove('active');
+    const finishedDigit = gs.continuousFillDigit;
+    gs.continuousFillDigit = 0;
     gs.numButtons.forEach((b) => b.classList.remove('continuous-active'));
+    showFeedback(t('miscRuntime.digitComplete', { digit: String(finishedDigit) }), 'success');
   }
 }
 

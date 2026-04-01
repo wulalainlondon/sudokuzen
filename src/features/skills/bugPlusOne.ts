@@ -1,16 +1,17 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 
-const META = { id: 'bug_plus_one', name: '孤蟲', subtitle: 'BUG+1', sweepDirection: 'inward' as const };
+const META = { id: 'bug_plus_one', get name() { return t('skills.bugPlusOneName'); }, subtitle: 'BUG+1', sweepDirection: 'inward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 1) return makeEmptyPreview(META, selectedCells.length < 1 ? '' : '需選 1 格');
+  if (selectedCells.length !== 1) return makeEmptyPreview(META, selectedCells.length < 1 ? '' : t('skills.needSelectN', { n: '1' }));
 
   const targetIdx = selectedCells[0];
   const targetCell = cells[targetIdx];
   if (!targetCell || targetCell.value !== 0 || targetCell.notes.length !== 3) {
-    return makeEmptyPreview(META, '所選格需有 3 個候選');
+    return makeEmptyPreview(META, t('skills.need3Candidates'));
   }
 
   // BUG+1 condition: every other unsolved cell has exactly 2 candidates
@@ -32,7 +33,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   }
 
   if (!bugValid) {
-    return makeEmptyPreview(META, '未構成孤蟲（需其他格皆為雙候選）');
+    return makeEmptyPreview(META, t('skills.notBugState'));
   }
 
   // Find the unique digit: the digit that appears an odd number of times
@@ -81,7 +82,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   }
 
   if (bugDigit === null) {
-    return makeEmptyPreview(META, '未構成孤蟲');
+    return makeEmptyPreview(META, t('skills.noBugPlusOne'));
   }
 
   // Targets: eliminate the other 2 candidates from the target cell
@@ -116,7 +117,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

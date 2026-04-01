@@ -1,10 +1,12 @@
 // Static metadata for all 40 techniques — single source of truth for the ecology engine.
 
+import { t } from '../../i18n/t';
+
 export type Rarity = 'common' | 'rare' | 'legendary' | 'mythic';
 
 export interface TechniqueMeta {
   key: string; // matches generated/*.json filename (without extension)
-  name: string; // Chinese display name
+  name: string; // Chinese display name (fallback — prefer getLocalizedTechName)
   subtitle: string; // English name
   weight: number; // difficulty weight (higher = rarer spawn)
   rarity: Rarity;
@@ -554,7 +556,7 @@ export const TECHNIQUE_TABLE: TechniqueMeta[] = [
 
 // Lookup by key
 const _byKey = new Map<string, TechniqueMeta>();
-for (const t of TECHNIQUE_TABLE) _byKey.set(t.key, t);
+for (const meta of TECHNIQUE_TABLE) _byKey.set(meta.key, meta);
 
 export function getTechniqueMeta(key: string): TechniqueMeta | undefined {
   return _byKey.get(key);
@@ -563,9 +565,9 @@ export function getTechniqueMeta(key: string): TechniqueMeta | undefined {
 /** Get all technique keys that should auto-resolve at the given IQ level. */
 export function getAutoCastKeys(iqLevel: number): Set<string> {
   const keys = new Set<string>();
-  for (const t of TECHNIQUE_TABLE) {
-    if (t.autoCastGate > 0 && iqLevel >= t.autoCastGate) {
-      keys.add(t.key);
+  for (const meta of TECHNIQUE_TABLE) {
+    if (meta.autoCastGate > 0 && iqLevel >= meta.autoCastGate) {
+      keys.add(meta.key);
     }
   }
   return keys;
@@ -577,3 +579,15 @@ export const RARITY_MULTIPLIER: Record<Rarity, number> = {
   legendary: 3,
   mythic: 5,
 };
+
+/** Get the localised display name for a technique key, falling back to the static `name` field. */
+export function getLocalizedTechName(key: string): string {
+  const i18nKey = `technique.${key}`;
+  const result = t(i18nKey);
+  // t() returns the key itself if not found — fall back to static name
+  if (result === i18nKey) {
+    const meta = _byKey.get(key);
+    return meta?.name ?? key;
+  }
+  return result;
+}

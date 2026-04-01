@@ -1,12 +1,13 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 import { evaluateFish } from './fishHelper';
 
-const META = { id: 'x_wing', name: '破陣', subtitle: 'X-Wing', sweepDirection: 'outward' as const };
+const META = { id: 'x_wing', get name() { return t('skills.xWingName'); }, subtitle: 'X-Wing', sweepDirection: 'outward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 4) return makeEmptyPreview(META, selectedCells.length < 4 ? '' : '需選 4 格');
+  if (selectedCells.length !== 4) return makeEmptyPreview(META, selectedCells.length < 4 ? '' : t('skills.needSelectN', { n: '4' }));
   return evaluateFish(selectedCells, cells, 2, META);
 }
 
@@ -25,7 +26,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

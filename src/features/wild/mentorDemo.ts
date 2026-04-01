@@ -4,6 +4,7 @@
 
 import { renderGrid, updateCellDisplay } from '../../game/board';
 import { gs } from '../../game/state';
+import { t } from '../../i18n/t';
 
 // ── Real puzzle: exocet_death_blossom.json[17] ──────────────────────
 
@@ -82,7 +83,7 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
       if (g[i].value !== 0 || g[i].cands.size !== 1) continue;
       const d = [...g[i].cands][0];
       const elims = placeAndLog(g, i, d);
-      steps.push({ technique: 'naked_single', label: '明眼', eliminations: elims, fills: [{ cellIdx: i, digit: d }], sourceCells: [i] });
+      steps.push({ technique: 'naked_single', label: t('skills.nakedSingleName'), eliminations: elims, fills: [{ cellIdx: i, digit: d }], sourceCells: [i] });
       progress = true;
     }
     if (progress) continue;
@@ -99,7 +100,7 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
           if (c !== d) { g[idx].cands.delete(c); selfElims.push({ cellIdx: idx, digit: c }); }
         }
         const peerElims = placeAndLog(g, idx, d);
-        steps.push({ technique: 'hidden_single', label: '暗眼', eliminations: [...selfElims, ...peerElims], fills: [{ cellIdx: idx, digit: d }], sourceCells: [idx] });
+        steps.push({ technique: 'hidden_single', label: t('skills.hiddenSingleName'), eliminations: [...selfElims, ...peerElims], fills: [{ cellIdx: idx, digit: d }], sourceCells: [idx] });
         progress = true;
         break;
       }
@@ -133,7 +134,7 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
           }
         }
         if (elims.length > 0) {
-          steps.push({ technique: 'locked_candidates', label: '封鎖', eliminations: elims, fills: [], sourceCells: cells });
+          steps.push({ technique: 'locked_candidates', label: t('skills.lockedCandidatesName'), eliminations: elims, fills: [], sourceCells: cells });
           progress = true;
           break;
         }
@@ -163,7 +164,7 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
               }
             }
             if (elims.length > 0) {
-              steps.push({ technique: 'locked_candidates', label: '封鎖', eliminations: elims, fills: [], sourceCells: cells });
+              steps.push({ technique: 'locked_candidates', label: t('skills.lockedCandidatesName'), eliminations: elims, fills: [], sourceCells: cells });
               progress = true;
               break;
             }
@@ -191,7 +192,7 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
             }
           }
           if (elims.length > 0) {
-            steps.push({ technique: 'hidden_pair', label: '藏雙', eliminations: elims, fills: [], sourceCells: cells });
+            steps.push({ technique: 'hidden_pair', label: t('skills.hiddenPairName'), eliminations: elims, fills: [], sourceCells: cells });
             progress = true;
             break;
           }
@@ -220,7 +221,7 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
               }
             }
             if (elims.length > 0) {
-              steps.push({ technique: 'hidden_triple', label: '隱流', eliminations: elims, fills: [], sourceCells: cells });
+              steps.push({ technique: 'hidden_triple', label: t('skills.hiddenTripleName'), eliminations: elims, fills: [], sourceCells: cells });
               progress = true;
               break;
             }
@@ -244,10 +245,15 @@ function findNoteSpan(cellEl: HTMLElement, digit: number): HTMLElement | null {
   return cellEl.querySelector(`.note-num[data-digit="${digit}"]`) as HTMLElement | null;
 }
 
-const TECH_COLORS: Record<string, string> = {
-  '領域展開': '#dfe6e9', '明眼': '#74b9ff', '暗眼': '#a29bfe',
-  '封鎖': '#00cec9', '藏雙': '#fd79a8', '隱流': '#81ecec', '天劫': '#ff3333',
+// Colors keyed by technique ID
+const TECH_COLORS_BY_ID: Record<string, string> = {
+  domain_expansion: '#dfe6e9', naked_single: '#74b9ff', hidden_single: '#a29bfe',
+  locked_candidates: '#00cec9', hidden_pair: '#fd79a8', hidden_triple: '#81ecec', exocet: '#ff3333',
 };
+
+function getTechColor(techId: string): string {
+  return TECH_COLORS_BY_ID[techId] ?? '#fff';
+}
 
 export async function runMentorDemo(): Promise<void> {
   // Setup
@@ -256,7 +262,7 @@ export async function runMentorDemo(): Promise<void> {
   if (container) container.style.display = 'flex';
 
   gs.currentLevel = {
-    id: -1, stars: 0, difficultyName: '世界', displayName: '弈塵的最後一題',
+    id: -1, stars: 0, difficultyName: t('wildRuntime.difficultyWorld'), displayName: t('skills.mentorDemoTitle'),
     puzzle: DEMO_PUZZLE, solution: DEMO_SOLUTION, maxTechnique: 'exocet_death_blossom', source: 'demo',
   };
   gs.cellsData = DEMO_PUZZLE.map(v => ({ value: v, fixed: v !== 0, notes: [] as number[], isError: false }));
@@ -288,8 +294,8 @@ export async function runMentorDemo(): Promise<void> {
   await wait(600);
 
   // ── Phase 0: 領域展開 (same animation as real fillAllCandidates) ──
-  techLabel.textContent = '領域展開';
-  techLabel.style.color = TECH_COLORS['領域展開']!;
+  techLabel.textContent = t('skill.domainExpansion');
+  techLabel.style.color = getTechColor('domain_expansion');
 
   const solverGrid = initGrid(DEMO_PUZZLE);
   // Fill candidate data first
@@ -391,7 +397,7 @@ export async function runMentorDemo(): Promise<void> {
   for (let i = 0; i < singlesSteps.length; i++) {
     const step = singlesSteps[i];
     techLabel.textContent = step.label;
-    techLabel.style.color = TECH_COLORS[step.label] ?? '#fff';
+    techLabel.style.color = getTechColor(step.technique);
 
     applyEliminations(step.eliminations);
     applyFills(step.fills);
@@ -419,7 +425,7 @@ export async function runMentorDemo(): Promise<void> {
   // ── Phase 2: Mid-tier techniques (uses REAL cast animation classes) ──
   for (const step of midSteps) {
     techLabel.textContent = step.label;
-    techLabel.style.color = TECH_COLORS[step.label] ?? '#fff';
+    techLabel.style.color = getTechColor(step.technique);
 
     const isInward = step.technique === 'hidden_pair' || step.technique === 'hidden_triple';
 
@@ -533,8 +539,8 @@ export async function runMentorDemo(): Promise<void> {
         }
       }
       if (sweepFilled) {
-        techLabel.textContent = '明眼';
-        techLabel.style.color = TECH_COLORS['明眼']!;
+        techLabel.textContent = t('skills.nakedSingleName');
+        techLabel.style.color = getTechColor('naked_single');
         counter.textContent = `${filled}/81`;
         await wait(60);
       }
@@ -546,8 +552,8 @@ export async function runMentorDemo(): Promise<void> {
   await wait(700);
 
   // ── Phase 3: 天劫 — the wall ──
-  techLabel.textContent = '天劫';
-  techLabel.style.color = TECH_COLORS['天劫']!;
+  techLabel.textContent = t('technique.exocet_death_blossom');
+  techLabel.style.color = getTechColor('exocet');
 
   // Find cells that still have candidates — these are the REAL stuck cells
   // Only highlight cells with multiple candidates (the bottleneck pattern)

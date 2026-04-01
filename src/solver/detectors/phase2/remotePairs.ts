@@ -7,14 +7,14 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Remote Pairs（遠程數對）：
- * 找一條由相同雙值格 {a,b} 組成的鏈，相鄰格互相看到。
- * 鏈中距離為偶數的兩格（同奇偶性），可從其公共 peers 中消去 a 和 b。
+ * Remote Pairs:
+ * Find a chain of identical bivalue cells {a,b} where adjacent cells see each other.
+ * Two cells at even distance (same parity) can eliminate a and b from their common peers.
  */
 export function detectRemotePairs(board: SolverBoard): DetectionResult | null {
   const bivals = board.bivalueCells;
 
-  // 按候選遮罩分組
+  // Group by candidate mask
   const maskMap = new Map<number, number[]>();
   for (const cell of bivals) {
     const m = board.candidates[cell];
@@ -23,11 +23,11 @@ export function detectRemotePairs(board: SolverBoard): DetectionResult | null {
   }
 
   for (const [mask, cells] of maskMap) {
-    if (cells.length < 4) continue; // 至少需要 4 格形成有效遠程數對
+    if (cells.length < 4) continue; // need at least 4 cells for valid remote pairs
     const digits = bitsToDigits(mask);
     const [a, b] = digits;
 
-    // 建立鄰接表（互相看到的同候選雙值格）
+    // Build adjacency list (bivalue cells with same candidates that see each other)
     const adj = new Map<number, number[]>();
     for (const c of cells) adj.set(c, []);
     for (let i = 0; i < cells.length; i++) {
@@ -39,7 +39,7 @@ export function detectRemotePairs(board: SolverBoard): DetectionResult | null {
       }
     }
 
-    // BFS 從每個格出發，找偶數距離的配對
+    // BFS from each cell, find even-distance pairs
     for (const start of cells) {
       const dist = new Map<number, number>();
       dist.set(start, 0);
@@ -57,9 +57,9 @@ export function detectRemotePairs(board: SolverBoard): DetectionResult | null {
         }
       }
 
-      // 找偶數距離 >= 4 的配對
+      // Find pairs at even distance >= 4
       for (const [cell, d] of dist) {
-        if (cell <= start) continue; // 避免重複
+        if (cell <= start) continue; // avoid duplicates
         if (d < 4 || d % 2 !== 0) continue;
 
         const commonPeers = board.commonPeers([start, cell]);
@@ -74,14 +74,14 @@ export function detectRemotePairs(board: SolverBoard): DetectionResult | null {
         }
         if (actions.length === 0) continue;
 
-        // 重建路徑作為 patternCells
+        // Reconstruct path as patternCells
         const path = reconstructPath(start, cell, dist, adj);
 
         return {
           technique: 'remote_pairs',
           actions,
           patternCells: path,
-          description: `遠程數對：{${a},${b}} 鏈 ${path.map(cellRef).join('→')}，距離 ${d}，消去 ${actions.length} 個候選`,
+          description: `Remote Pairs: {${a},${b}} chain ${path.map(cellRef).join('->')} distance ${d}, eliminate ${actions.length} candidates`,
         };
       }
     }

@@ -1,13 +1,14 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 import { evaluateFish } from './fishHelper';
 
-const META = { id: 'swordfish', name: '法印', subtitle: 'Swordfish', sweepDirection: 'outward' as const };
+const META = { id: 'swordfish', get name() { return t('skills.swordfishName'); }, subtitle: 'Swordfish', sweepDirection: 'outward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   if (selectedCells.length < 3 || selectedCells.length > 9)
-    return makeEmptyPreview(META, selectedCells.length < 3 ? '' : '需選 3-9 格');
+    return makeEmptyPreview(META, selectedCells.length < 3 ? '' : t('skills.needSelectRange', { min: '3', max: '9' }));
   return evaluateFish(selectedCells, cells, 3, META);
 }
 
@@ -26,7 +27,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

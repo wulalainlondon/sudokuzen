@@ -1,70 +1,78 @@
 // Stats, achievements, and stats modal — extracted from legacyRuntime.ts
 
-import { gs } from '../game/state';
+import { gs, type AchievementToastItem } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { getAllLevels } from '../data/dataRegistry';
 import { mergeCloudAchievements, syncAchievementsToCloud } from '../firebase/client';
+import { t } from '../i18n/t';
 
 // ── Achievement definitions ───────────────────────────────────────────
 
 // Each achievement teaches a behavior or marks a genuine milestone.
 // No padding, no filler — every unlock should feel meaningful.
 
-const ACHIEVEMENTS = [
+const ACHIEVEMENT_DEFS = [
   // ── Journey milestones (4) ──────────────────────────────────────
-  { id: 'first_clear', name: '初試啼聲', desc: '完成第一關', icon: '🌱' },
-  { id: 'clear_50', name: '爐火純青', desc: '累計通關 50 關', icon: '💪' },
-  { id: 'clear_all', name: '全制霸', desc: '通關全部關卡', icon: '👑' },
-  { id: 'tier_any', name: '悟道者', desc: '全通任一境界', icon: '🪷' },
+  { id: 'first_clear', icon: '🌱' },
+  { id: 'clear_50', icon: '💪' },
+  { id: 'clear_all', icon: '👑' },
+  { id: 'tier_any', icon: '🪷' },
 
-  // ── Precision (3) — teaches "don't guess, be accurate" ──────────
-  { id: 'perfect_one', name: '完美無瑕', desc: '任一關零失誤三星', icon: '⭐' },
-  { id: 'no_guess', name: '純粹邏輯', desc: '零猜測完成一局（偵測器辨識所有步驟）', icon: '🧠' },
-  { id: 'streak_5_clean', name: '穩如磐石', desc: '連續 5 局零失誤', icon: '🪨' },
+  // ── Precision (3) ──────────────────────────────────────────────
+  { id: 'perfect_one', icon: '⭐' },
+  { id: 'no_guess', icon: '🧠' },
+  { id: 'streak_5_clean', icon: '🪨' },
 
-  // ── Scoring (4) — teaches "technique mastery earns points" ──────
-  { id: 'grade_a', name: '初露鋒芒', desc: '回放評分達到 A 級', icon: '🅰️' },
-  { id: 'grade_s', name: '登峰造極', desc: '回放評分達到 S 級', icon: '🏅' },
-  { id: 'grade_s_10', name: '常駐巔峰', desc: '累計 10 次 S 級評分', icon: '💎' },
-  { id: 'streak_3_s', name: '三連霸', desc: '連續 3 局 S 級評分', icon: '🔱' },
+  // ── Scoring (4) ────────────────────────────────────────────────
+  { id: 'grade_a', icon: '🅰️' },
+  { id: 'grade_s', icon: '🏅' },
+  { id: 'grade_s_10', icon: '💎' },
+  { id: 'streak_3_s', icon: '🔱' },
 
-  // ── Technique mastery (6) — teaches "learn the next technique" ──
-  { id: 'tech_locked', name: '初見・封鎖', desc: '首次使用鎖定候選消去', icon: '🔒' },
-  { id: 'tech_fish', name: '初見・魚型', desc: '首次使用 X-Wing 或 Swordfish', icon: '🐟' },
-  { id: 'tech_wing', name: '初見・翼型', desc: '首次使用 XY-Wing / W-Wing', icon: '🦋' },
-  { id: 'tech_chain', name: '初見・鏈型', desc: '首次使用 AIC 或強制鏈', icon: '🔗' },
-  { id: 'tech_als', name: '初見・ALS', desc: '首次使用 ALS-XZ 或 ALS Chain', icon: '🧬' },
-  { id: 'tech_variety', name: '博學多聞', desc: '單局使用 5 種以上不同技巧', icon: '📚' },
+  // ── Technique mastery (6) ──────────────────────────────────────
+  { id: 'tech_locked', icon: '🔒' },
+  { id: 'tech_fish', icon: '🐟' },
+  { id: 'tech_wing', icon: '🦋' },
+  { id: 'tech_chain', icon: '🔗' },
+  { id: 'tech_als', icon: '🧬' },
+  { id: 'tech_variety', icon: '📚' },
 
-  // ── Candidate elimination (3) — teaches "the game is about eliminating" ──
-  { id: 'elim_100', name: '候選獵人', desc: '累計消除 100 個候選', icon: '✂️' },
-  { id: 'elim_1000', name: '消去大師', desc: '累計消除 1,000 個候選', icon: '🗡️' },
-  { id: 'elim_5000', name: '候選終結者', desc: '累計消除 5,000 個候選', icon: '⚔️' },
+  // ── Candidate elimination (3) ──────────────────────────────────
+  { id: 'elim_100', icon: '✂️' },
+  { id: 'elim_1000', icon: '🗡️' },
+  { id: 'elim_5000', icon: '⚔️' },
 
-  // ── Learning (3) — teaches "study, don't just play" ─────────────
-  { id: 'teach_read_10', name: '書蟲', desc: '研讀 10 本秘笈', icon: '📖' },
-  { id: 'teach_read_all', name: '藏經閣主', desc: '研讀全部秘笈', icon: '🏛️' },
-  { id: 'practice_10', name: '勤修苦練', desc: '完成 10 個練習題', icon: '🎯' },
-  { id: 'practice_master_1', name: '初悟', desc: '修行模式：全通一個技巧 (25/25)', icon: '🧿' },
-  { id: 'practice_master_10', name: '十全', desc: '修行模式：全通 10 個技巧', icon: '🔟' },
-  { id: 'practice_master_all', name: '萬法歸宗', desc: '修行模式：全通 41 個技巧', icon: '🏆' },
+  // ── Learning (6) ───────────────────────────────────────────────
+  { id: 'teach_read_10', icon: '📖' },
+  { id: 'teach_read_all', icon: '🏛️' },
+  { id: 'practice_10', icon: '🎯' },
+  { id: 'practice_master_1', icon: '🧿' },
+  { id: 'practice_master_10', icon: '🔟' },
+  { id: 'practice_master_all', icon: '🏆' },
 
-  // ── Speed (2) — teaches "fluency comes from practice" ───────────
-  { id: 'speed_2min', name: '閃電手', desc: '2 分鐘內通關', icon: '⚡' },
-  { id: 'speed_1min', name: '光速通關', desc: '1 分鐘內通關', icon: '💨' },
+  // ── Speed (2) ──────────────────────────────────────────────────
+  { id: 'speed_2min', icon: '⚡' },
+  { id: 'speed_1min', icon: '💨' },
 
-  // ── Mode variety (3) — teaches "try different ways to play" ─────
-  { id: 'speedrun_first', name: '競速初體驗', desc: '競速模式通關', icon: '🏎️' },
-  { id: 'ghost_win', name: '鬼影殺手', desc: '幽靈模式下擊敗自己', icon: '👻' },
-  { id: 'replay_10', name: '覆盤學者', desc: '觀看 10 次回放', icon: '🎬' },
+  // ── Mode variety (3) ───────────────────────────────────────────
+  { id: 'speedrun_first', icon: '🏎️' },
+  { id: 'ghost_win', icon: '👻' },
+  { id: 'replay_10', icon: '🎬' },
 
-  // ── Wild challenge modes (5) — teaches "master all combat styles" ──
-  { id: 'mode_blind_first', name: '盲審初體驗', desc: '首次以盲審模式通關', icon: '🙈' },
-  { id: 'mode_ironman_first', name: '鐵壁不倒', desc: '首次以鐵壁模式通關', icon: '🛡️' },
-  { id: 'mode_nonotes_first', name: '無念之境', desc: '首次以無念模式通關', icon: '🧘' },
-  { id: 'mode_all_one_tech', name: '全模式制霸', desc: '某個技巧以所有模式各通關一次', icon: '👑' },
-  { id: 'mode_blind_10', name: '盲審大師', desc: '以盲審模式通關10個不同技巧', icon: '🔮' },
-];
+  // ── Wild challenge modes (5) ───────────────────────────────────
+  { id: 'mode_blind_first', icon: '🙈' },
+  { id: 'mode_ironman_first', icon: '🛡️' },
+  { id: 'mode_nonotes_first', icon: '🧘' },
+  { id: 'mode_all_one_tech', icon: '👑' },
+  { id: 'mode_blind_10', icon: '🔮' },
+] as const;
+
+/** Localised achievement list — resolves name/desc from i18n at access time. */
+const ACHIEVEMENTS = ACHIEVEMENT_DEFS.map((def) => ({
+  ...def,
+  get name() { return t(`achievements.${def.id}.name`); },
+  get desc() { return t(`achievements.${def.id}.desc`); },
+}));
 export { ACHIEVEMENTS };
 
 // ── Persistence helpers ───────────────────────────────────────────────
@@ -267,14 +275,15 @@ export function checkAllAchievements(): void {
   if (replayCount >= 10) unlockAchievement('replay_10');
 
   // ── Mode achievements (from Wild bestiary) ──
-  const wildRaw = readJson<any>(SK.WILD_PROFILE, {});
-  const bEntries = Object.values(wildRaw.bestiary || {}) as any[];
+  const wildRaw = readJson<Record<string, unknown>>(SK.WILD_PROFILE, {});
+  const bestiary = (wildRaw.bestiary ?? {}) as Record<string, Record<string, unknown>>;
+  const bEntries = Object.values(bestiary);
   let hasBlind = false, hasIronman = false, hasNoNotes = false;
   let blindTechCount = 0, anyAllModes = false;
   const requiredModes = ['standard', 'blind', 'ironman', 'noNotes'];
   for (const be of bEntries) {
     if (!be?.kills) continue;
-    const mc = be.modesCleared || [];
+    const mc = Array.isArray(be.modesCleared) ? be.modesCleared as string[] : [];
     if (mc.includes('blind')) { hasBlind = true; blindTechCount++; }
     if (mc.includes('ironman')) hasIronman = true;
     if (mc.includes('noNotes')) hasNoNotes = true;

@@ -8,9 +8,9 @@ function cellRef(idx: number): string {
 }
 
 function unitName(unitIdx: number): string {
-  if (unitIdx < 9) return `第 ${unitIdx + 1} 行`;
-  if (unitIdx < 18) return `第 ${unitIdx - 9 + 1} 列`;
-  return `第 ${unitIdx - 18 + 1} 宮`;
+  if (unitIdx < 9) return `Row ${unitIdx + 1}`;
+  if (unitIdx < 18) return `Col ${unitIdx - 9 + 1}`;
+  return `Box ${unitIdx - 18 + 1}`;
 }
 
 export function detectHiddenPair(board: SolverBoard): DetectionResult | null {
@@ -52,7 +52,7 @@ export function detectHiddenPair(board: SolverBoard): DetectionResult | null {
           technique: 'hidden_pair',
           actions,
           patternCells,
-          description: `${unitName(u)}的 Hidden Pair {${digitStr}} 在 ${patternCells.map(cellRef).join('、')}，消去這兩格中 ${digitStr} 以外的候選`,
+          description: `Hidden Pair {${digitStr}} in ${unitName(u)} at ${patternCells.map(cellRef).join(', ')}, eliminate candidates other than ${digitStr} from these cells`,
         };
       }
     }

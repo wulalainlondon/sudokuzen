@@ -7,9 +7,9 @@ function cellRef(idx: number): string {
 }
 
 /**
- * XY-Wing（XY 翼）：
- * 樞紐格 {a,b}，翼格1 {a,c} 看到樞紐，翼格2 {b,c} 看到樞紐。
- * 同時看到兩個翼格的格子可消去候選數 c。
+ * XY-Wing:
+ * Pivot cell {a,b}, wing1 {a,c} sees pivot, wing2 {b,c} sees pivot.
+ * Cells that see both wings can eliminate candidate c.
  */
 export function detectXYWing(board: SolverBoard): DetectionResult | null {
   const bivals = board.bivalueCells;
@@ -24,7 +24,7 @@ export function detectXYWing(board: SolverBoard): DetectionResult | null {
       if (!board.seesCell(pivot, wing1)) continue;
       const w1Cands = board.candidates[wing1];
 
-      // wing1 必須包含 a 但不包含 b，且有一個額外數字 c
+      // wing1 must contain a but not b, with an extra digit c
       let sharedWithPivot: number;
       let c1: number;
       const w1Digits = bitsToDigits(w1Cands);
@@ -41,7 +41,7 @@ export function detectXYWing(board: SolverBoard): DetectionResult | null {
       const otherPivotDigit = sharedWithPivot === a ? b : a;
       const c = c1;
 
-      // 找 wing2：包含 otherPivotDigit 和 c，看到 pivot
+      // Find wing2: contains otherPivotDigit and c, sees pivot
       for (let wj = wi + 1; wj < bivals.length; wj++) {
         const wing2 = bivals[wj];
         if (wing2 === pivot) continue;
@@ -50,7 +50,7 @@ export function detectXYWing(board: SolverBoard): DetectionResult | null {
         const w2Digits = bitsToDigits(w2Cands);
         if (!w2Digits.includes(otherPivotDigit) || !w2Digits.includes(c)) continue;
 
-        // 消去：同時看到 wing1 和 wing2 且含候選 c 的格子
+        // Eliminate: cells that see both wing1 and wing2 and have candidate c
         const commonPeers = board.commonPeers([wing1, wing2]);
         const actions: DetectionAction[] = [];
         for (const cell of commonPeers) {
@@ -65,7 +65,7 @@ export function detectXYWing(board: SolverBoard): DetectionResult | null {
           technique: 'xy_wing',
           actions,
           patternCells: [pivot, wing1, wing2],
-          description: `XY-Wing：樞紐 ${cellRef(pivot)}{${a},${b}}，翼 ${cellRef(wing1)} 與 ${cellRef(wing2)}，消去候選數 ${c} 共 ${actions.length} 處`,
+          description: `XY-Wing: pivot ${cellRef(pivot)}{${a},${b}}, wings ${cellRef(wing1)} and ${cellRef(wing2)}, eliminate candidate ${c} in ${actions.length} cells`,
         };
       }
     }

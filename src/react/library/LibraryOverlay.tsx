@@ -6,6 +6,7 @@ import { useLibraryStore } from './libraryStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
 import { t } from '../../i18n/t';
+import type { SudokuWindow } from '../../facade/windowTypes';
 
 export function LibraryOverlay(): ReactElement {
   const visible = useLibraryStore((s) => s.visible);
@@ -34,7 +35,8 @@ export function LibraryOverlay(): ReactElement {
   }, [visible]);
 
   const handleClose = useCallback(() => {
-    (window as any).closeLibraryOverlay?.();
+    const win = window as unknown as SudokuWindow;
+    win.closeLibraryOverlay?.();
   }, []);
 
   return (

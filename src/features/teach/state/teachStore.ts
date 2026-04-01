@@ -7,6 +7,7 @@ import type {
   TeachModuleModel,
 } from '../../../entities/teach';
 import { fetchTeachModule } from '../lib/teachDataAdapter';
+import { t } from '../../../i18n/t';
 
 type TeachStore = {
   flow: TeachFlowState;
@@ -48,12 +49,12 @@ function formatPracticeExplanation(answer: { description: string; aicChain: stri
   if (answer.description) lines.push(answer.description);
   if (answer.aicChain.length) {
     lines.push('');
-    lines.push('推理節點鏈：');
+    lines.push(t('teachPractice.chainNodes'));
     answer.aicChain.forEach((line, i) => lines.push(`${i + 1}. ${line}`));
   }
   if (answer.proof.length) {
     lines.push('');
-    lines.push('推理鏈：');
+    lines.push(t('teachPractice.chainProof'));
     answer.proof.forEach((line, i) => lines.push(`${i + 1}. ${line}`));
   }
   return lines.join('\n');
@@ -151,7 +152,7 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     if (!total) {
       set({
         flow: 'result',
-        practice: createPracticeState({ success: true, tone: 'success', message: '本秘笈目前沒有練習題。' }),
+        practice: createPracticeState({ success: true, tone: 'success', message: t('teachPractice.noPractice') }),
       });
       return;
     }
@@ -208,7 +209,7 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
           revealed: true,
           success: true,
           tone: 'success' satisfies PracticeResultTone,
-          message: '太棒了！完全正確！',
+          message: t('teachPractice.perfect'),
         },
       });
       return;
@@ -227,14 +228,14 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
         regions.add(`C${col + 1}`);
         regions.add(`Box${box + 1}`);
       }
-      const hint = regions.size <= 3 ? `，留意 ${[...regions].slice(0, 2).join('、')} 附近` : '';
+      const hint = regions.size <= 3 ? t('teachPractice.missingHint', { regions: [...regions].slice(0, 2).join(', ') }) : '';
       set({
         flow: 'practice',
         practice: {
           ...practice,
           success: false,
           tone: 'partial',
-          message: `還有 ${missingCount} 個候選數可以消去${hint}`,
+          message: t('teachPractice.missingCandidates', { count: String(missingCount) }) + hint,
         },
       });
       return;
@@ -244,9 +245,9 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     const wrongKeys = [...selectedSet].filter((k) => !correctSet.has(k));
     const wrongDescs = wrongKeys.slice(0, 2).map((k) => {
       const [c, d] = k.split(':').map(Number);
-      return `R${Math.floor(c / 9) + 1}C${(c % 9) + 1} 的 ${d}`;
+      return t('teachPractice.wrongCellDesc', { row: String(Math.floor(c / 9) + 1), col: String((c % 9) + 1), digit: String(d) });
     });
-    const wrongMsg = wrongDescs.join('、') + ' 不應消去 — 該候選仍有存在的可能';
+    const wrongMsg = t('teachPractice.wrongElim', { descs: wrongDescs.join(', ') });
 
     const cleaned = new Set([...selectedSet].filter((k) => correctSet.has(k)));
     set({
@@ -271,13 +272,13 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     if (nextHint === 1) {
       // Technique-specific hint based on module name
       const { module: mod } = get();
-      const techName = mod?.name || '技巧';
-      const techHint = mod?.subtitle || '觀察候選數之間的關係';
+      const techName = mod?.name || t('teachPractice.defaultTechName');
+      const techHint = mod?.subtitle || t('teachPractice.defaultTechHint');
       set({
         practice: {
           ...practice,
           hintLevel: nextHint,
-          message: `提示（${techName}）：${techHint}。留意藍色高亮的關鍵格。`,
+          message: t('teachPractice.hintLabel', { name: techName, subtitle: techHint }),
           tone: 'neutral',
         },
       });
@@ -287,7 +288,7 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     if (nextHint === 2) {
       // Full explanation from answer data
       const explanation = formatPracticeExplanation(item.answer);
-      const fallback = item.answer.description || '觀察候選的關係鏈，找到可消去的候選。';
+      const fallback = item.answer.description || t('teachPractice.fallbackExplanation');
       set({
         practice: {
           ...practice,
@@ -316,7 +317,7 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
         revealed: true,
         success: true,
         tone: 'neutral',
-        message: formatPracticeExplanation(item.answer) || '答案已顯示',
+        message: formatPracticeExplanation(item.answer) || t('teachPractice.answerRevealed'),
       },
     });
   },

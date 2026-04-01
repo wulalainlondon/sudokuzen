@@ -7,10 +7,10 @@ function cellRef(idx: number): string {
 }
 
 /**
- * Empty Rectangle（空矩形）：
- * 對於數字 d，某宮中 d 的候選格形成 L/T 形（不佔滿某行某列的交叉區域）。
- * 存在一條外部共軛對連接到該宮的某行或列，
- * 使得消去目標格（共軛對的另一端與宮投影的交叉格）的 d。
+ * Empty Rectangle:
+ * For digit d, candidates in a box form an L/T shape (not filling the row-col intersection).
+ * An external conjugate pair connects to that box's row or column,
+ * allowing elimination of d from the target cell (cross-cell of the pair's other end and the box projection).
  */
 export function detectEmptyRectangle(board: SolverBoard): DetectionResult | null {
   for (let d = 1; d <= 9; d++) {
@@ -24,42 +24,41 @@ export function detectEmptyRectangle(board: SolverBoard): DetectionResult | null
       const boxRowStart = Math.floor(box / 3) * 3;
       const boxColStart = (box % 3) * 3;
 
-      // 檢查是否形成空矩形：存在某行和某列使得 d 的候選不在其交叉處
-      // 即存在一個 "空" 的 row-col 交叉區域
+      // Check if an empty rectangle forms: a row and column where d's candidates don't occupy the intersection
+      // i.e. there exists an "empty" row-col cross area
       for (let lr = 0; lr < 3; lr++) {
         for (let lc = 0; lc < 3; lc++) {
           const erRow = boxRowStart + lr;
           const erCol = boxColStart + lc;
           const _crossCell = erRow * 9 + erCol;
 
-          // 交叉格不能有 d 候選（形成空矩形的空角）
-          // 而且 d 的候選必須分布在這一行的其他列和這一列的其他行
+          // Cross cell must not have candidate d (forming the empty corner of the rectangle)
+          // and d's candidates must be distributed in other columns of this row and other rows of this column
           const inSameRow = dCells.filter((c) => SolverBoard.CELL_ROW[c] === erRow);
           const inSameCol = dCells.filter((c) => SolverBoard.CELL_COL[c] === erCol);
           const _atCross = dCells.filter((c) => SolverBoard.CELL_ROW[c] === erRow && SolverBoard.CELL_COL[c] === erCol);
 
-          // 所有 d 候選必須在這一行或這一列上（ER 條件）
+          // All d candidates must be on this row or this column (ER condition)
           const allOnRowOrCol = dCells.every(
             (c) => SolverBoard.CELL_ROW[c] === erRow || SolverBoard.CELL_COL[c] === erCol,
           );
           if (!allOnRowOrCol) continue;
           if (inSameRow.length === 0 || inSameCol.length === 0) continue;
 
-          // 在 erRow 上（宮外）找共軛對 → 消去 erCol 上的目標
-          // 在 erCol 上（宮外）找共軛對 → 消去 erRow 上的目標
+          // Find conjugate pair outside box on erRow -> eliminate target on erCol
+          // Find conjugate pair outside box on erCol -> eliminate target on erRow
 
-          // 策略：erCol 上宮外的共軛對
+          // Strategy: conjugate pair outside box on erCol
           const colCells = board.digitCellsInUnit(9 + erCol, d);
           const colOutside = colCells.filter((c) => SolverBoard.CELL_BOX[c] !== box);
           if (colOutside.length === 2) {
-            // 這兩格形成該列在宮外的共軛對？需要整列只有這些格+宮內格
-            // 簡化：該列恰好有 2 個宮外候選格
-            // 共軛對端點之一與 erRow 的交叉格就是消去目標
+            // Do these two cells form a conjugate pair outside the box in this column?
+            // Simplified: column has exactly 2 candidate cells outside the box
+            // One endpoint of the conjugate pair and erRow's cross cell is the elimination target
             for (const endpoint of colOutside) {
               const otherEnd = colOutside.find((c) => c !== endpoint)!;
-              // endpoint 所在行 與 erRow 行中宮內候選的行是否匹配？
-              // 其實我們需要的是：endpoint 在宮外列上，通過宮的 ER 投射到 erRow
-              // 消去目標 = otherEnd 所在行 × inSameRow 的列
+              // We need: endpoint is on the column outside box, projecting through the box's ER to erRow
+              // Elimination target = otherEnd's row x inSameRow's column
               const targetRow = SolverBoard.CELL_ROW[otherEnd];
               for (const rowCell of inSameRow) {
                 const targetCol = SolverBoard.CELL_COL[rowCell];
@@ -67,7 +66,7 @@ export function detectEmptyRectangle(board: SolverBoard): DetectionResult | null
                 if (target === otherEnd) continue;
                 if (SolverBoard.CELL_BOX[target] === box) continue;
                 if (!board.hasCandidate(target, d)) continue;
-                // 驗證 otherEnd 與 target 在同一行
+                // Verify otherEnd and target are in the same row
                 if (SolverBoard.CELL_ROW[target] !== SolverBoard.CELL_ROW[otherEnd]) continue;
 
                 const actions: DetectionAction[] = [{ kind: 'eliminate', cell: target, digit: d }];
@@ -75,13 +74,13 @@ export function detectEmptyRectangle(board: SolverBoard): DetectionResult | null
                   technique: 'empty_rectangle',
                   actions,
                   patternCells: [...dCells, endpoint, otherEnd],
-                  description: `空矩形：數字 ${d}，宮 ${box + 1} 形成 ER，透過列 ${erCol + 1} 的共軛對 ${cellRef(endpoint)}–${cellRef(otherEnd)}，消去 ${cellRef(target)} 的 ${d}`,
+                  description: `Empty Rectangle: digit ${d}, Box ${box + 1} forms ER, via Col ${erCol + 1} conjugate pair ${cellRef(endpoint)}-${cellRef(otherEnd)}, eliminate ${d} from ${cellRef(target)}`,
                 };
               }
             }
           }
 
-          // 策略：erRow 上宮外的共軛對
+          // Strategy: conjugate pair outside box on erRow
           const rowCells = board.digitCellsInUnit(erRow, d);
           const rowOutside = rowCells.filter((c) => SolverBoard.CELL_BOX[c] !== box);
           if (rowOutside.length === 2) {
@@ -101,7 +100,7 @@ export function detectEmptyRectangle(board: SolverBoard): DetectionResult | null
                   technique: 'empty_rectangle',
                   actions,
                   patternCells: [...dCells, endpoint, otherEnd],
-                  description: `空矩形：數字 ${d}，宮 ${box + 1} 形成 ER，透過行 ${erRow + 1} 的共軛對 ${cellRef(endpoint)}–${cellRef(otherEnd)}，消去 ${cellRef(target)} 的 ${d}`,
+                  description: `Empty Rectangle: digit ${d}, Box ${box + 1} forms ER, via Row ${erRow + 1} conjugate pair ${cellRef(endpoint)}-${cellRef(otherEnd)}, eliminate ${d} from ${cellRef(target)}`,
                 };
               }
             }

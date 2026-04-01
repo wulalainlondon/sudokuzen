@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import type { DemoAct, DemoStory, TeachModuleModel } from '../../../entities/teach';
 import { ChainOverlay } from './ChainOverlay';
+import { t } from '../../../i18n/t';
 
 type Props = {
   module: TeachModuleModel;
@@ -317,7 +318,7 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
       </div>
 
       {/* Elimination count after final act */}
-      {done && completedElims.length > 0 && <div className="demo-elim-count">−{completedElims.length} 候選</div>}
+      {done && completedElims.length > 0 && <div className="demo-elim-count">{t('miscRuntime.elimCountLabel', { count: String(completedElims.length) })}</div>}
 
       <div className="demo-live-caption" aria-live="polite">
         {caption}
@@ -325,7 +326,7 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
 
       {done && (
         <button className="demo-continue-btn" onClick={handleReplay}>
-          🔄 再看一次
+          {t('miscRuntime.replayBtn')}
         </button>
       )}
     </div>
@@ -413,14 +414,14 @@ function LegacyDemoBoard({ module }: Props): ReactElement {
   const cameraClass = phase === 'chain' || phase === 'pause' ? 'camera-zoom-in' : '';
 
   const liveCaption = (() => {
-    if (phase === 'idle' || phase === 'glow') return '先看全盤，定位線索。';
-    if (phase === 'chain' || phase === 'pause') return '連線成因果，準備出手。';
-    if (phase === 'name') return `${module.name}：開始清理。`;
+    if (phase === 'idle' || phase === 'glow') return t('miscRuntime.phaseIdle');
+    if (phase === 'chain' || phase === 'pause') return t('miscRuntime.phaseChain');
+    if (phase === 'name') return t('miscRuntime.phaseName', { name: module.name });
     if (phase === 'eliminate') {
       const p = Math.min(Math.max(elimIdx + 1, 0), elimCount);
-      return `消去不成立候選（${p}/${elimCount}）`;
+      return t('miscRuntime.phaseElim', { p: String(p), total: String(elimCount) });
     }
-    if (phase === 'count' || phase === 'afterglow' || phase === 'done') return `結論成立：共清掉 ${elimCount} 個候選。`;
+    if (phase === 'count' || phase === 'afterglow' || phase === 'done') return t('miscRuntime.phaseDone', { count: String(elimCount) });
     return '';
   })();
 
@@ -471,13 +472,13 @@ function LegacyDemoBoard({ module }: Props): ReactElement {
       </div>
 
       {showName && <div className="demo-technique-name">{module.name}</div>}
-      {showCount && elimCount > 0 && <div className="demo-elim-count">−{elimCount} 候選</div>}
+      {showCount && elimCount > 0 && <div className="demo-elim-count">{t('miscRuntime.elimCountLabel', { count: String(elimCount) })}</div>}
       <div className="demo-live-caption" aria-live="polite">
         {liveCaption}
       </div>
       {phase === 'done' && (
         <button className="demo-continue-btn" onClick={handleReplay}>
-          🔄 再看一次
+          {t('miscRuntime.replayBtn')}
         </button>
       )}
     </div>

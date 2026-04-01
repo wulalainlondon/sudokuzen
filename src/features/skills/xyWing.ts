@@ -1,17 +1,18 @@
 import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
+import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther, getCommonPeers } from './types';
 
-const META = { id: 'xy_wing', name: '雙翼', subtitle: 'XY-Wing', sweepDirection: 'outward' as const };
+const META = { id: 'xy_wing', get name() { return t('skills.xyWingName'); }, subtitle: 'XY-Wing', sweepDirection: 'outward' as const };
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 3) return makeEmptyPreview(META, selectedCells.length < 3 ? '' : '需選 3 格');
+  if (selectedCells.length !== 3) return makeEmptyPreview(META, selectedCells.length < 3 ? '' : t('skills.needSelectN', { n: '3' }));
 
   // All 3 must be bivalue
   for (const idx of selectedCells) {
     const d = cells[idx];
     if (!d || d.value !== 0 || d.notes.length !== 2) {
-      return makeEmptyPreview(META, '三格皆需為雙候選');
+      return makeEmptyPreview(META, t('skills.allThreeMustBeBivalue'));
     }
   }
 
@@ -79,7 +80,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
     }
   }
 
-  return makeEmptyPreview(META, '未構成雙翼');
+  return makeEmptyPreview(META, t('skills.noXYWing'));
 }
 
 function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
@@ -97,7 +98,7 @@ function execute(cells: CellData[], preview: SkillPreview): SkillPreview {
     ...preview,
     targets: removed,
     valid: removed.length > 0,
-    reason: removed.length > 0 ? undefined : '沒有可消去候選',
+    reason: removed.length > 0 ? undefined : t('skills.noElimTargets'),
   };
 }
 

@@ -1,6 +1,6 @@
 import { SolverBoard } from '../../board';
 import type { DetectionResult, DetectionAction } from '../../types';
-import { bitsToDigits, digitBit, popcount } from '../../helpers/bitmask';
+import { bitsToDigits, digitBit } from '../../helpers/bitmask';
 import { findConjugatePairs } from '../../helpers/links';
 
 function cellRef(idx: number): string {
@@ -8,21 +8,21 @@ function cellRef(idx: number): string {
 }
 
 /**
- * 3D Medusa（多數字著色）：
+ * 3D Medusa (Multi-digit Coloring):
  *
- * 擴展 Simple Coloring：除了單數字共軛對著色外，
- * 當一格恰好只有 2 個候選數（雙值格），若其中一個數已著色，
- * 則另一個數自動著反色。這樣著色鏈可跨數字延伸。
+ * Extends Simple Coloring: in addition to single-digit conjugate pair coloring,
+ * when a cell has exactly 2 candidates (bivalue), if one is already colored,
+ * the other is automatically assigned the opposite color. This extends coloring across digits.
  *
- * 節點表示為 (cell, digit) 對，著色為 A(0) 或 B(1)。
+ * Nodes are (cell, digit) pairs, colored A(0) or B(1).
  *
- * 6 條消去規則：
- * Rule 1: 同色同格兩數 → 矛盾，該色全假
- * Rule 2: 同色同數在同 unit → 矛盾，該色全假
- * Rule 3: 未著色格看到同數兩色 → 消去該數
- * Rule 4: 未著色格的某候選數，在所有包含它的 unit 中都被兩色佔據 → 消去
- * Rule 5: 未著色雙值格，兩數分別被同色看到 → 消去兩數（格填反色值）
- * Rule 6: 著色格確定後的連帶消去（通常由 Rule 1/2 觸發後處理）
+ * 6 elimination rules:
+ * Rule 1: Same color, same cell, two digits -> contradiction, that color is all false
+ * Rule 2: Same color, same digit in same unit -> contradiction, that color is all false
+ * Rule 3: Uncolored cell sees both colors of same digit -> eliminate that digit
+ * Rule 4: Uncolored cell's candidate is covered by both colors in all its units -> eliminate
+ * Rule 5: Uncolored bivalue cell, both candidates seen by same color -> eliminate both (fill opposite)
+ * Rule 6: Cascade eliminations after colored cells are determined (triggered by Rule 1/2)
  */
 export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
   const allPairs = findConjugatePairs(board);
@@ -129,7 +129,7 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
               technique: 'medusa_3d',
               actions,
               patternCells,
-              description: `3D Medusa（規則1·同格同色矛盾）：${cellRef(cell)} 有兩數同色，消去色${colorIdx} 共 ${actions.length} 處`,
+              description: `3D Medusa (Rule 1: same-cell same-color conflict): ${cellRef(cell)} has two digits same color, eliminate color ${colorIdx}, ${actions.length} candidates`,
             };
           }
         }
@@ -167,7 +167,7 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
                   technique: 'medusa_3d',
                   actions,
                   patternCells,
-                  description: `3D Medusa（規則2·同色同數同區）：數字 ${d}，${cellRef(cells[i])} 與 ${cellRef(cells[j])} 同色衝突，消去 ${actions.length} 處`,
+                  description: `3D Medusa (Rule 2: same-color same-digit same-unit): digit ${d}, ${cellRef(cells[i])} and ${cellRef(cells[j])} conflict, eliminate ${actions.length} candidates`,
                 };
               }
             }
@@ -188,8 +188,6 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
         if (!digitColor.has(d)) digitColor.set(d, [[], []]);
         digitColor.get(d)![col].push(c);
       }
-
-      const coloredCells = new Set(allNodes.map(decodeCell));
 
       for (const [d, [c0cells, c1cells]] of digitColor) {
         if (c0cells.length === 0 || c1cells.length === 0) continue;
@@ -213,7 +211,7 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
           technique: 'medusa_3d',
           actions,
           patternCells,
-          description: `3D Medusa（規則3·雙色可見）：未著色格看到同數字兩色，消去 ${actions.length} 處`,
+          description: `3D Medusa (Rule 3: both-color visible): uncolored cell sees both colors of same digit, eliminate ${actions.length} candidates`,
         };
       }
     }
@@ -221,8 +219,6 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
     // ── Rule 5: Uncolored bivalue cell, both candidates seen by same color → eliminate both ──
     {
       const actions: DetectionAction[] = [];
-      const coloredNodes = new Set(allNodes);
-
       for (const cell of board.bivalueCells) {
         const digits = bitsToDigits(board.candidates[cell]);
         if (digits.length !== 2) continue;
@@ -260,7 +256,7 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
           technique: 'medusa_3d',
           actions,
           patternCells,
-          description: `3D Medusa（規則5·雙值格雙殺）：未著色雙值格兩候選均被同色覆蓋，消去 ${actions.length} 處`,
+          description: `3D Medusa (Rule 5: bivalue cell double kill): uncolored bivalue cell both candidates covered by same color, eliminate ${actions.length} candidates`,
         };
       }
     }
@@ -306,7 +302,7 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
           technique: 'medusa_3d',
           actions,
           patternCells,
-          description: `3D Medusa（規則4·全域覆蓋）：候選數在所有相關區域均被兩色佔據，消去 ${actions.length} 處`,
+          description: `3D Medusa (Rule 4: full coverage): candidate covered by both colors in all related units, eliminate ${actions.length} candidates`,
         };
       }
     }
