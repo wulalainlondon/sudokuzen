@@ -77,6 +77,19 @@ export const ja: Widen<Locale> = {
     branchFish: '魚翼流',
     branchColor: '着色鎖',
     branchALS: '唯一・ALS',
+    node: {
+      statusLockedChip: '未解放',
+      statusUnlockedChip: '挑戦可',
+      statusPartialChip: '修行中',
+      statusCompletedChip: '円満',
+      primaryLocked: '未解放',
+      primaryCompleted: '円満',
+      remaining: '残り {remaining}',
+      cleared: 'クリア {cleared}/{total}',
+      lockedHint: '前提技法を各 {threshold} ステージ',
+      lockedHintNamed: '{prereqs} を各 {threshold} ステージ',
+      lockedHintNamedMore: '{prereqs} ほか {extra} 項目を各 {threshold} ステージ',
+    },
   },
 
   // ── Wild / World mode ───────────────────────────────────────────────

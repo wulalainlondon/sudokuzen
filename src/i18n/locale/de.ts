@@ -80,6 +80,19 @@ export const de: Widen<Locale> = {
     branchFish: 'Fisch & Fl\u00FCgel',
     branchColor: 'F\u00E4rbungsketten',
     branchALS: 'Unique \u00B7 ALS',
+    node: {
+      statusLockedChip: 'Gesperrt',
+      statusUnlockedChip: 'Bereit',
+      statusPartialChip: 'Im Training',
+      statusCompletedChip: 'Meisterhaft',
+      primaryLocked: 'Gesperrt',
+      primaryCompleted: 'Meisterhaft',
+      remaining: 'Noch {remaining}',
+      cleared: '{cleared}/{total} geschafft',
+      lockedHint: 'Jede Voraussetzung {threshold}x abschlie\u00DFen',
+      lockedHintNamed: '{prereqs} abschlie\u00DFen (je {threshold}x)',
+      lockedHintNamedMore: '{prereqs} +{extra} weitere (je {threshold}x)',
+    },
   },
 
   // ── Wild / World mode ───────────────────────────────────────────────

@@ -72,6 +72,19 @@ export const zhTW = {
     branchFish: '魚翼流',
     branchColor: '著色鏈',
     branchALS: '唯一·ALS',
+    node: {
+      statusLockedChip: '未解鎖',
+      statusUnlockedChip: '可修行',
+      statusPartialChip: '修行中',
+      statusCompletedChip: '已圓滿',
+      primaryLocked: '待解鎖',
+      primaryCompleted: '已圓滿',
+      remaining: '剩 {remaining} 關',
+      cleared: '已通關 {cleared}/{total}',
+      lockedHint: '完成前置技巧各 {threshold} 關',
+      lockedHintNamed: '先完成 {prereqs}（各 {threshold} 關）',
+      lockedHintNamedMore: '先完成 {prereqs} 等 {extra} 項（各 {threshold} 關）',
+    },
   },
 
   // ── Wild / World mode ───────────────────────────────────────────────

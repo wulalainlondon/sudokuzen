@@ -6,9 +6,9 @@
 import fs from 'node:fs';
 
 const errors = [];
-const warnings = [];
+const notices = [];
 const warn = (msg) => errors.push(msg);
-const softWarn = (msg) => warnings.push(msg);
+const softWarn = (msg) => notices.push(msg);
 
 // ── 1. Parse ─────────────────────────────────────────────────────
 let TD;
@@ -89,9 +89,9 @@ for (const [key, mod] of Object.entries(TD)) {
 }
 
 // ── 4. Report ────────────────────────────────────────────────────
-if (warnings.length > 0) {
-  console.warn(`⚠ ${warnings.length} warning(s):`);
-  warnings.forEach((w) => console.warn(`  • ${w}`));
+if (notices.length > 0) {
+  console.log(`ℹ ${notices.length} notice(s):`);
+  notices.forEach((w) => console.log(`  • ${w}`));
 }
 if (errors.length > 0) {
   console.error(`\n✗ teach-data.json validation failed (${errors.length} errors):\n`);

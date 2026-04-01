@@ -1927,6 +1927,8 @@ header h1 {
     overflow-y: auto;
     max-height: calc(100dvh - 120px - env(safe-area-inset-bottom, 0px));
     padding-bottom: 32px;
+    display: flex;
+    justify-content: center;
 }
 
 /* Phase label */
@@ -1939,6 +1941,14 @@ header h1 {
     text-align: center;
     padding: 12px 0 4px;
 }
+.tree-phase-label--map {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    padding: 0;
+    z-index: 3;
+}
 
 /* Convergence hint */
 .tree-converge-hint {
@@ -1948,6 +1958,14 @@ header h1 {
     letter-spacing: 0.08em;
     padding: 4px 0;
     opacity: 0.7;
+}
+.tree-converge-hint--map {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    padding: 0;
+    z-index: 3;
 }
 
 /* ── Tree Spine (flowing grid) ───────────────────────────────────── */
@@ -1966,6 +1984,13 @@ header h1 {
     text-align: center;
     padding: 6px 0 2px;
     letter-spacing: 0.04em;
+}
+.tree-spine-label--map {
+    position: absolute;
+    transform: translateX(-50%);
+    width: 96px;
+    padding: 0;
+    z-index: 3;
 }
 
 .tree-spine-nodes {
@@ -1986,109 +2011,213 @@ header h1 {
     cursor: pointer;
     position: relative;
     z-index: 1;
-    transition: opacity 0.15s, transform 0.15s;
-    width: 64px;
+    transition: opacity 0.2s, transform 0.2s;
+    width: 88px;
+}
+.tree-node--map {
+    position: absolute;
+    transform: translateX(-50%);
+    z-index: 4;
 }
 
 .tree-node:active {
-    opacity: 0.85;
-    transform: scale(0.95);
+    opacity: 0.95;
+    transform: scale(0.985);
 }
 
 .tree-node--compact {
-    width: 60px;
+    width: 84px;
 }
 
 .tree-node--locked {
     cursor: not-allowed;
 }
 
-/* ── Skill icon square ────────────────────────────────────────────── */
+.tree-node--new-unlock .tree-node-icon {
+    animation: node-unlock-pulse 0.62s cubic-bezier(.17,.67,.26,1.26);
+}
+
+/* ── Skill icon card (zen paper tile) ─────────────────────────────── */
 
 .tree-node-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 76px;
+    height: 76px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
-    background: #1a1a2e;
-    border: 2px solid #333;
-    transition: border-color 0.3s, box-shadow 0.3s, opacity 0.3s;
+    background:
+        radial-gradient(circle at 24% 20%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 42%),
+        repeating-linear-gradient(125deg, rgba(136, 125, 98, 0.05), rgba(136, 125, 98, 0.05) 2px, rgba(136, 125, 98, 0) 2px, rgba(136, 125, 98, 0) 6px),
+        linear-gradient(150deg, #f2eee3 0%, #e9e3d6 52%, #e2dac9 100%);
+    border: 1.2px solid rgba(92, 84, 67, 0.26);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.34),
+        0 6px 12px rgba(41, 39, 34, 0.14);
+    transition: border-color 0.24s, box-shadow 0.24s, opacity 0.2s, transform 0.2s;
 }
 
 .tree-node--compact .tree-node-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 10px;
+    width: 72px;
+    height: 72px;
+    border-radius: 15px;
 }
 
 /* Locked state */
 .tree-node--locked .tree-node-icon {
-    opacity: 0.6;
-    border-color: #444;
+    opacity: 0.84;
+    border-color: rgba(118, 121, 124, 0.22);
+    filter: saturate(0.72) grayscale(0.08);
 }
 
-/* Unlocked state — breathing glow */
 .tree-node--unlocked .tree-node-icon {
-    border-color: var(--accent-strong);
-    animation: skill-breathe 3s ease-in-out infinite;
+    border-color: rgba(62, 89, 96, 0.42);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+        0 8px 14px rgba(33, 53, 57, 0.2);
 }
 
-/* Partial state — accent border */
 .tree-node--partial .tree-node-icon {
-    border-color: var(--accent-strong);
-    box-shadow: 0 0 6px 1px color-mix(in srgb, var(--accent-strong) 30%, transparent);
+    border-color: rgba(79, 112, 116, 0.52);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+        0 8px 14px rgba(35, 64, 70, 0.2);
 }
 
-/* Completed state — gold border + shimmer */
 .tree-node--completed .tree-node-icon {
-    border-color: #FFD700;
-    box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.25);
-    animation: skill-gold-shimmer 4s ease-in-out infinite;
+    border-color: rgba(124, 95, 50, 0.52);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 252, 239, 0.38),
+        0 8px 14px rgba(86, 63, 35, 0.2);
 }
 
-/* ── Bestiary glyph ───────────────────────────────────────────────── */
+.tree-node-chip {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    padding: 1px 6px;
+    font-size: 9px;
+    line-height: 1.2;
+    border-radius: 999px;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+    z-index: 4;
+    border: 1px solid transparent;
+    background: rgba(70, 70, 70, 0.14);
+    color: #62625e;
+}
+
+.tree-node-chip--unlocked,
+.tree-node-chip--partial {
+    color: #37535b;
+    border-color: rgba(77, 110, 115, 0.32);
+    background: rgba(152, 182, 188, 0.2);
+}
+
+.tree-node-chip--completed {
+    color: #5d4322;
+    border-color: rgba(131, 102, 58, 0.42);
+    background: rgba(201, 173, 116, 0.28);
+}
 
 .tree-node-glyph {
-    font-size: 20px;
-    font-weight: 700;
-    color: #e0e0e0;
-    line-height: 1;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-    user-select: none;
-    pointer-events: none;
+    width: 34px;
+    height: 34px;
+    color: #51626a;
+    opacity: 0.92;
+    z-index: 2;
+    transform: translateY(-7px);
+}
+
+.tree-node-glyph svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.tree-node-glyph--locked {
+    color: #8d9090;
+    opacity: 0.8;
+}
+
+.tree-node-glyph--completed {
+    color: #7a5a2b;
+}
+
+.tree-node-ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
     z-index: 1;
 }
 
-.tree-node--compact .tree-node-glyph {
-    font-size: 18px;
+.tree-node-ring-track {
+    fill: none;
+    stroke: rgba(79, 76, 66, 0.16);
+    stroke-width: 3.2;
 }
 
-.tree-node--locked .tree-node-glyph {
-    color: #888;
+.tree-node-ring-fill {
+    fill: none;
+    stroke-width: 3.2;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.55s var(--ease-zen), stroke 0.3s;
+    stroke: rgba(70, 107, 116, 0.84);
 }
 
-.tree-node--completed .tree-node-glyph {
-    color: #FFD700;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+.tree-node--locked .tree-node-ring-fill {
+    stroke: rgba(123, 126, 129, 0.54);
 }
 
-.tree-node--unlocked .tree-node-glyph,
-.tree-node--partial .tree-node-glyph {
-    color: var(--accent-light, #88bbff);
+.tree-node--completed .tree-node-ring-fill {
+    stroke: rgba(133, 100, 54, 0.88);
+}
+
+.tree-node-primary {
+    position: absolute;
+    left: 50%;
+    bottom: 19px;
+    transform: translateX(-50%);
+    font-size: 13px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    font-weight: 700;
+    color: #39464b;
+    z-index: 4;
+    white-space: nowrap;
+}
+
+.tree-node-primary--unlocked,
+.tree-node-primary--partial {
+    color: #345058;
+}
+
+.tree-node--locked .tree-node-primary {
+    color: #757a7e;
+    font-size: 12px;
+}
+
+.tree-node--completed .tree-node-primary {
+    color: #5f4523;
+    font-size: 12px;
 }
 
 /* ── Label (technique name below icon) ────────────────────────────── */
 
 .tree-node-label {
     font-size: 10px;
-    font-weight: 500;
-    color: var(--text-light);
+    font-weight: 600;
+    color: #5d5b56;
     text-align: center;
-    line-height: 1.25;
+    line-height: 1.2;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2097,42 +2226,54 @@ header h1 {
     -webkit-box-orient: vertical;
     white-space: normal;
     word-break: break-word;
+    margin-top: 1px;
 }
 
 .tree-node--compact .tree-node-label {
-    font-size: 10px;
+    font-size: 9px;
 }
 
 .tree-node--locked .tree-node-label {
-    opacity: 0.65;
+    display: block;
+    opacity: 0.85;
 }
 
 .tree-node--completed .tree-node-label {
-    color: #FFD700;
+    color: #725429;
 }
 
-/* ── Progress bar at bottom of icon ───────────────────────────────── */
-
-.tree-node-progress {
+.tree-node-secondary {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: rgba(0, 0, 0, 0.4);
+    left: 50%;
+    bottom: 7px;
+    transform: translateX(-50%);
+    font-size: 8px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: #71716c;
+    opacity: 0.96;
+    font-weight: 600;
+    z-index: 4;
+    white-space: nowrap;
 }
 
-.tree-node-progress-fill {
-    height: 100%;
-    background: var(--accent-strong);
-    transition: width 0.6s var(--ease-zen);
-    border-radius: 0 2px 0 0;
+.tree-node-secondary--locked {
+    opacity: 0.88;
 }
 
-.tree-node--partial .tree-node-progress-fill {
-    background: linear-gradient(90deg, var(--accent-strong), var(--accent-light, #88bbff), var(--accent-strong));
-    background-size: 200% 100%;
-    animation: practice-flow 2s linear infinite;
+.tree-node-secondary--completed {
+    color: #74542b;
+}
+
+.tree-node-hint {
+    font-size: 8px;
+    line-height: 1.25;
+    color: #8a8d8f;
+    text-align: center;
+    width: 86px;
+    min-height: 20px;
+    letter-spacing: 0.02em;
+    margin-top: 1px;
 }
 
 /* ── Corner badge ─────────────────────────────────────────────────── */
@@ -2146,36 +2287,28 @@ header h1 {
 }
 
 .tree-node-badge--done {
-    top: -2px;
-    right: -2px;
-    width: 18px;
-    height: 18px;
-    background: #FFD700;
-    color: #1a1a2e;
-    font-size: 11px;
+    top: -3px;
+    right: -3px;
+    width: 20px;
+    height: 20px;
+    background:
+        radial-gradient(circle at 35% 30%, rgba(255, 240, 216, 0.95), rgba(189, 108, 70, 0.95) 60%, rgba(139, 61, 35, 0.96));
+    color: rgba(255, 244, 232, 0.98);
+    font-size: 9px;
     font-weight: 800;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.tree-node-badge--lock {
-    top: -3px;
-    right: -3px;
-    font-size: 14px;
+    box-shadow: 0 0 0 1px rgba(154, 81, 52, 0.48), 0 3px 8px rgba(83, 45, 24, 0.24);
 }
 
 /* ── Animations ───────────────────────────────────────────────────── */
 
-@keyframes skill-breathe {
-    0%, 100% { box-shadow: 0 0 4px 0 transparent; }
-    50% { box-shadow: 0 0 10px 3px color-mix(in srgb, var(--accent-strong) 35%, transparent); }
-}
-
-@keyframes skill-gold-shimmer {
-    0%, 100% { box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.25); }
-    50% { box-shadow: 0 0 14px 4px rgba(255, 215, 0, 0.4); }
+@keyframes node-unlock-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 rgba(106, 175, 255, 0); }
+    45% { transform: scale(1.07); box-shadow: 0 0 0 8px rgba(106, 175, 255, 0.16); }
+    100% { transform: scale(1); box-shadow: 0 0 0 rgba(106, 175, 255, 0); }
 }
 
 /* ── Tree Fork (SVG split/merge) ──────────────────────────────────── */
@@ -2198,6 +2331,43 @@ header h1 {
     stroke-width: 2;
     stroke-linecap: round;
     transition: stroke 0.3s;
+}
+
+.practice-tree-map {
+    position: relative;
+    margin: 0 auto;
+}
+
+.practice-tree-map-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.tree-map-line {
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    transition: stroke 0.3s, opacity 0.3s, filter 0.3s;
+}
+
+.tree-map-line--locked {
+    stroke: color-mix(in srgb, var(--cell-border) 86%, #8b8f98 14%);
+    opacity: 0.38;
+}
+
+.tree-map-line--active {
+    stroke: color-mix(in srgb, var(--accent-strong) 64%, #e2f2ff 36%);
+    opacity: 0.92;
+    filter: drop-shadow(0 0 2px rgba(120, 190, 255, 0.35));
+}
+
+.tree-map-line--completed {
+    stroke: #e0bb5b;
+    opacity: 0.96;
+    filter: drop-shadow(0 0 2px rgba(228, 184, 78, 0.3));
 }
 
 .tree-fork-branches {

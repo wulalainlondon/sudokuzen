@@ -82,6 +82,19 @@ export const en: Widen<Locale> = {
     branchFish: 'Fish & Wings',
     branchColor: 'Coloring Chains',
     branchALS: 'Unique \u00B7 ALS',
+    node: {
+      statusLockedChip: 'Locked',
+      statusUnlockedChip: 'Ready',
+      statusPartialChip: 'In Practice',
+      statusCompletedChip: 'Mastered',
+      primaryLocked: 'Locked',
+      primaryCompleted: 'Mastered',
+      remaining: '{remaining} left',
+      cleared: 'Cleared {cleared}/{total}',
+      lockedHint: 'Clear each prerequisite {threshold} times',
+      lockedHintNamed: 'Clear {prereqs} ({threshold} each)',
+      lockedHintNamedMore: 'Clear {prereqs} +{extra} more ({threshold} each)',
+    },
   },
 
   // ── Wild / World mode ───────────────────────────────────────────────

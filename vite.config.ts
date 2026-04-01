@@ -16,7 +16,22 @@ export default defineConfig({
   },
   build: {
     target: 'es2022',
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
+      onwarn(warning, warn) {
+        const msg = warning.message || '';
+        // Existing app architecture intentionally mixes static + dynamic imports
+        // for warm-start paths. Keep build output clean by suppressing this
+        // non-actionable chunking notice.
+        if (msg.includes('dynamically imported by') && msg.includes('will not move module into another chunk')) {
+          return;
+        }
+        // index.html includes legacy non-module scripts on purpose.
+        if (msg.includes('can\'t be bundled without type="module" attribute')) {
+          return;
+        }
+        warn(warning);
+      },
       output: {
         manualChunks: {
           // Heavy vendor libs — cached independently, rarely change
