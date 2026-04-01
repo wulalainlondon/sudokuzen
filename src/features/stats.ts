@@ -2,7 +2,6 @@
 
 import { gs } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
-import { formatSeconds } from '../game/utils';
 import { getAllLevels } from '../data/dataRegistry';
 import { mergeCloudAchievements, syncAchievementsToCloud } from '../firebase/client';
 
