@@ -39,7 +39,6 @@ function ConfettiLayer({ count, colors }: { count: number; colors: string[] }): 
 
 export function DuoResultModal(): ReactElement | null {
   const { visible, contentHtml, iWon, isDraw } = useDuoResultStore();
-  const close = useDuoResultStore((s) => s.close);
   const trapRef = useFocusTrap(visible);
 
   const handleBackdropClick = useCallback(

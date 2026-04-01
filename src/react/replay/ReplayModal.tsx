@@ -156,7 +156,6 @@ export function ReplayModal(): ReactElement | null {
   const progressPct = useReplayStore((s) => s.progressPct);
   const prevDisabled = useReplayStore((s) => s.prevDisabled);
   const nextDisabled = useReplayStore((s) => s.nextDisabled);
-  const close = useReplayStore((s) => s.close);
   const trapRef = useFocusTrap(visible);
 
   // Close on Escape

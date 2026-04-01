@@ -67,7 +67,6 @@ import { useStatsStore } from '../react/stats/statsStore';
 import { usePreLevelStore } from '../react/prelevel/preLevelStore';
 import { useDuoResultStore } from '../react/duoresult/duoResultStore';
 import { useLibraryStore } from '../react/library/libraryStore';
-import { useMentorStore } from '../react/mentor/mentorStore';
 
 function isWinCelebrationOpen(): boolean {
   return useWinStore.getState().visible;
