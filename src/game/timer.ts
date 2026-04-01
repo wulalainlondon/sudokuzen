@@ -4,7 +4,7 @@ import { gs } from './state';
 import { recalculatePlayerFilledCount, updateGhostEngine, updateGhostProgressUI } from '../features/ghost';
 
 export function startTimer(reset = true): void {
-  clearInterval(gs.timerInterval!);
+  if (gs.timerInterval) clearInterval(gs.timerInterval);
   if (reset) {
     gs.seconds = 0;
     gs.ghostIdx = 0;

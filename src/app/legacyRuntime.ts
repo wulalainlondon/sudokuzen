@@ -170,24 +170,21 @@ export function bootLegacyRuntime(appVersion: string): void {
   }
 
   // 12. Pre-level modal buttons
-  gs.preLevelStartBtn?.addEventListener('click', () => startLevelFromModal(true, false, null));
-  gs.preLevelBackBtn?.addEventListener('click', hidePreLevelModal);
+  // Pre-level modal start/back buttons are now React-managed
   const wildEnterBtn = document.getElementById('wild-enter-btn');
   wildEnterBtn?.addEventListener('click', (e) => {
     e.preventDefault();
     startPoolRandom();
   });
-  if (gs.preLevelModalEl) {
-    gs.preLevelModalEl.addEventListener('click', (e) => {
-      if (e.target === gs.preLevelModalEl) hidePreLevelModal();
-    });
-  }
+  // Pre-level modal backdrop click is now React-managed
 
   // 13. Global event handlers
   window.addEventListener('beforeunload', () => {
     if ((document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') saveGameStatus();
+    // Clean up duo listener
+    if (gs.duoUnsubscribe) { gs.duoUnsubscribe(); gs.duoUnsubscribe = null; }
+    if (gs.duoGlowUnsubscribe) { gs.duoGlowUnsubscribe(); gs.duoGlowUnsubscribe = null; }
     if (gs.isDuoMode && gs.firebaseReady && gs.duoRole) {
-      // Best-effort cleanup
       const field = gs.duoRole === 'host' ? 'status' : 'guestId';
       const val = gs.duoRole === 'host' ? 'idle' : null;
       try {
@@ -199,6 +196,8 @@ export function bootLegacyRuntime(appVersion: string): void {
         /* ignore */
       }
     }
+    // Clean up wild timer
+    if (gs.wildTimerInterval) { clearInterval(gs.wildTimerInterval); gs.wildTimerInterval = null; }
   });
   window.addEventListener('resize', () => {
     if (document.getElementById('level-screen')?.style.display === 'flex') {
@@ -231,7 +230,6 @@ export function bootLegacyRuntime(appVersion: string): void {
     const statsModal = document.getElementById('stats-modal');
     const replayModal = gs.replayModalEl;
     const duoResult = document.getElementById('duo-result-modal');
-    const preLevel = gs.preLevelModalEl;
     const libraryEl = gs.libraryOverlayEl;
 
     if (teachModal?.classList.contains('show')) {
@@ -258,7 +256,7 @@ export function bootLegacyRuntime(appVersion: string): void {
       closeLibraryOverlay();
       return;
     }
-    if (preLevel?.style.display === 'flex' || usePreLevelStore.getState().visible) {
+    if (usePreLevelStore.getState().visible) {
       hidePreLevelModal();
       return;
     }
@@ -266,12 +264,10 @@ export function bootLegacyRuntime(appVersion: string): void {
     // Game screen → pause
     if ((document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') {
       const pauseScreen = document.getElementById('pause-screen');
-      const overlay = gs.overlay;
-      const winEl = gs.winCelebrationEl;
       if (pauseScreen?.style.display === 'flex') {
         // Already paused → go back to level screen
         showLevelScreen(true);
-      } else if (overlay?.style.display === 'flex' || winEl?.style.display === 'flex' || isWinCelebrationOpen() || useGameOverStore.getState().visible) {
+      } else if (isWinCelebrationOpen() || useGameOverStore.getState().visible) {
         // Game over or win → back to levels
         showLevelScreen(true);
       } else {

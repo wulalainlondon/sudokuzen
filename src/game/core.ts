@@ -42,20 +42,20 @@ import {
 
 // Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
 async function callDuoProgress() {
-  const m = await import('../features/duo');
-  m.updateDuoProgress();
+  try { const m = await import('../features/duo'); m.updateDuoProgress(); }
+  catch (e) { console.warn('lazy import duo failed:', e); }
 }
 async function callDuoFinish(sec: number, stars: number) {
-  const m = await import('../features/duo');
-  m.submitDuoFinish(sec, stars);
+  try { const m = await import('../features/duo'); m.submitDuoFinish(sec, stars); }
+  catch (e) { console.warn('lazy import duo failed:', e); }
 }
 async function callCloseReplay() {
-  const m = await import('../features/replay');
-  m.closeReplayModal();
+  try { const m = await import('../features/replay'); m.closeReplayModal(); }
+  catch (e) { console.warn('lazy import replay failed:', e); }
 }
 async function callCloseLibrary() {
-  const m = await import('../features/teach-legacy');
-  m.closeLibraryOverlay();
+  try { const m = await import('../features/teach-legacy'); m.closeLibraryOverlay(); }
+  catch (e) { console.warn('lazy import teach-legacy failed:', e); }
 }
 
 // ── Blind reveal guard ──────────────────────────────────────────────
@@ -192,9 +192,7 @@ export function initGame(
   }
 
   updateLivesUI();
-  if (gs.overlay) gs.overlay.style.display = 'none';
   document.getElementById('pause-screen')?.style.setProperty('display', 'none');
-  if (gs.winCelebrationEl) gs.winCelebrationEl.style.display = 'none';
   import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin());
   import('../react/gameover/gameOverBridge').then(({ bridgeCloseGameOver }) => bridgeCloseGameOver());
   renderGrid();
@@ -254,8 +252,12 @@ export function saveGameStatus(): void {
     isGhostMode: gs.isGhostMode,
     ghostHistory: gs.isGhostMode ? gs.ghostHistory : null,
   };
-  localStorage.setItem(saveKey, JSON.stringify(data));
-  localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
+  try {
+    localStorage.setItem(saveKey, JSON.stringify(data));
+    localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
+  } catch (e) {
+    console.warn('saveGameStatus: localStorage quota exceeded, skipping save', e);
+  }
 }
 
 function loadGameStatus(levelId: number): any {
@@ -466,7 +468,7 @@ export function erase(): void {
 function checkWin(): void {
   const isComplete = gs.cellsData.every((data, i) => data.value === solutionDigitAt(i));
   if (!isComplete) return;
-  clearInterval(gs.timerInterval!);
+  if (gs.timerInterval) clearInterval(gs.timerInterval);
   // Clear duo cooldown if active
   if (gs.duoCooldownTimer) {
     clearInterval(gs.duoCooldownTimer);
@@ -639,7 +641,7 @@ function saveProgress(): number {
 }
 
 export function showGameOver(): void {
-  clearInterval(gs.timerInterval!);
+  if (gs.timerInterval) clearInterval(gs.timerInterval);
 
   const isWild = gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
   const isPractice = gs.currentLevel?.mode === 'practice';
@@ -846,7 +848,7 @@ export function isDuoCooldownActive(): boolean {
 // ── Pause / Resume ──────────────────────────────────────────────────
 
 export function pauseGame(): void {
-  clearInterval(gs.timerInterval!);
+  if (gs.timerInterval) clearInterval(gs.timerInterval);
   document.getElementById('pause-level-name')!.textContent = gs.currentLevel!.displayName;
   document.getElementById('pause-timer')!.textContent = formatSeconds(gs.seconds);
   saveGameStatus();

@@ -17,6 +17,7 @@ const SAVE_SYNC_DEBOUNCE_MS = 800;
 const PROFILE_SYNC_KEYS: Set<string> = new Set([
   SK.RECORDS,
   SK.SPEED_RECORDS,
+  SK.PRACTICE_RECORDS,
   SK.ACHIEVEMENTS,
   SK.LAST_LEVEL,
   SK.SPEEDRUN,
@@ -274,6 +275,7 @@ export function initPresence(): void {
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
+    if (_presenceHeartbeatTimer) { clearInterval(_presenceHeartbeatTimer); _presenceHeartbeatTimer = null; }
     void _removePresenceDoc();
   });
 
@@ -628,7 +630,7 @@ export function renderLeaderboard(el: HTMLElement | null, rows: any[]): void {
 export async function loadLevelLeaderboard(levelId: number): Promise<void> {
   if (!gs.firebaseReady) {
     renderLeaderboard(gs.leaderboardListEl, []);
-    renderLeaderboard(gs.winLeaderboardListEl, []);
+    renderLeaderboard(document.getElementById('win-leaderboard-list'), []);
     return;
   }
   try {
@@ -641,20 +643,21 @@ export async function loadLevelLeaderboard(levelId: number): Promise<void> {
       .get();
     const rows = snap.docs.map((d: any) => d.data());
     renderLeaderboard(gs.leaderboardListEl, rows);
-    renderLeaderboard(gs.winLeaderboardListEl, rows);
+    renderLeaderboard(document.getElementById('win-leaderboard-list'), rows);
     // Also update React win store leaderboard
     const winEl = document.getElementById('win-leaderboard-list');
     if (winEl) renderLeaderboard(winEl, rows);
   } catch (e) {
     console.warn('load leaderboard failed:', e);
     renderLeaderboard(gs.leaderboardListEl, []);
-    renderLeaderboard(gs.winLeaderboardListEl, []);
+    renderLeaderboard(document.getElementById('win-leaderboard-list'), []);
   }
 }
 
 export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
   if (!gs.firebaseReady) {
-    if (gs.preLevelLeaderboardEl) gs.preLevelLeaderboardEl.textContent = '尚未啟用 Firebase 排行。';
+    const _plEl = document.getElementById('pre-level-leaderboard');
+    if (_plEl) _plEl.textContent = '尚未啟用 Firebase 排行。';
     return;
   }
   try {
@@ -675,14 +678,16 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
             return `${i + 1}. ${r.alias}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
           })
           .join('<br>');
-    if (gs.preLevelLeaderboardEl) gs.preLevelLeaderboardEl.innerHTML = html;
+    const _plEl = document.getElementById('pre-level-leaderboard');
+    if (_plEl) _plEl.innerHTML = html;
     // Also update React pre-level store
     import('../react/prelevel/preLevelBridge').then(({ bridgeSetPreLevelLeaderboard }) => {
       bridgeSetPreLevelLeaderboard(html);
     });
   } catch (e) {
     console.warn('load pre-level leaderboard failed:', e);
-    if (gs.preLevelLeaderboardEl) gs.preLevelLeaderboardEl.textContent = '載入失敗';
+    const _plEl = document.getElementById('pre-level-leaderboard');
+    if (_plEl) _plEl.textContent = '載入失敗';
   }
 }
 

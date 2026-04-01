@@ -40,14 +40,12 @@ export interface LevelData {
 
 export const gs = {
   // ── DOM refs (populated once by initDom) ──────────────────────────
+  // Note: overlay, win-celebration, confetti-layer, pre-level-modal, stats-modal
+  // are now React-managed — their refs have been removed.
   gridEl: null as HTMLElement | null,
   livesEl: null as HTMLElement | null,
-  overlay: null as HTMLElement | null,
   timerEl: null as HTMLElement | null,
-  winCelebrationEl: null as HTMLElement | null,
-  confettiLayerEl: null as HTMLElement | null,
   leaderboardListEl: null as HTMLElement | null,
-  winLeaderboardListEl: null as HTMLElement | null,
   aliasInputEl: null as HTMLInputElement | null,
   replayModalEl: null as HTMLElement | null,
   replaySummaryEl: null as HTMLElement | null,
@@ -55,15 +53,6 @@ export const gs = {
   replayFilterAllBtn: null as HTMLElement | null,
   replayFilterMistakeBtn: null as HTMLElement | null,
   replayFilterKeyBtn: null as HTMLElement | null,
-  preLevelModalEl: null as HTMLElement | null,
-  preLevelNameEl: null as HTMLElement | null,
-  preLevelBestRecordEl: null as HTMLElement | null,
-  preLevelTechEl: null as HTMLElement | null,
-  preLevelLeaderboardEl: null as HTMLElement | null,
-  preLevelStartBtn: null as HTMLElement | null,
-  preLevelGhostBtn: null as HTMLElement | null,
-  preLevelReplayBtn: null as HTMLElement | null,
-  preLevelBackBtn: null as HTMLElement | null,
   libraryOverlayEl: null as HTMLElement | null,
   libraryListEl: null as HTMLElement | null,
 
@@ -176,12 +165,8 @@ export const gs = {
 export function initDom(): void {
   gs.gridEl = document.getElementById('grid');
   gs.livesEl = document.getElementById('lives');
-  gs.overlay = document.getElementById('overlay');
   gs.timerEl = document.getElementById('timer');
-  gs.winCelebrationEl = document.getElementById('win-celebration');
-  gs.confettiLayerEl = document.getElementById('confetti-layer');
   gs.leaderboardListEl = document.getElementById('leaderboard-list');
-  gs.winLeaderboardListEl = document.getElementById('win-leaderboard-list');
   gs.aliasInputEl = document.getElementById('alias-input') as HTMLInputElement | null;
   gs.replayModalEl = document.getElementById('replay-modal');
   gs.replaySummaryEl = document.getElementById('replay-summary');
@@ -189,15 +174,6 @@ export function initDom(): void {
   gs.replayFilterAllBtn = document.getElementById('replay-filter-all');
   gs.replayFilterMistakeBtn = document.getElementById('replay-filter-mistake');
   gs.replayFilterKeyBtn = document.getElementById('replay-filter-key');
-  gs.preLevelModalEl = document.getElementById('pre-level-modal');
-  gs.preLevelNameEl = document.getElementById('pre-level-name');
-  gs.preLevelBestRecordEl = document.getElementById('pre-level-best-record');
-  gs.preLevelTechEl = document.getElementById('pre-level-tech');
-  gs.preLevelLeaderboardEl = document.getElementById('pre-level-leaderboard');
-  gs.preLevelStartBtn = document.getElementById('pre-level-start-btn');
-  gs.preLevelGhostBtn = document.getElementById('pre-level-ghost-btn');
-  gs.preLevelReplayBtn = document.getElementById('pre-level-replay-btn');
-  gs.preLevelBackBtn = document.getElementById('pre-level-back-btn');
   gs.libraryOverlayEl = document.getElementById('library-overlay');
   gs.libraryListEl = document.getElementById('library-list');
 

@@ -493,6 +493,10 @@ export function savePracticeRecord(levelId: number, seconds: number, errors: num
       techKey,
       ...(replayHistory ? { replayHistory } : {}),
     };
-    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(records));
+    try {
+      localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(records));
+    } catch (e) {
+      console.warn('savePracticeRecord: localStorage quota exceeded', e);
+    }
   }
 }

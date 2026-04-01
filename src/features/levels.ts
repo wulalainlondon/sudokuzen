@@ -391,8 +391,6 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false, exter
 }
 
 export function hidePreLevelModal(): void {
-  // Close both legacy and React modals
-  if (gs.preLevelModalEl) gs.preLevelModalEl.style.display = 'none';
   import('../react/prelevel/preLevelBridge').then(({ bridgeClosePreLevel }) => bridgeClosePreLevel());
   gs.pendingLevelId = null;
   _pendingLevelData = null;
@@ -426,8 +424,7 @@ export function showLevelScreen(returnToTier = false): void {
   updateSpeedrunToggleUI();
   document.getElementById('level-screen')!.style.display = 'flex';
   (document.querySelector('.game-container') as HTMLElement).style.display = 'none';
-  clearInterval(gs.timerInterval!);
-  gs.overlay!.style.display = 'none';
+  if (gs.timerInterval) clearInterval(gs.timerInterval);
   import('./replay').then((m) => m.closeReplayModal());
   hidePreLevelModal();
   closeWildLobby();
