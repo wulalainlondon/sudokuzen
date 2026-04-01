@@ -68,6 +68,9 @@ import { usePreLevelStore } from '../react/prelevel/preLevelStore';
 import { useDuoResultStore } from '../react/duoresult/duoResultStore';
 import { useLibraryStore } from '../react/library/libraryStore';
 import { useReplayStore } from '../react/replay/replayStore';
+import { useMentorStore } from '../react/mentor/mentorStore';
+import { bridgeCloseWin } from '../react/win/winBridge';
+import { bridgeCloseGameOver } from '../react/gameover/gameOverBridge';
 
 function isWinCelebrationOpen(): boolean {
   return useWinStore.getState().visible;
@@ -244,6 +247,18 @@ export function bootLegacyRuntime(appVersion: string): void {
     }
     if (usePreLevelStore.getState().visible) {
       hidePreLevelModal();
+      return;
+    }
+    if (useWinStore.getState().visible) {
+      bridgeCloseWin();
+      return;
+    }
+    if (useGameOverStore.getState().visible) {
+      bridgeCloseGameOver();
+      return;
+    }
+    if (useMentorStore.getState().visible) {
+      dismissMentor();
       return;
     }
 

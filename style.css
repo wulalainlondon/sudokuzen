@@ -1926,7 +1926,7 @@ header h1 {
 .practice-tree-container {
     position: fixed;
     inset: 0;
-    z-index: 101; /* Must be above #level-screen (z-index: 100) */
+    z-index: 105; /* Must be above #level-screen (z-index: 100), below modals (150) */
     background: var(--bg-color);
     display: flex;
     flex-direction: column;

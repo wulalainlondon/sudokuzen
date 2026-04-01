@@ -162,6 +162,7 @@ function Leaderboard(): ReactElement | null {
   return (
     <div className="leaderboard-card">
       <div className="leaderboard-title">{t('prelevel.leaderboardTitle')}</div>
+      {/* Safety: leaderboard HTML from Firebase — player aliases sanitized by normalizeAlias() which strips HTML */}
       <div className="leaderboard-list" id="win-leaderboard-list"
         dangerouslySetInnerHTML={{ __html: leaderboardHtml || t('prelevel.loading') }} />
     </div>

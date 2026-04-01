@@ -429,6 +429,11 @@ export function showLevelScreen(returnToTier = false): void {
   (document.querySelector('.game-container') as HTMLElement).style.display = 'none';
   if (gs.timerInterval) clearInterval(gs.timerInterval);
   import('./replay').then((m) => m.closeReplayModal());
+  import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin());
+  import('../react/gameover/gameOverBridge').then(({ bridgeCloseGameOver }) => bridgeCloseGameOver());
+  import('../react/stats/statsStore').then(({ useStatsStore }) => useStatsStore.getState().close());
+  import('../react/mentor/mentorBridge').then(({ bridgeDismissMentor }) => bridgeDismissMentor());
+  import('./duo').then((m) => m.closeDuoResult());
   hidePreLevelModal();
   closeWildLobby();
   const practiceReturnTech = gs.practiceActiveTech;

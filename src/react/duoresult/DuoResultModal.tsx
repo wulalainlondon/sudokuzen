@@ -56,6 +56,7 @@ export function DuoResultModal(): ReactElement {
       <div className="duo-result-panel">
         {showConfetti && <ConfettiLayer count={confettiCount} colors={confettiColors} />}
         <h2>{t('duo.resultTitle')}</h2>
+        {/* Safety: contentHtml built by our own duo.ts code (trusted) */}
         <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
         <button className="resume-btn" onClick={handleClose}>{t('duo.playAgain')}</button>
         <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleClose}>{t('nav.backToLevels')}</button>

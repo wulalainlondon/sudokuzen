@@ -75,6 +75,7 @@ export function PreLevelModal(): ReactElement {
 
           <div className="leaderboard-card">
             <div className="leaderboard-title">{t('prelevel.leaderboardTitle')}</div>
+            {/* Safety: leaderboard HTML from Firebase — player aliases sanitized by normalizeAlias() which strips HTML */}
             <div
               className="leaderboard-list"
               id="pre-level-leaderboard"

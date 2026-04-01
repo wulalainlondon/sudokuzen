@@ -51,12 +51,14 @@ export function EncounterTransition(): ReactElement {
 
   const phaseRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const cycleRef = useRef(0);
   const reduced = isReducedMotion();
 
   const cleanup = useCallback(() => {
     timerRef.current.forEach(clearTimeout);
     timerRef.current = [];
     phaseRef.current = 0;
+    cycleRef.current++; // invalidate any in-flight callbacks
   }, []);
 
   useEffect(() => {
@@ -65,9 +67,14 @@ export function EncounterTransition(): ReactElement {
       return;
     }
 
+    const currentCycle = ++cycleRef.current;
+
     // Reduced motion: show briefly then dismiss
     if (reduced) {
-      const t = setTimeout(() => dismiss(), 300);
+      const t = setTimeout(() => {
+        if (cycleRef.current !== currentCycle) return;
+        dismiss();
+      }, 300);
       timerRef.current.push(t);
       return cleanup;
     }
@@ -77,18 +84,21 @@ export function EncounterTransition(): ReactElement {
 
     // Phase 2: Technique reveal (400ms)
     const t2 = setTimeout(() => {
+      if (cycleRef.current !== currentCycle) return;
       phaseRef.current = 2;
     }, PHASE1_END);
     timerRef.current.push(t2);
 
     // Phase 3: Mode stamp (1200ms)
     const t3 = setTimeout(() => {
+      if (cycleRef.current !== currentCycle) return;
       phaseRef.current = 3;
     }, PHASE2_END);
     timerRef.current.push(t3);
 
     // Phase 4: Ink contracts + dismiss (1600ms -> 2200ms)
     const t4 = setTimeout(() => {
+      if (cycleRef.current !== currentCycle) return;
       phaseRef.current = 4;
       dismiss();
     }, PHASE4_END);
@@ -109,7 +119,7 @@ export function EncounterTransition(): ReactElement {
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 50,
+            zIndex: 160,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',

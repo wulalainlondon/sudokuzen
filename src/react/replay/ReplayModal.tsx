@@ -135,6 +135,7 @@ function StepList({ html }: { html: string }): ReactElement {
   }, [html]);
 
   return (
+    // Safety: step list HTML built by our own replay.ts code (trusted)
     <div
       className="replay-list"
       id="replay-list"
@@ -157,6 +158,15 @@ export function ReplayModal(): ReactElement {
   const progressPct = useReplayStore((s) => s.progressPct);
   const prevDisabled = useReplayStore((s) => s.prevDisabled);
   const nextDisabled = useReplayStore((s) => s.nextDisabled);
+
+  // Clear replay board to prevent stale content when modal closes
+  useEffect(() => {
+    if (!visible) return;
+    return () => {
+      const board = document.getElementById('replay-board');
+      if (board) board.innerHTML = '';
+    };
+  }, [visible]);
 
   // Close on Escape
   useEffect(() => {

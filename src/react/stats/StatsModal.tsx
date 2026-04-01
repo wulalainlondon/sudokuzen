@@ -175,18 +175,22 @@ export function StatsModal(): ReactElement {
   }, [visible]);
 
   return (
-    <ZenOverlay visible={visible && !!stats} onClose={close} id="stats-modal">
+    <ZenOverlay visible={visible} onClose={close} id="stats-modal">
       <div className="stats-panel">
-        <ZenStagger>
-          <h2>{t('stats.title')}</h2>
-          <div className="stats-tabs">
-            <button className={`stats-tab-btn${tab === 'overview' ? ' active' : ''}`} onClick={() => setTab('overview')}>{t('stats.tabOverview')}</button>
-            <button className={`stats-tab-btn${tab === 'achievement' ? ' active' : ''}`} onClick={() => setTab('achievement')}>{t('stats.tabAchievements')}</button>
-          </div>
-          {tab === 'overview' && stats && <OverviewTab stats={stats} />}
-          {tab === 'achievement' && <AchievementTab achievements={achievements} records={achievementRecords} />}
-          <button className="resume-btn" onClick={close}>{t('nav.close')}</button>
-        </ZenStagger>
+        {stats ? (
+          <ZenStagger>
+            <h2>{t('stats.title')}</h2>
+            <div className="stats-tabs">
+              <button className={`stats-tab-btn${tab === 'overview' ? ' active' : ''}`} onClick={() => setTab('overview')}>{t('stats.tabOverview')}</button>
+              <button className={`stats-tab-btn${tab === 'achievement' ? ' active' : ''}`} onClick={() => setTab('achievement')}>{t('stats.tabAchievements')}</button>
+            </div>
+            {tab === 'overview' && stats && <OverviewTab stats={stats} />}
+            {tab === 'achievement' && <AchievementTab achievements={achievements} records={achievementRecords} />}
+            <button className="resume-btn" onClick={close}>{t('nav.close')}</button>
+          </ZenStagger>
+        ) : (
+          <p style={{ color: 'var(--text-light)' }}>載入中...</p>
+        )}
       </div>
     </ZenOverlay>
   );
