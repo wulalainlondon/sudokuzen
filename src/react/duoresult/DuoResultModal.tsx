@@ -3,7 +3,7 @@
 
 import { useCallback, useMemo, type ReactElement } from 'react';
 import { useDuoResultStore } from './duoResultStore';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { ZenOverlay } from '../motion/ZenOverlay';
 
 const CONFETTI_COLORS_WIN = ['#FFD700', '#FF6B6B', '#74b9ff', '#55efc4', '#a29bfe'];
 const CONFETTI_COLORS_DRAW = ['#fd79a8', '#a29bfe', '#74b9ff', '#dfe6e9', '#fab1a0'];
@@ -37,42 +37,26 @@ function ConfettiLayer({ count, colors }: { count: number; colors: string[] }): 
   );
 }
 
-export function DuoResultModal(): ReactElement | null {
+export function DuoResultModal(): ReactElement {
   const { visible, contentHtml, iWon, isDraw } = useDuoResultStore();
-  const trapRef = useFocusTrap(visible);
 
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (e.target === e.currentTarget) {
-        (window as any).closeDuoResult?.();
-      }
-    },
-    [],
-  );
-
-  const handleRematch = useCallback(() => {
+  const handleClose = useCallback(() => {
     (window as any).closeDuoResult?.();
   }, []);
-
-  const handleBack = useCallback(() => {
-    (window as any).closeDuoResult?.();
-  }, []);
-
-  if (!visible) return null;
 
   const showConfetti = iWon || isDraw;
   const confettiCount = iWon ? 30 : 25;
   const confettiColors = iWon ? CONFETTI_COLORS_WIN : CONFETTI_COLORS_DRAW;
 
   return (
-    <div id="duo-result-modal" style={{ display: 'flex' }} onClick={handleBackdropClick} ref={trapRef}>
+    <ZenOverlay visible={visible} onClose={handleClose} id="duo-result-modal">
       <div className="duo-result-panel">
         {showConfetti && <ConfettiLayer count={confettiCount} colors={confettiColors} />}
         <h2>{"💑 雙人對決結果"}</h2>
         <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
-        <button className="resume-btn" onClick={handleRematch}>再來一局</button>
-        <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleBack}>返回選關</button>
+        <button className="resume-btn" onClick={handleClose}>再來一局</button>
+        <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleClose}>返回選關</button>
       </div>
-    </div>
+    </ZenOverlay>
   );
 }

@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, type ReactElement } from 'react';
 import { usePreLevelStore } from './preLevelStore';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { ZenOverlay } from '../motion/ZenOverlay';
+import { ZenStagger } from '../motion/ZenStagger';
 
-export function PreLevelModal(): ReactElement | null {
+export function PreLevelModal(): ReactElement {
   const {
     visible, displayName, techName, techTier, bestRecord, hasRecord,
     hasReplay, leaderboardHtml,
   } = usePreLevelStore();
   const close = usePreLevelStore((s) => s.close);
-  const trapRef = useFocusTrap(visible);
   const duoZoneRef = useRef<HTMLDivElement>(null);
 
   // Move legacy duo-ready-zone DOM into our container when visible;
@@ -27,10 +27,6 @@ export function PreLevelModal(): ReactElement | null {
       }
     };
   }, [visible]);
-
-  const handleBackdrop = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) close();
-  }, [close]);
 
   const handleStart = useCallback(() => {
     import('../../features/levels').then((m) => m.startLevelFromModal(true, false, null));
@@ -66,42 +62,42 @@ export function PreLevelModal(): ReactElement | null {
     }
   }, []);
 
-  if (!visible) return null;
-
   const techDisplay = techTier ? `💡 核心技巧: ${techName} (${techTier})` : `💡 核心技巧: ${techName}`;
 
   return (
-    <div id="pre-level-modal" style={{ display: 'flex' }} onClick={handleBackdrop} ref={trapRef}>
+    <ZenOverlay visible={visible} onClose={close} id="pre-level-modal">
       <div className="pre-level-panel">
-        <h2>{displayName}</h2>
-        <p className={`pre-level-record${hasRecord ? ' has-record' : ''}`}>{bestRecord}</p>
-        <p className="pre-level-tech">{techDisplay}</p>
+        <ZenStagger>
+          <h2>{displayName}</h2>
+          <p className={`pre-level-record${hasRecord ? ' has-record' : ''}`}>{bestRecord}</p>
+          <p className="pre-level-tech">{techDisplay}</p>
 
-        <div className="leaderboard-card">
-          <div className="leaderboard-title">首通榜 TOP 3</div>
-          <div
-            className="leaderboard-list"
-            id="pre-level-leaderboard"
-            dangerouslySetInnerHTML={{ __html: leaderboardHtml }}
-          />
-        </div>
+          <div className="leaderboard-card">
+            <div className="leaderboard-title">首通榜 TOP 3</div>
+            <div
+              className="leaderboard-list"
+              id="pre-level-leaderboard"
+              dangerouslySetInnerHTML={{ __html: leaderboardHtml }}
+            />
+          </div>
 
-        {/* Legacy Duo Ready Zone — mounted here by useEffect */}
-        <div ref={duoZoneRef} />
+          {/* Legacy Duo Ready Zone — mounted here by useEffect */}
+          <div ref={duoZoneRef} />
 
-        <button className="resume-btn" onClick={handleStart}>開始挑戰</button>
-        {hasReplay && (
-          <button className="resume-btn btn-ghost" onClick={handleGhostWithData}>
-            👻 挑戰本局幽靈
-          </button>
-        )}
-        {hasReplay && (
-          <button className="resume-btn btn-replay" onClick={handleReplay}>
-            🎬 觀看最佳通關回放
-          </button>
-        )}
-        <button className="back-btn-light" onClick={close}>選擇其他關卡</button>
+          <button className="resume-btn" onClick={handleStart}>開始挑戰</button>
+          {hasReplay && (
+            <button className="resume-btn btn-ghost" onClick={handleGhostWithData}>
+              👻 挑戰本局幽靈
+            </button>
+          )}
+          {hasReplay && (
+            <button className="resume-btn btn-replay" onClick={handleReplay}>
+              🎬 觀看最佳通關回放
+            </button>
+          )}
+          <button className="back-btn-light" onClick={close}>選擇其他關卡</button>
+        </ZenStagger>
       </div>
-    </div>
+    </ZenOverlay>
   );
 }

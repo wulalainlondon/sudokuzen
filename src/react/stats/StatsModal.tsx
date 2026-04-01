@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState, type ReactElement } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { useStatsStore } from './statsStore';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { ZenOverlay } from '../motion/ZenOverlay';
+import { ZenStagger } from '../motion/ZenStagger';
 
 // Import data functions from legacy stats module
 // These are pure computation — no DOM side effects
@@ -125,11 +126,10 @@ function AchievementTab({ achievements, records }: { achievements: AchievementDe
 
 // ── Main Modal ────────────────────────────────────────────────────────
 
-export function StatsModal(): ReactElement | null {
+export function StatsModal(): ReactElement {
   const { visible, tab } = useStatsStore();
   const close = useStatsStore((s) => s.close);
   const setTab = useStatsStore((s) => s.setTab);
-  const trapRef = useFocusTrap(visible);
 
   const [stats, setStats] = useState<StatsData | null>(null);
   const [achievements, setAchievements] = useState<AchievementDef[]>([]);
@@ -147,24 +147,20 @@ export function StatsModal(): ReactElement | null {
     });
   }, [visible]);
 
-  const handleBackdrop = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) close();
-  }, [close]);
-
-  if (!visible || !stats) return null;
-
   return (
-    <div id="stats-modal" style={{ display: 'flex' }} onClick={handleBackdrop} ref={trapRef}>
+    <ZenOverlay visible={visible && !!stats} onClose={close} id="stats-modal">
       <div className="stats-panel">
-        <h2>個人統計</h2>
-        <div className="stats-tabs">
-          <button className={`stats-tab-btn${tab === 'overview' ? ' active' : ''}`} onClick={() => setTab('overview')}>總覽</button>
-          <button className={`stats-tab-btn${tab === 'achievement' ? ' active' : ''}`} onClick={() => setTab('achievement')}>成就</button>
-        </div>
-        {tab === 'overview' && <OverviewTab stats={stats} />}
-        {tab === 'achievement' && <AchievementTab achievements={achievements} records={achievementRecords} />}
-        <button className="resume-btn" onClick={close}>關閉</button>
+        <ZenStagger>
+          <h2>個人統計</h2>
+          <div className="stats-tabs">
+            <button className={`stats-tab-btn${tab === 'overview' ? ' active' : ''}`} onClick={() => setTab('overview')}>總覽</button>
+            <button className={`stats-tab-btn${tab === 'achievement' ? ' active' : ''}`} onClick={() => setTab('achievement')}>成就</button>
+          </div>
+          {tab === 'overview' && stats && <OverviewTab stats={stats} />}
+          {tab === 'achievement' && <AchievementTab achievements={achievements} records={achievementRecords} />}
+          <button className="resume-btn" onClick={close}>關閉</button>
+        </ZenStagger>
       </div>
-    </div>
+    </ZenOverlay>
   );
 }

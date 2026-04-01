@@ -2,6 +2,7 @@
 // Floating toast notification, NOT a modal. Auto-dismisses after 3s.
 
 import { useEffect, useRef, type ReactElement } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAchievementToastStore } from './achievementToastStore';
 
 export function AchievementToast(): ReactElement {
@@ -29,12 +30,24 @@ export function AchievementToast(): ReactElement {
   }, [visible, dismiss, showNext, queue.length]);
 
   return (
-    <div className={`achievement-toast${visible ? ' show' : ''}`} id="achievement-toast">
-      <div className="achievement-toast-icon" id="achievement-toast-icon">{currentIcon}</div>
-      <div className="achievement-toast-text">
-        <span className="achievement-toast-label">{"成就解鎖"}</span>
-        <span className="achievement-toast-name" id="achievement-toast-name">{currentName}</span>
-      </div>
-    </div>
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          key="achievement-toast"
+          className="achievement-toast show"
+          id="achievement-toast"
+          initial={{ x: '100%', opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: '100%', opacity: 0 }}
+          transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
+        >
+          <div className="achievement-toast-icon" id="achievement-toast-icon">{currentIcon}</div>
+          <div className="achievement-toast-text">
+            <span className="achievement-toast-label">{"成就解鎖"}</span>
+            <span className="achievement-toast-name" id="achievement-toast-name">{currentName}</span>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

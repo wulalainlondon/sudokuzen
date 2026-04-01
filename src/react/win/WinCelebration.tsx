@@ -1,21 +1,14 @@
-// WinCelebration — React component replacing the legacy #win-celebration DOM.
+// WinCelebration — React component with Zen Motion System.
 // Renders differently for normal / practice / wild modes.
 
 import { useCallback, useEffect, useMemo, useRef, type ReactElement } from 'react';
 import { useWinStore, type WinMode } from './winStore';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { ZenOverlay } from '../motion/ZenOverlay';
+import { ZenStagger } from '../motion/ZenStagger';
+import { ZenStarReveal } from '../motion/ZenStarReveal';
+import { ZenCountUp } from '../motion/ZenCountUp';
 
 // ── Helpers ────────────────────────────────────────────────────────────
-
-function fmtTime(sec: number): string {
-  const m = Math.floor(sec / 60).toString().padStart(2, '0');
-  const s = (sec % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
-
-function starsText(stars: number): string {
-  return '★'.repeat(stars) + '☆'.repeat(Math.max(0, 3 - stars));
-}
 
 const CONFETTI_COLORS = ['#0984E3', '#74B9FF', '#A29BFE', '#DFE6E9', '#B2BEC3'];
 
@@ -38,7 +31,6 @@ function generateConfettiData(count: number) {
 }
 
 function ConfettiLayer({ count }: { count: number }): ReactElement {
-  // Generate random data once per mount, not during render
   const data = useMemo(() => generateConfettiData(count), [count]);
   return (
     <div className="confetti-layer">
@@ -87,7 +79,11 @@ function MetricDisplay(): ReactElement {
     return <div className="win-stars">⚡ 總提交: {submissions}次</div>;
   }
 
-  return <div className="win-stars">{starsText(stars)}</div>;
+  return (
+    <div className="win-stars">
+      <ZenStarReveal stars={stars} />
+    </div>
+  );
 }
 
 // ── Action buttons ─────────────────────────────────────────────────────
@@ -104,7 +100,6 @@ function ActionButtons(): ReactElement {
     if (mode === 'practice') {
       import('../../features/practice/practiceLobby').then((m) => m.startNextPracticeLevel());
     } else {
-      // Normal mode: try to show next level in same tier
       import('../../features/levels').then((m) => m.advanceToNextLevel());
     }
     close();
@@ -138,21 +133,16 @@ function ActionButtons(): ReactElement {
   if (mode === 'practice') {
     return (
       <div className="win-actions">
-        {showReplay && (
-          <button className="back-btn btn-replay" onClick={handleReplay}>查看回放</button>
-        )}
+        {showReplay && <button className="back-btn btn-replay" onClick={handleReplay}>查看回放</button>}
         <button className="resume-btn" onClick={handleNext}>下一關</button>
         <button className="back-btn" onClick={handleBack}>返回修行</button>
       </div>
     );
   }
 
-  // Normal
   return (
     <div className="win-actions">
-      {showReplay && (
-        <button className="back-btn btn-replay" onClick={handleReplay}>查看回放</button>
-      )}
+      {showReplay && <button className="back-btn btn-replay" onClick={handleReplay}>查看回放</button>}
       <button className="resume-btn" onClick={handleNext}>下一關</button>
       <button className="back-btn" onClick={handleBack}>返回選關</button>
     </div>
@@ -167,56 +157,48 @@ function Leaderboard(): ReactElement | null {
   return (
     <div className="leaderboard-card">
       <div className="leaderboard-title">首通榜 TOP 3</div>
-      <div
-        className="leaderboard-list"
-        id="win-leaderboard-list"
-        dangerouslySetInnerHTML={{ __html: leaderboardHtml || '載入中...' }}
-      />
+      <div className="leaderboard-list" id="win-leaderboard-list"
+        dangerouslySetInnerHTML={{ __html: leaderboardHtml || '載入中...' }} />
     </div>
   );
 }
 
 // ── Main component ─────────────────────────────────────────────────────
 
-export function WinCelebration(): ReactElement | null {
+export function WinCelebration(): ReactElement {
   const { visible, mode, levelName, timeSeconds, firstKill, firstKillSub, leveledUp } = useWinStore();
-  const trapRef = useFocusTrap(visible);
+  const close = useWinStore((s) => s.close);
   const prevVisibleRef = useRef(false);
 
-  // Trigger vibration on open
   useEffect(() => {
     if (visible && !prevVisibleRef.current) {
       if (navigator.vibrate) {
-        if (mode === 'wild' && leveledUp) {
-          navigator.vibrate([25, 45, 25, 45, 25, 45, 25, 70, 50]);
-        } else if (mode === 'practice') {
-          navigator.vibrate([25, 45, 25]);
-        } else {
-          navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
-        }
+        if (mode === 'wild' && leveledUp) navigator.vibrate([25, 45, 25, 45, 25, 45, 25, 70, 50]);
+        else if (mode === 'practice') navigator.vibrate([25, 45, 25]);
+        else navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
       }
     }
     prevVisibleRef.current = visible;
   }, [visible, mode, leveledUp]);
 
-  if (!visible) return null;
-
   const confettiCount = mode === 'wild' && leveledUp ? 35 : 22;
+  const displayName = mode === 'wild' && firstKill
+    ? `「${firstKill} · ${firstKillSub}」首次討伐！`
+    : levelName;
 
-  const displayName =
-    mode === 'wild' && firstKill
-      ? `「${firstKill} · ${firstKillSub}」首次討伐！`
-      : levelName;
+  const bg = 'radial-gradient(circle at top, rgba(9, 132, 227, 0.16), var(--bg-color) 60%)';
 
   return (
-    <div id="win-celebration" style={{ display: 'flex' }} ref={trapRef}>
+    <ZenOverlay visible={visible} onClose={close} id="win-celebration" noBackdropClose backdropTint={bg}>
       <ConfettiLayer count={confettiCount} />
-      <h2>{headingText(mode)}</h2>
-      <p id="win-level-name">{displayName}</p>
-      <MetricDisplay />
-      <p className="win-time">{fmtTime(timeSeconds)}</p>
-      <Leaderboard />
-      <ActionButtons />
-    </div>
+      <ZenStagger>
+        <h2>{headingText(mode)}</h2>
+        <p id="win-level-name">{displayName}</p>
+        <MetricDisplay />
+        <p className="win-time"><ZenCountUp value={timeSeconds} /></p>
+        <Leaderboard />
+        <ActionButtons />
+      </ZenStagger>
+    </ZenOverlay>
   );
 }

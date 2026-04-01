@@ -4,7 +4,7 @@
 
 import { useCallback, useEffect, useRef, type ReactElement } from 'react';
 import { useReplayStore, type ReplayFilter } from './replayStore';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { ZenOverlay } from '../motion/ZenOverlay';
 
 // ── Replay Board Container ─────────────────────────────────────────────
 // The 9x9 board is performance-sensitive DOM manipulation.
@@ -145,7 +145,7 @@ function StepList({ html }: { html: string }): ReactElement {
 
 // ── Main Modal ──────────────────────────────────────────────────────────
 
-export function ReplayModal(): ReactElement | null {
+export function ReplayModal(): ReactElement {
   const visible = useReplayStore((s) => s.visible);
   const summaryText = useReplayStore((s) => s.summaryText);
   const listHtml = useReplayStore((s) => s.listHtml);
@@ -156,7 +156,6 @@ export function ReplayModal(): ReactElement | null {
   const progressPct = useReplayStore((s) => s.progressPct);
   const prevDisabled = useReplayStore((s) => s.prevDisabled);
   const nextDisabled = useReplayStore((s) => s.nextDisabled);
-  const trapRef = useFocusTrap(visible);
 
   // Close on Escape
   useEffect(() => {
@@ -170,23 +169,12 @@ export function ReplayModal(): ReactElement | null {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [visible]);
 
-  const handleBackdrop = useCallback(
-    (e: React.MouseEvent) => {
-      if (e.target === e.currentTarget) {
-        import('../../features/replay').then((m) => m.closeReplayModal());
-      }
-    },
-    [],
-  );
-
   const handleClose = useCallback(() => {
     import('../../features/replay').then((m) => m.closeReplayModal());
   }, []);
 
-  if (!visible) return null;
-
   return (
-    <div id="replay-modal" className="show" onClick={handleBackdrop} ref={trapRef}>
+    <ZenOverlay visible={visible} onClose={handleClose} id="replay-modal" className="show">
       <div className="replay-panel">
         <h3 className="replay-title">本局步驟回放</h3>
         <div className="replay-summary" id="replay-summary">
@@ -215,6 +203,6 @@ export function ReplayModal(): ReactElement | null {
           關閉
         </button>
       </div>
-    </div>
+    </ZenOverlay>
   );
 }

@@ -3,11 +3,11 @@
 
 import { useCallback, useEffect, useRef, type ReactElement } from 'react';
 import { useLibraryStore } from './libraryStore';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { ZenOverlay } from '../motion/ZenOverlay';
+import { ZenStagger } from '../motion/ZenStagger';
 
-export function LibraryOverlay(): ReactElement | null {
+export function LibraryOverlay(): ReactElement {
   const visible = useLibraryStore((s) => s.visible);
-  const trapRef = useFocusTrap(visible);
   const listRef = useRef<HTMLDivElement>(null);
 
   // When opening, render library cards via legacy function
@@ -32,31 +32,22 @@ export function LibraryOverlay(): ReactElement | null {
     };
   }, [visible]);
 
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (e.target === e.currentTarget) {
-        (window as any).closeLibraryOverlay?.();
-      }
-    },
-    [],
-  );
-
-  const handleBack = useCallback(() => {
+  const handleClose = useCallback(() => {
     (window as any).closeLibraryOverlay?.();
   }, []);
 
-  if (!visible) return null;
-
   return (
-    <div id="library-overlay" className="show" onClick={handleBackdropClick} ref={trapRef}>
+    <ZenOverlay visible={visible} onClose={handleClose} id="library-overlay" className="show">
       <div className="library-page">
-        <div className="library-header">
-          <button className="library-back-btn" onClick={handleBack}>{"<- 返回"}</button>
-          <h2 className="library-title">{"境界秘笈"}</h2>
-          <div className="library-subtitle">{"依境界由淺入深研讀"}</div>
-        </div>
-        <div className="library-list" id="library-list" ref={listRef} />
+        <ZenStagger>
+          <div className="library-header">
+            <button className="library-back-btn" onClick={handleClose}>{"<- 返回"}</button>
+            <h2 className="library-title">{"境界秘笈"}</h2>
+            <div className="library-subtitle">{"依境界由淺入深研讀"}</div>
+          </div>
+          <div className="library-list" id="library-list" ref={listRef} />
+        </ZenStagger>
       </div>
-    </div>
+    </ZenOverlay>
   );
 }
