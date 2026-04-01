@@ -86,7 +86,7 @@ export function ZenOverlay({
             justifyContent: 'center',
             alignItems: 'center',
             textAlign: 'center',
-            zIndex: 30,
+            zIndex: 150,
             background: backdropTint || 'var(--bg-color)',
           }}
           variants={bv}
