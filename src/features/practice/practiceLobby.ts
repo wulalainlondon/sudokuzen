@@ -77,7 +77,7 @@ const UNLOCK_TREE: TreeNode[] = [
 
 // Deduplicate tree (als_xz appears twice above — keep first)
 const _seen = new Set<string>();
-const TREE: TreeNode[] = [];
+export const TREE: TreeNode[] = [];
 for (const node of UNLOCK_TREE) {
   if (!_seen.has(node.key)) {
     _seen.add(node.key);
@@ -89,17 +89,17 @@ for (const node of UNLOCK_TREE) {
 
 // ── Unlock computation ─────────────────────────────────────────────────
 
-const UNLOCK_THRESHOLD = 3;
+export const UNLOCK_THRESHOLD = 3;
 
-type TechStatus = 'locked' | 'unlocked' | 'partial' | 'completed';
+export type TechStatus = 'locked' | 'unlocked' | 'partial' | 'completed';
 
-interface TechState {
+export interface TechState {
   status: TechStatus;
   cleared: number;
   total: number;
 }
 
-function computeUnlockState(): Map<string, TechState> {
+export function computeUnlockState(): Map<string, TechState> {
   const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
   const result = new Map<string, TechState>();
 
@@ -291,7 +291,7 @@ function renderPracticeLevelGrid(techKey: string): void {
       : '☆☆☆';
 
     item.innerHTML = `
-      <div class="level-num">${l.displayName || `第 ${idx + 1} 關`}</div>
+      <div class="level-num">${l.displayName || t('practiceLobby.levelFallback', { idx: String(idx + 1) })}</div>
       <div class="${starsClass}">${starsText}</div>
       <div class="level-stats${hasRecord ? '' : ' is-empty'}">${timeStr}</div>
     `;
@@ -342,8 +342,8 @@ export function backToPracticeLobby(): void {
       setTimeout(() => {
         import('../../react/mentor/mentorBridge').then(({ bridgeShowMentor }) => {
           bridgeShowMentor(
-            '你走完了三十九道坎，\n還多走了兩道我沒留記號的。\n\n修行圓滿。但劍沒有盡頭。',
-            '── 弈塵',
+            t('practiceLobby.allCompleteQuote'),
+            t('practiceLobby.allCompleteAttr'),
           );
         });
       }, 3500);

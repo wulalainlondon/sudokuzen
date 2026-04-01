@@ -75,7 +75,7 @@ function eliminateNoteFromPeers(idx: number, digit: number): void {
     if (ni > -1) {
       cell.notes.splice(ni, 1);
       updateCellDisplay(gs.gridEl!.children[p] as HTMLElement, cell);
-      recordAction('eliminate', `${cellLabel(p)} 消去候選 ${digit}`, p, digit, cell.notes);
+      recordAction('eliminate', t('miscRuntime.elimLog', { cell: cellLabel(p), digit: String(digit) }), p, digit, cell.notes);
       recordElimination();
     }
   }
@@ -261,7 +261,7 @@ export function saveGameStatus(): void {
   }
 }
 
-function loadGameStatus(levelId: number): any {
+export function loadGameStatus(levelId: number): any {
   const saved = localStorage.getItem(SK.save(levelId, gs.isSpeedrunMode));
   if (!saved) return null;
   try {
@@ -271,7 +271,7 @@ function loadGameStatus(levelId: number): any {
   }
 }
 
-function clearGameStatus(levelId: number): void {
+export function clearGameStatus(levelId: number): void {
   const saveKey = SK.save(levelId, gs.isSpeedrunMode);
   localStorage.removeItem(saveKey);
 }
@@ -304,7 +304,7 @@ export function handleInput(num: number): void {
     else data.notes.push(num);
     recordAction(
       'note',
-      `${cellLabel(gs.selectedIdx)} 候選 ${num}${ni > -1 ? ' 取消' : ' 加入'}`,
+      t('miscRuntime.noteLog', { cell: cellLabel(gs.selectedIdx), digit: String(num), action: ni > -1 ? t('miscRuntime.noteRemove') : t('miscRuntime.noteAdd') }),
       gs.selectedIdx,
       null,
       data.notes,
@@ -318,7 +318,7 @@ export function handleInput(num: number): void {
       data.value = num;
       data.notes = [];
       data.isError = false;
-      recordAction('fill', `${cellLabel(gs.selectedIdx)} (競速) 填入 ${num}`, gs.selectedIdx, num);
+      recordAction('fill', t('miscRuntime.fillSpeedrun', { cell: cellLabel(gs.selectedIdx), digit: String(num) }), gs.selectedIdx, num);
       playFillSound();
       updateCellDisplay(cellEl, data);
       saveGameStatus();
@@ -334,7 +334,7 @@ export function handleInput(num: number): void {
       gs.undoStack.push({ idx: gs.selectedIdx, prevValue: data.value, prevNotes: data.notes.slice() });
       data.value = num;
       data.notes = [];
-      recordAction('fill', `${cellLabel(gs.selectedIdx)} (盲審) 填入 ${num}`, gs.selectedIdx, num);
+      recordAction('fill', t('miscRuntime.fillBlind', { cell: cellLabel(gs.selectedIdx), digit: String(num) }), gs.selectedIdx, num);
       playFillSound();
       updateCellDisplay(cellEl, data);
       saveGameStatus();
@@ -388,7 +388,7 @@ export function handleInput(num: number): void {
 
       playErrorFeedback();
       if (navigator.vibrate) navigator.vibrate([35, 20, 25]);
-      recordAction('mistake', `${cellLabel(gs.selectedIdx)} 輸入 ${num}（錯誤）`, gs.selectedIdx, num);
+      recordAction('mistake', t('miscRuntime.mistakeLog', { cell: cellLabel(gs.selectedIdx), digit: String(num) }), gs.selectedIdx, num);
       setTimeout(() => {
         data.isError = false;
         cellEl.classList.remove('error');
@@ -412,7 +412,7 @@ export function handleInput(num: number): void {
     gs.cellsData[gs.selectedIdx].value = num;
     gs.cellsData[gs.selectedIdx].notes = [];
     gs.cellsData[gs.selectedIdx].isError = false;
-    recordAction('fill', `${cellLabel(gs.selectedIdx)} 填入 ${num}`, gs.selectedIdx, num);
+    recordAction('fill', t('miscRuntime.fillNormal', { cell: cellLabel(gs.selectedIdx), digit: String(num) }), gs.selectedIdx, num);
     // Auto-clear this digit from peer cells' notes
     eliminateNoteFromPeers(gs.selectedIdx, num);
     playFillSound();
@@ -444,7 +444,7 @@ export function undoAction(): void {
   const cellEl = gs.gridEl!.children[action.idx] as HTMLElement;
   cellEl.classList.remove('error');
   updateCellDisplay(cellEl, cell);
-  recordAction('undo', `${cellLabel(action.idx)} 撤銷`, action.idx, action.prevValue);
+  recordAction('undo', t('miscRuntime.undoLog', { cell: cellLabel(action.idx) }), action.idx, action.prevValue);
   saveGameStatus();
   updateNumpadState();
   if (navigator.vibrate) navigator.vibrate(5);
@@ -459,7 +459,7 @@ export function erase(): void {
     gs.cellsData[gs.selectedIdx].notes = [];
     updateCellDisplay(gs.gridEl!.children[gs.selectedIdx] as HTMLElement, gs.cellsData[gs.selectedIdx]);
     if (oldVal !== 0 || oldNotes.length) {
-      recordAction('erase', `${cellLabel(gs.selectedIdx)} 清除`, gs.selectedIdx, 0);
+      recordAction('erase', t('miscRuntime.eraseLog', { cell: cellLabel(gs.selectedIdx) }), gs.selectedIdx, 0);
       playEraseSound();
       if (navigator.vibrate) navigator.vibrate(5);
     }
@@ -616,7 +616,7 @@ async function checkBlindComplete(): Promise<void> {
   }, 600);
 }
 
-function saveProgress(): number {
+export function saveProgress(): number {
   if (gs.isSpeedrunMode) {
     const records = readJson<Record<string, any>>(SK.SPEED_RECORDS, {});
     const existing = records[gs.currentLevel!.id];
@@ -803,7 +803,7 @@ function showWildWinCelebration(seconds: number, expGained: number, leveledUp: b
       bridgeSetWildSession(session ? { round: session.round, wins: session.wins, totalExp: session.totalExp } : null);
     });
   });
-  showFeedback(leveledUp ? `升級！IQ Lv.${newLevel}` : '狩獵成功！', 'success');
+  showFeedback(leveledUp ? t('wildRuntime.levelUpFeedback', { level: String(newLevel) }) : t('wildRuntime.huntSuccess'), 'success');
   playWinSound();
 }
 
