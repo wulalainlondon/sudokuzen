@@ -102,19 +102,16 @@ export function processAchievementToasts(): void {
   if (gs.achievementToastActive || !gs.achievementToastQueue.length) return;
   gs.achievementToastActive = true;
   const a = gs.achievementToastQueue.shift()!;
-  const toast = document.getElementById('achievement-toast');
-  if (!toast) {
-    gs.achievementToastActive = false;
-    return;
-  }
-  document.getElementById('achievement-toast-icon')!.textContent = a.icon;
-  document.getElementById('achievement-toast-name')!.textContent = a.name;
-  toast.classList.add('show');
+
+  import('../react/toast/achievementToastBridge').then(({ bridgeEnqueueToast }) => {
+    bridgeEnqueueToast(a.icon, a.name);
+  });
+
+  // Auto-clear active flag after toast duration (3s) + gap (0.4s)
   setTimeout(() => {
-    toast.classList.remove('show');
     gs.achievementToastActive = false;
     if (gs.achievementToastQueue.length) setTimeout(processAchievementToasts, 400);
-  }, 3000);
+  }, 3400);
 }
 
 // ── Stats computation ─────────────────────────────────────────────────

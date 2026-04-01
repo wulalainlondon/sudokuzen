@@ -536,12 +536,6 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
 let duoResultShown = false;
 export function showDuoResult(d: any): void {
   if (duoResultShown) return;
-  const modal = document.getElementById('duo-result-modal');
-  const cardsEl = document.getElementById('duo-result-cards');
-  const diffEl = document.getElementById('duo-result-diff');
-  const streakEl = document.getElementById('duo-result-streak');
-  const recordEl = document.getElementById('duo-result-record');
-  if (!modal || !cardsEl) return;
   duoResultShown = true;
 
   const hTime = d.hostFinishTime;
@@ -563,12 +557,12 @@ export function showDuoResult(d: any): void {
     rec = recordDuoWin(winner, loser);
   }
 
+  // Build content HTML for React bridge
+  let contentHtml = '';
+
   // Streak badge
   if (rec.streak >= 2 && rec.streakHolder) {
-    if (streakEl)
-      streakEl.innerHTML = `<div class="duo-streak-badge">\u{1F525} ${rec.streakHolder} 連勝 ${rec.streak} 場！</div>`;
-  } else {
-    if (streakEl) streakEl.innerHTML = '';
+    contentHtml += `<div id="duo-result-streak"><div class="duo-streak-badge">\u{1F525} ${rec.streakHolder} 連勝 ${rec.streak} 場！</div></div>`;
   }
 
   function makeCard(alias: string, time: number, stars: number | null, isWinner: boolean): string {
@@ -582,80 +576,48 @@ export function showDuoResult(d: any): void {
                 </div>`;
   }
 
-  cardsEl.innerHTML =
-    makeCard(d.hostAlias, hTime, d.hostStars, hWin) + makeCard(d.guestAlias, gTime, d.guestStars, gWin);
+  contentHtml += `<div class="duo-result-cards" id="duo-result-cards">${makeCard(d.hostAlias, hTime, d.hostStars, hWin)}${makeCard(d.guestAlias, gTime, d.guestStars, gWin)}</div>`;
 
   if (isDraw) {
-    if (diffEl) diffEl.textContent = '平手！心有靈犀 \u{1F495}';
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">平手！心有靈犀 \u{1F495}</div>`;
   } else {
     const winnerAlias = hWin ? d.hostAlias : d.guestAlias;
-    if (diffEl) diffEl.textContent = `${winnerAlias} 快了 ${formatSeconds(diff)}`;
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${winnerAlias} 快了 ${formatSeconds(diff)}</div>`;
   }
 
   // Lifetime record
   const wins = rec.wins || {};
   const names = Object.keys(wins);
-  if (recordEl) {
-    if (names.length >= 2) {
-      const sorted = names.sort((a: string, b: string) => wins[b] - wins[a]);
-      recordEl.innerHTML = `歷史戰績：<span>${sorted[0]} ${wins[sorted[0]]}</span> 勝 — <span>${sorted[1]} ${wins[sorted[1]]}</span> 勝`;
-    } else if (names.length === 1) {
-      recordEl.innerHTML = `歷史戰績：<span>${names[0]} ${wins[names[0]]}</span> 勝`;
-    } else {
-      recordEl.innerHTML = '';
-    }
+  if (names.length >= 2) {
+    const sorted = names.sort((a: string, b: string) => wins[b] - wins[a]);
+    contentHtml += `<div class="duo-result-record" id="duo-result-record">歷史戰績：<span>${sorted[0]} ${wins[sorted[0]]}</span> 勝 — <span>${sorted[1]} ${wins[sorted[1]]}</span> 勝</div>`;
+  } else if (names.length === 1) {
+    contentHtml += `<div class="duo-result-record" id="duo-result-record">歷史戰績：<span>${names[0]} ${wins[names[0]]}</span> 勝</div>`;
   }
 
   // Hide emoji bar
   const emojiBarEl = document.getElementById('duo-emoji-bar');
   if (emojiBarEl) emojiBarEl.style.display = 'none';
 
-  modal.style.display = 'flex';
-
   // Remove forfeit button if present
   const forfeitBtn = document.getElementById('duo-forfeit-btn');
   if (forfeitBtn) forfeitBtn.remove();
 
-  // Celebrate winner or draw
+  // Determine win/draw for confetti + vibration
   const myTime = gs.duoRole === 'host' ? hTime : gTime;
   const oppTime = gs.duoRole === 'host' ? gTime : hTime;
   const iWon = myTime < oppTime;
 
   if (iWon) {
     if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
-    const layer = document.getElementById('duo-confetti-layer');
-    if (layer) {
-      layer.innerHTML = '';
-      const colors = ['#FFD700', '#FF6B6B', '#74b9ff', '#55efc4', '#a29bfe'];
-      for (let i = 0; i < 30; i++) {
-        const piece = document.createElement('div');
-        piece.className = 'confetti';
-        piece.style.left = `${Math.random() * 100}%`;
-        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-        piece.style.animationDuration = `${2 + Math.random() * 1.3}s`;
-        piece.style.animationDelay = `${Math.random() * 0.4}s`;
-        layer.appendChild(piece);
-      }
-    }
+  } else if (isDraw) {
+    if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25]);
   }
 
-  if (isDraw) {
-    if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25]);
-    const layer = document.getElementById('duo-confetti-layer');
-    if (layer) {
-      layer.innerHTML = '';
-      const colors = ['#fd79a8', '#a29bfe', '#74b9ff', '#dfe6e9', '#fab1a0'];
-      for (let i = 0; i < 25; i++) {
-        const piece = document.createElement('div');
-        piece.className = 'confetti';
-        piece.style.left = `${Math.random() * 100}%`;
-        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-        piece.style.animationDuration = `${2 + Math.random() * 1.3}s`;
-        piece.style.animationDelay = `${Math.random() * 0.4}s`;
-        layer.appendChild(piece);
-      }
-    }
-  }
+  // Open via React bridge
+  import('../react/duoresult/duoResultBridge').then(({ bridgeOpenDuoResult }) => {
+    bridgeOpenDuoResult({ contentHtml, iWon, isDraw });
+  });
 }
 
 // ── Duo Records & Streaks ────────────────────────────────────────────
@@ -745,8 +707,7 @@ export function spawnEmojiFloat(emoji: string, isSelf: boolean): void {
 // ── Close / Leave / Reset ────────────────────────────────────────────
 
 export async function closeDuoResult(): Promise<void> {
-  const modal = document.getElementById('duo-result-modal');
-  if (modal) modal.style.display = 'none';
+  import('../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult());
   // Mark room finished
   if (gs.firebaseReady) {
     duoRoomRef()

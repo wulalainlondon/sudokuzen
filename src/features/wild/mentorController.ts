@@ -30,23 +30,16 @@ let _dismissResolve: (() => void) | null = null;
 
 function showMentorMessage(line: MentorLine): Promise<void> {
   return new Promise((resolve) => {
-    const overlay = document.getElementById('mentor-overlay');
-    const textEl = document.getElementById('mentor-text');
-    const subEl = document.getElementById('mentor-sub');
-    if (!overlay || !textEl || !subEl) {
-      resolve();
-      return;
-    }
-
-    textEl.textContent = line.text;
-    subEl.textContent = line.sub ?? '';
-    overlay.classList.remove('hidden');
     _dismissResolve = () => {
-      overlay.classList.add('hidden');
+      import('../../react/mentor/mentorBridge').then(({ bridgeDismissMentor }) => bridgeDismissMentor());
       markSeen(line.key);
       _dismissResolve = null;
       resolve();
     };
+
+    import('../../react/mentor/mentorBridge').then(({ bridgeShowMentor }) => {
+      bridgeShowMentor(line.text, line.sub ?? '');
+    });
   });
 }
 

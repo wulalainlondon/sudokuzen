@@ -65,6 +65,9 @@ import { useWinStore } from '../react/win/winStore';
 import { useGameOverStore } from '../react/gameover/gameOverStore';
 import { useStatsStore } from '../react/stats/statsStore';
 import { usePreLevelStore } from '../react/prelevel/preLevelStore';
+import { useDuoResultStore } from '../react/duoresult/duoResultStore';
+import { useLibraryStore } from '../react/library/libraryStore';
+import { useMentorStore } from '../react/mentor/mentorStore';
 
 function isWinCelebrationOpen(): boolean {
   return useWinStore.getState().visible;
@@ -156,17 +159,7 @@ export function bootLegacyRuntime(appVersion: string): void {
       if (e.target === statsModalEl) closeStatsModal();
     });
   }
-  if (gs.libraryOverlayEl) {
-    gs.libraryOverlayEl.addEventListener('click', (e) => {
-      if (e.target === gs.libraryOverlayEl) closeLibraryOverlay();
-    });
-  }
-  const duoResultModalEl = document.getElementById('duo-result-modal');
-  if (duoResultModalEl) {
-    duoResultModalEl.addEventListener('click', (e) => {
-      if (e.target === duoResultModalEl) closeDuoResult();
-    });
-  }
+  // library-overlay and duo-result-modal backdrop clicks are now React-managed
 
   // 12. Pre-level modal buttons
   // Pre-level modal start/back buttons are now React-managed
@@ -228,8 +221,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     const practiceModal = document.getElementById('practice-modal');
     const statsModal = document.getElementById('stats-modal');
     const replayModal = gs.replayModalEl;
-    const duoResult = document.getElementById('duo-result-modal');
-    const libraryEl = gs.libraryOverlayEl;
+    // duo-result-modal and library-overlay are now React-managed (checked via stores below)
 
     if (teachModal?.classList.contains('show')) {
       hideTeachModal();
@@ -247,11 +239,11 @@ export function bootLegacyRuntime(appVersion: string): void {
       closeReplayModal();
       return;
     }
-    if (duoResult?.style.display === 'flex') {
+    if (useDuoResultStore.getState().visible) {
       closeDuoResult();
       return;
     }
-    if (libraryEl?.classList.contains('show')) {
+    if (useLibraryStore.getState().visible) {
       closeLibraryOverlay();
       return;
     }

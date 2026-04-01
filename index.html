@@ -152,16 +152,7 @@
         <div class="version-badge" id="version-badge">v--</div>
     </div>
 
-    <div id="library-overlay">
-        <div class="library-page">
-            <div class="library-header">
-                <button class="library-back-btn" onclick="closeLibraryOverlay()">← 返回</button>
-                <h2 class="library-title">境界秘笈</h2>
-                <div class="library-subtitle">依境界由淺入深研讀</div>
-            </div>
-            <div class="library-list" id="library-list"></div>
-        </div>
-    </div>
+    <!-- Library Overlay is now rendered by React (src/react/library/LibraryOverlay.tsx) -->
 
     <!-- Pre-level Modal is now rendered by React (src/react/prelevel/PreLevelModal.tsx) -->
     <!-- Duo Ready Zone lives here as hidden DOM; React mounts it via ref when needed -->
@@ -285,14 +276,7 @@
     </div>
     </div>
 
-    <!-- Mentor Message Overlay -->
-    <div id="mentor-overlay" class="hidden">
-        <div class="mentor-panel">
-            <div class="mentor-text" id="mentor-text"></div>
-            <div class="mentor-sub" id="mentor-sub"></div>
-            <button class="mentor-dismiss-btn" onclick="dismissMentor()">……</button>
-        </div>
-    </div>
+    <!-- Mentor Message Overlay is now rendered by React (src/react/mentor/MentorOverlay.tsx) -->
 
     <div id="replay-modal">
         <div class="replay-panel">
@@ -326,28 +310,9 @@
 
     <!-- Stats & Achievements Modal is now rendered by React (src/react/stats/StatsModal.tsx) -->
 
-    <!-- Achievement unlock toast -->
-    <div class="achievement-toast" id="achievement-toast">
-        <div class="achievement-toast-icon" id="achievement-toast-icon"></div>
-        <div class="achievement-toast-text">
-            <span class="achievement-toast-label">成就解鎖</span>
-            <span class="achievement-toast-name" id="achievement-toast-name"></span>
-        </div>
-    </div>
+    <!-- Achievement Toast is now rendered by React (src/react/toast/AchievementToast.tsx) -->
 
-    <!-- Duo Result Modal -->
-    <div id="duo-result-modal">
-        <div class="duo-result-panel">
-            <div class="confetti-layer" id="duo-confetti-layer"></div>
-            <h2>💑 雙人對決結果</h2>
-            <div id="duo-result-streak"></div>
-            <div class="duo-result-cards" id="duo-result-cards"></div>
-            <div class="duo-result-diff" id="duo-result-diff"></div>
-            <div class="duo-result-record" id="duo-result-record"></div>
-            <button class="resume-btn" onclick="closeDuoResult()">再來一局</button>
-            <button class="back-btn" style="border:none; font-size:0.8rem; color:var(--text-light);" onclick="closeDuoResult()">返回選關</button>
-        </div>
-    </div>
+    <!-- Duo Result Modal is now rendered by React (src/react/duoresult/DuoResultModal.tsx) -->
 
     <!-- Teach Modal -->
     <div id="teach-modal">
@@ -397,7 +362,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.04.01-V4';
+        var INLINE_VER = '2026.04.01-V5';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);

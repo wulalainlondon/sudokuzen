@@ -53,8 +53,7 @@ export const gs = {
   replayFilterAllBtn: null as HTMLElement | null,
   replayFilterMistakeBtn: null as HTMLElement | null,
   replayFilterKeyBtn: null as HTMLElement | null,
-  libraryOverlayEl: null as HTMLElement | null,
-  libraryListEl: null as HTMLElement | null,
+  // Note: libraryOverlayEl, libraryListEl are now React-managed — their refs have been removed.
 
   // ── Core game state ───────────────────────────────────────────────
   selectedIdx: null as number | null,
@@ -174,8 +173,7 @@ export function initDom(): void {
   gs.replayFilterAllBtn = document.getElementById('replay-filter-all');
   gs.replayFilterMistakeBtn = document.getElementById('replay-filter-mistake');
   gs.replayFilterKeyBtn = document.getElementById('replay-filter-key');
-  gs.libraryOverlayEl = document.getElementById('library-overlay');
-  gs.libraryListEl = document.getElementById('library-list');
+  // libraryOverlayEl and libraryListEl are now React-managed
 
   const toast = document.createElement('div');
   toast.id = 'feedback-toast';

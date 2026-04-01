@@ -182,31 +182,34 @@ export function getTeachStageLabel(stars: number | string): string {
 }
 
 export function renderLibraryCards(): void {
-  if (!gs.libraryListEl) return;
+  // React now manages the #library-list element; find it from the DOM
+  const listEl = document.getElementById('library-list');
+  if (!listEl) return;
 
   // Try sync first, fall back to async manifest
   const syncItems = getLibraryItemsFromTeachData();
   if (syncItems.length > 0) {
     renderLibraryCardsFromItems(syncItems);
   } else {
-    gs.libraryListEl.innerHTML = '<div class="library-empty">載入秘笈目錄…</div>';
+    listEl.innerHTML = '<div class="library-empty">載入秘笈目錄…</div>';
     getLibraryItemsAsync().then((items) => renderLibraryCardsFromItems(items));
   }
 }
 
 function renderLibraryCardsFromItems(items: LibraryItem[]): void {
-  if (!gs.libraryListEl) return;
+  const listEl = document.getElementById('library-list');
+  if (!listEl) return;
   const read = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
 
   if (!items.length) {
-    gs.libraryListEl.innerHTML = '<div class="library-empty">目前沒有可研讀的秘笈內容</div>';
+    listEl.innerHTML = '<div class="library-empty">目前沒有可研讀的秘笈內容</div>';
     return;
   }
 
   const orderIndex = new Map(items.map((item, idx) => [item.book, idx + 1]));
   const groups = getLibraryLearningGroups(items);
 
-  gs.libraryListEl.innerHTML = groups
+  listEl.innerHTML = groups
     .map((group) => {
       const cardsHtml = group.items
         .map(({ book, key, teach }) => {
@@ -247,18 +250,11 @@ function renderLibraryCardsFromItems(items: LibraryItem[]): void {
 }
 
 export function openLibraryOverlay(): void {
-  renderLibraryCards();
-  if (gs.libraryOverlayEl) {
-    gs.libraryOverlayEl.classList.add('show');
-  }
-  document.body.classList.add('library-open');
+  import('../react/library/libraryBridge').then(({ bridgeOpenLibrary }) => bridgeOpenLibrary());
 }
 
 export function closeLibraryOverlay(): void {
-  if (gs.libraryOverlayEl) {
-    gs.libraryOverlayEl.classList.remove('show');
-  }
-  document.body.classList.remove('library-open');
+  import('../react/library/libraryBridge').then(({ bridgeCloseLibrary }) => bridgeCloseLibrary());
 }
 
 export function openTeachFromLibrary(stars: string | number): void {

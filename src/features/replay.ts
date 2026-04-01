@@ -6,6 +6,14 @@ import { getAllLevels } from '../data/dataRegistry';
 import { detectTechnique } from '../solver/techniqueDetector';
 import { computeReplayScore } from '../solver/scoring';
 import { recordReplayWatch } from './stats';
+import {
+  bridgeOpenReplay,
+  bridgeCloseReplay,
+  bridgeSetReplayFilter,
+  bridgeSetReplaySummary,
+  bridgeSetReplayListHtml,
+  bridgeSetReplayPlayback,
+} from '../react/replay/replayBridge';
 
 const RB_BASE_INTERVAL = 700;
 
@@ -23,10 +31,7 @@ export function getFilteredReplayActions(): any[] {
 }
 
 export function syncReplayFilterButtons(): void {
-  if (!gs.replayFilterAllBtn) return;
-  gs.replayFilterAllBtn.classList.toggle('active', gs.replayFilter === 'all');
-  gs.replayFilterMistakeBtn!.classList.toggle('active', gs.replayFilter === 'mistake');
-  gs.replayFilterKeyBtn!.classList.toggle('active', gs.replayFilter === 'key');
+  bridgeSetReplayFilter(gs.replayFilter as 'all' | 'mistake' | 'key');
 }
 
 export function setReplayFilter(filterKey: 'all' | 'mistake' | 'key'): void {
@@ -38,13 +43,14 @@ export function setReplayFilter(filterKey: 'all' | 'mistake' | 'key'): void {
 export function renderReplayList(): void {
   const filtered = getFilteredReplayActions();
   const filterLabel = gs.replayFilter === 'mistake' ? '錯誤步驟' : gs.replayFilter === 'key' ? '關鍵步驟' : '全部步驟';
-  gs.replaySummaryEl!.textContent = `${gs.currentLevel!.displayName} / 用時 ${formatSeconds(gs.seconds)} / ${filterLabel} ${filtered.length}/${gs.actionHistory.length}`;
+  const summaryText = `${gs.currentLevel!.displayName} / 用時 ${formatSeconds(gs.seconds)} / ${filterLabel} ${filtered.length}/${gs.actionHistory.length}`;
+  bridgeSetReplaySummary(summaryText);
 
   if (!filtered.length) {
-    gs.replayListEl!.innerHTML = '<div class="replay-item">此篩選下暫無步驟</div>';
+    bridgeSetReplayListHtml('<div class="replay-item">此篩選下暫無步驟</div>');
     return;
   }
-  gs.replayListEl!.innerHTML = filtered
+  const html = filtered
     .map((a: any, i: number) => {
       const isMistake = a.type === 'mistake';
       const isElim = a.type === 'eliminate';
@@ -59,23 +65,16 @@ export function renderReplayList(): void {
     })
     .join('');
 
-  // Click-to-jump on replay items
-  gs.replayListEl!.querySelectorAll('.replay-item[data-step]').forEach((el) => {
-    el.addEventListener('click', () => {
-      const step = parseInt((el as HTMLElement).dataset.step || '0');
-      if (step > 0) replayJumpToStep(step);
-    });
-  });
+  bridgeSetReplayListHtml(html);
 }
 
 export function openReplayModal(): void {
-  if (!gs.replayModalEl) return;
   recordReplayWatch();
   gs.replayFilter = 'all';
   syncReplayFilterButtons();
   renderReplayList();
   replayOpen();
-  gs.replayModalEl.classList.add('show');
+  bridgeOpenReplay();
 }
 
 export function openHistoricalReplay(levelId: number, savedHistory: any[]): void {
@@ -94,9 +93,8 @@ export function openHistoricalReplay(levelId: number, savedHistory: any[]): void
 }
 
 export function closeReplayModal(): void {
-  if (!gs.replayModalEl) return;
   replayPause();
-  gs.replayModalEl.classList.remove('show');
+  bridgeCloseReplay();
 }
 
 export function replayOpen(): void {
@@ -105,7 +103,7 @@ export function replayOpen(): void {
   gs.rbStepIdx = 0;
   gs.rbIsPlaying = false;
   gs.rbSpeed = 1;
-  document.getElementById('rb-speed-btn')!.textContent = '1x';
+  bridgeSetReplayPlayback({ speed: 1 });
   replayRenderBoard(-1, null);
   replayUpdateStepInfo();
   replayUpdateButtons();
@@ -202,34 +200,33 @@ export function replayRenderBoard(highlightIdx: number, _action: any | null): vo
 }
 
 function updateProgressBar(): void {
-  const bar = document.getElementById('rb-progress-fill');
-  if (!bar) return;
   const pct = gs.actionHistory.length > 0 ? (gs.rbStepIdx / gs.actionHistory.length) * 100 : 0;
-  bar.style.width = `${pct}%`;
+  bridgeSetReplayPlayback({ progressPct: pct });
+  // Also update the DOM element directly for immediate visual feedback
+  const bar = document.getElementById('rb-progress-fill');
+  if (bar) bar.style.width = `${pct}%`;
 }
 
 export function replayUpdateStepInfo(technique = ''): void {
-  const el = document.getElementById('replay-step-info');
-  if (!el) return;
   const stepText = `步驟 ${gs.rbStepIdx} / ${gs.actionHistory.length}`;
+  let html: string;
   if (technique) {
-    el.innerHTML = `${stepText}<span class="replay-technique">${technique}</span>`;
+    html = `${stepText}<span class="replay-technique">${technique}</span>`;
   } else {
-    el.textContent = stepText;
+    html = stepText;
   }
+  bridgeSetReplayPlayback({ stepInfoHtml: html });
   updateProgressBar();
 }
 
 export function replayUpdateButtons(): void {
-  const prevBtn = document.getElementById('rb-prev-btn') as HTMLButtonElement | null;
-  const nextBtn = document.getElementById('rb-next-btn') as HTMLButtonElement | null;
-  const playBtn = document.getElementById('rb-play-btn') as HTMLButtonElement | null;
-  if (prevBtn) prevBtn.disabled = gs.rbStepIdx <= 0;
-  if (nextBtn) nextBtn.disabled = gs.rbStepIdx >= gs.actionHistory.length;
-  if (playBtn) {
-    playBtn.textContent = gs.rbIsPlaying ? '⏸ 暫停' : '▶ 播放';
-    playBtn.classList.toggle('active', gs.rbIsPlaying);
-  }
+  const prevDisabled = gs.rbStepIdx <= 0;
+  const nextDisabled = gs.rbStepIdx >= gs.actionHistory.length;
+  bridgeSetReplayPlayback({
+    prevDisabled,
+    nextDisabled,
+    isPlaying: gs.rbIsPlaying,
+  });
 }
 
 export function replayStepForward(): void {
@@ -326,8 +323,7 @@ export function replayReset(): void {
 export function replayToggleSpeed(): void {
   const speeds = [1, 2, 4];
   gs.rbSpeed = speeds[(speeds.indexOf(gs.rbSpeed) + 1) % speeds.length];
-  const speedBtn = document.getElementById('rb-speed-btn');
-  if (speedBtn) speedBtn.textContent = `${gs.rbSpeed}x`;
+  bridgeSetReplayPlayback({ speed: gs.rbSpeed });
   if (gs.rbIsPlaying) {
     replayPause();
     replayPlay();
@@ -335,7 +331,7 @@ export function replayToggleSpeed(): void {
 }
 
 // ── Jump to specific step (from text list click) ────────────────
-function replayJumpToStep(step: number): void {
+export function replayJumpToStep(step: number): void {
   replayPause();
   gs.rbStepIdx = step;
   gs.rbState = replayBuildStateAtStep(step);
@@ -349,8 +345,9 @@ function replayJumpToStep(step: number): void {
 
 // ── Highlight active step in text list ──────────────────────────
 function highlightReplayListItem(): void {
-  if (!gs.replayListEl) return;
-  gs.replayListEl.querySelectorAll('.replay-item').forEach((el) => {
+  const listEl = document.getElementById('replay-list');
+  if (!listEl) return;
+  listEl.querySelectorAll('.replay-item').forEach((el) => {
     const step = parseInt((el as HTMLElement).dataset.step || '0');
     el.classList.toggle('replay-item-active', step === gs.rbStepIdx);
   });
@@ -361,9 +358,6 @@ function highlightReplayListItem(): void {
 function showReplayScore(): void {
   const errors = gs.actionHistory.filter((a: any) => a.type === 'mistake').length;
   const score = computeReplayScore(replayTechniqueLog as any, gs.seconds, errors);
-
-  const el = document.getElementById('replay-step-info');
-  if (!el) return;
 
   const gradeColors: Record<string, string> = {
     S: 'var(--star-color)',
@@ -396,13 +390,15 @@ function showReplayScore(): void {
   const totalDelay = 300 + rows.length * 120 + 200;
   const gradeDelay = totalDelay + 600;
 
-  el.innerHTML = `
+  const html = `
     <div class="replay-score">
       <div class="replay-score-grade score-grade-hidden" style="color:${gradeColor};animation-delay:${gradeDelay}ms">${score.grade}</div>
       <div class="replay-score-counter" id="score-counter" data-target="${score.total}" style="animation-delay:${totalDelay}ms">0</div>
       <div class="replay-score-breakdown">${rowsHtml}</div>
     </div>
   `;
+
+  bridgeSetReplayPlayback({ stepInfoHtml: html });
 
   // Start counting animation after rows finish appearing
   setTimeout(() => animateCounter(score.total, totalDelay > 0 ? 800 : 400), totalDelay);
