@@ -72,9 +72,9 @@ for (const device of DEVICES) {
     test('practice lobby — tree renders, no overflow', async ({ page }) => {
       // Open practice lobby
       await page.evaluate(() => (window as any).openPracticeLobby());
-      await page.locator('#practice-lobby').waitFor({ state: 'visible', timeout: 10_000 });
-      // Wait for nodes to render
-      await page.locator('.practice-node').first().waitFor({ state: 'visible', timeout: 5_000 });
+      // Wait for React practice tree to render
+      await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 10_000 });
+      await page.locator('.tree-node').first().waitFor({ state: 'visible', timeout: 5_000 });
       await page.screenshot({ path: `test-results/layout-${device.name}-practice-lobby.png`, fullPage: false });
       // Check no horizontal overflow
       const overflow = await page.evaluate(() => {
@@ -83,21 +83,18 @@ for (const device of DEVICES) {
       expect(overflow).toBe(false);
     });
 
-    test('practice branches — 3-col or 1-col fits', async ({ page }) => {
+    test('practice branches — fork SVG fits', async ({ page }) => {
       await page.evaluate(() => (window as any).openPracticeLobby());
-      await page.locator('#practice-lobby').waitFor({ state: 'visible', timeout: 10_000 });
-      // Scroll to branches section (Phase 2)
-      const branches = page.locator('.practice-branches').first();
-      if (await branches.isVisible()) {
-        await branches.scrollIntoViewIfNeeded();
+      await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 10_000 });
+      // Scroll to fork section
+      const fork = page.locator('.tree-fork').first();
+      if (await fork.isVisible()) {
+        await fork.scrollIntoViewIfNeeded();
         await page.screenshot({ path: `test-results/layout-${device.name}-practice-branches.png`, fullPage: false });
-        // Branch container should not overflow its parent
         const branchOverflow = await page.evaluate(() => {
-          const el = document.querySelector('.practice-branches');
+          const el = document.querySelector('.tree-fork-branches');
           if (!el) return false;
-          const parent = el.parentElement;
-          if (!parent) return false;
-          return el.scrollWidth > parent.clientWidth + 2; // 2px tolerance
+          return el.scrollWidth > document.documentElement.clientWidth + 2;
         });
         expect(branchOverflow).toBe(false);
       }
@@ -105,9 +102,9 @@ for (const device of DEVICES) {
 
     test('practice level grid — 25 items fit', async ({ page }) => {
       await page.evaluate(() => (window as any).openPracticeLobby());
-      await page.locator('#practice-lobby').waitFor({ state: 'visible', timeout: 10_000 });
+      await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 10_000 });
       // Click first unlocked technique (naked_single)
-      const firstNode = page.locator('.practice-node.unlocked').first();
+      const firstNode = page.locator('.tree-node').first();
       if (await firstNode.isVisible()) {
         await firstNode.click();
         await page.locator('#tier-view').waitFor({ state: 'visible', timeout: 5_000 });

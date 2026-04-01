@@ -9,6 +9,7 @@ import { showFeedback } from '../../ui/feedback';
 import { syncLevelCardSize } from '../../game/board';
 import { playZenMentor, playZenEncounter, playZenDiscover, playZenLevelUp, playZenSessionComplete } from '../../game/zenAudio';
 import { t } from '../../i18n/t';
+import { usePracticeTreeStore } from '../../react/practice/practiceTreeStore';
 
 // ── Unlock tree definition ────────────────────────────────────────────
 
@@ -253,105 +254,33 @@ export async function openPracticeLobby(): Promise<void> {
 export function closePracticeLobby(): void {
   setPracticeViewActive(false);
   gs.practiceActiveTech = null;
+  usePracticeTreeStore.getState().close();
 }
 
 export function isPracticeLobbyOpen(): boolean {
   const lobby = document.getElementById('practice-lobby');
-  return !!lobby && !lobby.classList.contains('hidden');
+  const legacyOpen = !!lobby && !lobby.classList.contains('hidden');
+  return legacyOpen || usePracticeTreeStore.getState().visible;
 }
 
 function renderPracticeLobby(): void {
-  const body = document.getElementById('practice-lobby-body');
-  if (!body) return;
-  body.innerHTML = '';
-
   const state = computeUnlockState();
-
-  // Progress summary
   const completedCount = [...state.values()].filter(s => s.status === 'completed').length;
-  const progressEl = document.getElementById('practice-lobby-progress');
-  if (progressEl) progressEl.textContent = t('practice.progress', { completed: String(completedCount) });
 
-  for (const phase of PHASES) {
-    const section = document.createElement('div');
-    section.className = 'practice-phase';
-
-    const title = document.createElement('div');
-    title.className = 'practice-phase-title';
-    title.textContent = phase.name;
-    section.appendChild(title);
-
-    if (phase.type === 'linear') {
-      const list = document.createElement('div');
-      list.className = 'practice-node-list';
-      for (const key of phase.keys) {
-        list.appendChild(createTechNode(key, state.get(key), false));
-      }
-      section.appendChild(list);
-    } else {
-      const container = document.createElement('div');
-      container.className = 'practice-branches';
-      for (const branch of phase.branches) {
-        const col = document.createElement('div');
-        col.className = 'practice-branch-col';
-
-        const header = document.createElement('div');
-        header.className = 'practice-branch-header';
-        header.textContent = branch.name;
-        col.appendChild(header);
-
-        for (const key of branch.keys) {
-          col.appendChild(createTechNode(key, state.get(key), true));
-        }
-        container.appendChild(col);
-      }
-      section.appendChild(container);
-    }
-
-    body.appendChild(section);
-  }
-}
-
-function createTechNode(key: string, techState: TechState | undefined, compact: boolean): HTMLElement {
-  const st = techState || { status: 'locked' as TechStatus, cleared: 0, total: 25 };
-  const node = document.createElement('div');
-  node.className = `practice-node ${st.status}${compact ? ' practice-node--compact' : ''}`;
-
-  const name = TECH_MAP[key] || key;
-  const nameEl = document.createElement('div');
-  nameEl.className = 'practice-node-name';
-  nameEl.textContent = st.status === 'locked' ? '🔒 ' + name : name;
-
-  const bar = document.createElement('div');
-  bar.className = 'practice-mini-bar';
-  const fill = document.createElement('div');
-  fill.className = 'practice-mini-fill';
-  fill.style.width = `${(st.cleared / st.total) * 100}%`;
-  bar.appendChild(fill);
-
-  const count = document.createElement('div');
-  count.className = 'practice-node-count';
-  count.textContent = `${st.cleared}/${st.total}`;
-
-  node.appendChild(nameEl);
-  node.appendChild(bar);
-  node.appendChild(count);
-
-  if (st.status === 'locked') {
-    node.onclick = () => {
-      const treeNode = TREE.find(n => n.key === key);
-      if (treeNode && treeNode.prerequisites.length > 0) {
-        const preNames = treeNode.prerequisites.map(k => TECH_MAP[k] || k).join('、');
-        showFeedback(t('practice.prerequisiteRequired', { prereqs: preNames, threshold: String(UNLOCK_THRESHOLD) }), 'error');
-      } else {
-        showFeedback(t('practice.techLocked'), 'error');
-      }
-    };
-  } else {
-    node.onclick = () => enterPracticeTechnique(key);
+  // Convert to React-friendly format with display names
+  const nodeMap = new Map<string, { key: string; name: string; status: TechStatus; cleared: number; total: number }>();
+  for (const [key, val] of state.entries()) {
+    nodeMap.set(key, {
+      key,
+      name: TECH_MAP[key] || key,
+      status: val.status,
+      cleared: val.cleared,
+      total: val.total,
+    });
   }
 
-  return node;
+  // Push to React PracticeTree store
+  usePracticeTreeStore.getState().open(nodeMap, completedCount);
 }
 
 // ── Enter technique level grid (reuses #tier-view) ──────────────────
@@ -359,6 +288,9 @@ function createTechNode(key: string, techState: TechState | undefined, compact: 
 export function enterPracticeTechnique(techKey: string): void {
   gs.practiceActiveTech = techKey;
   playZenEncounter();
+
+  // Hide React tree when entering technique grid
+  usePracticeTreeStore.getState().close();
 
   const stageView = document.getElementById('stage-view');
   const practiceLobby = document.getElementById('practice-lobby');

@@ -11,6 +11,7 @@ import { AchievementToast } from './toast/AchievementToast';
 import { LibraryOverlay } from './library/LibraryOverlay';
 import { MentorOverlay } from './mentor/MentorOverlay';
 import { EncounterTransition } from './wild/EncounterTransition';
+import { PracticeTree } from './practice/PracticeTree';
 
 export function AppShell(): ReactElement {
   return (
@@ -26,6 +27,7 @@ export function AppShell(): ReactElement {
       <LibraryOverlay />
       <MentorOverlay />
       <EncounterTransition />
+      <PracticeTree />
     </>
   );
 }
