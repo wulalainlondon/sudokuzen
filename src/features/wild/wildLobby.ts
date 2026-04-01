@@ -93,7 +93,7 @@ function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {
   const enterSub =
     session.round >= 10
       ? t('wild.lastRoundSub', { wins: String(session.wins), exp: String(session.totalExp) })
-      : `下一輪 ${session.round + 1}/10 · 目前勝場 ${session.wins}/${session.round}`;
+      : t('wildLobby.nextRoundSub', { next: String(session.round + 1), wins: String(session.wins), round: String(session.round) });
   return {
     roundText: pace,
     fillPct,
@@ -162,21 +162,21 @@ async function studySkill(techKey: string): Promise<void> {
   profile.studiedSkills.push(techKey);
   saveWildProfile(profile);
 
-  showFeedback(`${meta.name} · ${meta.subtitle} 研習完成！`, 'success');
+  showFeedback(t('wild.studyComplete', { name: meta.name, subtitle: meta.subtitle }), 'success');
 
   // Check if this unlocks Lv.21
   const requiredSkills = TECHNIQUE_TABLE.filter(t => t.fragmentsRequired > 0).map(t => t.key);
   const allStudied = requiredSkills.every(k => profile.studiedSkills.includes(k));
   if (allStudied) {
     setTimeout(() => {
-      showFeedback('所有基礎技巧研習完成——修行輪已解鎖！', 'success');
+      showFeedback(t('wild.allBasicsComplete'), 'success');
     }, 1500);
   }
 
   // If this is locked_candidates, hint about long-press
   if (techKey === 'locked_candidates') {
     setTimeout(() => {
-      showFeedback('提示：長按兩個格子可施放技能', 'success');
+      showFeedback(t('wild.longPressHint'), 'success');
     }, 3000);
   }
 
@@ -208,10 +208,13 @@ export function renderWildLobby(): void {
   ensureWildFilterBindings();
 
   const profile = loadWildProfile();
-  const currentThreshold = expForLevel(profile.iqLevel);
-  const nextThreshold = expForLevel(profile.iqLevel + 1);
-  const expInLevel = profile.totalExp - currentThreshold;
-  const expNeeded = nextThreshold - currentThreshold;
+  // expForLevel(n) = cumulative EXP to reach level n.
+  // Progress within current level = totalExp - floor, where floor = expForLevel(currentLevel).
+  // But at Lv.1 (starting), floor should be 0 since expForLevel(1)=15 but players start at 0.
+  const floorExp = profile.iqLevel <= 1 ? 0 : expForLevel(profile.iqLevel);
+  const ceilExp = expForLevel(profile.iqLevel + 1);
+  const expInLevel = Math.max(0, profile.totalExp - floorExp);
+  const expNeeded = ceilExp - floorExp;
   const progress = expNeeded > 0 ? Math.min(1, expInLevel / expNeeded) : 0;
 
   // Profile card
@@ -280,18 +283,18 @@ export function renderWildLobby(): void {
         hintEl.textContent = t('wild.autoCastMastered', { count: String(names.length), conquered: String(conquered), total: String(TECHNIQUE_TABLE.length) });
         if (toggleBtn) toggleBtn.title = names.join('、');
       } else {
-        hintEl.textContent = '尚未精通任何技巧';
+        hintEl.textContent = t('wild.autoCastNone');
         if (toggleBtn) toggleBtn.removeAttribute('title');
       }
     } else {
-      hintEl.textContent = '所有技巧皆需手動施放';
+      hintEl.textContent = t('wild.autoCastOff');
       if (toggleBtn) toggleBtn.removeAttribute('title');
     }
   }
 
   // Bestiary count
   const countEl = document.getElementById('wild-bestiary-count');
-  if (countEl) countEl.textContent = `${discovered} / ${TECHNIQUE_TABLE.length}`;
+  if (countEl) countEl.textContent = t('wild.bestiaryCount', { discovered: String(discovered), total: String(TECHNIQUE_TABLE.length) });
 
   // Bestiary grid
   const grid = document.getElementById('wild-bestiary-grid');
@@ -311,13 +314,13 @@ export function renderWildLobby(): void {
 
   // ── Phase-based bestiary display ──
   const PHASES: { name: string; minGate: number; keys: string[] }[] = [
-    { name: '基礎心法', minGate: 1, keys: ['naked_single','hidden_single','locked_candidates','naked_pair','hidden_pair','naked_triple','hidden_triple'] },
-    { name: '中階劍法·直覺型', minGate: 21, keys: ['x_wing','unique_rectangle','bug_plus_one'] },
-    { name: '中階劍法·推理型', minGate: 31, keys: ['skyscraper','two_string_kite','empty_rectangle','finned_x_wing','xy_wing','xyz_wing','w_wing','remote_pairs'] },
-    { name: '高階', minGate: 41, keys: ['swordfish','x_cycle_simple_coloring','finned_swordfish','jellyfish','finned_jellyfish'] },
-    { name: '鏈術', minGate: 61, keys: ['aic','aic_mid_chain','aic_long_chain','grouped_aic_nice_loop','discontinuous_nice_loop','xy_chain'] },
-    { name: '殘集與逼宮', minGate: 71, keys: ['als_xz','als_xy','als_w_wing','als_chain','forcing_chain_net','cell_forcing_chain','region_forcing_chain'] },
-    { name: '終極', minGate: 80, keys: ['sue_de_coq','template','death_blossom','exocet_death_blossom'] },
+    { name: t('wildLobby.phaseFundamentals'), minGate: 1, keys: ['naked_single','hidden_single','locked_candidates','naked_pair','hidden_pair','naked_triple','hidden_triple'] },
+    { name: t('wildLobby.phaseMidIntuitive'), minGate: 21, keys: ['x_wing','unique_rectangle','bug_plus_one'] },
+    { name: t('wildLobby.phaseMidDeductive'), minGate: 31, keys: ['skyscraper','two_string_kite','empty_rectangle','finned_x_wing','xy_wing','xyz_wing','w_wing','remote_pairs'] },
+    { name: t('wildLobby.phaseAdvanced'), minGate: 41, keys: ['swordfish','x_cycle_simple_coloring','finned_swordfish','jellyfish','finned_jellyfish'] },
+    { name: t('wildLobby.phaseChains'), minGate: 61, keys: ['aic','aic_mid_chain','aic_long_chain','grouped_aic_nice_loop','discontinuous_nice_loop','xy_chain'] },
+    { name: t('wildLobby.phaseALSForcing'), minGate: 71, keys: ['als_xz','als_xy','als_w_wing','als_chain','forcing_chain_net','cell_forcing_chain','region_forcing_chain'] },
+    { name: t('wildLobby.phaseUltimate'), minGate: 80, keys: ['sue_de_coq','template','death_blossom','exocet_death_blossom'] },
   ];
 
   const techByKey = new Map(TECHNIQUE_TABLE.map(t => [t.key, t]));
@@ -334,7 +337,7 @@ export function renderWildLobby(): void {
       // Show locked teaser for the NEXT phase only
       const nextHint = document.createElement('div');
       nextHint.className = 'wild-bestiary-locked';
-      nextHint.textContent = `🔒 Lv.${phase.minGate} 解鎖「${phase.name}」`;
+      nextHint.textContent = t('wild.phaseLock', { level: String(phase.minGate), name: phase.name });
       grid.appendChild(nextHint);
       break; // Don't show phases beyond the next
     }
@@ -346,7 +349,7 @@ export function renderWildLobby(): void {
     const phaseHeader = document.createElement('div');
     phaseHeader.className = 'wild-bestiary-phase';
     const phaseDiscovered = phase.keys.filter(k => profile.bestiary[k]).length;
-    phaseHeader.textContent = `── ${phase.name} (${phaseDiscovered}/${phase.keys.length}) ──`;
+    phaseHeader.textContent = t('wild.phaseHeader', { name: phase.name, discovered: String(phaseDiscovered), total: String(phase.keys.length) });
     grid.appendChild(phaseHeader);
 
     // Filter techniques in this phase
@@ -372,7 +375,7 @@ export function renderWildLobby(): void {
         const hint = document.createElement('div');
         hint.className = 'wild-bestiary-hint';
         const nextGate = Math.min(...pending.map(k => techByKey.get(k)!.levelGate));
-        hint.textContent = `Lv.${nextGate} 解鎖更多`;
+        hint.textContent = t('wild.unlockMore', { level: String(nextGate) });
         grid.appendChild(hint);
       }
     }
@@ -385,11 +388,11 @@ export function renderWildLobby(): void {
 
     const nameSpan = document.createElement('div');
     nameSpan.className = 'wild-beast-name';
-    nameSpan.textContent = entry ? tech.name : '？';
+    nameSpan.textContent = entry ? tech.name : t('wild.unknown');
 
     const subSpan = document.createElement('div');
     subSpan.className = 'wild-beast-sub';
-    subSpan.textContent = entry ? `${tech.subtitle} · ${RARITY_LABEL[tech.rarity]}` : '未發現';
+    subSpan.textContent = entry ? `${tech.subtitle} · ${RARITY_LABEL[tech.rarity]}` : t('wild.undiscovered');
 
     card.appendChild(nameSpan);
     card.appendChild(subSpan);
@@ -397,13 +400,13 @@ export function renderWildLobby(): void {
     if (entry) {
       const killsSpan = document.createElement('div');
       killsSpan.className = 'wild-beast-kills';
-      killsSpan.textContent = `討伐 ${entry.kills} · 遭遇 ${entry.encounters}`;
+      killsSpan.textContent = t('wild.kills', { kills: String(entry.kills), encounters: String(entry.encounters) });
       card.appendChild(killsSpan);
 
       if (entry.kills > 0) {
         const modesCleared = entry.modesCleared || [];
         const allModes = ['standard', 'blind', 'ironman', 'noNotes'];
-        const modeLabels: Record<string, string> = { standard: '修', blind: '盲', ironman: '鐵', noNotes: '念' };
+        const modeLabels: Record<string, string> = { standard: t('wildLobby.modeBadgeStandard'), blind: t('wildLobby.modeBadgeBlind'), ironman: t('wildLobby.modeBadgeIronman'), noNotes: t('wildLobby.modeBadgeNoNotes') };
         const badgesHtml = allModes.map(m => {
           const cleared = modesCleared.includes(m);
           return `<span class="mode-badge ${cleared ? 'cleared' : ''}">${modeLabels[m]}</span>`;
@@ -427,12 +430,12 @@ export function renderWildLobby(): void {
       if (isStudied) {
         const badge = document.createElement('div');
         badge.className = 'wild-beast-studied';
-        badge.textContent = '已研習';
+        badge.textContent = t('wild.studied');
         card.appendChild(badge);
       } else if (isReady) {
         const studyBtn = document.createElement('button');
         studyBtn.className = 'wild-beast-study-btn';
-        studyBtn.textContent = '研習';
+        studyBtn.textContent = t('wild.study');
         studyBtn.onclick = (e) => {
           e.stopPropagation();
           studySkill(tech.key);
@@ -441,7 +444,7 @@ export function renderWildLobby(): void {
       } else {
         const fragBar = document.createElement('div');
         fragBar.className = 'wild-beast-frag';
-        fragBar.textContent = `${frags}/${tech.fragmentsRequired} 碎片`;
+        fragBar.textContent = t('wild.fragments', { current: String(frags), required: String(tech.fragmentsRequired) });
         card.appendChild(fragBar);
       }
     }
@@ -460,7 +463,7 @@ export function renderWildLobby(): void {
         popup.className = 'beast-note-popup';
         popup.innerHTML = `<div class="beast-note-title">${conquered ? tech.name + ' · ' + tech.subtitle : '？？？'}</div>
           <div class="beast-note-body">${note}</div>
-          <div class="beast-note-attr">—— 弈塵《殘篇》</div>`;
+          <div class="beast-note-attr">${t('wildLobby.mentorAttr')}</div>`;
         popup.addEventListener('click', () => popup.remove());
         document.body.appendChild(popup);
       });
@@ -473,7 +476,7 @@ export function renderWildLobby(): void {
   // Total discovered footer
   const footer = document.createElement('div');
   footer.className = 'wild-bestiary-footer';
-  footer.textContent = `已發現 ${discovered} / ${TECHNIQUE_TABLE.length}`;
+  footer.textContent = t('wild.bestiaryFooter', { discovered: String(discovered), total: String(TECHNIQUE_TABLE.length) });
   grid.appendChild(footer);
 }
 
@@ -498,8 +501,8 @@ function setWorldViewActive(active: boolean): void {
   const lobby = document.getElementById('wild-lobby');
   const libraryBtn = document.getElementById('library-btn');
   if (levelScreen) levelScreen.classList.toggle('world-view-active', active);
-  if (levelTitle) levelTitle.textContent = active ? '世界' : 'SUDOKU ZEN';
-  if (levelModeChip) levelModeChip.textContent = '世界';
+  if (levelTitle) levelTitle.textContent = active ? t('wild.lobbyTitle') : 'SUDOKU ZEN';
+  if (levelModeChip) levelModeChip.textContent = t('mode.world');
   if (levelModeChip) levelModeChip.classList.toggle('hidden', !active);
   if (aliasConfig) aliasConfig.style.display = active ? 'none' : '';
   if (stageView) stageView.style.display = active ? 'none' : 'flex';

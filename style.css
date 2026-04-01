@@ -3351,16 +3351,17 @@ header h1 {
 }
 
 .wild-stat-label {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     color: var(--text-sub, #636e72);
+    letter-spacing: 0.02em;
 }
 
 /* Session card */
 .wild-session-card {
-    border: 1px solid color-mix(in srgb, var(--cell-border) 55%, transparent);
+    border: 1px solid color-mix(in srgb, var(--cell-border) 70%, transparent);
     border-radius: 12px;
-    background: color-mix(in srgb, var(--btn-bg) 72%, transparent);
-    padding: 12px 14px;
+    background: color-mix(in srgb, var(--btn-bg) 85%, transparent);
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -3415,7 +3416,8 @@ header h1 {
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    padding: 13px 20px;
+    padding: 16px 20px;
+    margin: 8px 0;
     border: 1px solid var(--accent, #0984E3);
     background:
         radial-gradient(120% 150% at 50% 0%, color-mix(in srgb, var(--accent, #0984E3) 20%, transparent), transparent 62%),
@@ -3502,7 +3504,8 @@ header h1 {
     background: color-mix(in srgb, var(--btn-bg) 92%, transparent);
     color: var(--text-light);
     border-radius: 999px;
-    padding: 4px 9px;
+    padding: 6px 12px;
+    min-height: 32px;
     font-size: 0.66rem;
     font-weight: 600;
     cursor: pointer;
