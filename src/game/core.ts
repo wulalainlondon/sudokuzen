@@ -743,7 +743,7 @@ function showWinCelebration(earnedValue: number): void {
 function showPracticeWinCelebration(earnedStars: number): void {
   // Compute practice progress for this technique
   const techKey = gs.currentLevel?.maxTechnique || '';
-  import('../features/practice/practiceLobby').then(async (pMod) => {
+  import('../features/practice/practiceLobby').then(async () => {
     const { TECH_MAP } = await import('../features/teach-legacy');
     const { SK, readJson } = await import('../storage/keys');
     const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
