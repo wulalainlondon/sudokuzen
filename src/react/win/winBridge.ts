@@ -35,6 +35,7 @@ export function bridgeShowWildWin(payload: {
   firstKill?: string | null;
   firstKillSub?: string | null;
   beatMentor?: boolean;
+  mentorNote?: string | null;
 }): void {
   useWinStore.getState().open({
     mode: 'wild',
@@ -46,6 +47,7 @@ export function bridgeShowWildWin(payload: {
     firstKill: payload.firstKill ?? null,
     firstKillSub: payload.firstKillSub ?? null,
     beatMentor: payload.beatMentor ?? false,
+    mentorNote: payload.mentorNote ?? null,
     showLeaderboard: false,
     showReplay: false,
   });

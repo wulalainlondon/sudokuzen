@@ -16,6 +16,8 @@ import {
   triggerFinaleIfNeeded,
   triggerContinuousFillHint,
 } from './mentorController';
+import { bridgeShowEncounterTransition, bridgeDismissEncounterTransition } from '../../react/wild/encounterTransitionBridge';
+import { playZenEnter, playZenEncounter, playZenBoss } from '../../game/zenAudio';
 
 // ── Runtime state (non-persisted) ────────────────────────────────────
 
@@ -195,6 +197,28 @@ export async function startWildEncounter(): Promise<void> {
 
   // Apply rarity tint to game container
   applyRarityTint(_encounter.rarity);
+
+  // Trigger encounter transition overlay with zen audio
+  const isBoss = !!(session && session.round === 10);
+  const bestiaryForFirst = profile.bestiary[_encounter.technique];
+  const isFirstEncounter = bestiaryForFirst ? bestiaryForFirst.encounters === 1 : false;
+  bridgeShowEncounterTransition({
+    techName: meta?.name ?? '???',
+    techSubtitle: meta ? `${meta.subtitle}` : '世界',
+    rarity: _encounter.rarity,
+    challengeMode: mode,
+    isBoss,
+    isFirstEncounter,
+  });
+  // Phase 1 audio: temple bell
+  playZenEnter();
+  // Phase 2 audio: brush on paper (delayed 400ms)
+  setTimeout(() => playZenEncounter(), 400);
+  // Phase 3 audio: boss thunder if boss (delayed 1200ms)
+  if (isBoss) {
+    setTimeout(() => playZenBoss(), 1200);
+  }
+  // Phase 4: transition auto-dismisses at 2200ms via the component
 
   // Launch game via core — dynamic import to avoid circular deps
   document.getElementById('level-screen')?.style.setProperty('display', 'none');
@@ -703,12 +727,14 @@ function applyRarityTint(rarity: string): void {
   if (!container) return;
   clearRarityTint();
   container.classList.add(`wild-${rarity}`);
+  container.setAttribute('data-rarity', rarity);
 }
 
 function clearRarityTint(): void {
   const container = document.querySelector('.game-container') as HTMLElement | null;
   if (!container) return;
   container.classList.remove('wild-common', 'wild-rare', 'wild-legendary', 'wild-mythic');
+  container.removeAttribute('data-rarity');
 }
 
 // ── Profile summary (for UI) ─────────────────────────────────────────

@@ -359,3 +359,7 @@ export function playErrorFeedback(): void {
     /* ignore */
   }
 }
+
+// ── Shared helpers (used by zenAudio.ts) ─────────────────────────────
+
+export { getCtx, ensureGraph, connectToRoom, getNoiseBuffer };

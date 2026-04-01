@@ -660,14 +660,30 @@ export function showGameOver(): void {
   // Delegate to React GameOverOverlay
   const mode = isWild ? 'wild' : isPractice ? 'practice' : 'normal';
   import('../react/gameover/gameOverBridge').then(({ bridgeShowGameOver, bridgeSetGameOverWildSession }) => {
-    bridgeShowGameOver(mode as any);
     if (isWild) {
-      import('../features/wild/wildController').then((m) => {
-        const session = m.getSession();
+      import('../features/wild/wildController').then((wc) => {
+        const enc = wc.getCurrentEncounter();
+        let wildInfo: { techName?: string; techSubtitle?: string; isIronman?: boolean } | undefined;
+        if (enc) {
+          import('../features/wild/techniqueMeta').then(({ getTechniqueMeta }) => {
+            const meta = getTechniqueMeta(enc.technique);
+            wildInfo = {
+              techName: meta?.name ?? '',
+              techSubtitle: meta?.subtitle ?? '',
+              isIronman: gs.wildChallengeMode === 'ironman',
+            };
+            bridgeShowGameOver(mode as any, wildInfo);
+          });
+        } else {
+          bridgeShowGameOver(mode as any);
+        }
+        const session = wc.getSession();
         if (session) {
           bridgeSetGameOverWildSession({ round: session.round, hasMore: session.round < 10 });
         }
       });
+    } else {
+      bridgeShowGameOver(mode as any);
     }
   });
 }
@@ -740,7 +756,18 @@ function showPracticeWinCelebration(earnedStars: number): void {
 }
 
 function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number, firstKill?: string | null, firstKillSub?: string | null, beatMentor?: boolean): void {
-  import('../react/win/winBridge').then(({ bridgeShowWildWin, bridgeSetWildSession }) => {
+  // Look up mentor note for first kill, then show celebration
+  const mentorNotePromise: Promise<string | null> = firstKill
+    ? import('../features/wild/mentorDialogue').then(({ MENTOR_MILESTONES }) => {
+        const line = MENTOR_MILESTONES.find((m) => m.key === 'first_kill');
+        return line?.text ?? null;
+      })
+    : Promise.resolve(null);
+
+  Promise.all([
+    mentorNotePromise,
+    import('../react/win/winBridge'),
+  ]).then(([mentorNote, { bridgeShowWildWin, bridgeSetWildSession }]) => {
     bridgeShowWildWin({
       levelName: gs.currentLevel!.displayName,
       timeSeconds: seconds,
@@ -750,6 +777,7 @@ function showWildWinCelebration(seconds: number, expGained: number, leveledUp: b
       firstKill,
       firstKillSub,
       beatMentor,
+      mentorNote,
     });
     // Fetch session info async and update store
     import('../features/wild/wildController').then((m) => {

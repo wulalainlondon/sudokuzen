@@ -1306,6 +1306,28 @@ header h1 {
     filter: blur(0.5px);
 }
 
+/* Win celebration — first kill mentor note */
+.win-mentor-note {
+    font-style: italic;
+    color: var(--text-secondary, #888);
+    font-size: 0.78rem;
+    max-width: 280px;
+    margin: 6px auto 0;
+    text-align: center;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
+.win-mentor-note-title {
+    font-size: 0.70rem;
+    margin-bottom: 3px;
+    opacity: 0.7;
+}
+
+.win-mentor-note-text {
+    letter-spacing: 0.02em;
+}
+
 .win-actions {
     display: flex;
     flex-direction: column;
@@ -1327,6 +1349,28 @@ header h1 {
         transform: translateY(80vh) rotate(300deg) scale(0.2);
         opacity: 0;
     }
+}
+
+/* Game Over — wild mode mentor quote */
+.gameover-mentor-quote {
+    font-style: italic;
+    color: var(--text-secondary, #888);
+    font-size: 0.82rem;
+    max-width: 260px;
+    margin: 8px auto 0;
+    text-align: center;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
+.gameover-mentor-attr {
+    font-size: 0.72rem;
+    margin-bottom: 4px;
+    opacity: 0.7;
+}
+
+.gameover-mentor-text {
+    letter-spacing: 0.02em;
 }
 
 .retry-btn,
@@ -2570,6 +2614,37 @@ header h1 {
     50%      { filter: brightness(1.03); }
 }
 
+/* Rarity ambient glow during wild encounters */
+.game-container.world-play-active[data-rarity="rare"] .sudoku-grid {
+    box-shadow: inset 0 0 40px rgba(226, 185, 59, 0.06);
+    animation: rarity-breathe-rare 4s ease-in-out infinite;
+}
+
+.game-container.world-play-active[data-rarity="legendary"] .sudoku-grid {
+    box-shadow: inset 0 0 40px rgba(162, 155, 254, 0.08);
+    animation: rarity-breathe-legendary 4s ease-in-out infinite;
+}
+
+.game-container.world-play-active[data-rarity="mythic"] .sudoku-grid {
+    box-shadow: inset 0 0 40px rgba(214, 48, 49, 0.06);
+    animation: rarity-breathe-mythic 6s ease-in-out infinite;
+}
+
+@keyframes rarity-breathe-rare {
+    0%, 100% { box-shadow: inset 0 0 40px rgba(226, 185, 59, 0.04); }
+    50% { box-shadow: inset 0 0 50px rgba(226, 185, 59, 0.08); }
+}
+
+@keyframes rarity-breathe-legendary {
+    0%, 100% { box-shadow: inset 0 0 40px rgba(162, 155, 254, 0.05); }
+    50% { box-shadow: inset 0 0 50px rgba(162, 155, 254, 0.10); }
+}
+
+@keyframes rarity-breathe-mythic {
+    0%, 100% { box-shadow: inset 0 0 40px rgba(214, 48, 49, 0.04); }
+    50% { box-shadow: inset 0 0 50px rgba(214, 48, 49, 0.08); }
+}
+
 /* ===== Mentor Demo (弈塵 power demonstration) ===== */
 
 .demo-tech-label {
@@ -2785,6 +2860,23 @@ header h1 {
     line-height: 1;
 }
 
+.wild-online-indicator::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #27ae60;
+    margin-right: 4px;
+    vertical-align: middle;
+    animation: online-breathe 2s ease-in-out infinite;
+}
+
+@keyframes online-breathe {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
 .wild-profile-level {
     display: flex;
     align-items: baseline;
@@ -2894,7 +2986,7 @@ header h1 {
     width: 0%;
     background: linear-gradient(90deg, color-mix(in srgb, var(--accent-strong) 88%, #fff 12%), color-mix(in srgb, var(--accent-strong) 60%, #fff 40%));
     border-radius: 999px;
-    transition: width 0.35s ease;
+    transition: width 0.6s cubic-bezier(.2,.8,.2,1);
 }
 
 .wild-session-meta,
@@ -3034,6 +3126,27 @@ header h1 {
 
 .wild-beast-card.undiscovered {
     opacity: 0.35;
+    animation: beast-float 3s ease-in-out infinite;
+}
+
+/* Stagger the float animation per card */
+.wild-beast-card.undiscovered:nth-child(2n) { animation-delay: 0.5s; }
+.wild-beast-card.undiscovered:nth-child(3n) { animation-delay: 1.0s; }
+.wild-beast-card.undiscovered:nth-child(5n) { animation-delay: 1.5s; }
+
+@keyframes beast-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+
+/* Mythic cards pulse with dark energy */
+.wild-beast-card.rarity-mythic:not(.undiscovered) {
+    animation: mythic-pulse 6s ease-in-out infinite;
+}
+
+@keyframes mythic-pulse {
+    0%, 100% { box-shadow: 0 0 0 rgba(214, 48, 49, 0); }
+    50% { box-shadow: 0 0 12px rgba(214, 48, 49, 0.08); }
 }
 
 .wild-beast-card.rarity-common  { border-left: 3px solid #b2bec3; }

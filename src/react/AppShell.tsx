@@ -10,6 +10,7 @@ import { DuoResultModal } from './duoresult/DuoResultModal';
 import { AchievementToast } from './toast/AchievementToast';
 import { LibraryOverlay } from './library/LibraryOverlay';
 import { MentorOverlay } from './mentor/MentorOverlay';
+import { EncounterTransition } from './wild/EncounterTransition';
 
 export function AppShell(): ReactElement {
   return (
@@ -24,6 +25,7 @@ export function AppShell(): ReactElement {
       <AchievementToast />
       <LibraryOverlay />
       <MentorOverlay />
+      <EncounterTransition />
     </>
   );
 }

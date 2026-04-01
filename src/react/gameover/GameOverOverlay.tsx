@@ -24,7 +24,7 @@ const shakeVariants = {
 };
 
 export function GameOverOverlay(): ReactElement {
-  const { visible, mode, wildSession } = useGameOverStore();
+  const { visible, mode, wildSession, techName, isIronman } = useGameOverStore();
   const close = useGameOverStore((s) => s.close);
 
   const handleRetry = useCallback(() => {
@@ -44,13 +44,28 @@ export function GameOverOverlay(): ReactElement {
     close();
   }, [mode, wildSession, close]);
 
+  const isWild = mode === 'wild';
+  const heading = isWild ? '逃脫了。' : 'GAME OVER';
+  const subtext = isWild && techName
+    ? `「${techName}」消失在候選數的迷霧裡。`
+    : '你犯了 3 次錯誤';
+  const bg = isWild ? 'radial-gradient(circle at top, rgba(0,0,0,0.22), var(--bg-color) 60%)' : undefined;
+
   return (
-    <ZenOverlay visible={visible} onClose={close} id="overlay" noBackdropClose>
+    <ZenOverlay visible={visible} onClose={close} id="overlay" noBackdropClose backdropTint={bg}>
       <ZenStagger>
         <motion.h2 variants={shakeVariants} initial="hidden" animate="visible">
-          GAME OVER
+          {heading}
         </motion.h2>
-        <p>你犯了 3 次錯誤</p>
+        <p>{subtext}</p>
+        {isWild && isIronman && (
+          <div className="gameover-mentor-quote">
+            <div className="gameover-mentor-attr">── 弈塵《殘篇》──</div>
+            <div className="gameover-mentor-text">
+              「鐵壁不是永遠不犯錯。{'\n'}是犯錯的時候，不會再犯第二次。」
+            </div>
+          </div>
+        )}
         <button className="retry-btn" onClick={handleRetry}>重新開始</button>
         <button className="back-btn" onClick={handleBack}>{backText(mode, wildSession)}</button>
       </ZenStagger>

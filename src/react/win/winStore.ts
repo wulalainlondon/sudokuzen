@@ -31,6 +31,7 @@ export interface WinState {
   firstKill: string | null;
   firstKillSub: string | null;
   beatMentor: boolean;
+  mentorNote: string | null;
   wildSession: WildSessionInfo | null;
 
   // Leaderboard
@@ -61,6 +62,7 @@ const INITIAL: Omit<WinState, 'open' | 'close' | 'setLeaderboard' | 'setWildSess
   firstKill: null,
   firstKillSub: null,
   beatMentor: false,
+  mentorNote: null,
   wildSession: null,
   showLeaderboard: false,
   leaderboardHtml: '',
