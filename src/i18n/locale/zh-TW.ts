@@ -35,6 +35,7 @@ export const zhTW = {
     selectOther: '選擇其他關卡',
     abandonLevel: '放棄關卡',
     resumeGame: '繼續遊戲',
+    resumeGameWithLevel: '繼續遊戲：{level}',
     quitNormal: 'Quit',
     quitPractice: '返回修行',
     quitWild: '離開世界',

@@ -53,6 +53,8 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
 
       if (!d || d.status === 'idle' || d.status === 'finished' || isStale) {
         // Create new room as host
+        const hostRec = loadDuoRecords();
+        const hostTotalWins = Object.values(hostRec.wins).reduce((s, v) => s + v, 0);
         tx.set(duoRoomRef(), {
           levelId,
           status: 'waiting',
@@ -63,6 +65,7 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
           hostProgress: 0,
           hostFinishTime: null,
           hostStars: null,
+          hostDuoWins: hostTotalWins,
           guestId: null,
           guestAlias: null,
           guestTitle: null,
@@ -76,6 +79,8 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
         gs.duoRole = 'host';
       } else if (d.status === 'waiting' && d.hostId !== playerId) {
         // Join as guest
+        const guestRec = loadDuoRecords();
+        const guestTotalWins = Object.values(guestRec.wins).reduce((s, v) => s + v, 0);
         tx.update(duoRoomRef(), {
           guestId: playerId,
           guestAlias: alias,
@@ -84,6 +89,7 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
           guestProgress: 0,
           guestFinishTime: null,
           guestStars: null,
+          guestDuoWins: guestTotalWins,
           updatedAt: now,
         });
         gs.duoRole = 'guest';
@@ -288,24 +294,42 @@ export function updateDuoPreLevelUI(d: DuoRoomData): void {
     }
   }
 
-  // Show streak if present
+  // Show streak and synced duo wins
   const preStreak = document.getElementById('duo-pre-streak');
   if (preStreak && d.guestId) {
+    preStreak.textContent = '';
     const rec = loadDuoRecords();
     if (rec.streak >= 2 && rec.streakHolder) {
-      preStreak.innerHTML = `<div class="duo-streak-badge">${t('duoRuntime.streakBadge', { holder: rec.streakHolder, count: String(rec.streak) })}</div>`;
-    } else {
+      const badge = document.createElement('div');
+      badge.className = 'duo-streak-badge';
+      badge.textContent = t('duoRuntime.streakBadge', { holder: rec.streakHolder, count: String(rec.streak) });
+      preStreak.appendChild(badge);
+    }
+    // Show both players' total duo wins from Firebase room data
+    if (d.hostDuoWins != null && d.guestDuoWins != null) {
+      const winsDiv = document.createElement('div');
+      winsDiv.style.cssText = 'font-size:0.72rem;color:var(--text-light);margin-bottom:6px;';
+      winsDiv.textContent = t('duoRuntime.winsVs', {
+        a: d.hostAlias || '--',
+        aWins: String(d.hostDuoWins),
+        b: d.guestAlias || '--',
+        bWins: String(d.guestDuoWins),
+      });
+      preStreak.appendChild(winsDiv);
+    } else if (!(rec.streak >= 2 && rec.streakHolder)) {
+      // Fallback to local wins if Firebase data not yet available
       const wins = rec.wins || {};
       const names = Object.keys(wins);
       if (names.length >= 2) {
         const sorted = names.sort((a, b) => wins[b] - wins[a]);
-        preStreak.innerHTML = `<div style="font-size:0.72rem;color:var(--text-light);margin-bottom:6px;">${t('duoRuntime.winsVs', { a: sorted[0], aWins: String(wins[sorted[0]]), b: sorted[1], bWins: String(wins[sorted[1]]) })}</div>`;
-      } else {
-        preStreak.innerHTML = '';
+        const fallbackDiv = document.createElement('div');
+        fallbackDiv.style.cssText = 'font-size:0.72rem;color:var(--text-light);margin-bottom:6px;';
+        fallbackDiv.textContent = t('duoRuntime.winsVs', { a: sorted[0], aWins: String(wins[sorted[0]]), b: sorted[1], bWins: String(wins[sorted[1]]) });
+        preStreak.appendChild(fallbackDiv);
       }
     }
   } else if (preStreak) {
-    preStreak.innerHTML = '';
+    preStreak.textContent = '';
   }
 
   // Ready button state — driven solely by snapshot data

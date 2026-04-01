@@ -46,6 +46,7 @@ export const en: Widen<Locale> = {
     selectOther: 'Select Another Level',
     abandonLevel: 'Abandon Level',
     resumeGame: 'Resume Game',
+    resumeGameWithLevel: 'Resume: {level}',
     quitNormal: 'Quit',
     quitPractice: 'Back to Practice',
     quitWild: 'Leave World',

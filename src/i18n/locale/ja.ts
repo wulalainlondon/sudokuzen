@@ -41,6 +41,7 @@ export const ja: Widen<Locale> = {
     selectOther: '他のステージを選ぶ',
     abandonLevel: 'ステージを放棄',
     resumeGame: 'ゲームを再開',
+    resumeGameWithLevel: 'ゲームを再開：{level}',
     quitNormal: 'Quit',
     quitPractice: '修行へ戻る',
     quitWild: '世界を離れる',

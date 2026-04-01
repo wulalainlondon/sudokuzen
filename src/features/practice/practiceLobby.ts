@@ -162,7 +162,6 @@ function setPracticeViewActive(active: boolean): void {
   const stageView = document.getElementById('stage-view');
   const tierView = document.getElementById('tier-view');
   const wildLobby = document.getElementById('wild-lobby');
-  const practiceLobby = document.getElementById('practice-lobby');
   const libraryBtn = document.getElementById('library-btn');
 
   if (levelTitle) levelTitle.textContent = active ? t('practice.lobbyTitle') : 'SUDOKU ZEN';
@@ -174,7 +173,6 @@ function setPracticeViewActive(active: boolean): void {
   if (stageView) stageView.style.display = active ? 'none' : 'flex';
   if (tierView) tierView.classList.add('hidden');
   if (wildLobby) wildLobby.classList.add('hidden');
-  if (practiceLobby) practiceLobby.classList.toggle('hidden', !active);
   if (libraryBtn) libraryBtn.style.display = active ? 'none' : '';
 }
 
@@ -203,9 +201,7 @@ export function closePracticeLobby(): void {
 }
 
 export function isPracticeLobbyOpen(): boolean {
-  const lobby = document.getElementById('practice-lobby');
-  const legacyOpen = !!lobby && !lobby.classList.contains('hidden');
-  return legacyOpen || usePracticeTreeStore.getState().visible;
+  return usePracticeTreeStore.getState().visible;
 }
 
 function renderPracticeLobby(): void {
@@ -238,11 +234,9 @@ export function enterPracticeTechnique(techKey: string): void {
   usePracticeTreeStore.getState().close();
 
   const stageView = document.getElementById('stage-view');
-  const practiceLobby = document.getElementById('practice-lobby');
   const tierView = document.getElementById('tier-view');
 
   if (stageView) stageView.style.display = 'none';
-  if (practiceLobby) practiceLobby.classList.add('hidden');
   if (tierView) tierView.classList.remove('hidden');
 
   const techName = TECH_MAP[techKey] || techKey;
@@ -315,10 +309,8 @@ export function backToPracticeLobby(): void {
   gs.practiceActiveTech = null;
 
   const tierView = document.getElementById('tier-view');
-  const practiceLobby = document.getElementById('practice-lobby');
 
   if (tierView) tierView.classList.add('hidden');
-  if (practiceLobby) practiceLobby.classList.remove('hidden');
 
   // Restore tier-view back button to default behavior
   const backBtn = tierView?.querySelector('.tier-back-btn') as HTMLElement | null;

@@ -29,6 +29,7 @@
 <body>
 
     <div id="level-screen">
+        <div id="resume-banner" class="resume-banner hidden"></div>
         <div class="level-screen-header">
             <div class="level-brand">
                 <h1 class="level-title" id="level-title">SUDOKU ZEN</h1>
@@ -63,15 +64,7 @@
                 </button>
             </div>
         </div>
-        <!-- Practice Mode Lobby -->
-        <div id="practice-lobby" class="hidden">
-            <div class="practice-lobby-header">
-                <button class="tier-back-btn" onclick="closePracticeLobby()">← 返回</button>
-                <div class="practice-lobby-title">修行</div>
-                <div id="practice-lobby-progress">0/41</div>
-            </div>
-            <div class="practice-lobby-body" id="practice-lobby-body"></div>
-        </div>
+        <!-- Practice Mode is now rendered by React (src/react/practice/PracticeTree.tsx) -->
         <!-- Wild Mode Lobby -->
         <div id="wild-lobby" class="hidden">
             <div class="wild-lobby-header">
@@ -337,7 +330,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.04.01-V32';
+        var INLINE_VER = '2026.04.01-V33';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);

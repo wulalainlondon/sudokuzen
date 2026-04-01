@@ -19,7 +19,7 @@ const DEVICES = [
 
 const SCREENS = [
   'stage-map',
-  'practice-lobby',
+  'practice-tree',
   'practice-branches',
   'practice-level-grid',
   'wild-lobby',
@@ -75,7 +75,7 @@ for (const device of DEVICES) {
       // Wait for React practice tree to render
       await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 10_000 });
       await page.locator('.tree-node').first().waitFor({ state: 'visible', timeout: 5_000 });
-      await page.screenshot({ path: `test-results/layout-${device.name}-practice-lobby.png`, fullPage: false });
+      await page.screenshot({ path: `test-results/layout-${device.name}-practice-tree.png`, fullPage: false });
       // Check no horizontal overflow
       const overflow = await page.evaluate(() => {
         return document.documentElement.scrollWidth > document.documentElement.clientWidth;

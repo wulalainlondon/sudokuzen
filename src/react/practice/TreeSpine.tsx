@@ -1,5 +1,5 @@
-// TreeSpine — a vertical chain of TreeNodes connected by lines.
-// Each node has a connecting line above it (except the first).
+// TreeSpine — a container of TreeNodes arranged in a flowing grid.
+// Supports both full-size and compact (branch) layouts.
 
 import { type ReactElement, type ReactNode } from 'react';
 

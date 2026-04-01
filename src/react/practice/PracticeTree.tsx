@@ -63,6 +63,7 @@ export function PracticeTree(): ReactElement | null {
       return (
         <TreeNode
           key={key}
+          techKey={key}
           name={n.name}
           status={n.status}
           cleared={n.cleared}

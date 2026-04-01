@@ -35,6 +35,37 @@ function callStartDuoGlowListener() {
   import('./duo').then((m) => m.startDuoGlowListener());
 }
 
+// ── Helpers ─────────────────────────────────────────────────────────
+
+/** Check if there is an active save for a level (without importing core). */
+function hasActiveSave(levelId: number): boolean {
+  const saveKey = SK.save(levelId, gs.isSpeedrunMode);
+  return localStorage.getItem(saveKey) !== null;
+}
+
+/** Show or hide the "Resume Game" banner at the top of the level screen. */
+export function updateResumeBanner(): void {
+  const banner = document.getElementById('resume-banner');
+  if (!banner) return;
+
+  const level = gs.currentLevel;
+  const hasGame = level && level.id > 0 && hasActiveSave(level.id);
+
+  if (!hasGame) {
+    banner.classList.add('hidden');
+    return;
+  }
+
+  banner.classList.remove('hidden');
+  banner.textContent = t('nav.resumeGameWithLevel', { level: level!.displayName });
+  banner.onclick = () => {
+    // Resume: hide level screen, show game board, restart timer
+    document.getElementById('level-screen')!.style.display = 'none';
+    (document.querySelector('.game-container') as HTMLElement).style.display = 'flex';
+    import('../game/timer').then((m) => m.startTimer(false));
+  };
+}
+
 // ── Constants ───────────────────────────────────────────────────────
 
 const REALM_ORDER = [
@@ -277,8 +308,9 @@ export function renderLevelGrid(): void {
       }
     }
 
+    const isCurrent = gs.currentLevel?.id === l.id && hasActiveSave(l.id);
     const item = document.createElement('div');
-    item.className = `level-item ${bestTime !== null ? 'completed' : ''}${isLocked ? ' locked' : ''}`;
+    item.className = `level-item ${bestTime !== null ? 'completed' : ''}${isLocked ? ' locked' : ''}${isCurrent ? ' level-item--current' : ''}`;
     item.onclick = () => {
       if (isLocked) {
         showFeedback(getTierUnlockMessage(l.difficultyName, unlockState), 'error');
@@ -313,6 +345,7 @@ export function renderLevelGrid(): void {
       `;
     } else {
       item.innerHTML = `
+        ${isCurrent ? `<div class="level-current-badge">${t('stage.inProgress')}</div>` : ''}
         <div class="level-num">${l.displayName}</div>
         <div class="${starsClass}">${starsText}</div>
         <div class="${statsClass}">${timeStr}</div>
@@ -425,6 +458,7 @@ export function showLevelScreen(returnToTier = false): void {
   }
   closeLibraryOverlay();
   updateSpeedrunToggleUI();
+  updateResumeBanner();
   document.getElementById('level-screen')!.style.display = 'flex';
   (document.querySelector('.game-container') as HTMLElement).style.display = 'none';
   if (gs.timerInterval) clearInterval(gs.timerInterval);

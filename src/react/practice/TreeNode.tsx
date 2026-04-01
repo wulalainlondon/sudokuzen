@@ -1,11 +1,13 @@
-// TreeNode — single technique node rendered as a "stone marker" on the path.
-// Shows: status dot + technique name + mini progress bar + count
+// TreeNode — single technique node rendered as an "RPG skill icon button".
+// Shows: bestiary name glyph in a square icon + technique name below + progress + badge
 
 import type { ReactElement } from 'react';
 import type { TechStatus } from './practiceTreeStore';
+import { t } from '../../i18n/t';
 
 interface TreeNodeProps {
-  name: string;
+  techKey: string;      // e.g. 'naked_single' — for looking up bestiary name
+  name: string;         // localized display name (e.g. 'Naked Single')
   status: TechStatus;
   cleared: number;
   total: number;
@@ -13,15 +15,13 @@ interface TreeNodeProps {
   onClick: () => void;
 }
 
-const DOT_CLASS: Record<TechStatus, string> = {
-  locked: 'tree-dot tree-dot--locked',
-  unlocked: 'tree-dot tree-dot--unlocked',
-  partial: 'tree-dot tree-dot--partial',
-  completed: 'tree-dot tree-dot--completed',
-};
-
-export function TreeNode({ name, status, cleared, total, compact, onClick }: TreeNodeProps): ReactElement {
+export function TreeNode({ techKey, name, status, cleared, total, compact, onClick }: TreeNodeProps): ReactElement {
   const pct = total > 0 ? (cleared / total) * 100 : 0;
+  const bestiary = t(`technique.${techKey}`);
+  // If t() returns the key itself, it means no bestiary name — use first 2 chars of display name
+  const glyph = bestiary.startsWith('technique.') ? name.slice(0, 2) : bestiary;
+  // Shorten label: remove parenthesized English names like "摩天樓 (Skyscraper)" → "摩天樓"
+  const shortName = name.replace(/\s*\(.*\)\s*$/, '');
 
   return (
     <div
@@ -31,16 +31,21 @@ export function TreeNode({ name, status, cleared, total, compact, onClick }: Tre
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter') onClick(); }}
     >
-      <div className={DOT_CLASS[status]} />
-      <div className="tree-node-body">
-        <div className="tree-node-name">
-          {status === 'locked' ? `🔒 ${name}` : name}
-        </div>
-        <div className="tree-node-bar">
-          <div className="tree-node-bar-fill" style={{ width: `${pct}%` }} />
-        </div>
+      <div className="tree-node-icon">
+        <span className="tree-node-glyph">{glyph}</span>
+
+        {/* Progress arc at bottom */}
+        {(status === 'partial' || status === 'unlocked') && total > 0 && (
+          <div className="tree-node-progress">
+            <div className="tree-node-progress-fill" style={{ width: `${pct}%` }} />
+          </div>
+        )}
+
+        {/* Corner badge */}
+        {status === 'completed' && <span className="tree-node-badge tree-node-badge--done">✓</span>}
+        {status === 'locked' && <span className="tree-node-badge tree-node-badge--lock">🔒</span>}
       </div>
-      <div className="tree-node-count">{cleared}/{total}</div>
+      <div className="tree-node-label">{shortName}</div>
     </div>
   );
 }

@@ -44,6 +44,7 @@ export const de: Widen<Locale> = {
     selectOther: 'Anderes Level w\u00E4hlen',
     abandonLevel: 'Level aufgeben',
     resumeGame: 'Spiel fortsetzen',
+    resumeGameWithLevel: 'Fortsetzen: {level}',
     quitNormal: 'Beenden',
     quitPractice: 'Zur\u00FCck zum Training',
     quitWild: 'Welt verlassen',

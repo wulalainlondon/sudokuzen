@@ -55,6 +55,8 @@ export interface DuoRoomData {
   hostEmojiTs?: number | null;
   guestEmoji?: string | null;
   guestEmojiTs?: number | null;
+  hostDuoWins?: number;
+  guestDuoWins?: number;
 }
 
 export interface SkillModeState {
