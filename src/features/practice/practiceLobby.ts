@@ -85,62 +85,7 @@ for (const node of UNLOCK_TREE) {
   }
 }
 
-// ── Phase layout definition ───────────────────────────────────────────
-
-interface PhaseLinear {
-  type: 'linear';
-  name: string;
-  keys: string[];
-}
-
-interface PhaseBranch {
-  type: 'branch';
-  name: string;
-  branches: { name: string; keys: string[] }[];
-}
-
-type Phase = PhaseLinear | PhaseBranch;
-
-const PHASES: Phase[] = [
-  {
-    type: 'linear',
-    name: t('practice.phase1'),
-    keys: ['naked_single', 'hidden_single', 'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple'],
-  },
-  {
-    type: 'branch',
-    name: t('practice.phase2'),
-    branches: [
-      {
-        name: t('practice.branchFish'),
-        keys: ['x_wing', 'finned_x_wing', 'swordfish', 'finned_swordfish', 'jellyfish', 'finned_jellyfish', 'skyscraper', 'two_string_kite', 'empty_rectangle'],
-      },
-      {
-        name: t('practice.branchColor'),
-        keys: ['x_cycle_simple_coloring', 'xy_wing', 'xyz_wing', 'w_wing', 'remote_pairs'],
-      },
-      {
-        name: t('practice.branchALS'),
-        keys: ['unique_rectangle', 'bug_plus_one', 'als_xz', 'als_xy', 'als_w_wing', 'als_chain'],
-      },
-    ],
-  },
-  {
-    type: 'linear',
-    name: t('practice.phase3'),
-    keys: ['medusa_3d'],
-  },
-  {
-    type: 'linear',
-    name: t('practice.phase4'),
-    keys: ['xy_chain', 'aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop'],
-  },
-  {
-    type: 'linear',
-    name: t('practice.phase5'),
-    keys: ['forcing_chain_net', 'cell_forcing_chain', 'region_forcing_chain', 'sue_de_coq', 'template', 'death_blossom', 'exocet_death_blossom'],
-  },
-];
+// Phase layout definition is now in React PracticeTree.tsx — phases here removed.
 
 // ── Unlock computation ─────────────────────────────────────────────────
 
