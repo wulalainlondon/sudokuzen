@@ -3,6 +3,7 @@ import { useStatsStore } from './statsStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
 import { t } from '../../i18n/t';
+import { TITLE_DEFS, getTitleName, getEquippedTitle, setEquippedTitle } from '../../features/titles';
 
 // Import data functions from legacy stats module
 // These are pure computation — no DOM side effects
@@ -101,9 +102,24 @@ function OverviewTab({ stats }: { stats: StatsData }): ReactElement {
 
 function AchievementTab({ achievements, records }: { achievements: AchievementDef[]; records: AchievementRecord }): ReactElement {
   const unlockedCount = achievements.filter((a) => records[a.id]).length;
+  const [equippedTitle, setEquippedState] = useState(() => getEquippedTitle());
+
+  const handleEquip = (titleId: string) => {
+    setEquippedTitle(titleId);
+    setEquippedState(titleId);
+  };
 
   return (
     <div className="stats-section">
+      <div className="stats-section-title">{t('titles.sectionTitle')}</div>
+      <div style={{ marginBottom: 10 }}>
+        <button
+          className={`title-equip-btn ${equippedTitle === 'none' ? 'equipped' : ''}`}
+          onClick={() => handleEquip('none')}
+        >
+          {equippedTitle === 'none' ? t('titles.equippedMark') : t('titles.noTitle')}
+        </button>
+      </div>
       <div className="stats-section-title">{t('stats.sectionAchievements')}</div>
       <div className="achievement-counter">
         {t('stats.achievementsUnlocked', { unlocked: unlockedCount, total: achievements.length })}
@@ -111,12 +127,22 @@ function AchievementTab({ achievements, records }: { achievements: AchievementDe
       <div className="achievement-grid">
         {achievements.map((a) => {
           const u = records[a.id];
+          const titleDef = TITLE_DEFS.find(td => td.achievementId === a.id);
+          const isEquipped = titleDef ? equippedTitle === titleDef.id : false;
           return (
             <div key={a.id} className={`achievement-card ${u ? 'unlocked' : 'locked'}`}>
               <div className="achievement-icon">{a.icon}</div>
               <div className="achievement-name">{a.name}</div>
               <div className="achievement-desc">{a.desc}</div>
               {u && <div className="achievement-date">{u.date}</div>}
+              {u && titleDef && (
+                <button
+                  className={`title-equip-btn ${isEquipped ? 'equipped' : ''}`}
+                  onClick={() => handleEquip(titleDef.id)}
+                >
+                  {isEquipped ? t('titles.equippedMark') : `${t('titles.equipButton')}\u300C${getTitleName(titleDef.id)}\u300D`}
+                </button>
+              )}
             </div>
           );
         })}

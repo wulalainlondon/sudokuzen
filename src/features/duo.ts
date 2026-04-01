@@ -6,6 +6,8 @@ import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds } from '../game/utils';
 import { getPlayerIdentity } from '../firebase/client';
 import { showFeedback } from '../ui/feedback';
+import { t } from '../i18n/t';
+import { getEquippedTitleDisplay } from './titles';
 
 declare const firebase: any;
 
@@ -43,12 +45,14 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
           status: 'waiting',
           hostId: playerId,
           hostAlias: alias,
+          hostTitle: getEquippedTitleDisplay(),
           hostReady: false,
           hostProgress: 0,
           hostFinishTime: null,
           hostStars: null,
           guestId: null,
           guestAlias: null,
+          guestTitle: null,
           guestReady: false,
           guestProgress: 0,
           guestFinishTime: null,
@@ -62,6 +66,7 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
         tx.update(duoRoomRef(), {
           guestId: playerId,
           guestAlias: alias,
+          guestTitle: getEquippedTitleDisplay(),
           guestReady: false,
           guestProgress: 0,
           guestFinishTime: null,
@@ -74,6 +79,7 @@ export async function enterDuoRoom(levelId: number): Promise<void> {
         tx.update(duoRoomRef(), {
           levelId,
           hostAlias: alias,
+          hostTitle: getEquippedTitleDisplay(),
           hostReady: false,
           guestReady: false,
           updatedAt: now,
@@ -115,12 +121,12 @@ function _attachSnapshotListener(): void {
       console.warn('duo snapshot error:', err);
       _snapshotRetryCount++;
       if (_snapshotRetryCount <= MAX_SNAPSHOT_RETRIES) {
-        showFeedback('連線中斷，嘗試重新連接...', 'neutral');
+        showFeedback(t('duoRuntime.connectionRetry'), 'neutral');
         setTimeout(() => {
           _attachSnapshotListener();
         }, 2000);
       } else {
-        showFeedback('連線失敗', 'error');
+        showFeedback(t('duoRuntime.connectionFailed'), 'error');
         resetDuoState();
       }
     },
@@ -184,7 +190,7 @@ export function handleDuoSnapshot(d: any): void {
     gs.duoRoundLaunched = true;
     // Update opponent progress bar
     const oppProgress = gs.duoRole === 'host' ? d.guestProgress : d.hostProgress;
-    const oppAlias = gs.duoRole === 'host' ? d.guestAlias || '對手' : d.hostAlias || '對手';
+    const oppAlias = gs.duoRole === 'host' ? d.guestAlias || t('duoRuntime.opponent') : d.hostAlias || t('duoRuntime.opponent');
     updateDuoProgressUI(oppAlias, oppProgress || 0);
 
     // Handle emoji reactions
@@ -226,11 +232,16 @@ export function updateDuoPreLevelUI(d: any): void {
   // Host slot
   const hostAliasEl = document.getElementById('duo-host-alias');
   if (hostAliasEl) hostAliasEl.textContent = d.hostAlias || '--';
+  const hostTitleEl = document.getElementById('duo-host-title');
+  if (hostTitleEl) {
+    hostTitleEl.textContent = d.hostTitle || '';
+    hostTitleEl.style.display = d.hostTitle ? '' : 'none';
+  }
   const hostSlot = document.getElementById('duo-slot-host');
   const hostStatus = document.getElementById('duo-host-status');
   if (hostSlot) hostSlot.classList.toggle('ready', !!d.hostReady);
   if (hostStatus) {
-    hostStatus.textContent = d.hostReady ? '已準備' : '等待中';
+    hostStatus.textContent = d.hostReady ? t('duoRuntime.statusReady') : t('duoRuntime.statusWaiting');
     hostStatus.classList.toggle('is-ready', !!d.hostReady);
   }
 
@@ -244,13 +255,20 @@ export function updateDuoPreLevelUI(d: any): void {
       guestSlot.classList.toggle('ready', !!d.guestReady);
     }
     if (guestAlias) guestAlias.textContent = d.guestAlias || '--';
+    const guestTitleEl = document.getElementById('duo-guest-title');
+    if (guestTitleEl) {
+      guestTitleEl.textContent = d.guestTitle || '';
+      guestTitleEl.style.display = d.guestTitle ? '' : 'none';
+    }
     if (guestStatus) {
-      guestStatus.textContent = d.guestReady ? '已準備' : '等待中';
+      guestStatus.textContent = d.guestReady ? t('duoRuntime.statusReady') : t('duoRuntime.statusWaiting');
       guestStatus.classList.toggle('is-ready', !!d.guestReady);
     }
   } else {
     if (guestSlot) guestSlot.classList.add('empty');
-    if (guestAlias) guestAlias.textContent = '等待加入...';
+    if (guestAlias) guestAlias.textContent = t('duoRuntime.waitingJoin');
+    const guestTitleEl = document.getElementById('duo-guest-title');
+    if (guestTitleEl) guestTitleEl.style.display = 'none';
     if (guestStatus) {
       guestStatus.textContent = '';
       guestStatus.classList.remove('is-ready');
@@ -262,13 +280,13 @@ export function updateDuoPreLevelUI(d: any): void {
   if (preStreak && d.guestId) {
     const rec = loadDuoRecords();
     if (rec.streak >= 2 && rec.streakHolder) {
-      preStreak.innerHTML = `<div class="duo-streak-badge">\u{1F525} ${rec.streakHolder} 連勝 ${rec.streak} 場</div>`;
+      preStreak.innerHTML = `<div class="duo-streak-badge">${t('duoRuntime.streakBadge', { holder: rec.streakHolder, count: String(rec.streak) })}</div>`;
     } else {
       const wins = rec.wins || {};
       const names = Object.keys(wins);
       if (names.length >= 2) {
         const sorted = names.sort((a, b) => wins[b] - wins[a]);
-        preStreak.innerHTML = `<div style="font-size:0.72rem;color:var(--text-light);margin-bottom:6px;">${sorted[0]} ${wins[sorted[0]]} 勝 — ${sorted[1]} ${wins[sorted[1]]} 勝</div>`;
+        preStreak.innerHTML = `<div style="font-size:0.72rem;color:var(--text-light);margin-bottom:6px;">${t('duoRuntime.winsVs', { a: sorted[0], aWins: String(wins[sorted[0]]), b: sorted[1], bWins: String(wins[sorted[1]]) })}</div>`;
       } else {
         preStreak.innerHTML = '';
       }
@@ -291,7 +309,7 @@ export function updateDuoPreLevelUI(d: any): void {
   } else {
     if (readyBtn) {
       readyBtn.style.display = d.guestId ? 'inline-block' : 'none';
-      readyBtn.textContent = myReady ? '\u2713 已準備' : '我準備好了';
+      readyBtn.textContent = myReady ? t('duoRuntime.readyConfirm') : t('duoRuntime.readyPrompt');
       readyBtn.classList.toggle('is-ready', myReady);
     }
     if (countdownArea) countdownArea.style.display = 'none';
@@ -454,7 +472,7 @@ export async function launchDuoGame(): Promise<void> {
       await duoRoomRef().set(statusUpdate, { merge: true });
     } catch (e2) {
       console.error('launchDuoGame status update retry failed:', e2);
-      showFeedback('連線異常，請重試', 'error');
+      showFeedback(t('duoRuntime.connectionError'), 'error');
     }
   }
 }
@@ -491,7 +509,7 @@ export function showDuoOpponentFinished(alias: string, timeSec: number, stars: n
   if (gs.duoOpponentNotified) return;
   gs.duoOpponentNotified = true;
   const starsStr = stars ? ' ' + '\u2605'.repeat(stars) : '';
-  showFeedback(`\u26A1 ${alias} 已完成！${formatSeconds(timeSec)}${starsStr} — 加油！`, 'error');
+  showFeedback(t('duoRuntime.opponentFinished', { alias, time: formatSeconds(timeSec), stars: starsStr }), 'error');
   if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 50]);
 
   // Add forfeit button
@@ -500,7 +518,7 @@ export function showDuoOpponentFinished(alias: string, timeSec: number, stars: n
     const btn = document.createElement('button');
     btn.id = 'duo-forfeit-btn';
     btn.className = 'duo-forfeit-btn';
-    btn.textContent = '\u8A8D\u8F38';
+    btn.textContent = t('duoRuntime.forfeit');
     btn.onclick = async () => {
       btn.remove();
       await submitDuoFinish(9999, 0);
@@ -562,11 +580,11 @@ export function showDuoResult(d: any): void {
 
   // Streak badge
   if (rec.streak >= 2 && rec.streakHolder) {
-    contentHtml += `<div id="duo-result-streak"><div class="duo-streak-badge">\u{1F525} ${rec.streakHolder} 連勝 ${rec.streak} 場！</div></div>`;
+    contentHtml += `<div id="duo-result-streak"><div class="duo-streak-badge">${t('duoRuntime.streakBadgeExcl', { holder: rec.streakHolder, count: String(rec.streak) })}</div></div>`;
   }
 
   function makeCard(alias: string, time: number, stars: number | null, isWinner: boolean): string {
-    const resultLabel = isWinner ? '<div class="duo-result-label win">\u52DD</div>' : (isDraw ? '' : '<div class="duo-result-label lose">\u6557</div>');
+    const resultLabel = isWinner ? `<div class="duo-result-label win">${t('duoRuntime.resultWin')}</div>` : (isDraw ? '' : `<div class="duo-result-label lose">${t('duoRuntime.resultLose')}</div>`);
     return `<div class="duo-result-card ${isWinner ? 'winner' : ''}">
                     ${resultLabel}
                     <div class="duo-result-crown">${isWinner ? '\u{1F451}' : ''}</div>
@@ -579,10 +597,10 @@ export function showDuoResult(d: any): void {
   contentHtml += `<div class="duo-result-cards" id="duo-result-cards">${makeCard(d.hostAlias, hTime, d.hostStars, hWin)}${makeCard(d.guestAlias, gTime, d.guestStars, gWin)}</div>`;
 
   if (isDraw) {
-    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">平手！心有靈犀 \u{1F495}</div>`;
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultDraw')}</div>`;
   } else {
     const winnerAlias = hWin ? d.hostAlias : d.guestAlias;
-    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${winnerAlias} 快了 ${formatSeconds(diff)}</div>`;
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultFaster', { winner: winnerAlias, diff: formatSeconds(diff) })}</div>`;
   }
 
   // Lifetime record
@@ -590,9 +608,9 @@ export function showDuoResult(d: any): void {
   const names = Object.keys(wins);
   if (names.length >= 2) {
     const sorted = names.sort((a: string, b: string) => wins[b] - wins[a]);
-    contentHtml += `<div class="duo-result-record" id="duo-result-record">歷史戰績：<span>${sorted[0]} ${wins[sorted[0]]}</span> 勝 — <span>${sorted[1]} ${wins[sorted[1]]}</span> 勝</div>`;
+    contentHtml += `<div class="duo-result-record" id="duo-result-record">${t('duoRuntime.historyRecord')}<span>${t('duoRuntime.winsRecord', { name: sorted[0], wins: String(wins[sorted[0]]) })}</span> — <span>${t('duoRuntime.winsRecord', { name: sorted[1], wins: String(wins[sorted[1]]) })}</span></div>`;
   } else if (names.length === 1) {
-    contentHtml += `<div class="duo-result-record" id="duo-result-record">歷史戰績：<span>${names[0]} ${wins[names[0]]}</span> 勝</div>`;
+    contentHtml += `<div class="duo-result-record" id="duo-result-record">${t('duoRuntime.historyRecordSingle', { name: names[0], wins: String(wins[names[0]]) })}</div>`;
   }
 
   // Hide emoji bar

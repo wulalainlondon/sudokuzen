@@ -7,6 +7,7 @@ import { getMentorNote } from './mentorController';
 import { showFeedback } from '../../ui/feedback';
 import { getOnlineCount } from '../../firebase/client';
 import { t } from '../../i18n/t';
+import { getEquippedTitleDisplay } from '../titles';
 
 // ── Level titles by IQ level range ───────────────────────────────────
 
@@ -254,6 +255,14 @@ export function renderWildLobby(): void {
 
   if (levelEl) levelEl.textContent = `Lv.${profile.iqLevel}`;
   if (titleEl) titleEl.textContent = getLevelTitle(profile.iqLevel);
+
+  // Player title (稱號)
+  const playerTitleEl = document.getElementById('wild-title');
+  if (playerTitleEl) {
+    const display = getEquippedTitleDisplay();
+    playerTitleEl.textContent = display;
+    playerTitleEl.style.display = display ? '' : 'none';
+  }
   if (expFill) expFill.style.width = `${(progress * 100).toFixed(1)}%`;
   if (expText) expText.textContent = `${expInLevel} / ${expNeeded} EXP`;
   if (completedEl) completedEl.textContent = String(profile.puzzlesCompleted);

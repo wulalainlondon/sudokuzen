@@ -19,6 +19,7 @@ import {
 import { bridgeShowEncounterTransition } from '../../react/wild/encounterTransitionBridge';
 import { playZenEnter, playZenEncounter, playZenBoss } from '../../game/zenAudio';
 import { t } from '../../i18n/t';
+import { getEquippedTitle, getTitleResonanceBonus } from '../titles';
 
 // ── Runtime state (non-persisted) ────────────────────────────────────
 
@@ -186,10 +187,10 @@ export async function startWildEncounter(): Promise<void> {
   const wildLevel: LevelData = {
     id: -Date.now(), // negative = Wild mode, unique per encounter
     stars: 0,
-    difficultyName: '世界',
+    difficultyName: t('wildRuntime.difficultyWorld'),
     displayName: meta
       ? `${sessionLabel}${meta.name} · ${meta.subtitle}${modeLabel}${bossLabel}`
-      : `${sessionLabel}世界${modeLabel}${bossLabel}`,
+      : `${sessionLabel}${t('wildRuntime.difficultyWorld')}${modeLabel}${bossLabel}`,
     puzzle: puzzleToUse,
     solution: _encounter.solution,
     maxTechnique: _encounter.technique,
@@ -205,7 +206,7 @@ export async function startWildEncounter(): Promise<void> {
   const isFirstEncounter = bestiaryForFirst ? bestiaryForFirst.encounters === 1 : false;
   bridgeShowEncounterTransition({
     techName: meta?.name ?? '???',
-    techSubtitle: meta ? `${meta.subtitle}` : '世界',
+    techSubtitle: meta ? `${meta.subtitle}` : t('wildRuntime.difficultyWorld'),
     rarity: _encounter.rarity,
     challengeMode: mode,
     isBoss,
@@ -289,7 +290,7 @@ export async function startWildEncounter(): Promise<void> {
     const timerEl = gs.timerEl;
     if (timerEl) {
       timerEl.setAttribute('data-mentor-time', String(_encounter.mentorTime));
-      timerEl.title = `弈塵的紀錄：${timeStr}`;
+      timerEl.title = t('skills.mentorRecord', { time: timeStr });
     }
   }
 
@@ -398,10 +399,10 @@ async function _advanceGauntlet(
   const wildLevel: LevelData = {
     id: -Date.now(),
     stars: 0,
-    difficultyName: '世界',
+    difficultyName: t('wildRuntime.difficultyWorld'),
     displayName: nextMeta
-      ? `${nextMeta.name} · ${nextMeta.subtitle} [百鬼 ${_gauntletIdx + 1}/5]`
-      : `世界 [百鬼 ${_gauntletIdx + 1}/5]`,
+      ? t('wildRuntime.gauntletLabel', { name: nextMeta.name, subtitle: nextMeta.subtitle, idx: String(_gauntletIdx + 1) })
+      : t('wildRuntime.gauntletLabelFallback', { idx: String(_gauntletIdx + 1) }),
     puzzle: _encounter.puzzle,
     solution: _encounter.solution,
     maxTechnique: _encounter.technique,
@@ -521,6 +522,13 @@ export function onWildComplete(
     expGained = Math.round(expGained * 1.5);
   }
 
+  // Title resonance bonus: +10% EXP
+  const titleBonus = getTitleResonanceBonus(getEquippedTitle(), _encounter.technique);
+  if (titleBonus > 0) {
+    expGained = Math.round(expGained * (1 + titleBonus));
+    showFeedback(t('titles.resonanceBonus'), 'success');
+  }
+
   const result = applyExp(profile, expGained);
 
   // Update bestiary
@@ -565,7 +573,7 @@ export function onWildComplete(
           const techName = fragMeta.name;
           setTimeout(async () => {
             const { showFeedback: fb } = await import('../../ui/feedback');
-            fb(`${techName} 的記憶碎片已集齊——去圖鑑研習`, 'success');
+            fb(t('skills.fragmentsCollected', { name: techName }), 'success');
           }, 2500);
         }
       }
@@ -631,10 +639,10 @@ async function launchGauntletNext(profile: WildProfile): Promise<void> {
   const wildLevel: LevelData = {
     id: -Date.now(),
     stars: 0,
-    difficultyName: '世界',
+    difficultyName: t('wildRuntime.difficultyWorld'),
     displayName: nextMeta
-      ? `${nextMeta.name} · ${nextMeta.subtitle} [百鬼 ${_gauntletIdx + 1}/5]`
-      : `世界 [百鬼 ${_gauntletIdx + 1}/5]`,
+      ? t('wildRuntime.gauntletLabel', { name: nextMeta.name, subtitle: nextMeta.subtitle, idx: String(_gauntletIdx + 1) })
+      : t('wildRuntime.gauntletLabelFallback', { idx: String(_gauntletIdx + 1) }),
     puzzle: _encounter!.puzzle,
     solution: _encounter!.solution,
     maxTechnique: _encounter!.technique,

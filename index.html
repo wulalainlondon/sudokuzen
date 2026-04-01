@@ -85,6 +85,7 @@
                     <div class="wild-profile-level">
                         <span class="wild-level-badge" id="wild-level">Lv.1</span>
                         <span class="wild-level-title" id="wild-level-title">見習修士</span>
+                        <div class="wild-title-display" id="wild-title"></div>
                     </div>
                     <div class="wild-exp-bar-wrap">
                         <div class="wild-exp-fill" id="wild-exp-fill"></div>
@@ -161,10 +162,12 @@
         <div class="duo-player-slots">
             <div class="duo-player-slot" id="duo-slot-host">
                 <div class="duo-slot-alias" id="duo-host-alias">--</div>
+                <div class="duo-slot-title" id="duo-host-title"></div>
                 <div class="duo-slot-status" id="duo-host-status">等待中</div>
             </div>
             <div class="duo-player-slot empty" id="duo-slot-guest">
                 <div class="duo-slot-alias" id="duo-guest-alias">等待加入...</div>
+                <div class="duo-slot-title" id="duo-guest-title"></div>
                 <div class="duo-slot-status" id="duo-guest-status"></div>
             </div>
         </div>
@@ -334,7 +337,7 @@
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.04.01-V24';
+        var INLINE_VER = '2026.04.01-V25';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);

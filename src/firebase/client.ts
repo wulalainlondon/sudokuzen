@@ -6,6 +6,7 @@ import { formatSeconds, normalizeAlias, ALIAS_MIN_LEN } from '../game/utils';
 import { showFeedback } from '../ui/feedback';
 import { getAllLevels } from '../data/dataRegistry';
 import { t } from '../i18n/t';
+import { getEquippedTitleDisplay } from '../features/titles';
 
 declare const firebase: any;
 type AchievementMap = Record<string, { date: string }>;
@@ -24,6 +25,7 @@ const PROFILE_SYNC_KEYS: Set<string> = new Set([
   SK.SPEEDRUN,
   SK.SKILL_MODE,
   SK.THEME,
+  SK.PLAYER_TITLE,
 ]);
 let progressSyncTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingSaveSyncTimers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -336,11 +338,11 @@ export function getPlayerIdentity(): { playerId: string; alias: string } {
   }
   let alias = localStorage.getItem(SK.PLAYER_ALIAS);
   if (!alias) {
-    alias = `玩家${Math.floor(Math.random() * 9000) + 1000}`;
+    alias = t('miscRuntime.defaultAlias', { code: String(Math.floor(Math.random() * 9000) + 1000) });
     localStorage.setItem(SK.PLAYER_ALIAS, alias);
   }
   alias = normalizeAlias(alias);
-  if (alias.length < ALIAS_MIN_LEN) alias = `玩家${Math.floor(Math.random() * 9000) + 1000}`;
+  if (alias.length < ALIAS_MIN_LEN) alias = t('miscRuntime.defaultAlias', { code: String(Math.floor(Math.random() * 9000) + 1000) });
   localStorage.setItem(SK.PLAYER_ALIAS, alias);
   return { playerId, alias };
 }
@@ -624,7 +626,10 @@ export function renderLeaderboard(el: HTMLElement | null, rows: any[]): void {
     return;
   }
   el.innerHTML = rows
-    .map((r, i) => `${i + 1}. ${r.alias}  ${formatSeconds(r.firstTimeSec)}  ${'★'.repeat(r.firstStars)}`)
+    .map((r, i) => {
+      const titleStr = r.title ? r.title : '';
+      return `${i + 1}. ${r.alias}${titleStr}  ${formatSeconds(r.firstTimeSec)}  ${'★'.repeat(r.firstStars)}`;
+    })
     .join('<br>');
 }
 
@@ -675,8 +680,9 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
       : rows
           .map((r: any, i: number) => {
             const timeStr = formatSeconds(r.firstTimeSec);
-            if (gs.isSpeedrunMode) return `${i + 1}. ${r.alias}  ${timeStr} (經典)`;
-            return `${i + 1}. ${r.alias}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
+            const titleStr = r.title ? r.title : '';
+            if (gs.isSpeedrunMode) return `${i + 1}. ${r.alias}${titleStr}  ${timeStr} ${t('miscRuntime.speedrunClassic')}`;
+            return `${i + 1}. ${r.alias}${titleStr}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
           })
           .join('<br>');
     const _plEl = document.getElementById('pre-level-leaderboard');
@@ -716,9 +722,11 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
     await gs.db.runTransaction(async (tx: any) => {
       const doc = await tx.get(docRef);
       if (doc.exists) return;
+      const title = getEquippedTitleDisplay();
       tx.set(docRef, {
         playerId,
         alias,
+        title,
         firstTimeSec: clearSec,
         firstStars: clearStars,
         levelVersion,
