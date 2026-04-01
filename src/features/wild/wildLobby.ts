@@ -66,39 +66,39 @@ function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {
   if (!canSession) {
     // 新手村: free roam
     return {
-      roundText: '自由探索',
+      roundText: t('wild.freeExplore'),
       fillPct: 0,
-      metaText: `Lv.${SESSION_LEVEL_GATE} 解鎖修行輪`,
-      techText: `已遭遇 ${Object.keys(profile.bestiary).length} 種技巧`,
-      enterText: '進入世界',
-      enterSub: '隨機遭遇 · 基礎修煉',
+      metaText: t('wild.sessionUnlock', { level: String(SESSION_LEVEL_GATE) }),
+      techText: t('wild.techEncountered', { count: String(Object.keys(profile.bestiary).length) }),
+      enterText: t('wild.enterWorld'),
+      enterSub: t('wild.enterSub'),
     };
   }
 
   if (!session || session.round <= 0) {
     return {
-      roundText: '新修行輪',
+      roundText: t('wild.newSession'),
       fillPct: 0,
-      metaText: '啟動後將進入 10 輪連續遭遇',
-      techText: '本輪尚未遭遇任何技巧',
-      enterText: '進入世界',
-      enterSub: '第 1/10 輪 · 隨機遭遇 · 技巧修煉',
+      metaText: t('wild.sessionStart'),
+      techText: t('wild.noTechThisRound'),
+      enterText: t('wild.enterWorld'),
+      enterSub: t('wild.roundSub', { round: '1' }),
     };
   }
 
   const fillPct = Math.max(0, Math.min(100, (session.round / 10) * 100));
   const techniques = session.techniques.length > 0 ? session.techniques.length : 0;
-  const pace = session.round >= 10 ? 'Boss 輪完成' : `目前第 ${session.round}/10 輪`;
-  const enterText = session.round >= 10 ? '開啟新修行輪' : '繼續修行';
+  const pace = session.round >= 10 ? t('wild.bossComplete') : t('wild.roundProgress', { round: String(session.round) });
+  const enterText = session.round >= 10 ? t('wild.startNewSession') : t('wild.continueSession');
   const enterSub =
     session.round >= 10
-      ? `上一輪勝場 ${session.wins}/10 · 總 EXP ${session.totalExp}`
+      ? t('wild.lastRoundSub', { wins: String(session.wins), exp: String(session.totalExp) })
       : `下一輪 ${session.round + 1}/10 · 目前勝場 ${session.wins}/${session.round}`;
   return {
     roundText: pace,
     fillPct,
-    metaText: `本輪累積 EXP ${session.totalExp} · 勝場 ${session.wins}/${Math.max(1, session.round)}`,
-    techText: techniques > 0 ? `本輪已遭遇 ${techniques} 種技巧` : '本輪尚未遭遇任何技巧',
+    metaText: t('wild.sessionMeta', { exp: String(session.totalExp), wins: String(session.wins), round: String(Math.max(1, session.round)) }),
+    techText: techniques > 0 ? t('wild.sessionTechs', { count: String(techniques) }) : t('wild.noTechThisRound'),
     enterText,
     enterSub,
   };
@@ -241,7 +241,7 @@ export function renderWildLobby(): void {
   if (onlineEl) {
     void getOnlineCount().then((count) => {
       if (count > 0) {
-        onlineEl.textContent = `\u{1F7E2} ${count} 位修士在線`;
+        onlineEl.textContent = `\u{1F7E2} ${t('wild.online', { count: String(count) })}`;
         onlineEl.style.display = '';
       } else {
         onlineEl.style.display = 'none';
@@ -277,7 +277,7 @@ export function renderWildLobby(): void {
     if (profile.autoCastEnabled) {
       if (autoKeys.size > 0) {
         const names = TECHNIQUE_TABLE.filter((t) => autoKeys.has(t.key)).map((t) => t.name);
-        hintEl.textContent = `已精通 ${names.length} 項（已討伐 ${conquered}/${TECHNIQUE_TABLE.length}）`;
+        hintEl.textContent = t('wild.autoCastMastered', { count: String(names.length), conquered: String(conquered), total: String(TECHNIQUE_TABLE.length) });
         if (toggleBtn) toggleBtn.title = names.join('、');
       } else {
         hintEl.textContent = '尚未精通任何技巧';
