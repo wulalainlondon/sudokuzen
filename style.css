@@ -1696,6 +1696,18 @@ header h1 {
 
 /* ── Practice Lobby ────────────────────────────────────────────────── */
 
+#practice-lobby {
+    padding: 0 16px 24px;
+    width: 100%;
+    max-width: 400px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#practice-lobby.hidden {
+    display: none;
+}
+
 .practice-lobby-header {
     display: flex;
     align-items: center;
@@ -1718,7 +1730,7 @@ header h1 {
 
 .practice-lobby-body {
     overflow-y: auto;
-    max-height: calc(100vh - 160px);
+    max-height: calc(100dvh - 160px - env(safe-area-inset-bottom, 0px));
     padding-bottom: 32px;
 }
 
@@ -1905,6 +1917,70 @@ header h1 {
     font-size: 0.72rem;
     color: var(--text-light);
     margin-top: 2px;
+}
+
+/* ── Practice responsive ─────────────────────────────────────────── */
+
+@media (max-width: 420px) {
+    /* Collapse 3-column branches to 1-column on small screens */
+    .practice-branches {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .practice-branch-header {
+        text-align: left;
+        border-bottom: 1px solid var(--cell-border);
+        padding-bottom: 4px;
+    }
+
+    /* Compact nodes get slightly more room */
+    .practice-node--compact {
+        padding: 6px 10px;
+        gap: 6px;
+    }
+
+    .practice-node--compact .practice-node-name {
+        font-size: 0.72rem;
+        white-space: normal;
+    }
+
+    .practice-node--compact .practice-mini-bar {
+        width: 36px;
+    }
+
+    /* Entry buttons stack vertically on very small screens */
+    .random-bar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .practice-entry-btn,
+    .world-entry-btn {
+        min-width: 200px;
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 360px) {
+    /* Extra tight — reduce phase spacing */
+    .practice-phase {
+        margin-bottom: 10px;
+    }
+
+    .practice-node {
+        padding: 6px 8px;
+        gap: 6px;
+    }
+
+    .practice-node-name {
+        font-size: 0.72rem;
+    }
+
+    .practice-mini-bar {
+        width: 32px;
+    }
 }
 
 .random-btn.ghost {
