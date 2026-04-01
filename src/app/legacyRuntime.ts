@@ -43,7 +43,6 @@ import {
   toggleSpeedrunMode,
   startPoolRandom,
   hidePreLevelModal,
-  startLevelFromModal,
 } from '../features/levels';
 import {
   openLibraryOverlay,
