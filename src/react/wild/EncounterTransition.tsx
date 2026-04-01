@@ -30,7 +30,7 @@ const MODE_CHARS: Record<string, string> = {
 
 const PHASE1_END = 400;
 const PHASE2_END = 1200;
-const PHASE3_END = 1600;
+// Phase 3 ends at 1600ms (stamp animation), Phase 4 auto-dismiss at:
 const PHASE4_END = 2200;
 
 export function EncounterTransition(): ReactElement {

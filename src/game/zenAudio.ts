@@ -3,7 +3,7 @@
 // Evokes temple bells, ink brush, water drops, bronze bowls — organic, meditative.
 
 import { gs } from './state';
-import { getCtx, ensureGraph, connectToRoom, getNoiseBuffer } from './audio';
+import { getCtx, ensureGraph, connectToRoom } from './audio';
 
 // ── Helper: connect dry-only (no reverb) ─────────────────────────────
 

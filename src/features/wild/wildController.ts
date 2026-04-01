@@ -16,7 +16,7 @@ import {
   triggerFinaleIfNeeded,
   triggerContinuousFillHint,
 } from './mentorController';
-import { bridgeShowEncounterTransition, bridgeDismissEncounterTransition } from '../../react/wild/encounterTransitionBridge';
+import { bridgeShowEncounterTransition } from '../../react/wild/encounterTransitionBridge';
 import { playZenEnter, playZenEncounter, playZenBoss } from '../../game/zenAudio';
 
 // ── Runtime state (non-persisted) ────────────────────────────────────
