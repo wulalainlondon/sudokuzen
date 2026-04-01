@@ -4,6 +4,7 @@ export interface SudokuWindow extends Window {
   openReplayModal?: () => void;
   closeReplayModal?: () => void;
   closeDuoResult?: () => void;
+  surrenderDuo?: () => void;
   closeLibraryOverlay?: () => void;
   dismissMentor?: () => void;
   resetGame?: () => void;

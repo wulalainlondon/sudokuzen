@@ -21,10 +21,12 @@ export function PreLevelModal(): ReactElement {
       duoZoneRef.current.appendChild(legacyDuoZone);
     }
     return () => {
-      // Return duo zone to body so it's not lost when React unmounts
-      if (legacyDuoZone && legacyDuoZone.parentElement !== document.body) {
-        legacyDuoZone.classList.add('hidden');
-        document.body.appendChild(legacyDuoZone);
+      // Return duo zone to body so it's not lost when React unmounts.
+      // Use fresh getElementById (not captured ref) to avoid stale references.
+      const el = document.getElementById('duo-ready-zone');
+      if (el && el.parentElement && el.parentElement !== document.body) {
+        el.classList.add('hidden');
+        document.body.appendChild(el);
       }
     };
   }, [visible]);

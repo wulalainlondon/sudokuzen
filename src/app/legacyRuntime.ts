@@ -35,7 +35,7 @@ import {
   replayTogglePlay,
   replayToggleSpeed,
 } from '../features/replay';
-import { toggleDuoReady, sendDuoEmoji, closeDuoResult, startDuoGlowListener } from '../features/duo';
+import { toggleDuoReady, sendDuoEmoji, closeDuoResult, surrenderDuo, startDuoGlowListener } from '../features/duo';
 import { openStatsModal, closeStatsModal } from '../features/stats';
 import {
   showLevelScreen,
@@ -345,6 +345,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     closeReplayModal,
     closeStatsModal,
     closeDuoResult,
+    surrenderDuo,
     teachPrev,
     teachNext,
     hideTeachModal,

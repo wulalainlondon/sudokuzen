@@ -29,7 +29,7 @@ let _countdownLaunched = false;
 let _duoFinishSubmitted = false;
 let _snapshotRetryCount = 0;
 let _lastSeenLevelId: number | null = null;
-const MAX_SNAPSHOT_RETRIES = 3;
+const MAX_SNAPSHOT_RETRIES = 5;
 
 // ── Room Reference ───────────────────────────────────────────────────
 
@@ -137,7 +137,7 @@ function _attachSnapshotListener(): void {
         showFeedback(t('duoRuntime.connectionRetry'), 'neutral');
         setTimeout(() => {
           _attachSnapshotListener();
-        }, 2000);
+        }, 2000 * Math.pow(1.5, _snapshotRetryCount));
       } else {
         showFeedback(t('duoRuntime.connectionFailed'), 'error');
         resetDuoState();
@@ -650,7 +650,7 @@ export function showDuoResult(d: DuoRoomData): void {
 
   // Open via React bridge
   import('../react/duoresult/duoResultBridge').then(({ bridgeOpenDuoResult }) => {
-    bridgeOpenDuoResult({ contentHtml, iWon, isDraw });
+    bridgeOpenDuoResult({ contentHtml, iWon, isDraw, levelId: d.levelId ?? null });
   });
 }
 
@@ -738,15 +738,23 @@ export function spawnEmojiFloat(emoji: string, isSelf: boolean): void {
   setTimeout(() => el.remove(), 1500);
 }
 
+// ── Surrender ────────────────────────────────────────────────────────
+
+export async function surrenderDuo(): Promise<void> {
+  if (!gs.isDuoMode) return;
+  await submitDuoFinish(9999, 0);
+  showFeedback(t('duo.surrender'), 'success');
+}
+
 // ── Close / Leave / Reset ────────────────────────────────────────────
 
 export async function closeDuoResult(): Promise<void> {
   import('../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult());
-  // Mark room finished
+  // Mark room finished — await to ensure Firebase update completes before state reset
   if (gs.firebaseReady) {
-    duoRoomRef()
-      .update({ status: 'finished' })
-      .catch(() => {});
+    try {
+      await duoRoomRef().update({ status: 'finished', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    } catch { /* ignore */ }
   }
   resetDuoState();
   const { showLevelScreen } = await import('../features/levels');

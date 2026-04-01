@@ -42,7 +42,21 @@ function ConfettiLayer({ count, colors }: { count: number; colors: string[] }): 
 export function DuoResultModal(): ReactElement {
   const { visible, contentHtml, iWon, isDraw } = useDuoResultStore();
 
-  const handleClose = useCallback(() => {
+  const handlePlayAgain = useCallback(() => {
+    const levelId = useDuoResultStore.getState().levelId;
+    // Close result modal via bridge (resets duo state)
+    import('../../features/duo').then((m) => {
+      m.closeDuoResult();
+      // Re-open pre-level for the same level after a short delay
+      if (levelId) {
+        setTimeout(() => {
+          import('../../features/levels').then((lm) => lm.showPreLevelModal(levelId));
+        }, 300);
+      }
+    });
+  }, []);
+
+  const handleBack = useCallback(() => {
     const win = window as unknown as SudokuWindow;
     win.closeDuoResult?.();
   }, []);
@@ -52,14 +66,14 @@ export function DuoResultModal(): ReactElement {
   const confettiColors = iWon ? CONFETTI_COLORS_WIN : CONFETTI_COLORS_DRAW;
 
   return (
-    <ZenOverlay visible={visible} onClose={handleClose} id="duo-result-modal">
+    <ZenOverlay visible={visible} onClose={handleBack} id="duo-result-modal">
       <div className="duo-result-panel">
         {showConfetti && <ConfettiLayer count={confettiCount} colors={confettiColors} />}
         <h2>{t('duo.resultTitle')}</h2>
         {/* Safety: contentHtml built by our own duo.ts code (trusted) */}
         <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
-        <button className="resume-btn" onClick={handleClose}>{t('duo.playAgain')}</button>
-        <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleClose}>{t('nav.backToLevels')}</button>
+        <button className="resume-btn" onClick={handlePlayAgain}>{t('duo.playAgain')}</button>
+        <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleBack}>{t('nav.backToLevels')}</button>
       </div>
     </ZenOverlay>
   );

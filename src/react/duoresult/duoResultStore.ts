@@ -11,8 +11,10 @@ export interface DuoResultState {
   iWon: boolean;
   /** Whether it's a draw (triggers softer confetti) */
   isDraw: boolean;
+  /** The level ID of the duo match (for "play again") */
+  levelId: number | null;
 
-  open: (payload: { contentHtml: string; iWon: boolean; isDraw: boolean }) => void;
+  open: (payload: { contentHtml: string; iWon: boolean; isDraw: boolean; levelId: number | null }) => void;
   close: () => void;
 }
 
@@ -21,6 +23,7 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
   contentHtml: '',
   iWon: false,
   isDraw: false,
+  levelId: null,
 
   open: (payload) =>
     set({
@@ -28,6 +31,7 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
       contentHtml: payload.contentHtml,
       iWon: payload.iWon,
       isDraw: payload.isDraw,
+      levelId: payload.levelId,
     }),
 
   close: () => set({ visible: false }),

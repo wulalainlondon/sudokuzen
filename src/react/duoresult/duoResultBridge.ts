@@ -6,6 +6,7 @@ export function bridgeOpenDuoResult(payload: {
   contentHtml: string;
   iWon: boolean;
   isDraw: boolean;
+  levelId: number | null;
 }): void {
   useDuoResultStore.getState().open(payload);
 }

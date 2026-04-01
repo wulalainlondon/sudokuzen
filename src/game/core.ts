@@ -726,7 +726,7 @@ export function updateLivesUI(): void {
   if (gs.isDuoMode && gs.errors >= gs.maxErrors) {
     // Lives depleted — cooldown UI takes over (handled by updateDuoCooldownUI)
     if (!isDuoCooldownActive()) {
-      gs.livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem;">${t('misc.noLivesRemaining')}</span>`;
+      gs.livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem;">${t('misc.noLivesRemaining')}</span> <button class="duo-surrender-btn" onclick="surrenderDuo()">${t('duo.surrender')}</button>`;
     }
     return;
   }
