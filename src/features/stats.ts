@@ -1,6 +1,6 @@
 // Stats, achievements, and stats modal — extracted from legacyRuntime.ts
 
-import { gs, type AchievementToastItem } from '../game/state';
+import { gs } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { getAllLevels } from '../data/dataRegistry';
 import { mergeCloudAchievements, syncAchievementsToCloud } from '../firebase/client';

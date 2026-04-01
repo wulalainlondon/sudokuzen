@@ -7,7 +7,7 @@ import { showFeedback } from '../ui/feedback';
 import { getAllLevels } from '../data/dataRegistry';
 import { t } from '../i18n/t';
 import { getEquippedTitleDisplay } from '../features/titles';
-import type { FirestoreDoc, FirestoreSnap, FirestoreTransaction } from './types';
+import type { FirestoreDoc, FirestoreTransaction } from './types';
 import type { SudokuWindow } from '../facade/windowTypes';
 
 interface FirestoreNamespace {

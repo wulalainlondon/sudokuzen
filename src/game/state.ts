@@ -116,7 +116,7 @@ export const gs = {
   numButtons: [] as HTMLButtonElement[],
 
   // ── Firebase ──────────────────────────────────────────────────────
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Firebase Firestore instance, typed in firebase/client.ts
+  // TODO: replace any with proper type -- Firebase Firestore instance, typed in firebase/client.ts
   db: null as any,
   firebaseReady: false,
 
@@ -151,15 +151,15 @@ export const gs = {
 
   // ── Teach (legacy) ────────────────────────────────────────────────
   teachCurrentStep: 0,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- complex teach data, typed in features/teach/
+  // TODO: replace any with proper type -- complex teach data, typed in features/teach/
   teachSteps: [] as any[],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- complex teach data, typed in features/teach/
+  // TODO: replace any with proper type -- complex teach data, typed in features/teach/
   teachData: null as any,
   teachStarsKey: null as string | null,
   teachLaunchSource: 'tier',
 
   // ── Practice ──────────────────────────────────────────────────────
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- complex practice state, typed in features/teach/
+  // TODO: replace any with proper type -- complex practice state, typed in features/teach/
   practiceState: null as any,
   practiceActiveTech: null as string | null,
 
