@@ -7,15 +7,16 @@ import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
 import { ZenStarReveal } from '../motion/ZenStarReveal';
 import { ZenCountUp } from '../motion/ZenCountUp';
+import { t } from '../../i18n/t';
 
 // ── Helpers ────────────────────────────────────────────────────────────
 
 const CONFETTI_COLORS = ['#0984E3', '#74B9FF', '#A29BFE', '#DFE6E9', '#B2BEC3'];
 
 function headingText(mode: WinMode): string {
-  if (mode === 'wild') return '狩獵成功';
-  if (mode === 'practice') return '修行完成';
-  return 'PERFECT FLOW';
+  if (mode === 'wild') return t('win.headingWild');
+  if (mode === 'practice') return t('win.headingPractice');
+  return t('win.headingNormal');
 }
 
 // ── Confetti layer ─────────────────────────────────────────────────────
@@ -61,22 +62,22 @@ function MetricDisplay(): ReactElement {
       const streakMult = wildSession.wins >= 10 ? 1.5 : wildSession.wins >= 8 ? 1.3 : wildSession.wins >= 5 ? 1.1 : 1.0;
       return (
         <div className="win-stars">
-          修行輪完成！<br />
-          {wildSession.wins}/10 勝 · +{wildSession.totalExp} EXP
-          {streakMult > 1 && <><br />連勝加成 ×{streakMult}</>}
+          {t('win.sessionComplete')}<br />
+          {t('win.sessionWins', { wins: wildSession.wins, exp: wildSession.totalExp })}
+          {streakMult > 1 && <><br />{t('win.streakBonus', { mult: streakMult })}</>}
         </div>
       );
     }
-    const mentorBonus = beatMentor ? ' ⚡ 超越弈塵！' : '';
+    const mentorBonus = beatMentor ? t('win.beatMentor') : '';
     return (
       <div className="win-stars">
-        {leveledUp ? `+${expGained} EXP${mentorBonus} — Lv.${newLevel}!` : `+${expGained} EXP${mentorBonus}`}
+        {leveledUp ? t('win.expLevelUp', { exp: expGained, level: newLevel }) + mentorBonus : t('win.expGained', { exp: expGained }) + mentorBonus}
       </div>
     );
   }
 
   if (isSpeedrun) {
-    return <div className="win-stars">⚡ 總提交: {submissions}次</div>;
+    return <div className="win-stars">{t('win.speedrunSubmissions', { count: submissions })}</div>;
   }
 
   return (
@@ -123,9 +124,9 @@ function ActionButtons(): ReactElement {
     return (
       <div className="win-actions">
         <button className="resume-btn wild-continue-btn" onClick={handleWildContinue}>
-          {isSessionEnd ? '新的修行輪' : wildSession ? `繼續修行 (${wildSession.round}/10)` : '繼續世界'}
+          {isSessionEnd ? t('nav.newSession') : wildSession ? t('nav.continueSession', { round: wildSession.round }) : t('nav.continueWorld')}
         </button>
-        <button className="back-btn" onClick={handleBack}>離開世界</button>
+        <button className="back-btn" onClick={handleBack}>{t('nav.leaveWorld')}</button>
       </div>
     );
   }
@@ -133,18 +134,18 @@ function ActionButtons(): ReactElement {
   if (mode === 'practice') {
     return (
       <div className="win-actions">
-        {showReplay && <button className="back-btn btn-replay" onClick={handleReplay}>查看回放</button>}
-        <button className="resume-btn" onClick={handleNext}>下一關</button>
-        <button className="back-btn" onClick={handleBack}>返回修行</button>
+        {showReplay && <button className="back-btn btn-replay" onClick={handleReplay}>{t('win.viewReplay')}</button>}
+        <button className="resume-btn" onClick={handleNext}>{t('nav.nextLevel')}</button>
+        <button className="back-btn" onClick={handleBack}>{t('nav.backToPractice')}</button>
       </div>
     );
   }
 
   return (
     <div className="win-actions">
-      {showReplay && <button className="back-btn btn-replay" onClick={handleReplay}>查看回放</button>}
-      <button className="resume-btn" onClick={handleNext}>下一關</button>
-      <button className="back-btn" onClick={handleBack}>返回選關</button>
+      {showReplay && <button className="back-btn btn-replay" onClick={handleReplay}>{t('win.viewReplay')}</button>}
+      <button className="resume-btn" onClick={handleNext}>{t('nav.nextLevel')}</button>
+      <button className="back-btn" onClick={handleBack}>{t('nav.backToLevels')}</button>
     </div>
   );
 }
@@ -156,9 +157,9 @@ function Leaderboard(): ReactElement | null {
   if (!showLeaderboard) return null;
   return (
     <div className="leaderboard-card">
-      <div className="leaderboard-title">首通榜 TOP 3</div>
+      <div className="leaderboard-title">{t('prelevel.leaderboardTitle')}</div>
       <div className="leaderboard-list" id="win-leaderboard-list"
-        dangerouslySetInnerHTML={{ __html: leaderboardHtml || '載入中...' }} />
+        dangerouslySetInnerHTML={{ __html: leaderboardHtml || t('prelevel.loading') }} />
     </div>
   );
 }
@@ -183,7 +184,7 @@ export function WinCelebration(): ReactElement {
 
   const confettiCount = mode === 'wild' && leveledUp ? 35 : 22;
   const displayName = mode === 'wild' && firstKill
-    ? `「${firstKill} · ${firstKillSub}」首次討伐！`
+    ? t('win.firstKill', { name: firstKill, sub: firstKillSub ?? '' })
     : levelName;
 
   const bg = 'radial-gradient(circle at top, rgba(9, 132, 227, 0.16), var(--bg-color) 60%)';
@@ -198,7 +199,7 @@ export function WinCelebration(): ReactElement {
         <p className="win-time"><ZenCountUp value={timeSeconds} /></p>
         {mode === 'practice' && practiceTechName && (
           <div>
-            <div className="win-practice-sub">{practiceTechName} · {practiceCleared}/{practiceTotal}</div>
+            <div className="win-practice-sub">{t('win.practiceProgress', { tech: practiceTechName, cleared: practiceCleared, total: practiceTotal })}</div>
             <div className="win-practice-progress">
               <div className="win-practice-progress-fill" style={{ width: `${(practiceCleared / practiceTotal) * 100}%` }} />
             </div>
@@ -206,7 +207,7 @@ export function WinCelebration(): ReactElement {
         )}
         {mode === 'wild' && firstKill && mentorNote && (
           <div className="win-mentor-note">
-            <div className="win-mentor-note-title">── 弈塵《殘篇》──</div>
+            <div className="win-mentor-note-title">{t('win.mentorNoteTitle')}</div>
             <div className="win-mentor-note-text">{mentorNote}</div>
           </div>
         )}

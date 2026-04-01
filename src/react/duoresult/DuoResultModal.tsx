@@ -4,6 +4,7 @@
 import { useCallback, useMemo, type ReactElement } from 'react';
 import { useDuoResultStore } from './duoResultStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
+import { t } from '../../i18n/t';
 
 const CONFETTI_COLORS_WIN = ['#FFD700', '#FF6B6B', '#74b9ff', '#55efc4', '#a29bfe'];
 const CONFETTI_COLORS_DRAW = ['#fd79a8', '#a29bfe', '#74b9ff', '#dfe6e9', '#fab1a0'];
@@ -52,10 +53,10 @@ export function DuoResultModal(): ReactElement {
     <ZenOverlay visible={visible} onClose={handleClose} id="duo-result-modal">
       <div className="duo-result-panel">
         {showConfetti && <ConfettiLayer count={confettiCount} colors={confettiColors} />}
-        <h2>{"💑 雙人對決結果"}</h2>
+        <h2>{t('duo.resultTitle')}</h2>
         <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
-        <button className="resume-btn" onClick={handleClose}>再來一局</button>
-        <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleClose}>返回選關</button>
+        <button className="resume-btn" onClick={handleClose}>{t('duo.playAgain')}</button>
+        <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleClose}>{t('nav.backToLevels')}</button>
       </div>
     </ZenOverlay>
   );

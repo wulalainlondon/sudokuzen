@@ -4,6 +4,7 @@
 import { useEffect, useRef, type ReactElement } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAchievementToastStore } from './achievementToastStore';
+import { t } from '../../i18n/t';
 
 export function AchievementToast(): ReactElement {
   const { visible, currentIcon, currentName } = useAchievementToastStore();
@@ -43,7 +44,7 @@ export function AchievementToast(): ReactElement {
         >
           <div className="achievement-toast-icon" id="achievement-toast-icon">{currentIcon}</div>
           <div className="achievement-toast-text">
-            <span className="achievement-toast-label">{"成就解鎖"}</span>
+            <span className="achievement-toast-label">{t('toast.achievementUnlock')}</span>
             <span className="achievement-toast-name" id="achievement-toast-name">{currentName}</span>
           </div>
         </motion.div>

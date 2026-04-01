@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, type ReactElement } from 'react';
 import { usePreLevelStore } from './preLevelStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
+import { t } from '../../i18n/t';
 
 export function PreLevelModal(): ReactElement {
   const {
@@ -62,7 +63,7 @@ export function PreLevelModal(): ReactElement {
     }
   }, []);
 
-  const techDisplay = techTier ? `💡 核心技巧: ${techName} (${techTier})` : `💡 核心技巧: ${techName}`;
+  const techDisplay = techTier ? t('prelevel.techDisplayTier', { tech: techName, tier: techTier }) : t('prelevel.techDisplay', { tech: techName });
 
   return (
     <ZenOverlay visible={visible} onClose={close} id="pre-level-modal">
@@ -73,7 +74,7 @@ export function PreLevelModal(): ReactElement {
           <p className="pre-level-tech">{techDisplay}</p>
 
           <div className="leaderboard-card">
-            <div className="leaderboard-title">首通榜 TOP 3</div>
+            <div className="leaderboard-title">{t('prelevel.leaderboardTitle')}</div>
             <div
               className="leaderboard-list"
               id="pre-level-leaderboard"
@@ -84,18 +85,18 @@ export function PreLevelModal(): ReactElement {
           {/* Legacy Duo Ready Zone — mounted here by useEffect */}
           <div ref={duoZoneRef} />
 
-          <button className="resume-btn" onClick={handleStart}>開始挑戰</button>
+          <button className="resume-btn" onClick={handleStart}>{t('nav.startChallenge')}</button>
           {hasReplay && (
             <button className="resume-btn btn-ghost" onClick={handleGhostWithData}>
-              👻 挑戰本局幽靈
+              {t('win.ghostChallenge')}
             </button>
           )}
           {hasReplay && (
             <button className="resume-btn btn-replay" onClick={handleReplay}>
-              🎬 觀看最佳通關回放
+              {t('win.viewBestReplay')}
             </button>
           )}
-          <button className="back-btn-light" onClick={close}>選擇其他關卡</button>
+          <button className="back-btn-light" onClick={close}>{t('nav.selectOther')}</button>
         </ZenStagger>
       </div>
     </ZenOverlay>

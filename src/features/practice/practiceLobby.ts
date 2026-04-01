@@ -8,6 +8,7 @@ import { TECH_MAP } from '../teach-legacy';
 import { showFeedback } from '../../ui/feedback';
 import { syncLevelCardSize } from '../../game/board';
 import { playZenMentor, playZenEncounter, playZenDiscover, playZenLevelUp, playZenSessionComplete } from '../../game/zenAudio';
+import { t } from '../../i18n/t';
 
 // ── Unlock tree definition ────────────────────────────────────────────
 
@@ -102,40 +103,40 @@ type Phase = PhaseLinear | PhaseBranch;
 const PHASES: Phase[] = [
   {
     type: 'linear',
-    name: '基礎定式流',
+    name: t('practice.phase1'),
     keys: ['naked_single', 'hidden_single', 'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple'],
   },
   {
     type: 'branch',
-    name: '三流分歧',
+    name: t('practice.phase2'),
     branches: [
       {
-        name: '魚翼流',
+        name: t('practice.branchFish'),
         keys: ['x_wing', 'finned_x_wing', 'swordfish', 'finned_swordfish', 'jellyfish', 'finned_jellyfish', 'skyscraper', 'two_string_kite', 'empty_rectangle'],
       },
       {
-        name: '著色鏈',
+        name: t('practice.branchColor'),
         keys: ['x_cycle_simple_coloring', 'xy_wing', 'xyz_wing', 'w_wing', 'remote_pairs'],
       },
       {
-        name: '唯一·ALS',
+        name: t('practice.branchALS'),
         keys: ['unique_rectangle', 'bug_plus_one', 'als_xz', 'als_xy', 'als_w_wing', 'als_chain'],
       },
     ],
   },
   {
     type: 'linear',
-    name: '匯合·著色',
+    name: t('practice.phase3'),
     keys: ['medusa_3d'],
   },
   {
     type: 'linear',
-    name: '鏈術',
+    name: t('practice.phase4'),
     keys: ['xy_chain', 'aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop'],
   },
   {
     type: 'linear',
-    name: '終局',
+    name: t('practice.phase5'),
     keys: ['forcing_chain_net', 'cell_forcing_chain', 'region_forcing_chain', 'sue_de_coq', 'template', 'death_blossom', 'exocet_death_blossom'],
   },
 ];
@@ -218,9 +219,9 @@ function setPracticeViewActive(active: boolean): void {
   const practiceLobby = document.getElementById('practice-lobby');
   const libraryBtn = document.getElementById('library-btn');
 
-  if (levelTitle) levelTitle.textContent = active ? '修行' : 'SUDOKU ZEN';
+  if (levelTitle) levelTitle.textContent = active ? t('practice.lobbyTitle') : 'SUDOKU ZEN';
   if (levelModeChip) {
-    levelModeChip.textContent = '修行';
+    levelModeChip.textContent = t('mode.practice');
     levelModeChip.classList.toggle('hidden', !active);
   }
   if (aliasConfig) aliasConfig.style.display = active ? 'none' : '';
@@ -238,7 +239,7 @@ export async function openPracticeLobby(): Promise<void> {
     _practiceData = await getPracticeLevels();
   }
   if (!_practiceData || _practiceData.length === 0) {
-    showFeedback('修行資料載入失敗，請重試', 'error');
+    showFeedback(t('practice.dataLoadError'), 'error');
     return;
   }
   setPracticeViewActive(true);
@@ -269,7 +270,7 @@ function renderPracticeLobby(): void {
   // Progress summary
   const completedCount = [...state.values()].filter(s => s.status === 'completed').length;
   const progressEl = document.getElementById('practice-lobby-progress');
-  if (progressEl) progressEl.textContent = `${completedCount}/41`;
+  if (progressEl) progressEl.textContent = t('practice.progress', { completed: String(completedCount) });
 
   for (const phase of PHASES) {
     const section = document.createElement('div');
@@ -341,9 +342,9 @@ function createTechNode(key: string, techState: TechState | undefined, compact: 
       const treeNode = TREE.find(n => n.key === key);
       if (treeNode && treeNode.prerequisites.length > 0) {
         const preNames = treeNode.prerequisites.map(k => TECH_MAP[k] || k).join('、');
-        showFeedback(`需先完成：${preNames}（各通 ${UNLOCK_THRESHOLD} 關）`, 'error');
+        showFeedback(t('practice.prerequisiteRequired', { prereqs: preNames, threshold: String(UNLOCK_THRESHOLD) }), 'error');
       } else {
-        showFeedback('此技巧尚未解鎖', 'error');
+        showFeedback(t('practice.techLocked'), 'error');
       }
     };
   } else {
@@ -472,7 +473,7 @@ export function backToPracticeLobby(): void {
     } else {
       // Single technique completed
       const techName = prevTech ? (TECH_MAP[prevTech] || prevTech) : '';
-      if (techName) showFeedback(`【${techName}】修行圓滿`, 'success');
+      if (techName) showFeedback(t('practice.techComplete', { name: techName }), 'success');
       playZenLevelUp();
     }
   }
@@ -507,7 +508,7 @@ export async function startNextPracticeLevel(): Promise<void> {
 
   if (nextIdx >= techLevels.length) {
     // All levels in this technique done — go back to level grid
-    showFeedback('本技巧全部通關！', 'success');
+    showFeedback(t('practice.allComplete'), 'success');
     const { showLevelScreen } = await import('../levels');
     showLevelScreen(true);
     return;

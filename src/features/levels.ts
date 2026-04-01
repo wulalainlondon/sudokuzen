@@ -10,6 +10,7 @@ import { syncLevelCardSize } from '../game/board';
 import { TECH_MAP, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
 import { closeWildLobby } from './wild/wildLobby';
 import { closePracticeLobby, enterPracticeTechnique } from './practice/practiceLobby';
+import { t } from '../i18n/t';
 
 // Route through window so the React bridge can intercept
 function showTeachModal(stars: number, source = 'tier') {
@@ -142,10 +143,10 @@ export function getTierUnlockMessage(tierName: string, unlockState?: ReturnType<
   const state = unlockState || getRealmUnlockState();
   if (state.unlockedTiers.has(tierName)) return '';
   const idx = state.tiers.indexOf(tierName);
-  if (idx <= 0) return '境界尚未達成，暫時無法挑戰。';
+  if (idx <= 0) return t('stage.unlockGeneric');
   const prev = state.stats[idx - 1];
   const needed = Math.min(3, prev.total);
-  return `需先全通「${prev.name}」(${prev.cleared}/${needed}) 才能挑戰後續境界`;
+  return t('stage.unlockRequired', { prev: prev.name, cleared: String(prev.cleared), needed: String(needed) });
 }
 
 export function canAccessLevel(level: any, unlockState?: ReturnType<typeof getRealmUnlockState>): boolean {
@@ -194,7 +195,7 @@ export function renderStageMap(): void {
       <div class="stage-dot">${isLocked ? '🔒' : isCleared ? '✓' : ''}</div>
       <div class="stage-info">
         <div class="stage-name">${tierName}</div>
-        <div class="stage-progress">${isLocked ? lockHint : cleared === 0 ? '尚未挑戰' : isCleared ? '已解鎖' : '進行中'}</div>
+        <div class="stage-progress">${isLocked ? lockHint : cleared === 0 ? t('stage.notChallenged') : isCleared ? t('stage.unlocked') : t('stage.inProgress')}</div>
       </div>
       <div class="stage-bar-wrap"><div class="stage-bar-fill" style="width:${pct}%"></div></div>
       <div class="stage-count">${cleared}/${total}</div>
@@ -307,8 +308,8 @@ export function renderLevelGrid(): void {
     if (isLocked) {
       item.innerHTML = `
         <div class="level-num">${l.displayName}</div>
-        <div class="level-lock">🔒 境界未達</div>
-        <div class="level-lock-hint">完成前一境界後解鎖</div>
+        <div class="level-lock">${t('stage.locked')}</div>
+        <div class="level-lock-hint">${t('stage.lockHint')}</div>
       `;
     } else {
       item.innerHTML = `
@@ -355,18 +356,18 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false, exter
   const records = readJson<Record<string, any>>(recKey, {});
   const record = records[levelId];
 
-  let bestRecord = '尚無通關紀錄';
+  let bestRecord = t('prelevel.noRecord');
   let hasRecord = false;
   let hasReplay = false;
 
   if (record) {
     hasRecord = true;
     if (gs.isSpeedrunMode) {
-      bestRecord = `最佳紀錄：${formatSeconds(record.time)} ⚡ ${record.submissions}次提交`;
+      bestRecord = t('prelevel.bestRecordSpeed', { time: formatSeconds(record.time), submissions: String(record.submissions) });
     } else {
       const stars = typeof record === 'number' ? 1 : record.stars || 1;
       const time = typeof record === 'number' ? record : record.time;
-      bestRecord = `最佳紀錄：${formatSeconds(time)} 星級：${'★'.repeat(stars)}`;
+      bestRecord = t('prelevel.bestRecord', { time: formatSeconds(time), stars: '★'.repeat(stars) });
     }
     hasReplay = !!(record.replayHistory && record.replayHistory.length > 0);
   }
@@ -449,7 +450,7 @@ export function toggleSpeedrunMode(): void {
   localStorage.setItem(SK.SPEEDRUN, String(gs.isSpeedrunMode));
   updateSpeedrunToggleUI();
   renderLevelGrid();
-  if (gs.isSpeedrunMode) showFeedback('已切換至純粹競速模式 ⚡', 'success');
+  if (gs.isSpeedrunMode) showFeedback(t('feedback.speedrunToggle'), 'success');
 }
 
 export function updateSpeedrunToggleUI(): void {
@@ -471,7 +472,7 @@ export function advanceToNextLevel(): void {
   const nextIdx = currentIdx + 1;
 
   if (nextIdx >= tierLevels.length) {
-    showFeedback('本境界已全部通關！', 'success');
+    showFeedback(t('win.tierAllCleared'), 'success');
     showLevelScreen(true);
     return;
   }
@@ -499,7 +500,7 @@ export async function startPoolRandom(): Promise<void> {
   }
 
   try {
-    showFeedback('世界載入中...', 'success');
+    showFeedback(t('misc.worldLoadingFeedback'), 'success');
     const { startWorldSession, continueWild, getWildProfile } = await import('./wild/wildController');
     const session = getWildProfile().currentSession;
     if (session && session.round > 0 && session.round < 10) {
@@ -509,7 +510,7 @@ export async function startPoolRandom(): Promise<void> {
     await startWorldSession();
   } catch (e) {
     console.error('[World] start failed:', e);
-    showFeedback('進入世界失敗，請稍後再試', 'error');
+    showFeedback(t('wild.worldLoadError'), 'error');
   } finally {
     worldLaunchInFlight = false;
     if (enterBtn) {

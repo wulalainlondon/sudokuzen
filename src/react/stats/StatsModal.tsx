@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactElement } from 'react';
 import { useStatsStore } from './statsStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
+import { t } from '../../i18n/t';
 
 // Import data functions from legacy stats module
 // These are pure computation — no DOM side effects
@@ -56,14 +57,14 @@ function OverviewTab({ stats }: { stats: StatsData }): ReactElement {
   return (
     <div>
       <div className="stats-section">
-        <div className="stats-section-title">遊戲數據</div>
+        <div className="stats-section-title">{t('stats.sectionGameData')}</div>
         <div className="stats-grid" id="stats-overview">
-          <StatCard value={stats.totalCleared} sub={String(stats.totalLevels)} label={`通關數 (${completionPct}%)`} />
-          <StatCard value={stats.threeStarCount} label="三星通關" />
-          <StatCard value={stats.totalCleared > 0 ? fmtSec(stats.avgTime) : '--'} label="平均用時" />
-          <StatCard value={stats.fastestTime > 0 ? fmtSec(stats.fastestTime) : '--'} label={fastLabel ? `最速 ${fastLabel}` : '最速通關'} />
-          <StatCard value={stats.totalStars} sub={String(stats.maxStars)} label="總星數" />
-          <StatCard value={fmtSec(stats.totalTime)} label="最佳用時總計" />
+          <StatCard value={stats.totalCleared} sub={String(stats.totalLevels)} label={t('stats.cleared', { pct: completionPct })} />
+          <StatCard value={stats.threeStarCount} label={t('stats.threeStar')} />
+          <StatCard value={stats.totalCleared > 0 ? fmtSec(stats.avgTime) : '--'} label={t('stats.avgTime')} />
+          <StatCard value={stats.fastestTime > 0 ? fmtSec(stats.fastestTime) : '--'} label={fastLabel ? t('stats.fastestLevel', { name: fastLabel }) : t('stats.fastestTime')} />
+          <StatCard value={stats.totalStars} sub={String(stats.maxStars)} label={t('stats.totalStars')} />
+          <StatCard value={fmtSec(stats.totalTime)} label={t('stats.totalTime')} />
           {stats.practiceCleared > 0 && (
             <div className="stat-item" style={{ gridColumn: '1 / -1', borderTop: '1px solid var(--cell-border)', paddingTop: 8, marginTop: 4 }}>
               <div className="stat-value">
@@ -71,22 +72,22 @@ function OverviewTab({ stats }: { stats: StatsData }): ReactElement {
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-light)' }}>/{stats.practiceTotalLevels}</span>
               </div>
               <div className="stat-label">
-                修行通關 ({Math.round((stats.practiceCleared / stats.practiceTotalLevels) * 100)}%) · {stats.practiceFullTechs}/41 技巧全通
+                {t('stats.practiceProgress', { pct: Math.round((stats.practiceCleared / stats.practiceTotalLevels) * 100), techs: stats.practiceFullTechs })}
               </div>
             </div>
           )}
         </div>
       </div>
       <div className="stats-section" style={{ marginTop: 14 }}>
-        <div className="stats-section-title">各難度進度</div>
+        <div className="stats-section-title">{t('stats.sectionTierProgress')}</div>
         <div id="stats-tier-progress">
-          {stats.tierStats.map((t) => {
-            const pct = t.total > 0 ? Math.round((t.cleared / t.total) * 100) : 0;
+          {stats.tierStats.map((tier) => {
+            const pct = tier.total > 0 ? Math.round((tier.cleared / tier.total) * 100) : 0;
             return (
-              <div className="tier-progress" key={t.name}>
-                <span className="tier-name">{t.name}</span>
+              <div className="tier-progress" key={tier.name}>
+                <span className="tier-name">{tier.name}</span>
                 <div className="tier-bar"><div className="tier-bar-fill" style={{ width: `${pct}%` }} /></div>
-                <span className="tier-count">{t.cleared}/{t.total}</span>
+                <span className="tier-count">{tier.cleared}/{tier.total}</span>
               </div>
             );
           })}
@@ -103,9 +104,9 @@ function AchievementTab({ achievements, records }: { achievements: AchievementDe
 
   return (
     <div className="stats-section">
-      <div className="stats-section-title">成就徽章</div>
+      <div className="stats-section-title">{t('stats.sectionAchievements')}</div>
       <div className="achievement-counter">
-        已解鎖 <span>{unlockedCount}</span> / {achievements.length}
+        {t('stats.achievementsUnlocked', { unlocked: unlockedCount, total: achievements.length })}
       </div>
       <div className="achievement-grid">
         {achievements.map((a) => {
@@ -151,14 +152,14 @@ export function StatsModal(): ReactElement {
     <ZenOverlay visible={visible && !!stats} onClose={close} id="stats-modal">
       <div className="stats-panel">
         <ZenStagger>
-          <h2>個人統計</h2>
+          <h2>{t('stats.title')}</h2>
           <div className="stats-tabs">
-            <button className={`stats-tab-btn${tab === 'overview' ? ' active' : ''}`} onClick={() => setTab('overview')}>總覽</button>
-            <button className={`stats-tab-btn${tab === 'achievement' ? ' active' : ''}`} onClick={() => setTab('achievement')}>成就</button>
+            <button className={`stats-tab-btn${tab === 'overview' ? ' active' : ''}`} onClick={() => setTab('overview')}>{t('stats.tabOverview')}</button>
+            <button className={`stats-tab-btn${tab === 'achievement' ? ' active' : ''}`} onClick={() => setTab('achievement')}>{t('stats.tabAchievements')}</button>
           </div>
           {tab === 'overview' && stats && <OverviewTab stats={stats} />}
           {tab === 'achievement' && <AchievementTab achievements={achievements} records={achievementRecords} />}
-          <button className="resume-btn" onClick={close}>關閉</button>
+          <button className="resume-btn" onClick={close}>{t('nav.close')}</button>
         </ZenStagger>
       </div>
     </ZenOverlay>

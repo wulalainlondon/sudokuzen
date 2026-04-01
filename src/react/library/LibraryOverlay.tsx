@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, type ReactElement } from 'react';
 import { useLibraryStore } from './libraryStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
+import { t } from '../../i18n/t';
 
 export function LibraryOverlay(): ReactElement {
   const visible = useLibraryStore((s) => s.visible);
@@ -41,9 +42,9 @@ export function LibraryOverlay(): ReactElement {
       <div className="library-page">
         <ZenStagger>
           <div className="library-header">
-            <button className="library-back-btn" onClick={handleClose}>{"<- 返回"}</button>
-            <h2 className="library-title">{"境界秘笈"}</h2>
-            <div className="library-subtitle">{"依境界由淺入深研讀"}</div>
+            <button className="library-back-btn" onClick={handleClose}>{t('nav.back')}</button>
+            <h2 className="library-title">{t('library.title')}</h2>
+            <div className="library-subtitle">{t('library.subtitle')}</div>
           </div>
           <div className="library-list" id="library-list" ref={listRef} />
         </ZenStagger>

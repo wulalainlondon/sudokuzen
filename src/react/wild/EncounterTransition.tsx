@@ -5,6 +5,7 @@ import { useEffect, useRef, useCallback, type ReactElement } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEncounterTransitionStore } from './encounterTransitionStore';
 import { isReducedMotion } from '../motion/zenMotion';
+import { t } from '../../i18n/t';
 
 // ── Rarity color map ─────────────────────────────────────────────────
 
@@ -17,14 +18,17 @@ const RARITY_COLORS: Record<string, string> = {
 
 // ── Challenge mode single-character labels ───────────────────────────
 
-const MODE_CHARS: Record<string, string> = {
-  standard: '修',
-  blind: '盲',
-  ironman: '鐵',
-  noNotes: '念',
-  timed: '限',
-  gauntlet: '百',
-};
+function getModeChar(mode: string): string {
+  const modeMap: Record<string, string> = {
+    standard: t('encounter.modeStamp.standard'),
+    blind: t('encounter.modeStamp.blind'),
+    ironman: t('encounter.modeStamp.ironman'),
+    noNotes: t('encounter.modeStamp.noNotes'),
+    timed: '限',
+    gauntlet: '百',
+  };
+  return modeMap[mode] || t('encounter.modeStamp.standard');
+}
 
 // ── Phase timings (ms) ───────────────────────────────────────────────
 
@@ -94,7 +98,7 @@ export function EncounterTransition(): ReactElement {
   }, [active, reduced, dismiss, cleanup]);
 
   const color = RARITY_COLORS[rarity] || RARITY_COLORS.common;
-  const modeChar = MODE_CHARS[challengeMode] || '修';
+  const modeChar = getModeChar(challengeMode);
   const showNonStandardMode = challengeMode !== 'standard';
 
   return (
@@ -173,7 +177,7 @@ export function EncounterTransition(): ReactElement {
                   transition: { delay: PHASE1_END / 1000 + 0.15, duration: 0.4 },
                 }}
               >
-                {'初遇'}
+                {t('encounter.firstEncounterBadge')}
               </motion.div>
             )}
 
@@ -238,7 +242,7 @@ export function EncounterTransition(): ReactElement {
                   },
                 }}
               >
-                {isBoss ? '天劫' : modeChar}
+                {isBoss ? t('encounter.bossStamp') : modeChar}
               </motion.div>
             )}
 
@@ -265,7 +269,7 @@ export function EncounterTransition(): ReactElement {
                   x: [0, -3, 3, -2, 2, 0],
                 }}
               >
-                {'天劫'}
+                {t('encounter.bossStamp')}
               </motion.div>
             )}
           </motion.div>

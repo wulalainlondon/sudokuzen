@@ -6,20 +6,21 @@ import { expForLevel } from './expSystem';
 import { getMentorNote } from './mentorController';
 import { showFeedback } from '../../ui/feedback';
 import { getOnlineCount } from '../../firebase/client';
+import { t } from '../../i18n/t';
 
 // ── Level titles by IQ level range ───────────────────────────────────
 
 const LEVEL_TITLES: [number, string][] = [
-  [1, '見習修士'],
-  [5, '初階修士'],
-  [11, '中階修士'],
-  [21, '高階修士'],
-  [31, '精銳修士'],
-  [41, '煉獄修士'],
-  [51, '超凡修士'],
-  [61, '鏈術大師'],
-  [71, '殘集宗師'],
-  [80, '不朽真仙'],
+  [1, t('wild.levelTitle1')],
+  [5, t('wild.levelTitle5')],
+  [11, t('wild.levelTitle11')],
+  [21, t('wild.levelTitle21')],
+  [31, t('wild.levelTitle31')],
+  [41, t('wild.levelTitle41')],
+  [51, t('wild.levelTitle51')],
+  [61, t('wild.levelTitle61')],
+  [71, t('wild.levelTitle71')],
+  [80, t('wild.levelTitle80')],
 ];
 
 function getLevelTitle(level: number): string {
@@ -37,17 +38,17 @@ let _bestiaryFilter: BestiaryFilter = 'all';
 let _rarityFilter: RarityFilter = 'all';
 
 const RARITY_LABEL: Record<Rarity, string> = {
-  common: '常見',
-  rare: '稀有',
-  legendary: '傳說',
-  mythic: '神話',
+  common: t('wild.rarityCommon'),
+  rare: t('wild.rarityRare'),
+  legendary: t('wild.rarityLegendary'),
+  mythic: t('wild.rarityMythic'),
 };
 
 function getEnterChip(level: number): string {
-  if (level >= 71) return '高風險遭遇池';
-  if (level >= 41) return '菁英遭遇池';
-  if (level >= 21) return '進階遭遇池';
-  return '穩定遭遇池';
+  if (level >= 71) return t('wild.poolHighRisk');
+  if (level >= 41) return t('wild.poolElite');
+  if (level >= 21) return t('wild.poolAdvanced');
+  return t('wild.poolStable');
 }
 
 function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {

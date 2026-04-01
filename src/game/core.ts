@@ -14,6 +14,7 @@ import {
   playEraseSound,
 } from './audio';
 import { showFeedback, markErrorArea } from '../ui/feedback';
+import { t } from '../i18n/t';
 import {
   renderGrid,
   updateCellDisplay,
@@ -132,14 +133,14 @@ function updateGameHeaderByMode(isWild: boolean): void {
   const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
   const isPractice = gs.currentLevel?.mode === 'practice';
 
-  if (gameTitle) gameTitle.textContent = isWild ? '世界' : isPractice ? '修行' : 'SUDOKU';
+  if (gameTitle) gameTitle.textContent = isWild ? t('mode.world') : isPractice ? t('mode.practice') : 'SUDOKU';
   if (gameModeChip) {
-    gameModeChip.textContent = isWild ? '世界' : '修行';
+    gameModeChip.textContent = isWild ? t('mode.world') : t('mode.practice');
     gameModeChip.classList.toggle('hidden', !isWild && !isPractice);
   }
   if (gameContainer) gameContainer.classList.toggle('world-play-active', isWild);
   if (quitBtn) {
-    quitBtn.textContent = isWild ? '離開世界' : isPractice ? '返回修行' : 'Quit';
+    quitBtn.textContent = isWild ? t('nav.quitWild') : isPractice ? t('nav.quitPractice') : t('nav.quitNormal');
     quitBtn.setAttribute('onclick', isWild ? 'exitWild(); showLevelScreen(true)' : 'showLevelScreen(true)');
   }
 }
@@ -360,11 +361,11 @@ export function handleInput(num: number): void {
         if (remaining > 0) {
           // Still have lives — lose a life, no cooldown
           updateLivesUI();
-          showFeedback(`錯誤！${remaining} 次機會剩餘`, 'error');
+          showFeedback(t('feedback.errorRemaining', { remaining: String(remaining) }), 'error');
         } else if (remaining === 0) {
           // Just lost the last life — show warning, start first cooldown
           updateLivesUI();
-          showFeedback('命用完了！之後答錯將會冷卻', 'error');
+          showFeedback(t('feedback.livesExhausted'), 'error');
         } else {
           // Lives already depleted: cooldown based on same-cell streak
           const now = Date.now();
@@ -378,11 +379,11 @@ export function handleInput(num: number): void {
           gs.duoLastErrorTime = now;
           const cooldownSec = Math.min(BASE_CD * gs.duoSameCellStreak, 30);
           startDuoCooldown(cooldownSec);
-          showFeedback(`錯誤！冷卻 ${cooldownSec}s`, 'error');
+          showFeedback(t('feedback.cooldown', { seconds: String(cooldownSec) }), 'error');
         }
       } else {
         updateLivesUI();
-        showFeedback(`錯誤！${gs.maxErrors - gs.errors} 次機會剩餘`, 'error');
+        showFeedback(t('feedback.errorRemaining', { remaining: String(gs.maxErrors - gs.errors) }), 'error');
       }
 
       playErrorFeedback();
@@ -536,7 +537,7 @@ function checkSpeedrunComplete(lastIdx: number): void {
   }
 
   gs.submissionCount++;
-  showFeedback(`盤面有誤！已重置最後一步 (第 ${gs.submissionCount} 次提交)`, 'error');
+  showFeedback(t('feedback.boardError', { count: String(gs.submissionCount) }), 'error');
   playErrorFeedback();
   Array.from(gs.gridEl!.children).forEach((c) => c.classList.add('error-strong'));
   setTimeout(() => {
@@ -591,7 +592,7 @@ async function checkBlindComplete(): Promise<void> {
     }
 
     // Update running count
-    showFeedback(`盲審揭曉中... 正確: ${correct} / 錯誤: ${errors}`, errors > 0 ? 'error' : 'neutral');
+    showFeedback(t('feedback.blindRevealing', { correct: String(correct), errors: String(errors) }), errors > 0 ? 'error' : 'neutral');
 
     await new Promise((r) => setTimeout(r, 30));
   }
@@ -603,7 +604,7 @@ async function checkBlindComplete(): Promise<void> {
   if (errors === 0) {
     checkWin();
   } else {
-    showFeedback(`盲審結果：${correct} 正確 / ${errors} 錯誤`, 'error');
+    showFeedback(t('feedback.blindResult', { correct: String(correct), errors: String(errors) }), 'error');
     showGameOver();
   }
 
@@ -689,7 +690,7 @@ export function showGameOver(): void {
 }
 
 export function resetGame(): void {
-  if (confirm('確定要重新開始本關嗎？當前進度將遺失。')) {
+  if (confirm(t('misc.resetConfirm'))) {
     clearGameStatus(gs.currentLevel!.id);
     initGame(gs.currentLevel!.id, true);
   }
@@ -705,13 +706,13 @@ export function updateLivesUI(): void {
   }
   if (gs.wildBlindMode) {
     gs.livesEl.innerHTML =
-      '<span style="color: var(--accent-strong); font-size: 0.72rem; letter-spacing: 0.08em;">盲審</span>';
+      `<span style="color: var(--accent-strong); font-size: 0.72rem; letter-spacing: 0.08em;">${t('misc.blindLabel')}</span>`;
     return;
   }
   if (gs.isDuoMode && gs.errors >= gs.maxErrors) {
     // Lives depleted — cooldown UI takes over (handled by updateDuoCooldownUI)
     if (!isDuoCooldownActive()) {
-      gs.livesEl.innerHTML = '<span style="color: var(--error-color); font-size: 0.8rem;">⚠ 無剩餘</span>';
+      gs.livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem;">${t('misc.noLivesRemaining')}</span>`;
     }
     return;
   }
@@ -736,7 +737,7 @@ function showWinCelebration(earnedValue: number): void {
       showReplay: true,
     });
   });
-  showFeedback('完成！太棒了！', 'success');
+  showFeedback(t('feedback.complete'), 'success');
   playWinSound();
 }
 
@@ -838,10 +839,10 @@ function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: 
   }, 900);
 
   const parts: string[] = [];
-  if (justRow) parts.push('一列');
-  if (justCol) parts.push('一欄');
-  if (justBox) parts.push('一宮');
-  showFeedback(`完成 ${parts.join(' + ')}！`, 'success');
+  if (justRow) parts.push(t('feedback.unitRow'));
+  if (justCol) parts.push(t('feedback.unitCol'));
+  if (justBox) parts.push(t('feedback.unitBox'));
+  showFeedback(t('feedback.unitComplete', { parts: parts.join(' + ') }), 'success');
   playUnitCompleteSound();
   if (navigator.vibrate) navigator.vibrate([8, 20, 8, 20, 8]);
 }
@@ -922,16 +923,16 @@ export function toggleTheme(): void {
 
 export function toggleNoteMode(): void {
   if (gs.wildNotesDisabled) {
-    showFeedback('無念模式：筆記已禁用', 'error');
+    showFeedback(t('feedback.noNotesMode'), 'error');
     return;
   }
   gs.isNotesMode = !gs.isNotesMode;
   document.getElementById('note-toggle')!.classList.toggle('active', gs.isNotesMode);
   // If continuous fill is active, let user know notes mode changes how it fills
   if (gs.continuousFillDigit !== null && gs.isNotesMode) {
-    showFeedback('連續填入：切換為筆記模式', 'neutral');
+    showFeedback(t('feedback.continuousFillNote'), 'neutral');
   } else if (gs.continuousFillDigit !== null && !gs.isNotesMode) {
-    showFeedback('連續填入：切換為答案模式', 'neutral');
+    showFeedback(t('feedback.continuousFillAnswer'), 'neutral');
   }
 }
 
@@ -959,7 +960,7 @@ function highlightDigitOnBoard(digit: number): void {
 export async function fillAllCandidates(): Promise<void> {
   if (!gs.gridEl || !gs.cellsData.length) return;
   if (gs.wildNotesDisabled) {
-    showFeedback('無念模式：筆記已禁用', 'error');
+    showFeedback(t('feedback.noNotesMode'), 'error');
     return;
   }
 
@@ -1046,7 +1047,7 @@ export async function fillAllCandidates(): Promise<void> {
 
   await wait(TOTAL_REVEAL + 300);
   svg.remove();
-  showFeedback(`已填入 ${totalFilled} 個候選`, 'success');
+  showFeedback(t('feedback.candidatesFilled', { count: String(totalFilled) }), 'success');
   saveGameStatus();
 }
 

@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useRef, type ReactElement } from 'react';
 import { useReplayStore, type ReplayFilter } from './replayStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
+import { t } from '../../i18n/t';
 
 // ── Replay Board Container ─────────────────────────────────────────────
 // The 9x9 board is performance-sensitive DOM manipulation.
@@ -55,21 +56,21 @@ function PlaybackControls({
 
   return (
     <div className="replay-controls">
-      <button className="replay-ctrl-btn" id="rb-reset-btn" onClick={handleReset} title="重置">
+      <button className="replay-ctrl-btn" id="rb-reset-btn" onClick={handleReset} title={t('replay.reset')}>
         ↺
       </button>
-      <button className="replay-ctrl-btn" id="rb-prev-btn" onClick={handlePrev} disabled={prevDisabled} title="上一步">
+      <button className="replay-ctrl-btn" id="rb-prev-btn" onClick={handlePrev} disabled={prevDisabled} title={t('replay.prevStep')}>
         ◄
       </button>
       <button
         className={`replay-ctrl-btn rb-play${isPlaying ? ' active' : ''}`}
         id="rb-play-btn"
         onClick={handleTogglePlay}
-        title="播放/暫停"
+        title={isPlaying ? t('replay.pause') : t('replay.play')}
       >
-        {isPlaying ? '⏸ 暫停' : '▶ 播放'}
+        {isPlaying ? t('replay.pause') : t('replay.play')}
       </button>
-      <button className="replay-ctrl-btn" id="rb-next-btn" onClick={handleNext} disabled={nextDisabled} title="下一步">
+      <button className="replay-ctrl-btn" id="rb-next-btn" onClick={handleNext} disabled={nextDisabled} title={t('replay.nextStep')}>
         ►
       </button>
       <button className="replay-ctrl-btn" id="rb-speed-btn" onClick={handleSpeed}>
@@ -92,19 +93,19 @@ function FilterTabs({ active }: { active: ReplayFilter }): ReactElement {
         className={`replay-filter-btn${active === 'all' ? ' active' : ''}`}
         onClick={() => handleFilter('all')}
       >
-        全部
+        {t('replay.filterAll')}
       </button>
       <button
         className={`replay-filter-btn${active === 'mistake' ? ' active' : ''}`}
         onClick={() => handleFilter('mistake')}
       >
-        錯誤
+        {t('replay.filterMistake')}
       </button>
       <button
         className={`replay-filter-btn${active === 'key' ? ' active' : ''}`}
         onClick={() => handleFilter('key')}
       >
-        關鍵步
+        {t('replay.filterKey')}
       </button>
     </div>
   );
@@ -176,7 +177,7 @@ export function ReplayModal(): ReactElement {
   return (
     <ZenOverlay visible={visible} onClose={handleClose} id="replay-modal" className="show">
       <div className="replay-panel">
-        <h3 className="replay-title">本局步驟回放</h3>
+        <h3 className="replay-title">{t('replay.title')}</h3>
         <div className="replay-summary" id="replay-summary">
           {summaryText}
         </div>
@@ -193,14 +194,14 @@ export function ReplayModal(): ReactElement {
           <div
             className="replay-step-info"
             id="replay-step-info"
-            dangerouslySetInnerHTML={{ __html: stepInfoHtml || '步驟 0 / 0' }}
+            dangerouslySetInnerHTML={{ __html: stepInfoHtml || t('replay.stepInfo', { current: 0, total: 0 }) }}
           />
         </div>
 
         <FilterTabs active={filter} />
         <StepList html={listHtml} />
         <button className="resume-btn" onClick={handleClose}>
-          關閉
+          {t('nav.close')}
         </button>
       </div>
     </ZenOverlay>
