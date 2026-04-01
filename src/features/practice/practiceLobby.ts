@@ -220,7 +220,7 @@ function setPracticeViewActive(active: boolean): void {
 
   if (levelTitle) levelTitle.textContent = active ? '修行' : 'SUDOKU ZEN';
   if (levelModeChip) {
-    levelModeChip.textContent = 'PRACTICE';
+    levelModeChip.textContent = '修行';
     levelModeChip.classList.toggle('hidden', !active);
   }
   if (aliasConfig) aliasConfig.style.display = active ? 'none' : '';

@@ -132,9 +132,9 @@ function updateGameHeaderByMode(isWild: boolean): void {
   const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
   const isPractice = gs.currentLevel?.mode === 'practice';
 
-  if (gameTitle) gameTitle.textContent = isWild ? 'WORLD BATTLE' : isPractice ? '修行' : 'SUDOKU';
+  if (gameTitle) gameTitle.textContent = isWild ? '世界' : isPractice ? '修行' : 'SUDOKU';
   if (gameModeChip) {
-    gameModeChip.textContent = isWild ? 'WORLD' : 'PRACTICE';
+    gameModeChip.textContent = isWild ? '世界' : '修行';
     gameModeChip.classList.toggle('hidden', !isWild && !isPractice);
   }
   if (gameContainer) gameContainer.classList.toggle('world-play-active', isWild);

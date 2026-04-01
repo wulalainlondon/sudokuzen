@@ -497,7 +497,8 @@ function setWorldViewActive(active: boolean): void {
   const lobby = document.getElementById('wild-lobby');
   const libraryBtn = document.getElementById('library-btn');
   if (levelScreen) levelScreen.classList.toggle('world-view-active', active);
-  if (levelTitle) levelTitle.textContent = active ? 'WORLD REALM' : 'SUDOKU ZEN';
+  if (levelTitle) levelTitle.textContent = active ? '世界' : 'SUDOKU ZEN';
+  if (levelModeChip) levelModeChip.textContent = '世界';
   if (levelModeChip) levelModeChip.classList.toggle('hidden', !active);
   if (aliasConfig) aliasConfig.style.display = active ? 'none' : '';
   if (stageView) stageView.style.display = active ? 'none' : 'flex';
