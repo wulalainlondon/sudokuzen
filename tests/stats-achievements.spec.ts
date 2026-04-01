@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest';
-import { SK, writeJson } from '../src/storage/keys';
+import { SK } from '../src/storage/keys';
 import {
   computeStats,
   checkAllAchievements,
