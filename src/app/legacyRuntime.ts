@@ -69,6 +69,7 @@ import { useDuoResultStore } from '../react/duoresult/duoResultStore';
 import { useLibraryStore } from '../react/library/libraryStore';
 import { useReplayStore } from '../react/replay/replayStore';
 import { useMentorStore } from '../react/mentor/mentorStore';
+import { useEncounterTransitionStore } from '../react/wild/encounterTransitionStore';
 import { bridgeCloseWin } from '../react/win/winBridge';
 import { bridgeCloseGameOver } from '../react/gameover/gameOverBridge';
 
@@ -259,6 +260,10 @@ export function bootLegacyRuntime(appVersion: string): void {
     }
     if (useMentorStore.getState().visible) {
       dismissMentor();
+      return;
+    }
+    if (useEncounterTransitionStore.getState().active) {
+      import('../react/wild/encounterTransitionBridge').then(({ bridgeDismissEncounterTransition }) => bridgeDismissEncounterTransition());
       return;
     }
 
