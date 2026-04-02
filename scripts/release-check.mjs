@@ -33,13 +33,14 @@ function checkLocalVersionConsistency() {
   const appVersion = parseVersion(versionTs, /APP_VERSION\s*=\s*['"]([^'"]+)['"]/, 'APP_VERSION');
   const cacheVersion = parseVersion(sw, /CACHE_VERSION\s*=\s*['"]([^'"]+)['"]/, 'CACHE_VERSION');
   const inlineVersion = parseVersion(html, /INLINE_VER\s*=\s*['"]([^'"]+)['"]/, 'INLINE_VER');
-  if (!appVersion || !cacheVersion || !inlineVersion) return;
+  if (!appVersion || !cacheVersion || !inlineVersion) return null;
 
   if (appVersion !== cacheVersion || appVersion !== inlineVersion) {
     fail(`Version mismatch: APP=${appVersion}, CACHE=${cacheVersion}, INLINE=${inlineVersion}`);
   } else {
     pass(`Version consistent: ${appVersion}`);
   }
+  return appVersion;
 }
 
 function checkNormalShardNonEmpty() {
@@ -74,7 +75,7 @@ function checkNormalShardNonEmpty() {
   pass(`Normal shard non-empty and consistent (${normalLevels.length} levels)`);
 }
 
-async function checkLiveVersions(urls) {
+async function checkLiveVersions(urls, expectedVersion) {
   for (const url of urls) {
     try {
       const res = await fetch(url, { redirect: 'follow' });
@@ -85,7 +86,11 @@ async function checkLiveVersions(urls) {
       const html = await res.text();
       const inline = parseVersion(html, /INLINE_VER\s*=\s*['"]([^'"]+)['"]/, `INLINE_VER from ${url}`);
       if (!inline) continue;
-      pass(`Live ${url} INLINE_VER=${inline}`);
+      if (expectedVersion && inline !== expectedVersion) {
+        fail(`Live ${url} version mismatch: expected ${expectedVersion}, got ${inline}`);
+      } else {
+        pass(`Live ${url} INLINE_VER=${inline}`);
+      }
     } catch (e) {
       fail(`Live check error for ${url}: ${e instanceof Error ? e.message : String(e)}`);
     }
@@ -96,14 +101,14 @@ async function main() {
   const args = new Set(process.argv.slice(2));
   const live = args.has('--live');
 
-  checkLocalVersionConsistency();
+  const appVersion = checkLocalVersionConsistency();
   checkNormalShardNonEmpty();
 
   if (live) {
     await checkLiveVersions([
       'https://sudokuzen-f2aa3.web.app/',
       'https://wulalainlondon.github.io/sudokuzen/',
-    ]);
+    ], appVersion);
   }
 
   if (process.exitCode && process.exitCode !== 0) {
