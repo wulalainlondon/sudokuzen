@@ -79,6 +79,7 @@ export const zhTW = {
       statusCompletedChip: '已圓滿',
       primaryLocked: '待解鎖',
       primaryCompleted: '已圓滿',
+      lockedNameFallback: '未公開技巧',
       remaining: '剩 {remaining} 關',
       cleared: '已通關 {cleared}/{total}',
       lockedHint: '完成前置技巧各 {threshold} 關',

@@ -1901,6 +1901,7 @@ header h1 {
     max-width: 400px;
     padding-left: 16px;
     padding-right: 16px;
+    box-sizing: border-box;
 }
 
 .practice-tree-header {
@@ -1911,16 +1912,19 @@ header h1 {
 }
 
 .practice-tree-title {
-    font-size: 1.1rem;
+    font-size: 1.12rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     flex: 1;
+    min-width: 0;
 }
 
 .practice-tree-progress {
-    font-size: 0.82rem;
-    color: var(--text-light);
-    font-weight: 600;
+    font-size: 0.88rem;
+    color: #5f6368;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-right: 6px;
 }
 
 .practice-tree-scroll {
@@ -2012,7 +2016,7 @@ header h1 {
     position: relative;
     z-index: 1;
     transition: opacity 0.2s, transform 0.2s;
-    width: 88px;
+    width: 92px;
 }
 .tree-node--map {
     position: absolute;
@@ -2022,11 +2026,23 @@ header h1 {
 
 .tree-node:active {
     opacity: 0.95;
-    transform: scale(0.985);
+    transform: scale(0.985) translateY(1px);
+}
+
+.tree-node:not(.tree-node--locked):hover .tree-node-icon {
+    transform: translateY(-1px);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+        0 10px 16px rgba(33, 53, 57, 0.22);
+}
+
+.tree-node:focus-visible .tree-node-icon {
+    outline: 2px solid rgba(76, 110, 117, 0.42);
+    outline-offset: 2px;
 }
 
 .tree-node--compact {
-    width: 84px;
+    width: 88px;
 }
 
 .tree-node--locked {
@@ -2040,8 +2056,8 @@ header h1 {
 /* ── Skill icon card (zen paper tile) ─────────────────────────────── */
 
 .tree-node-icon {
-    width: 76px;
-    height: 76px;
+    width: 78px;
+    height: 78px;
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -2060,8 +2076,8 @@ header h1 {
 }
 
 .tree-node--compact .tree-node-icon {
-    width: 72px;
-    height: 72px;
+    width: 74px;
+    height: 74px;
     border-radius: 15px;
 }
 
@@ -2098,7 +2114,7 @@ header h1 {
     top: 6px;
     left: 6px;
     padding: 1px 6px;
-    font-size: 9px;
+    font-size: 8px;
     line-height: 1.2;
     border-radius: 999px;
     letter-spacing: 0.03em;
@@ -2184,9 +2200,9 @@ header h1 {
 .tree-node-primary {
     position: absolute;
     left: 50%;
-    bottom: 19px;
+    bottom: 20px;
     transform: translateX(-50%);
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1;
     letter-spacing: 0.02em;
     font-weight: 700;
@@ -2201,19 +2217,19 @@ header h1 {
 }
 
 .tree-node--locked .tree-node-primary {
-    color: #757a7e;
-    font-size: 12px;
+    color: #6f7478;
+    font-size: 14px;
 }
 
 .tree-node--completed .tree-node-primary {
     color: #5f4523;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 /* ── Label (technique name below icon) ────────────────────────────── */
 
 .tree-node-label {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     color: #5d5b56;
     text-align: center;
@@ -2230,7 +2246,7 @@ header h1 {
 }
 
 .tree-node--compact .tree-node-label {
-    font-size: 9px;
+    font-size: 10px;
 }
 
 .tree-node--locked .tree-node-label {
@@ -2245,12 +2261,12 @@ header h1 {
 .tree-node-secondary {
     position: absolute;
     left: 50%;
-    bottom: 7px;
+    bottom: 8px;
     transform: translateX(-50%);
-    font-size: 8px;
+    font-size: 9px;
     line-height: 1;
     letter-spacing: 0.02em;
-    color: #71716c;
+    color: #646864;
     opacity: 0.96;
     font-weight: 600;
     z-index: 4;
@@ -2266,14 +2282,15 @@ header h1 {
 }
 
 .tree-node-hint {
-    font-size: 8px;
-    line-height: 1.25;
-    color: #8a8d8f;
+    font-size: 9px;
+    line-height: 1.3;
+    color: #6f746f;
     text-align: center;
-    width: 86px;
-    min-height: 20px;
+    width: 92px;
+    min-height: 24px;
     letter-spacing: 0.02em;
-    margin-top: 1px;
+    margin-top: 2px;
+    font-weight: 600;
 }
 
 /* ── Corner badge ─────────────────────────────────────────────────── */

@@ -84,6 +84,7 @@ export const ja: Widen<Locale> = {
       statusCompletedChip: '円満',
       primaryLocked: '未解放',
       primaryCompleted: '円満',
+      lockedNameFallback: '未公開技法',
       remaining: '残り {remaining}',
       cleared: 'クリア {cleared}/{total}',
       lockedHint: '前提技法を各 {threshold} ステージ',

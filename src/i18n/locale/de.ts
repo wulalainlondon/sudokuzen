@@ -87,6 +87,7 @@ export const de: Widen<Locale> = {
       statusCompletedChip: 'Meisterhaft',
       primaryLocked: 'Gesperrt',
       primaryCompleted: 'Meisterhaft',
+      lockedNameFallback: 'Unbekannte Technik',
       remaining: 'Noch {remaining}',
       cleared: '{cleared}/{total} geschafft',
       lockedHint: 'Jede Voraussetzung {threshold}x abschlie\u00DFen',

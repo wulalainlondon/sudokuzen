@@ -89,6 +89,7 @@ export const en: Widen<Locale> = {
       statusCompletedChip: 'Mastered',
       primaryLocked: 'Locked',
       primaryCompleted: 'Mastered',
+      lockedNameFallback: 'Unknown Technique',
       remaining: '{remaining} left',
       cleared: 'Cleared {cleared}/{total}',
       lockedHint: 'Clear each prerequisite {threshold} times',

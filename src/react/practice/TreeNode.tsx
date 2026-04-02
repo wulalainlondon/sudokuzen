@@ -13,6 +13,7 @@ interface TreeNodeProps {
   cleared: number;
   total: number;
   compact?: boolean;
+  showUnlockHint?: boolean;
   className?: string;
   style?: CSSProperties;
   onClick: () => void;
@@ -203,12 +204,13 @@ function ZenIcon({ kind }: { kind: ZenIconKind }): ReactElement {
 }
 
 export function TreeNode({
-  techKey, name, status, cleared, total, compact, className, style, onClick,
+  techKey, name, status, cleared, total, compact, showUnlockHint = true, className, style, onClick,
 }: TreeNodeProps): ReactElement {
   const bestiary = t(`technique.${techKey}`); // keep i18n dependency warm for technique glossary
   void bestiary;
   // Shorten label: remove parenthesized English names like "摩天樓 (Skyscraper)" → "摩天樓"
   const shortName = stripTrailingParentheses(name);
+  const displayName = shortName === '???' ? t('practice.node.lockedNameFallback') : shortName;
   const model = buildTreeNodeDisplayModel(techKey, status, cleared, total);
   const ringRadius = compact ? 24 : 26;
   const ringCircumference = 2 * Math.PI * ringRadius;
@@ -254,8 +256,8 @@ export function TreeNode({
         {/* Corner badge */}
         {status === 'completed' && <span className="tree-node-badge tree-node-badge--done">✓</span>}
       </div>
-      <div className="tree-node-label">{shortName}</div>
-      {model.unlockHintText && <div className="tree-node-hint">{model.unlockHintText}</div>}
+      <div className="tree-node-label">{displayName}</div>
+      {showUnlockHint && model.unlockHintText && <div className="tree-node-hint">{model.unlockHintText}</div>}
     </div>
   );
 }
