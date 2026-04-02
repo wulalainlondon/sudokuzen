@@ -238,7 +238,7 @@ export const en: Widen<Locale> = {
   gameover: {
     headingNormal: 'GAME OVER',
     headingWild: 'It escaped.',
-    subtextNormal: 'You made 3 mistakes',
+    subtextNormal: 'You made {maxErrors} mistakes',
     subtextWild: '"{tech}" vanished into the mist of candidates.',
     ironmanQuoteAttr: '\u2500\u2500 Yi-Chen "Fragments" \u2500\u2500',
     ironmanQuote: '"Iron Man isn\'t about never making mistakes.\nIt\'s about never making the same mistake twice."',

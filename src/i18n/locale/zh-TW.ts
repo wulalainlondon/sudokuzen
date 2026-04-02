@@ -236,7 +236,7 @@ export const zhTW = {
   gameover: {
     headingNormal: 'GAME OVER',
     headingWild: '逃脫了。',
-    subtextNormal: '你犯了 3 次錯誤',
+    subtextNormal: '你犯了 {maxErrors} 次錯誤',
     subtextWild: '「{tech}」消失在候選數的迷霧裡。',
     ironmanQuoteAttr: '── 弈塵《殘篇》──',
     ironmanQuote: '「鐵壁不是永遠不犯錯。\n是犯錯的時候，不會再犯第二次。」',

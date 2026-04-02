@@ -6,6 +6,7 @@ import { ZenStagger } from '../motion/ZenStagger';
 import { ZEN, isReducedMotion } from '../motion/zenMotion';
 import { t } from '../../i18n/t';
 import type { SudokuWindow } from '../../facade/windowTypes';
+import { gs } from '../../game/state';
 
 function backText(mode: string, wildSession: { round: number; hasMore: boolean } | null): string {
   if (mode === 'wild' && wildSession?.hasMore) return t('nav.continueSession', { round: wildSession.round });
@@ -52,7 +53,7 @@ export function GameOverOverlay(): ReactElement {
   const heading = isWild ? t('gameover.headingWild') : t('gameover.headingNormal');
   const subtext = isWild && techName
     ? t('gameover.subtextWild', { tech: techName })
-    : t('gameover.subtextNormal');
+    : t('gameover.subtextNormal', { maxErrors: String(gs.maxErrors || 3) });
   const bg = isWild ? 'radial-gradient(circle at top, rgba(0,0,0,0.22), var(--bg-color) 60%)' : undefined;
 
   return (

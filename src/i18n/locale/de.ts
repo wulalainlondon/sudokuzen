@@ -236,7 +236,7 @@ export const de: Widen<Locale> = {
   gameover: {
     headingNormal: 'GAME OVER',
     headingWild: 'Entkommen.',
-    subtextNormal: 'Du hast 3 Fehler gemacht',
+    subtextNormal: 'Du hast {maxErrors} Fehler gemacht',
     subtextWild: '\u201E{tech}\u201C verschwand im Nebel der Kandidaten.',
     ironmanQuoteAttr: '\u2500\u2500 Yi-Chen \u201EFragmente\u201C \u2500\u2500',
     ironmanQuote: '\u201EEisenwand bedeutet nicht, niemals Fehler zu machen.\nEs bedeutet, denselben Fehler nie zweimal zu machen.\u201C',

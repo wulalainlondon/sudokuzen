@@ -6,7 +6,7 @@
 
 import { gs, initDom } from '../game/state';
 import { SK } from '../storage/keys';
-import { getAllLevels, warmTeachManifest, warmManifest } from '../data/dataRegistry';
+import { getAllLevels, warmTeachManifest, warmManifest, preloadMode } from '../data/dataRegistry';
 import { bindLegacyFacade } from '../facade/windowFacade';
 
 import { initFirebase, initPresence, loadAliasToInput, saveAlias } from '../firebase/client';
@@ -43,6 +43,7 @@ import {
   toggleSpeedrunMode,
   startPoolRandom,
   hidePreLevelModal,
+  renderStageMap,
 } from '../features/levels';
 import {
   openLibraryOverlay,
@@ -312,6 +313,18 @@ export function bootLegacyRuntime(appVersion: string): void {
 
   // 15. Show level screen
   showLevelScreen();
+
+  // 16. Ensure normal-mode shard data is loaded, then refresh stage map.
+  // Without this, first paint can be empty when legacy levels.js is absent.
+  preloadMode('normal')
+    .then(() => {
+      const levelScreenVisible = document.getElementById('level-screen')?.style.display === 'flex';
+      const stageVisible = document.getElementById('stage-view')?.style.display !== 'none';
+      if (levelScreenVisible && stageVisible) renderStageMap();
+    })
+    .catch(() => {
+      /* no-op: keep current UI if shard prefetch fails */
+    });
 
   // 15. Bind window facade for onclick="" handlers in HTML
   bindLegacyFacade({

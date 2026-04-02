@@ -233,7 +233,7 @@ export const ja: Widen<Locale> = {
   gameover: {
     headingNormal: 'GAME OVER',
     headingWild: '逃げられた。',
-    subtextNormal: '3回ミスしました',
+    subtextNormal: '{maxErrors}回ミスしました',
     subtextWild: '「{tech}」が候補数の霧の中へ消えた。',
     ironmanQuoteAttr: '── 弈塵《残篇》──',
     ironmanQuote: '「鉄壁とは、一度もミスしないことではない。\nミスした時に、二度と同じミスをしないことだ。」',

@@ -168,12 +168,14 @@ let _legacyMerged: LevelData[] | null = null;
  * ⚠️ Deprecated: migrate to getNormalLevels() / getAllLevelsAsync().
  */
 export function getAllLevels(): LevelData[] {
-  if (_legacyMerged) return _legacyMerged;
-  // Try cached shards first
+  // Always prefer shard cache when available.
+  // This avoids locking into an empty legacy fallback snapshot.
   if (_shardCache.has('normal')) {
-    _legacyMerged = _shardCache.get('normal')!;
-    return _legacyMerged;
+    const normal = _shardCache.get('normal')!;
+    _legacyMerged = normal;
+    return normal;
   }
+  if (_legacyMerged) return _legacyMerged;
   // Fall back to script-tag globals
   const main = typeof levels !== 'undefined' ? levels : [];
   const mid = typeof midPool !== 'undefined'
