@@ -325,12 +325,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
     <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="firebase-config.local.js"></script>
     <script>
       // iOS PWA hard-update: bypass stale SW by checking inline version marker.
       // When index.html arrives (network-first), this runs BEFORE the app bundle.
       (function() {
-        var INLINE_VER = '2026.04.02-V5';
+        var INLINE_VER = '2026.04.02-V6';
         var KEY = 'sudoku_inline_ver';
         try {
           var stored = localStorage.getItem(KEY);
