@@ -433,6 +433,8 @@ export const zhTW = {
     modeBadgeBlind: '盲',
     modeBadgeIronman: '鐵',
     modeBadgeNoNotes: '念',
+    emptyByFilter: '此篩選下暫無圖鑑項目',
+    scrollForMore: '向下捲動以載入更多',
     mentorAttr: '—— 弈塵《殘篇》',
   },
 

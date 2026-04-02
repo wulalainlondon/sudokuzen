@@ -432,6 +432,8 @@ export const de: Widen<Locale> = {
     modeBadgeBlind: 'B',
     modeBadgeIronman: 'E',
     modeBadgeNoNotes: 'N',
+    emptyByFilter: 'Keine Einträge für diesen Filter',
+    scrollForMore: 'Nach unten scrollen, um mehr zu laden',
     mentorAttr: '\u2014\u2014 Yi-Chen \u201EFragmente\u201C',
   },
 

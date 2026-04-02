@@ -32,11 +32,15 @@ function getLevelTitle(level: number): string {
   return title;
 }
 
-type BestiaryFilter = 'all' | 'discovered' | 'conquered';
-type RarityFilter = 'all' | Rarity;
+export type BestiaryFilter = 'all' | 'discovered' | 'conquered';
+export type RarityFilter = 'all' | Rarity;
 
 let _bestiaryFilter: BestiaryFilter = 'all';
 let _rarityFilter: RarityFilter = 'all';
+
+export function getWildBestiaryFilters(): { bestiaryFilter: BestiaryFilter; rarityFilter: RarityFilter } {
+  return { bestiaryFilter: _bestiaryFilter, rarityFilter: _rarityFilter };
+}
 
 const RARITY_LABEL: Record<Rarity, string> = {
   common: t('wild.rarityCommon'),
@@ -141,7 +145,7 @@ const TECH_TO_STAR: Record<string, number> = {
   naked_pair: 4, hidden_pair: 5, naked_triple: 6, hidden_triple: 7,
 };
 
-async function studySkill(techKey: string): Promise<void> {
+export async function studyWildSkill(techKey: string): Promise<void> {
   const profile = loadWildProfile();
   if (!profile.studiedSkills) profile.studiedSkills = [];
   if (profile.studiedSkills.includes(techKey)) return;
@@ -343,7 +347,6 @@ export function renderWildLobby(): void {
   // Bestiary grid
   const grid = document.getElementById('wild-bestiary-grid');
   if (!grid) return;
-  grid.innerHTML = '';
 
   const filterButtons = document.querySelectorAll('#wild-bestiary-controls .wild-filter-btn');
   filterButtons.forEach((btn) => {
@@ -355,6 +358,13 @@ export function renderWildLobby(): void {
     const rarity = (btn as HTMLElement).getAttribute('data-rarity');
     btn.classList.toggle('active', rarity === _rarityFilter);
   });
+
+  if (document.body?.dataset.reactWildBestiary === '1') {
+    window.dispatchEvent(new Event('wild-bestiary-refresh'));
+    return;
+  }
+
+  grid.innerHTML = '';
 
   // ── Phase-based bestiary display ──
   const PHASES: { name: string; minGate: number; keys: string[] }[] = [
@@ -482,7 +492,7 @@ export function renderWildLobby(): void {
         studyBtn.textContent = t('wild.study');
         studyBtn.onclick = (e) => {
           e.stopPropagation();
-          studySkill(tech.key);
+          studyWildSkill(tech.key);
         };
         card.appendChild(studyBtn);
       } else {

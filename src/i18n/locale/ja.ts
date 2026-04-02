@@ -429,6 +429,8 @@ export const ja: Widen<Locale> = {
     modeBadgeBlind: '盲',
     modeBadgeIronman: '鉄',
     modeBadgeNoNotes: '念',
+    emptyByFilter: 'このフィルターでは図鑑項目がありません',
+    scrollForMore: '下へスクロールしてさらに表示',
     mentorAttr: '—— 弈塵《残篇》',
   },
 

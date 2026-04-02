@@ -65,6 +65,8 @@ export const enGame = {
     modeBadgeBlind: 'B',
     modeBadgeIronman: 'I',
     modeBadgeNoNotes: 'N',
+    emptyByFilter: 'No entries for this filter',
+    scrollForMore: 'Scroll down to load more',
     mentorAttr: '\u2014\u2014 Yi Chen "Remnant Pages"',
   },
 

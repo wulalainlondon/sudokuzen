@@ -14,6 +14,7 @@ import { EncounterTransition } from './wild/EncounterTransition';
 import { PracticeTree } from './practice/PracticeTree';
 import { NormalStageMap } from './normal/NormalStageMap';
 import { NormalLevelList } from './normal/NormalLevelList';
+import { WildBestiaryGrid } from './wild/WildBestiaryGrid';
 
 export function AppShell(): ReactElement {
   return (
@@ -32,6 +33,7 @@ export function AppShell(): ReactElement {
       <PracticeTree />
       <NormalStageMap />
       <NormalLevelList />
+      <WildBestiaryGrid />
     </>
   );
 }
