@@ -12,6 +12,8 @@
     "build": "npm run sync:version && npm run validate:teach && npm run build:teach && npm run build:data && vite build",
     "build:firebase": "DEPLOY_TARGET=firebase npm run build && node scripts/prepare-pages-dist.mjs && node scripts/smoke-test.mjs",
     "smoke": "node scripts/smoke-test.mjs",
+    "release:check": "node scripts/release-check.mjs",
+    "release:check:live": "node scripts/release-check.mjs --live",
     "deploy:preview": "npm run build:firebase && npx firebase hosting:channel:deploy web-preview --project sudokuzen-f2aa3",
     "deploy:live": "npm run build:firebase && npx firebase deploy --only hosting --project sudokuzen-f2aa3",
     "typecheck": "tsc --noEmit",
