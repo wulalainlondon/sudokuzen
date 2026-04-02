@@ -12,6 +12,8 @@ import { LibraryOverlay } from './library/LibraryOverlay';
 import { MentorOverlay } from './mentor/MentorOverlay';
 import { EncounterTransition } from './wild/EncounterTransition';
 import { PracticeTree } from './practice/PracticeTree';
+import { NormalStageMap } from './normal/NormalStageMap';
+import { NormalLevelList } from './normal/NormalLevelList';
 
 export function AppShell(): ReactElement {
   return (
@@ -28,6 +30,8 @@ export function AppShell(): ReactElement {
       <MentorOverlay />
       <EncounterTransition />
       <PracticeTree />
+      <NormalStageMap />
+      <NormalLevelList />
     </>
   );
 }

@@ -2575,6 +2575,46 @@ header h1 {
     min-height: 0;
 }
 
+.level-item-skeleton {
+    cursor: default;
+    border-style: dashed;
+    border-color: color-mix(in srgb, var(--cell-border) 70%, transparent);
+    background:
+      linear-gradient(90deg,
+        color-mix(in srgb, var(--grid-bg) 88%, transparent) 20%,
+        color-mix(in srgb, var(--btn-bg) 50%, transparent) 50%,
+        color-mix(in srgb, var(--grid-bg) 88%, transparent) 80%);
+    background-size: 220% 100%;
+    animation: levelSkeletonPulse 1.1s ease-in-out infinite;
+}
+
+.level-skeleton-line {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--cell-border) 60%, transparent);
+    opacity: 0.55;
+}
+
+.level-skeleton-title {
+    width: 62%;
+    height: 9px;
+    margin-top: 2px;
+}
+
+.level-skeleton-sub {
+    width: 48%;
+    height: 7px;
+    margin-top: 6px;
+}
+
+@keyframes levelSkeletonPulse {
+    0% {
+        background-position: 100% 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+}
+
 .level-item:active {
     transform: scale(0.92);
 }

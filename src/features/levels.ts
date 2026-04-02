@@ -195,6 +195,13 @@ export function getFilteredLevels(): LevelData[] {
 export function renderStageMap(): void {
   const map = document.getElementById('stage-map');
   if (!map) return;
+
+  // React takeover path: keep legacy callers, but let React own rendering.
+  if (document.body?.dataset.reactNormalStageMap === '1') {
+    window.dispatchEvent(new Event('normal-stage-map-refresh'));
+    return;
+  }
+
   const levels = getAllLevels();
   const recordsKey = gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
   const records = readJson<Record<string, any>>(recordsKey, {});
@@ -282,6 +289,11 @@ export function backToStageMap(): void {
 // ── Level grid ──────────────────────────────────────────────────────
 
 export function renderLevelGrid(): void {
+  if (document.body?.dataset.reactNormalLevelList === '1') {
+    window.dispatchEvent(new Event('normal-level-list-refresh'));
+    return;
+  }
+
   const recordsKey = gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
   const records = readJson<Record<string, any>>(recordsKey, {});
   const list = document.getElementById('level-list');
