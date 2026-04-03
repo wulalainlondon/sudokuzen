@@ -9,6 +9,8 @@ export function bridgeShowEncounterTransition(payload: {
   challengeMode: string;
   isBoss: boolean;
   isFirstEncounter: boolean;
+  rarityTone?: string;
+  isResume?: boolean;
 }): void {
   useEncounterTransitionStore.getState().show(payload);
 }

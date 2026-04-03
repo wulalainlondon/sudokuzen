@@ -3792,6 +3792,22 @@ header h1 {
     transition: border-color 0.2s, transform 0.2s;
 }
 
+.wild-beast-card-enter {
+    opacity: 0;
+    animation: wild-beast-enter 0.34s var(--ease-zen) forwards;
+}
+
+@keyframes wild-beast-enter {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 .wild-beast-card:hover {
     transform: translateY(-1px);
 }
@@ -3968,6 +3984,14 @@ header h1 {
     padding: 32px;
     cursor: pointer;
     animation: mentor-fade-in 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wild-beast-card-enter,
+    .wild-beast-card.undiscovered,
+    .wild-beast-card.rarity-mythic:not(.undiscovered) {
+        animation: none !important;
+    }
 }
 
 .beast-note-title {

@@ -319,6 +319,8 @@ export async function startWildEncounter(): Promise<void> {
     challengeMode: mode,
     isBoss,
     isFirstEncounter,
+    rarityTone: _encounter.rarity,
+    isResume: false,
   });
   // Phase 1 audio: temple bell
   playZenEnter();

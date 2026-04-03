@@ -32,10 +32,10 @@ function getModeChar(mode: string): string {
 
 // ── Phase timings (ms) ───────────────────────────────────────────────
 
-const PHASE1_END = 400;
-const PHASE2_END = 1200;
+const PHASE1_END = 340;
+const PHASE2_END = 980;
 // Phase 3 ends at 1600ms (stamp animation), Phase 4 auto-dismiss at:
-const PHASE4_END = 2200;
+const PHASE4_END = 1720;
 
 export function EncounterTransition(): ReactElement {
   const {
@@ -43,9 +43,11 @@ export function EncounterTransition(): ReactElement {
     techName,
     techSubtitle,
     rarity,
+    rarityTone,
     challengeMode,
     isBoss,
     isFirstEncounter,
+    isResume,
     dismiss,
   } = useEncounterTransitionStore();
 
@@ -74,7 +76,7 @@ export function EncounterTransition(): ReactElement {
       const t = setTimeout(() => {
         if (cycleRef.current !== currentCycle) return;
         dismiss();
-      }, 300);
+      }, 220);
       timerRef.current.push(t);
       return cleanup;
     }
@@ -107,7 +109,7 @@ export function EncounterTransition(): ReactElement {
     return cleanup;
   }, [active, reduced, dismiss, cleanup]);
 
-  const color = RARITY_COLORS[rarity] || RARITY_COLORS.common;
+  const color = RARITY_COLORS[rarityTone || rarity] || RARITY_COLORS.common;
   const modeChar = getModeChar(challengeMode);
   const showNonStandardMode = challengeMode !== 'standard';
 
@@ -213,6 +215,24 @@ export function EncounterTransition(): ReactElement {
             >
               {techName}
             </motion.div>
+
+            {isResume && (
+              <motion.div
+                style={{
+                  fontSize: '12px',
+                  color: 'rgba(255, 255, 255, 0.72)',
+                  letterSpacing: '2px',
+                }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  transition: { delay: PHASE1_END / 1000 + 0.1, duration: 0.24 },
+                }}
+              >
+                {t('wild.resumeEncounter')}
+              </motion.div>
+            )}
 
             {/* Subtitle */}
             <motion.div

@@ -11,6 +11,8 @@ export interface EncounterTransitionState {
   challengeMode: string; // 'standard' | 'ironman' | 'blind' | 'timed' | 'noNotes' | 'gauntlet'
   isBoss: boolean;
   isFirstEncounter: boolean;
+  rarityTone: string;
+  isResume: boolean;
 
   show: (payload: {
     techName: string;
@@ -19,6 +21,8 @@ export interface EncounterTransitionState {
     challengeMode: string;
     isBoss: boolean;
     isFirstEncounter: boolean;
+    rarityTone?: string;
+    isResume?: boolean;
   }) => void;
   dismiss: () => void;
 }
@@ -31,6 +35,8 @@ export const useEncounterTransitionStore = create<EncounterTransitionState>((set
   challengeMode: 'standard',
   isBoss: false,
   isFirstEncounter: false,
+  rarityTone: '',
+  isResume: false,
 
   show: (payload) =>
     set({
@@ -41,6 +47,8 @@ export const useEncounterTransitionStore = create<EncounterTransitionState>((set
       challengeMode: payload.challengeMode,
       isBoss: payload.isBoss,
       isFirstEncounter: payload.isFirstEncounter,
+      rarityTone: payload.rarityTone ?? '',
+      isResume: payload.isResume ?? false,
     }),
 
   dismiss: () => set({ active: false }),

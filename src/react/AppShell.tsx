@@ -15,6 +15,8 @@ import { PracticeTree } from './practice/PracticeTree';
 import { NormalStageMap } from './normal/NormalStageMap';
 import { NormalLevelList } from './normal/NormalLevelList';
 import { WildBestiaryGrid } from './wild/WildBestiaryGrid';
+import { WildAutoCastRow, WildBestiaryControls, WildEnterButton, WildProfileCard, WildSessionCard } from './wild/WildLobbyPanels';
+import { WildMentorNoteModal } from './wild/WildMentorNoteModal';
 
 export function AppShell(): ReactElement {
   return (
@@ -33,7 +35,13 @@ export function AppShell(): ReactElement {
       <PracticeTree />
       <NormalStageMap />
       <NormalLevelList />
+      <WildProfileCard />
+      <WildSessionCard />
+      <WildAutoCastRow />
+      <WildEnterButton />
+      <WildBestiaryControls />
       <WildBestiaryGrid />
+      <WildMentorNoteModal />
     </>
   );
 }

@@ -4,11 +4,12 @@ import { getMentorNote } from '../../features/wild/mentorController';
 import { TECHNIQUE_TABLE, type Rarity } from '../../features/wild/techniqueMeta';
 import {
   getWildBestiaryFilters,
-  isWorldLobbyOpen,
   studyWildSkill,
 } from '../../features/wild/wildLobby';
 import { loadWildProfile } from '../../features/wild/wildState';
 import { t } from '../../i18n/t';
+import { bridgeOpenWildMentorNote } from './wildLobbyBridge';
+import { useWildLobbyStore } from './wildLobbyStore';
 
 const RARITY_LABEL: Record<Rarity, string> = {
   common: t('wild.rarityCommon'),
@@ -35,23 +36,11 @@ const PHASES: Array<{ name: string; minGate: number; keys: string[] }> = [
   { name: t('wildLobby.phaseUltimate'), minGate: 80, keys: ['sue_de_coq', 'template', 'death_blossom', 'exocet_death_blossom'] },
 ];
 
-function openBeastNotePopup(title: string, body: string): void {
-  const existing = document.getElementById('beast-note-popup');
-  if (existing) existing.remove();
-  const popup = document.createElement('div');
-  popup.id = 'beast-note-popup';
-  popup.className = 'beast-note-popup';
-  popup.innerHTML = `<div class="beast-note-title">${title}</div>
-    <div class="beast-note-body">${body}</div>
-    <div class="beast-note-attr">${t('wildLobby.mentorAttr')}</div>`;
-  popup.addEventListener('click', () => popup.remove());
-  document.body.appendChild(popup);
-}
-
 export function WildBestiaryGrid(): ReactElement | null {
   const [, setTick] = useState(0);
   const [visibleCards, setVisibleCards] = useState(72);
   const host = document.getElementById('wild-bestiary-grid');
+  const visible = useWildLobbyStore((s) => s.visible);
 
   useEffect(() => {
     const gridHost = document.getElementById('wild-bestiary-grid');
@@ -147,6 +136,7 @@ export function WildBestiaryGrid(): ReactElement | null {
       }
       renderedCards += 1;
       renderedAnything = true;
+      const cardOrder = renderedCards;
       const entry = profile.bestiary[tech.key];
       const isUndiscovered = !entry;
       const isConquered = !!entry && entry.kills > 0;
@@ -156,11 +146,12 @@ export function WildBestiaryGrid(): ReactElement | null {
       rows.push(
         <div
           key={`card-${tech.key}`}
-          className={`wild-beast-card rarity-${tech.rarity}${isUndiscovered ? ' undiscovered' : ''}`}
+          className={`wild-beast-card wild-beast-card-enter rarity-${tech.rarity}${isUndiscovered ? ' undiscovered' : ''}`}
+          style={{ animationDelay: `${Math.min(cardOrder * 14, 280)}ms` }}
           title={note && entry ? note : undefined}
           onClick={() => {
             if (!note || !entry) return;
-            openBeastNotePopup(isConquered ? `${tech.name} · ${tech.subtitle}` : '？？？', note);
+            bridgeOpenWildMentorNote(isConquered ? `${tech.name} · ${tech.subtitle}` : '？？？', note);
           }}
         >
           <div className="wild-beast-name">{entry ? tech.name : t('wild.unknown')}</div>
@@ -225,6 +216,6 @@ export function WildBestiaryGrid(): ReactElement | null {
   );
   const view = rows;
 
-  if (!host || !isWorldLobbyOpen()) return null;
+  if (!host || !visible) return null;
   return createPortal(<>{view}</>, host);
 }

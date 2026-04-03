@@ -8,6 +8,8 @@ import { showFeedback } from '../../ui/feedback';
 import { getOnlineCount } from '../../firebase/client';
 import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
+import { bridgeSetWildLobbyViewModel, bridgeSetWildLobbyVisible } from '../../react/wild/wildLobbyBridge';
+import type { EnterButtonState, RarityFilter as StoreRarityFilter, BestiaryFilter as StoreBestiaryFilter } from '../../react/wild/wildLobbyStore';
 
 // ── Level titles by IQ level range ───────────────────────────────────
 
@@ -40,6 +42,16 @@ let _rarityFilter: RarityFilter = 'all';
 
 export function getWildBestiaryFilters(): { bestiaryFilter: BestiaryFilter; rarityFilter: RarityFilter } {
   return { bestiaryFilter: _bestiaryFilter, rarityFilter: _rarityFilter };
+}
+
+export function setWildBestiaryFilter(filter: BestiaryFilter): void {
+  _bestiaryFilter = filter;
+  renderWildLobby();
+}
+
+export function setWildRarityFilter(rarity: RarityFilter): void {
+  _rarityFilter = rarity;
+  renderWildLobby();
 }
 
 const RARITY_LABEL: Record<Rarity, string> = {
@@ -118,8 +130,7 @@ function ensureWildFilterBindings(): void {
       if (!btn) return;
       const filter = btn.dataset.filter as BestiaryFilter | undefined;
       if (!filter) return;
-      _bestiaryFilter = filter;
-      renderWildLobby();
+      setWildBestiaryFilter(filter);
     });
   }
 
@@ -131,8 +142,7 @@ function ensureWildFilterBindings(): void {
       if (!btn) return;
       const rarity = btn.dataset.rarity as RarityFilter | undefined;
       if (!rarity) return;
-      _rarityFilter = rarity;
-      renderWildLobby();
+      setWildRarityFilter(rarity);
     });
   }
 }
@@ -207,10 +217,19 @@ function waitForTeachClose(): Promise<void> {
   });
 }
 
+export function computeEnterButtonState(profile: ReturnType<typeof loadWildProfile>, hasSavedEncounter: boolean): EnterButtonState {
+  if (hasSavedEncounter) return 'resume_saved';
+  const session = profile.currentSession;
+  if (session && session.round > 0 && session.round < 10) return 'session_continue';
+  if (profile.iqLevel >= 21) return 'session_new';
+  return 'idle';
+}
+
 // ── Render lobby ─────────────────────────────────────────────────────
 
 export function renderWildLobby(): void {
-  ensureWildFilterBindings();
+  const reactTakeover = document.body?.dataset.reactWildLobby === '1';
+  if (!reactTakeover) ensureWildFilterBindings();
 
   const profile = loadWildProfile();
   // expForLevel(n) = cumulative EXP to reach level n.
@@ -243,6 +262,53 @@ export function renderWildLobby(): void {
   const conquered = Object.values(profile.bestiary).filter((entry) => entry.kills > 0).length;
   const autoKeys = getAutoCastKeys(profile.iqLevel);
   const sessionSummary = getSessionSummary(profile);
+  const equippedTitle = getEquippedTitleDisplay();
+  const wildSave = loadWildSave();
+  const enterState = computeEnterButtonState(profile, !!wildSave);
+  const savedEncounterSub = (() => {
+    if (!wildSave) return '';
+    const savedMeta = getTechniqueMeta(wildSave.encounter.technique);
+    const savedName = savedMeta ? savedMeta.name : '???';
+    const mins = Math.floor(wildSave.seconds / 60);
+    const secs = wildSave.seconds % 60;
+    const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+    return t('wild.savedEncounterInfo', { tech: savedName, time: timeStr });
+  })();
+  const autoCastNames = TECHNIQUE_TABLE.filter((tt) => autoKeys.has(tt.key)).map((tt) => tt.name);
+  const autoCastHint = profile.autoCastEnabled
+    ? autoKeys.size > 0
+      ? t('wild.autoCastMastered', { count: String(autoCastNames.length), conquered: String(conquered), total: String(TECHNIQUE_TABLE.length) })
+      : t('wild.autoCastNone')
+    : t('wild.autoCastOff');
+  const autoCastTitle = profile.autoCastEnabled && autoCastNames.length > 0 ? autoCastNames.join('、') : '';
+
+  bridgeSetWildLobbyViewModel({
+    iqLevel: profile.iqLevel,
+    levelTitle: getLevelTitle(profile.iqLevel),
+    equippedTitle,
+    expFillPct: progress * 100,
+    expText: `${expInLevel} / ${expNeeded} EXP`,
+    completed: profile.puzzlesCompleted,
+    discovered,
+    encounters: profile.totalEncounters,
+    sessionRoundText: sessionSummary.roundText,
+    sessionFillPct: sessionSummary.fillPct,
+    sessionMetaText: sessionSummary.metaText,
+    sessionTechText: sessionSummary.techText,
+    enterChip: getEnterChip(profile.iqLevel),
+    enterText: wildSave ? t('wild.resumeEncounter') : sessionSummary.enterText,
+    enterSub: wildSave ? savedEncounterSub : sessionSummary.enterSub,
+    enterState,
+    hasSavedEncounter: !!wildSave,
+    autoCastVisible: profile.iqLevel >= 21,
+    autoCastEnabled: profile.autoCastEnabled,
+    autoCastHint,
+    autoCastTitle,
+    bestiaryDiscovered: discovered,
+    bestiaryTotal: TECHNIQUE_TABLE.length,
+    bestiaryFilter: _bestiaryFilter as StoreBestiaryFilter,
+    rarityFilter: _rarityFilter as StoreRarityFilter,
+  });
 
   // Online presence indicator
   const onlineEl = document.getElementById('wild-online-count');
@@ -257,15 +323,19 @@ export function renderWildLobby(): void {
     });
   }
 
+  if (reactTakeover) {
+    window.dispatchEvent(new Event('wild-bestiary-refresh'));
+    return;
+  }
+
   if (levelEl) levelEl.textContent = `Lv.${profile.iqLevel}`;
   if (titleEl) titleEl.textContent = getLevelTitle(profile.iqLevel);
 
   // Player title (稱號)
   const playerTitleEl = document.getElementById('wild-title');
   if (playerTitleEl) {
-    const display = getEquippedTitleDisplay();
-    playerTitleEl.textContent = display;
-    playerTitleEl.style.display = display ? '' : 'none';
+    playerTitleEl.textContent = equippedTitle;
+    playerTitleEl.style.display = equippedTitle ? '' : 'none';
   }
   if (expFill) expFill.style.width = `${(progress * 100).toFixed(1)}%`;
   if (expText) expText.textContent = `${expInLevel} / ${expNeeded} EXP`;
@@ -279,7 +349,6 @@ export function renderWildLobby(): void {
   if (enterChipEl) enterChipEl.textContent = getEnterChip(profile.iqLevel);
 
   // Check for saved encounter (pause/resume)
-  const wildSave = loadWildSave();
   if (wildSave && enterTextEl) {
     const savedMeta = getTechniqueMeta(wildSave.encounter.technique);
     const savedName = savedMeta ? savedMeta.name : '???';
@@ -569,10 +638,12 @@ function setWorldViewActive(active: boolean): void {
 export function openWildLobby(): void {
   renderWildLobby();
   setWorldViewActive(true);
+  bridgeSetWildLobbyVisible(true);
 }
 
 export function closeWildLobby(): void {
   setWorldViewActive(false);
+  bridgeSetWildLobbyVisible(false);
 }
 
 export function isWorldLobbyOpen(): boolean {

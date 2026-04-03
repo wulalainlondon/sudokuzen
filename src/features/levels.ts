@@ -543,6 +543,7 @@ let worldLaunchInFlight = false;
 export async function startPoolRandom(): Promise<void> {
   if (worldLaunchInFlight) return;
   worldLaunchInFlight = true;
+  import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(true));
 
   const enterBtn = document.getElementById('wild-enter-btn') as HTMLButtonElement | null;
   if (enterBtn) {
@@ -574,6 +575,7 @@ export async function startPoolRandom(): Promise<void> {
     showFeedback(t('wild.worldLoadError'), 'error');
   } finally {
     worldLaunchInFlight = false;
+    import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(false));
     if (enterBtn) {
       enterBtn.classList.remove('is-loading');
       enterBtn.removeAttribute('aria-busy');

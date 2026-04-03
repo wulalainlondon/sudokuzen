@@ -73,6 +73,7 @@ import { useMentorStore } from '../react/mentor/mentorStore';
 import { useEncounterTransitionStore } from '../react/wild/encounterTransitionStore';
 import { bridgeCloseWin } from '../react/win/winBridge';
 import { bridgeCloseGameOver } from '../react/gameover/gameOverBridge';
+import { bridgeCloseWildMentorNote, bridgeHasWildMentorNoteOpen } from '../react/wild/wildLobbyBridge';
 
 function isWinCelebrationOpen(): boolean {
   return useWinStore.getState().visible;
@@ -261,6 +262,10 @@ export function bootLegacyRuntime(appVersion: string): void {
     }
     if (useMentorStore.getState().visible) {
       dismissMentor();
+      return;
+    }
+    if (bridgeHasWildMentorNoteOpen()) {
+      bridgeCloseWildMentorNote();
       return;
     }
     if (useEncounterTransitionStore.getState().active) {
