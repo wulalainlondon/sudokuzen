@@ -1,12 +1,15 @@
 const RELOAD_GUARD_KEY = 'sudoku_reload_guard_ts';
-const RELOAD_GUARD_MS = 2000;
+const RELOAD_GUARD_MS = 15000;
+const RELOAD_ONCE_KEY = 'sudoku_reload_once';
 
 function canReloadNow(): boolean {
   try {
+    if (sessionStorage.getItem(RELOAD_ONCE_KEY) === '1') return false;
     const now = Date.now();
     const last = Number(sessionStorage.getItem(RELOAD_GUARD_KEY) || '0');
     if (Number.isFinite(last) && now - last < RELOAD_GUARD_MS) return false;
     sessionStorage.setItem(RELOAD_GUARD_KEY, String(now));
+    sessionStorage.setItem(RELOAD_ONCE_KEY, '1');
     return true;
   } catch {
     return true;

@@ -43,7 +43,6 @@ import {
   toggleSpeedrunMode,
   startPoolRandom,
   hidePreLevelModal,
-  renderStageMap,
 } from '../features/levels';
 import {
   openLibraryOverlay,
@@ -81,6 +80,14 @@ function isWinCelebrationOpen(): boolean {
 
 export function bootLegacyRuntime(appVersion: string): void {
   gs.appVersion = appVersion;
+
+  if (import.meta.env.PROD) {
+    const storedVersion = localStorage.getItem(SK.APP_VERSION);
+    if (storedVersion !== appVersion) {
+      void window.__pwaRuntime.enforceAppVersion(appVersion);
+      return;
+    }
+  }
 
   // 1. Populate DOM refs
   initDom();
@@ -135,7 +142,6 @@ export function bootLegacyRuntime(appVersion: string): void {
   document.getElementById('version-badge')!.textContent = `v${appVersion}`;
 
   // 8. PWA
-  window.__pwaRuntime.enforceAppVersion(appVersion);
   window.__pwaRuntime.registerServiceWorkerUpdateFlow();
 
   // 9. Firebase
@@ -316,20 +322,18 @@ export function bootLegacyRuntime(appVersion: string): void {
     // Stage map = top level → do nothing (stay in app)
   });
 
-  // 15. Show level screen
-  showLevelScreen();
-
-  // 16. Ensure normal-mode shard data is loaded, then refresh stage map.
-  // Without this, first paint can be empty when legacy levels.js is absent.
+  // 15. Show level screen once normal data is warm (or timeout fallback).
+  // This avoids first-paint empty stage map -> second-paint filled map flicker.
+  let levelScreenBooted = false;
+  const bootLevelScreen = () => {
+    if (levelScreenBooted) return;
+    levelScreenBooted = true;
+    showLevelScreen();
+  };
+  window.setTimeout(bootLevelScreen, 1200);
   preloadMode('normal')
-    .then(() => {
-      const levelScreenVisible = document.getElementById('level-screen')?.style.display === 'flex';
-      const stageVisible = document.getElementById('stage-view')?.style.display !== 'none';
-      if (levelScreenVisible && stageVisible) renderStageMap();
-    })
-    .catch(() => {
-      /* no-op: keep current UI if shard prefetch fails */
-    });
+    .then(bootLevelScreen)
+    .catch(bootLevelScreen);
 
   // 15. Bind window facade for onclick="" handlers in HTML
   bindLegacyFacade({

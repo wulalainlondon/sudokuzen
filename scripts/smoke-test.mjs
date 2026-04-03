@@ -13,7 +13,7 @@ const check = (ok, msg) => { if (!ok) errors.push(msg); };
 const dist = 'dist';
 check(fs.existsSync(dist), 'dist/ directory missing — did build run?');
 
-const requiredFiles = ['index.html', 'sw.js', 'levels.js', 'mid_pool.js', 'teach/manifest.json'];
+const requiredFiles = ['index.html', 'sw.js', 'levels.js', 'teach/manifest.json'];
 for (const f of requiredFiles) {
   check(fs.existsSync(path.join(dist, f)), `Missing ${f} in dist/`);
 }
@@ -38,7 +38,6 @@ if (fs.existsSync(manifestPath)) {
 
 // ── 4. SW pre-cache list sanity ──────────────────────────────────
 const swContent = fs.readFileSync(path.join(dist, 'sw.js'), 'utf8');
-check(swContent.includes('mid_pool.js'), 'SW missing mid_pool.js in pre-cache list');
 check(swContent.includes('teach/manifest.json'), 'SW missing teach/manifest.json in pre-cache list');
 check(!swContent.includes("'techniques.js'"), 'SW still pre-caches techniques.js — should be removed');
 

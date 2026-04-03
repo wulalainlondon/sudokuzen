@@ -5,7 +5,6 @@ const ASSETS = [
   'index.html',
   'style.css',
   'manifest.json',
-  'mid_pool.js',
   'levels.js',
   'teach/manifest.json',
   'firebase-config.js',
