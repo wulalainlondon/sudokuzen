@@ -94,7 +94,7 @@ function newbiePick(pool: TechniqueMeta[], iqLevel: number): TechniqueMeta {
 // ── Two-step tier-based weighted selection ───────────────────────────
 
 /** Base tier probabilities. T0=singles, T4=mythic. */
-const BASE_TIER_PROBS: Record<number, number> = { 0: 0.55, 1: 0.25, 2: 0.12, 3: 0.06, 4: 0.02 };
+const BASE_TIER_PROBS: Record<number, number> = { 0: 0.45, 1: 0.25, 2: 0.18, 3: 0.09, 4: 0.03 };
 const TIER_GATES: Record<number, number> = { 0: 1, 1: 1, 2: 21, 3: 41, 4: 71 };
 
 /** Calculate level-adjusted tier probabilities. Higher level = less T0, more high tiers. */
@@ -112,12 +112,12 @@ function getAdjustedTierProbs(iqLevel: number): Map<number, number> {
 
     const overflow = Math.max(0, iqLevel - gate);
     if (t === 0) {
-      // T0 (singles) decays as player grows — veterans don't need basics
-      const decay = Math.max(0.15, 1 - iqLevel / 120);
+      // P1b: T0 decays more aggressively — veterans should see more diverse content
+      const decay = Math.max(0.10, 1 - iqLevel / 80);
       adjusted.set(t, base * decay);
     } else {
-      // Higher tiers get slight boost per 10 levels above gate
-      const bonus = 1 + Math.floor(overflow / 10) * 0.5;
+      // P1b: Higher tiers scale more per overflow — ensures Phase 2+ appear regularly
+      const bonus = 1 + Math.floor(overflow / 8) * 0.6;
       adjusted.set(t, base * bonus);
     }
   }
@@ -175,13 +175,13 @@ function tieredPick(pool: TechniqueMeta[], iqLevel: number): TechniqueMeta {
 
 // ── Challenge mode selection ─────────────────────────────────────────
 
-/** Per-tier mode weights: [standard, ironman, blind, noNotes]. */
+/** Per-tier mode weights. P3: Enable timed mode at T1+ for variety. */
 const MODE_WEIGHTS: Record<number, Record<ChallengeMode, number>> = {
-  0: { standard: 0.80, ironman: 0.05, blind: 0.10, timed: 0, noNotes: 0.05, gauntlet: 0 },
-  1: { standard: 0.65, ironman: 0.10, blind: 0.12, timed: 0, noNotes: 0.13, gauntlet: 0 },
-  2: { standard: 0.55, ironman: 0.15, blind: 0.13, timed: 0, noNotes: 0.17, gauntlet: 0 },
-  3: { standard: 0.48, ironman: 0.18, blind: 0.14, timed: 0, noNotes: 0.20, gauntlet: 0 },
-  4: { standard: 0.42, ironman: 0.22, blind: 0.15, timed: 0, noNotes: 0.21, gauntlet: 0 },
+  0: { standard: 0.80, ironman: 0.05, blind: 0.08, timed: 0.02, noNotes: 0.05, gauntlet: 0 },
+  1: { standard: 0.60, ironman: 0.10, blind: 0.10, timed: 0.08, noNotes: 0.12, gauntlet: 0 },
+  2: { standard: 0.48, ironman: 0.14, blind: 0.12, timed: 0.10, noNotes: 0.16, gauntlet: 0 },
+  3: { standard: 0.40, ironman: 0.17, blind: 0.13, timed: 0.12, noNotes: 0.18, gauntlet: 0 },
+  4: { standard: 0.35, ironman: 0.20, blind: 0.14, timed: 0.12, noNotes: 0.19, gauntlet: 0 },
 };
 
 export function selectChallengeMode(tier: number, _profile: WildProfile): ChallengeMode {
@@ -271,6 +271,17 @@ export async function selectEncounter(profile: WildProfile): Promise<WildEncount
   return buildEncounter(picked, mode);
 }
 
+// P2a: Dynamic rarity roll — each encounter can upgrade from base rarity
+function rollRarity(baseRarity: import('./techniqueMeta').Rarity): import('./techniqueMeta').Rarity {
+  const roll = Math.random();
+  // Chance to upgrade rarity (regardless of base):
+  //   rare: 12%, legendary: 3%, mythic: 0.5%
+  if (roll < 0.005) return 'mythic';
+  if (roll < 0.035) return 'legendary';
+  if (roll < 0.155) return 'rare';
+  return baseRarity;
+}
+
 async function buildEncounter(meta: TechniqueMeta, challengeMode: ChallengeMode): Promise<WildEncounter> {
   const puzzles = await loadTechniquePuzzles(meta.key);
   const idx = Math.floor(Math.random() * puzzles.length);
@@ -287,9 +298,12 @@ async function buildEncounter(meta: TechniqueMeta, challengeMode: ChallengeMode)
     mentorTime = Math.round(mentorTime * (0.85 + Math.random() * 0.3));
   }
 
+  // P2a: Roll rarity — even common techniques have a small chance to be rare+
+  const rarity = rollRarity(meta.rarity);
+
   return {
     technique: meta.key,
-    rarity: meta.rarity,
+    rarity,
     difficultyWeight: meta.weight,
     puzzle: p.puzzle,
     solution: p.solution,

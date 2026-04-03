@@ -173,6 +173,7 @@ export const en: Widen<Locale> = {
     allBasicsComplete: 'All basic techniques studied \u2014 sessions unlocked!',
     longPressHint: 'Tip: long-press two cells to cast a skill',
     continuousFillHint: 'Tip: enable to directly tap empty cells to fill the selected digit',
+    gateBlocked: '{count} basic technique(s) unstudied. Visit Practice to break past Lv.20',
     worldLoadError: 'Failed to enter World. Please retry.',
     resumeEncounter: 'Resume Encounter',
     savedEncounterInfo: 'Last encounter: {tech} · {time}',

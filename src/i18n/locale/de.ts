@@ -171,6 +171,7 @@ export const de: Widen<Locale> = {
     allBasicsComplete: 'Alle Grundtechniken studiert \u2014 Sitzungen freigeschaltet!',
     longPressHint: 'Tipp: Zwei Zellen lang dr\u00FCcken, um eine Technik zu wirken',
     continuousFillHint: 'Tipp: Aktivieren, um leere Zellen direkt mit der gew\u00E4hlten Ziffer zu f\u00FCllen',
+    gateBlocked: '{count} Grundtechnik(en) nicht studiert. Besuche Übung, um Lv.20 zu überschreiten',
     worldLoadError: 'Welt konnte nicht betreten werden. Bitte erneut versuchen.',
     resumeEncounter: 'Begegnung fortsetzen',
     savedEncounterInfo: 'Letzte Begegnung: {tech} · {time}',

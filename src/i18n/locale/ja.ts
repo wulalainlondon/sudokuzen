@@ -168,6 +168,7 @@ export const ja: Widen<Locale> = {
     allBasicsComplete: '基礎技法の研習がすべて完了——修行巡が解放されました！',
     longPressHint: 'ヒント：2つのセルを長押しでスキル発動',
     continuousFillHint: 'ヒント：有効にすると空セルをタップで選択中の数字を入力できます',
+    gateBlocked: '基礎技法が {count} 個未研習です。【修行】でLv.20を突破しましょう',
     worldLoadError: '世界への接続に失敗しました。再試行してください',
     resumeEncounter: '遭遇を再開',
     savedEncounterInfo: '前回の遭遇：{tech} · {time}',

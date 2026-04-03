@@ -4,19 +4,19 @@ import type { WildProfile } from '../src/features/wild/wildState';
 
 describe('expForLevel', () => {
   it('returns correct cumulative EXP for level 1', () => {
-    expect(expForLevel(1)).toBe(15);
+    expect(expForLevel(1)).toBe(25);
   });
 
   it('returns correct cumulative EXP for level 5', () => {
-    expect(expForLevel(5)).toBe(225);
+    expect(expForLevel(5)).toBe(375);
   });
 
   it('returns correct cumulative EXP for level 10', () => {
-    expect(expForLevel(10)).toBe(825);
+    expect(expForLevel(10)).toBe(1375);
   });
 
   it('returns correct cumulative EXP for level 21', () => {
-    expect(expForLevel(21)).toBe(3465);
+    expect(expForLevel(21)).toBe(5775);
   });
 
   it('returns 0 for level 0', () => {
@@ -47,17 +47,17 @@ describe('levelFromExp', () => {
   });
 
   it('returns correct level for EXP just below threshold', () => {
-    // Just below level 5 threshold (225) should be level 4
-    expect(levelFromExp(224)).toBe(4);
+    // Just below level 5 threshold (375) should be level 4
+    expect(levelFromExp(374)).toBe(4);
   });
 
   it('returns correct level for EXP at exact threshold', () => {
-    expect(levelFromExp(225)).toBe(5);
+    expect(levelFromExp(375)).toBe(5);
   });
 
   it('returns correct level for EXP slightly above threshold', () => {
-    // Slightly above level 5 but below level 6 (315)
-    expect(levelFromExp(226)).toBe(5);
+    // Slightly above level 5 but below level 6 (525)
+    expect(levelFromExp(376)).toBe(5);
   });
 });
 
@@ -162,20 +162,24 @@ describe('applyExp', () => {
     // Profile at level 20 boundary, but without all basic skills studied
     const lv20Exp = expForLevel(20);
     const profile = makeProfile({ iqLevel: 20, totalExp: lv20Exp, studiedSkills: [] });
-    const result = applyExp(profile, 500);
+    const result = applyExp(profile, 1000);
     expect(result.newLevel).toBe(20);
+    expect(result.gated).toBe(true);
     expect(profile.totalExp).toBe(lv20Exp); // EXP capped
   });
 
   it('allows level 21 when all basic skills are studied', () => {
     const lv20Exp = expForLevel(20);
+    const lv21Exp = expForLevel(21);
+    const needed = lv21Exp - lv20Exp + 1;
     // All T0-T1 technique keys that have fragmentsRequired > 0
     const requiredSkills = [
       'naked_single', 'hidden_single', 'locked_candidates',
       'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple',
     ];
     const profile = makeProfile({ iqLevel: 20, totalExp: lv20Exp, studiedSkills: requiredSkills });
-    const result = applyExp(profile, 500);
+    const result = applyExp(profile, needed);
     expect(result.newLevel).toBeGreaterThanOrEqual(21);
+    expect(result.gated).toBe(false);
   });
 });

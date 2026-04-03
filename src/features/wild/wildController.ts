@@ -7,7 +7,7 @@ import { showFeedback } from '../../ui/feedback';
 import { loadWildProfile, saveWildProfile, CHALLENGE_CONFIGS, saveWildEncounter, loadWildSave, clearWildSave, type WildProfile, type WildEncounter, type WildSaveData, type ChallengeMode } from './wildState';
 import { selectEncounter, selectSessionEncounter, tickCooldowns, setEscapeCooldown } from './ecologyEngine';
 import { getTechniqueMeta, getAutoCastKeys } from './techniqueMeta';
-import { calculateExp, applyExp, expForLevel } from './expSystem';
+import { calculateExp, applyExp, expForLevel, getUnstudiedGateSkills } from './expSystem';
 import { autoSolve } from './autoSolver';
 import {
   triggerIntroIfNeeded,
@@ -277,8 +277,14 @@ export async function startWildEncounter(): Promise<void> {
     autoCastKeys.delete(_encounter.technique);
     if (autoCastKeys.size > 0) {
       const result = autoSolve(_encounter.puzzle, _encounter.solution, autoCastKeys);
-      puzzleToUse = result.partialPuzzle;
-      prefilledNotes = result.notes;
+      // P1a: Ensure at least 5 empty cells remain after auto-solve
+      // If auto-solve leaves too few, fall back to original puzzle
+      const emptyCount = result.partialPuzzle.filter(v => v === 0).length;
+      if (emptyCount >= 5) {
+        puzzleToUse = result.partialPuzzle;
+        prefilledNotes = result.notes;
+      }
+      // else: skip auto-solve entirely to avoid empty-board encounters
     }
   }
 
@@ -632,6 +638,12 @@ export function onWildComplete(
   }
 
   const result = applyExp(profile, expGained);
+
+  // P0: Show clear feedback when Lv.20 gate blocks progression
+  if (result.gated) {
+    const unstudied = getUnstudiedGateSkills(profile);
+    showFeedback(t('wild.gateBlocked', { count: String(unstudied.length) }), 'error');
+  }
 
   // Update bestiary
   const entry = profile.bestiary[_encounter.technique];

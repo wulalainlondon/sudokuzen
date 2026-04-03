@@ -170,6 +170,7 @@ export const zhTW = {
     allBasicsComplete: '所有基礎技巧研習完成——修行輪已解鎖！',
     longPressHint: '提示：長按兩個格子可施放技能',
     continuousFillHint: '提示：開啟後可直接點擊空格填入選取中的數字',
+    gateBlocked: '尚有 {count} 個基礎技法未研習，前往【修行】突破 Lv.20',
     worldLoadError: '進入世界失敗，請稍後再試',
     resumeEncounter: '繼續遭遇',
     savedEncounterInfo: '上次遭遇：{tech} · {time}',
