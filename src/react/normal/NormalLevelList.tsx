@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement } from 'react';
+import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 import { gs } from '../../game/state';
 import { SK, readJson } from '../../storage/keys';
@@ -91,10 +91,21 @@ function starsView(stars: number): ReactElement {
   );
 }
 
+function buildCardsSignature(cards: LevelCardModel[]): string {
+  return cards
+    .map((c) => `${c.id}:${Number(c.isLocked)}:${Number(c.isCurrent)}:${Number(c.isCompleted)}:${Number(c.isDuoGlow)}:${c.timeText}:${c.submissions}:${c.stars}`)
+    .join('|');
+}
+
 export function NormalLevelList(): ReactElement | null {
   const [revision, setRevision] = useState(0);
   const [visibleCount, setVisibleCount] = useState(180);
+  const refreshRafRef = useRef<number | null>(null);
+  const lastCardsSigRef = useRef<string>('');
+  const lastTierRef = useRef<string | null>(null);
   const host = document.getElementById('level-list');
+  const cards = buildLevelCards();
+  const cardsSig = buildCardsSignature(cards);
 
   useEffect(() => {
     const levelListHost = document.getElementById('level-list');
@@ -103,13 +114,22 @@ export function NormalLevelList(): ReactElement | null {
     levelListHost.innerHTML = '';
 
     const onRefresh = () => {
-      setVisibleCount(180);
-      setRevision((v) => v + 1);
+      if (refreshRafRef.current !== null) return;
+      refreshRafRef.current = requestAnimationFrame(() => {
+        refreshRafRef.current = null;
+        const nextCards = buildLevelCards();
+        const nextSig = buildCardsSignature(nextCards);
+        const tierChanged = lastTierRef.current !== gs.currentTab;
+        if (!tierChanged && nextSig === lastCardsSigRef.current) return;
+        if (tierChanged) setVisibleCount(180);
+        setRevision((v) => v + 1);
+      });
     };
     window.addEventListener('normal-level-list-refresh', onRefresh);
     return () => {
       window.removeEventListener('normal-level-list-refresh', onRefresh);
       delete document.body.dataset.reactNormalLevelList;
+      if (refreshRafRef.current !== null) cancelAnimationFrame(refreshRafRef.current);
     };
   }, []);
 
@@ -117,7 +137,10 @@ export function NormalLevelList(): ReactElement | null {
     requestAnimationFrame(syncLevelCardSize);
   }, [revision, visibleCount]);
 
-  const cards = buildLevelCards();
+  useEffect(() => {
+    lastCardsSigRef.current = cardsSig;
+    lastTierRef.current = gs.currentTab;
+  }, [cardsSig]);
 
   useEffect(() => {
     if (!host) return;

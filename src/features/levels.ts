@@ -35,6 +35,16 @@ function callStartDuoGlowListener() {
   import('./duo').then((m) => m.startDuoGlowListener());
 }
 
+let normalLevelListRefreshQueued = false;
+function queueNormalLevelListRefresh(): void {
+  if (normalLevelListRefreshQueued) return;
+  normalLevelListRefreshQueued = true;
+  requestAnimationFrame(() => {
+    normalLevelListRefreshQueued = false;
+    window.dispatchEvent(new Event('normal-level-list-refresh'));
+  });
+}
+
 // ── Helpers ─────────────────────────────────────────────────────────
 
 /** Check if there is an active save for a level (without importing core). */
@@ -290,7 +300,7 @@ export function backToStageMap(): void {
 
 export function renderLevelGrid(): void {
   if (document.body?.dataset.reactNormalLevelList === '1') {
-    window.dispatchEvent(new Event('normal-level-list-refresh'));
+    queueNormalLevelListRefresh();
     return;
   }
 
