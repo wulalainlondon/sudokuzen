@@ -2,7 +2,7 @@
 // Usage: wrap modal content inside <ZenOverlay visible={...} onClose={...}>
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCallback, type ReactElement, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { ZEN, zenTransitionIn, zenTransitionOut, isReducedMotion } from './zenMotion';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 
@@ -16,6 +16,8 @@ interface ZenOverlayProps {
   className?: string;
   /** Disable backdrop click-to-close (e.g. for game over) */
   noBackdropClose?: boolean;
+  /** Ignore backdrop click for a short period after opening (prevents click-through close). */
+  backdropCloseDelayMs?: number;
   /** Custom background tint for the backdrop */
   backdropTint?: string;
 }
@@ -55,16 +57,23 @@ export function ZenOverlay({
   id,
   className,
   noBackdropClose,
+  backdropCloseDelayMs = 0,
   backdropTint,
 }: ZenOverlayProps): ReactElement {
   const trapRef = useFocusTrap(visible);
+  const openedAtRef = useRef(0);
   const reduced = isReducedMotion();
+
+  useEffect(() => {
+    if (visible) openedAtRef.current = Date.now();
+  }, [visible]);
 
   const handleBackdrop = useCallback(
     (e: React.MouseEvent) => {
+      if (backdropCloseDelayMs > 0 && Date.now() - openedAtRef.current < backdropCloseDelayMs) return;
       if (!noBackdropClose && e.target === e.currentTarget) onClose?.();
     },
-    [onClose, noBackdropClose],
+    [onClose, noBackdropClose, backdropCloseDelayMs],
   );
 
   const bv = reduced ? reducedVariants : backdropVariants;

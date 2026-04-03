@@ -68,7 +68,7 @@ export function PreLevelModal(): ReactElement {
   const techDisplay = techTier ? t('prelevel.techDisplayTier', { tech: techName, tier: techTier }) : t('prelevel.techDisplay', { tech: techName });
 
   return (
-    <ZenOverlay visible={visible} onClose={close} id="pre-level-modal">
+    <ZenOverlay visible={visible} onClose={close} id="pre-level-modal" backdropCloseDelayMs={220}>
       <div className="pre-level-panel">
         <ZenStagger>
           <h2>{displayName}</h2>
