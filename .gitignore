@@ -3,3 +3,7 @@ node_modules/
 dist/
 .vitest/
 coverage/
+.DS_Store
+.firebase/
+playwright-report/
+test-results/
