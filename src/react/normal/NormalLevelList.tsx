@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactElement } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 import { gs } from '../../game/state';
 import { SK, readJson } from '../../storage/keys';
@@ -94,8 +94,6 @@ function starsView(stars: number): ReactElement {
 export function NormalLevelList(): ReactElement | null {
   const [revision, setRevision] = useState(0);
   const [visibleCount, setVisibleCount] = useState(180);
-  const [showSkeleton, setShowSkeleton] = useState(false);
-  const rafIdRef = useRef<number | null>(null);
   const host = document.getElementById('level-list');
 
   useEffect(() => {
@@ -105,19 +103,13 @@ export function NormalLevelList(): ReactElement | null {
     levelListHost.innerHTML = '';
 
     const onRefresh = () => {
-      setShowSkeleton(true);
       setVisibleCount(180);
       setRevision((v) => v + 1);
-      if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
-      rafIdRef.current = requestAnimationFrame(() => {
-        setShowSkeleton(false);
-      });
     };
     window.addEventListener('normal-level-list-refresh', onRefresh);
     return () => {
       window.removeEventListener('normal-level-list-refresh', onRefresh);
       delete document.body.dataset.reactNormalLevelList;
-      if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
     };
   }, []);
 
@@ -142,14 +134,7 @@ export function NormalLevelList(): ReactElement | null {
   const renderedCards = cards.slice(0, visibleCount);
   return createPortal(
     <>
-      {showSkeleton && cards.length > 0 && Array.from({ length: 15 }).map((_, idx) => (
-        <div key={`sk-${idx}`} className="level-item level-item-skeleton" aria-hidden="true">
-          <div className="level-skeleton-line level-skeleton-title" />
-          <div className="level-skeleton-line level-skeleton-sub" />
-          <div className="level-skeleton-line level-skeleton-sub" />
-        </div>
-      ))}
-      {!showSkeleton && renderedCards.map((card) => {
+      {renderedCards.map((card) => {
         const itemClass = `level-item ${card.isCompleted ? 'completed' : ''}${card.isLocked ? ' locked' : ''}${card.isCurrent ? ' level-item--current' : ''}${card.isDuoGlow ? ' duo-glow' : ''}`;
         if (card.isLocked) {
           return (
