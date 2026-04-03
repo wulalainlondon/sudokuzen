@@ -16,6 +16,40 @@ import {
 import { showFeedback, markErrorArea } from '../ui/feedback';
 import { t } from '../i18n/t';
 import {
+  setGameHeaderByMode,
+  setGhostProgressVisible,
+  clearGhostMarkedCells,
+  hidePauseScreen,
+  hideLevelScreen,
+  showGameContainer,
+  setUndoButtonVisible,
+  setPauseScreenContent,
+  showPauseScreen,
+  setDocumentTheme,
+  getDocumentTheme,
+  setNoteToggleActive,
+  setContinuousFillToggleActive,
+  setNumpadContinuousState,
+  addCellClasses,
+  removeCellClasses,
+  addGridClass,
+  removeGridClass,
+  markBlindReveal,
+  clearBlindRevealClasses,
+  setLivesSpeedrun,
+  setLivesBlind,
+  setLivesNoRemaining,
+  setLivesRemaining,
+  setDuoCooldownText,
+  applyUnitCompleteClass,
+  clearUnitCompleteClass,
+  addCooldownMask,
+  removeCooldownMasks,
+  highlightDigitOnGrid,
+  createCandidateRipple,
+  triggerCandidateReveal,
+} from './coreUiBridge';
+import {
   renderGrid,
   updateCellDisplay,
   selectCell,
@@ -127,22 +161,16 @@ setBoardCallbacks({
 // ── Game lifecycle ──────────────────────────────────────────────────
 
 function updateGameHeaderByMode(isWild: boolean): void {
-  const gameTitle = document.getElementById('game-title');
-  const gameModeChip = document.getElementById('game-mode-chip');
-  const quitBtn = document.getElementById('quit-btn');
-  const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
   const isPractice = gs.currentLevel?.mode === 'practice';
-
-  if (gameTitle) gameTitle.textContent = isWild ? t('mode.world') : isPractice ? t('mode.practice') : 'SUDOKU';
-  if (gameModeChip) {
-    gameModeChip.textContent = isWild ? t('mode.world') : t('mode.practice');
-    gameModeChip.classList.toggle('hidden', !isWild && !isPractice);
-  }
-  if (gameContainer) gameContainer.classList.toggle('world-play-active', isWild);
-  if (quitBtn) {
-    quitBtn.textContent = isWild ? t('nav.quitWild') : isPractice ? t('nav.quitPractice') : t('nav.quitNormal');
-    quitBtn.setAttribute('onclick', isWild ? 'exitWild(); showLevelScreen(true)' : 'showLevelScreen(true)');
-  }
+  setGameHeaderByMode({
+    isWild,
+    isPractice,
+    worldLabel: t('mode.world'),
+    practiceLabel: t('mode.practice'),
+    quitWildLabel: t('nav.quitWild'),
+    quitPracticeLabel: t('nav.quitPractice'),
+    quitNormalLabel: t('nav.quitNormal'),
+  });
 }
 
 export function initGame(
@@ -166,8 +194,8 @@ export function initGame(
 
   gs.isGhostMode = playWithGhost;
   gs.ghostHistory = gs.isGhostMode && ghostData ? ghostData : [];
-  document.getElementById('ghost-progress-container')?.classList.toggle('hidden', !gs.isGhostMode);
-  if (gs.gridEl) Array.from(gs.gridEl.children).forEach((c) => c.classList.remove('ghost-marked'));
+  setGhostProgressVisible(gs.isGhostMode);
+  clearGhostMarkedCells(gs);
 
   const saved = forceReset ? null : loadGameStatus(gs.currentLevel.id);
 
@@ -186,21 +214,21 @@ export function initGame(
     if (saved.isGhostMode === true && saved.ghostHistory) {
       gs.isGhostMode = true;
       gs.ghostHistory = saved.ghostHistory;
-      document.getElementById('ghost-progress-container')?.classList.remove('hidden');
+      setGhostProgressVisible(true);
     }
   } else {
     resetGameState();
   }
 
   updateLivesUI();
-  document.getElementById('pause-screen')?.style.setProperty('display', 'none');
+  hidePauseScreen();
   import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin());
   import('../react/gameover/gameOverBridge').then(({ bridgeCloseGameOver }) => bridgeCloseGameOver());
   renderGrid();
   applyGridSkillClass();
   evaluateLockedSkill();
-  document.getElementById('level-screen')?.style.setProperty('display', 'none');
-  (document.querySelector('.game-container') as HTMLElement | null)?.style.setProperty('display', 'flex');
+  hideLevelScreen();
+  showGameContainer();
   loadLevelLeaderboard(gs.currentLevel.id);
 
   // If a restored save is already solved (common after interrupted updates),
@@ -229,11 +257,8 @@ function resetGameState(): void {
   resetSkillState();
 
   // Show undo button only in speedrun/blind modes
-  const undoBtn = document.getElementById('undo-btn');
-  if (undoBtn) {
-    const showUndo = gs.isSpeedrunMode || gs.wildBlindMode;
-    undoBtn.classList.toggle('hidden', !showUndo);
-  }
+  const showUndo = gs.isSpeedrunMode || gs.wildBlindMode;
+  setUndoButtonVisible(showUndo);
 }
 
 // ── Save / Load ─────────────────────────────────────────────────────
@@ -361,12 +386,12 @@ export function handleInput(num: number): void {
     if (num !== solutionDigitAt(gs.selectedIdx)) {
       gs.errors++;
       data.isError = true;
-      cellEl.classList.add('error');
+      addCellClasses(cellEl, 'error');
       const originalValue = data.value;
       const originalNotes = data.notes.slice();
       data.value = num;
       data.notes = [];
-      cellEl.classList.add('wrong-preview');
+      addCellClasses(cellEl, 'wrong-preview');
       updateCellDisplay(cellEl, data);
       markErrorArea(gs.selectedIdx);
 
@@ -405,8 +430,7 @@ export function handleInput(num: number): void {
       recordAction('mistake', t('miscRuntime.mistakeLog', { cell: cellLabel(gs.selectedIdx), digit: String(num) }), gs.selectedIdx, num);
       setTimeout(() => {
         data.isError = false;
-        cellEl.classList.remove('error');
-        cellEl.classList.remove('wrong-preview');
+        removeCellClasses(cellEl, 'error', 'wrong-preview');
         data.value = originalValue;
         data.notes = originalNotes;
         updateCellDisplay(cellEl, data);
@@ -456,7 +480,7 @@ export function undoAction(): void {
   cell.notes = action.prevNotes;
   cell.isError = false;
   const cellEl = gs.gridEl!.children[action.idx] as HTMLElement;
-  cellEl.classList.remove('error');
+  removeCellClasses(cellEl, 'error');
   updateCellDisplay(cellEl, cell);
   recordAction('undo', t('miscRuntime.undoLog', { cell: cellLabel(action.idx) }), action.idx, action.prevValue);
   saveGameStatus();
@@ -553,20 +577,20 @@ function checkSpeedrunComplete(lastIdx: number): void {
   gs.submissionCount++;
   showFeedback(t('feedback.boardError', { count: String(gs.submissionCount) }), 'error');
   playErrorFeedback();
-  Array.from(gs.gridEl!.children).forEach((c) => c.classList.add('error-strong'));
+  addGridClass(gs.gridEl, 'error-strong');
   setTimeout(() => {
-    Array.from(gs.gridEl!.children).forEach((c) => c.classList.remove('error-strong'));
+    removeGridClass(gs.gridEl, 'error-strong');
   }, 500);
 
   if (lastIdx !== null) {
     gs.cellsData[lastIdx].value = 0;
     gs.cellsData[lastIdx].isError = true;
     const cellEl = gs.gridEl!.children[lastIdx] as HTMLElement;
-    cellEl.classList.add('error');
+    addCellClasses(cellEl, 'error');
     updateCellDisplay(cellEl, gs.cellsData[lastIdx]);
     setTimeout(() => {
       gs.cellsData[lastIdx].isError = false;
-      cellEl.classList.remove('error');
+      removeCellClasses(cellEl, 'error');
       updateCellDisplay(cellEl, gs.cellsData[lastIdx]);
     }, 400);
     saveGameStatus();
@@ -597,11 +621,11 @@ async function checkBlindComplete(): Promise<void> {
 
     if (isCorrect) {
       correct++;
-      cellEl.classList.add('blind-reveal-correct');
+      markBlindReveal(cellEl, true);
     } else {
       errors++;
       gs.cellsData[i].isError = true;
-      cellEl.classList.add('blind-reveal-error', 'error');
+      markBlindReveal(cellEl, false);
       updateCellDisplay(cellEl, gs.cellsData[i]);
     }
 
@@ -624,9 +648,7 @@ async function checkBlindComplete(): Promise<void> {
 
   // Clean up animation classes after animations finish
   setTimeout(() => {
-    gs.gridEl?.querySelectorAll('.blind-reveal-correct, .blind-reveal-error').forEach((el) => {
-      el.classList.remove('blind-reveal-correct', 'blind-reveal-error');
-    });
+    clearBlindRevealClasses(gs.gridEl);
   }, 600);
 }
 
@@ -713,27 +735,23 @@ export function resetGame(): void {
 // ── UI helpers ──────────────────────────────────────────────────────
 
 export function updateLivesUI(): void {
-  if (!gs.livesEl) return;
   if (gs.isSpeedrunMode) {
-    gs.livesEl.innerHTML = '<span style="color: #FFC107; text-shadow: 0 0 5px rgba(255,193,7,0.5);">⚡</span>';
+    setLivesSpeedrun(gs.livesEl);
     return;
   }
   if (gs.wildBlindMode) {
-    gs.livesEl.innerHTML =
-      `<span style="color: var(--accent-strong); font-size: 0.72rem; letter-spacing: 0.08em;">${t('misc.blindLabel')}</span>`;
+    setLivesBlind(gs.livesEl, t('misc.blindLabel'));
     return;
   }
   if (gs.isDuoMode && gs.errors >= gs.maxErrors) {
     // Lives depleted — cooldown UI takes over (handled by updateDuoCooldownUI)
     if (!isDuoCooldownActive()) {
-      gs.livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem;">${t('misc.noLivesRemaining')}</span> <button class="duo-surrender-btn" onclick="surrenderDuo()">${t('duo.surrender')}</button>`;
+      setLivesNoRemaining(gs.livesEl, t('misc.noLivesRemaining'), t('duo.surrender'));
     }
     return;
   }
-  let html = '';
   const remaining = gs.maxErrors - gs.errors;
-  for (let i = 0; i < remaining; i++) html += '<span>✖</span> ';
-  gs.livesEl.innerHTML = html;
+  setLivesRemaining(gs.livesEl, remaining);
 }
 
 // ── Win celebrations (delegated to React WinCelebration component) ────
@@ -839,17 +857,9 @@ function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: 
     const dB = Math.abs(Math.floor(b / 9) - Math.floor(idx / 9)) + Math.abs((b % 9) - (idx % 9));
     return dA - dB;
   });
-  sorted.forEach((i, order) => {
-    const el = gs.gridEl!.children[i] as HTMLElement;
-    el.style.animationDelay = `${order * 25}ms`;
-    el.classList.add('unit-complete');
-  });
+  applyUnitCompleteClass(gs.gridEl, sorted, 25);
   setTimeout(() => {
-    flashSet.forEach((i) => {
-      const el = gs.gridEl!.children[i] as HTMLElement;
-      el.classList.remove('unit-complete');
-      el.style.animationDelay = '';
-    });
+    clearUnitCompleteClass(gs.gridEl, [...flashSet]);
   }, 900);
 
   const parts: string[] = [];
@@ -871,15 +881,7 @@ function startDuoCooldown(seconds: number): void {
 
   // Add shrinking mask on the target cell
   removeCooldownMask();
-  if (gs.gridEl && gs.duoLastErrorCell >= 0) {
-    const cellEl = gs.gridEl.children[gs.duoLastErrorCell] as HTMLElement;
-    if (cellEl) {
-      const mask = document.createElement('div');
-      mask.className = 'cell-cooldown-mask';
-      mask.style.animationDuration = `${seconds}s`;
-      cellEl.appendChild(mask);
-    }
-  }
+  addCooldownMask(gs.gridEl, gs.duoLastErrorCell, seconds);
 
   updateDuoCooldownUI();
   gs.duoCooldownTimer = setInterval(() => {
@@ -897,13 +899,12 @@ function startDuoCooldown(seconds: number): void {
 }
 
 function removeCooldownMask(): void {
-  document.querySelectorAll('.cell-cooldown-mask').forEach((el) => el.remove());
+  removeCooldownMasks();
 }
 
 function updateDuoCooldownUI(): void {
-  if (!gs.livesEl) return;
   const left = Math.max(0, Math.ceil((gs.duoCooldownUntil - Date.now()) / 1000));
-  gs.livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem; font-weight: 600;">🔒 ${left}s</span>`;
+  setDuoCooldownText(gs.livesEl, left);
 }
 
 export function isDuoCooldownActive(): boolean {
@@ -914,24 +915,22 @@ export function isDuoCooldownActive(): boolean {
 
 export function pauseGame(): void {
   if (gs.timerInterval) clearInterval(gs.timerInterval);
-  document.getElementById('pause-level-name')!.textContent = gs.currentLevel!.displayName;
-  document.getElementById('pause-timer')!.textContent = formatSeconds(gs.seconds);
+  setPauseScreenContent(gs.currentLevel!.displayName, formatSeconds(gs.seconds));
   saveGameStatus();
   loadLevelLeaderboard(gs.currentLevel!.id);
-  document.getElementById('pause-screen')!.style.display = 'flex';
+  showPauseScreen();
 }
 
 export function resumeGame(): void {
-  document.getElementById('pause-screen')!.style.display = 'none';
+  hidePauseScreen();
   startTimer(false);
 }
 
 // ── Theme / Notes ───────────────────────────────────────────────────
 
 export function toggleTheme(): void {
-  const html = document.documentElement;
-  const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-  html.setAttribute('data-theme', next);
+  const next = getDocumentTheme() === 'light' ? 'dark' : 'light';
+  setDocumentTheme(next);
   localStorage.setItem(SK.THEME, next);
 }
 
@@ -941,7 +940,7 @@ export function toggleNoteMode(): void {
     return;
   }
   gs.isNotesMode = !gs.isNotesMode;
-  document.getElementById('note-toggle')!.classList.toggle('active', gs.isNotesMode);
+  setNoteToggleActive(gs.isNotesMode);
   // If continuous fill is active, let user know notes mode changes how it fills
   if (gs.continuousFillDigit !== null && gs.isNotesMode) {
     showFeedback(t('feedback.continuousFillNote'), 'neutral');
@@ -953,20 +952,7 @@ export function toggleNoteMode(): void {
 // ── Highlight digit across board (for continuous fill) ──────────────
 
 function highlightDigitOnBoard(digit: number): void {
-  if (!gs.gridEl || digit < 1 || digit > 9) return;
-  Array.from(gs.gridEl.children).forEach((c, i) => {
-    c.classList.remove('selected', 'related', 'match', 'note-match');
-    c.querySelectorAll('.note-num.note-highlight').forEach((n) => n.classList.remove('note-highlight'));
-
-    const cell = gs.cellsData[i];
-    if (cell.value === digit) {
-      c.classList.add('match');
-    } else if (cell.value === 0 && cell.notes.includes(digit)) {
-      c.classList.add('note-match');
-      const noteEl = c.querySelector(`.note-num:nth-child(${digit})`);
-      if (noteEl) noteEl.classList.add('note-highlight');
-    }
-  });
+  highlightDigitOnGrid(gs.gridEl, gs.cellsData, digit);
 }
 
 // ── Fill All Candidates ─────────────────────────────────────────────
@@ -1013,22 +999,7 @@ export async function fillAllCandidates(): Promise<void> {
   }
 
   // Phase 1: Show ripple from center FIRST
-  gs.gridEl.style.position = 'relative';
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 100 100');
-  svg.setAttribute('preserveAspectRatio', 'none');
-  svg.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:5;overflow:visible';
-
-  const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  ring.setAttribute('cx', '50');
-  ring.setAttribute('cy', '50');
-  ring.setAttribute('r', '2');
-  ring.setAttribute('fill', 'none');
-  ring.setAttribute('stroke', 'var(--accent-strong)');
-  ring.setAttribute('stroke-width', '1');
-  ring.style.animation = 'skill-ripple-expand 1s ease-out forwards';
-  svg.appendChild(ring);
-  gs.gridEl.appendChild(svg);
+  const svg = createCandidateRipple(gs.gridEl);
 
   // Phase 2: Wait for ripple to expand, then reveal candidates per cell by distance from center
   const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -1053,14 +1024,13 @@ export async function fillAllCandidates(): Promise<void> {
       const cellEl = gs.gridEl?.children[i] as HTMLElement | undefined;
       if (cellEl) {
         updateCellDisplay(cellEl, cell);
-        cellEl.classList.add('candidate-reveal');
-        setTimeout(() => cellEl.classList.remove('candidate-reveal'), 300);
+        triggerCandidateReveal(cellEl);
       }
     }, delay);
   }
 
   await wait(TOTAL_REVEAL + 300);
-  svg.remove();
+  svg?.remove();
   showFeedback(t('feedback.candidatesFilled', { count: String(totalFilled) }), 'success');
   saveGameStatus();
 }
@@ -1088,12 +1058,8 @@ export function setContinuousDigit(num: number): void {
 }
 
 function updateContinuousFillUI(): void {
-  const btn = document.getElementById('continuous-fill-toggle');
-  if (btn) btn.classList.toggle('active', gs.continuousFillDigit !== null);
-  // Update numpad highlight
-  gs.numButtons.forEach((b, i) => {
-    b.classList.toggle('continuous-active', gs.continuousFillDigit === i + 1);
-  });
+  setContinuousFillToggleActive(gs.continuousFillDigit !== null);
+  setNumpadContinuousState(gs.numButtons, gs.continuousFillDigit);
 }
 
 export function handleContinuousCellClick(idx: number): boolean {
