@@ -71,21 +71,8 @@ const WEIGHT: Record<string, number> = {
 // with random generation. Their existing 25 puzzles are sufficient for endgame
 // encounter frequency (~15-30 encounters per technique).
 const TARGETS: Record<string, number> = {
-  naked_triple: 111,
-  hidden_triple: 96,
-  x_wing: 47,
-  unique_rectangle: 58,
-  skyscraper: 50,
-  two_string_kite: 43,
-  empty_rectangle: 43,
-  finned_x_wing: 50,
-  xy_wing: 50,
-  xyz_wing: 43,
-  w_wing: 50,
-  remote_pairs: 43,
-  swordfish: 35,
-  finned_swordfish: 28,
-  x_cycle_simple_coloring: 28,
+  hidden_triple: 58,
+  remote_pairs: 13,
 };
 
 interface PuzzleEntry {

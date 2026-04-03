@@ -90,8 +90,8 @@ describe('practice unlock tree', () => {
     expect(state.get('unique_rectangle')!.status).not.toBe('locked');
   });
 
-  it('medusa_3d unlocks when ANY ONE of (empty_rectangle, remote_pairs, als_chain) has 3+ clears', () => {
-    // Build full path to empty_rectangle through the fish/wing branch
+  it('medusa_3d unlocks only when ALL of (empty_rectangle, remote_pairs, als_chain) have 3+ clears', () => {
+    // Build full path to all three branch ends
     const prereqs = [
       { techKey: 'naked_single', count: 3 },
       { techKey: 'hidden_single', count: 3 },
@@ -109,16 +109,27 @@ describe('practice unlock tree', () => {
       { techKey: 'skyscraper', count: 3 },
       { techKey: 'two_string_kite', count: 3 },
       { techKey: 'empty_rectangle', count: 3 },
+      { techKey: 'x_cycle_simple_coloring', count: 3 },
+      { techKey: 'xy_wing', count: 3 },
+      { techKey: 'xyz_wing', count: 3 },
+      { techKey: 'w_wing', count: 3 },
+      { techKey: 'remote_pairs', count: 3 },
+      { techKey: 'unique_rectangle', count: 3 },
+      { techKey: 'bug_plus_one', count: 3 },
+      { techKey: 'als_xz', count: 3 },
+      { techKey: 'als_xy', count: 3 },
+      { techKey: 'als_w_wing', count: 3 },
+      { techKey: 'als_chain', count: 3 },
     ];
     localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(buildRecords(prereqs)));
     const state = computeUnlockState();
 
-    // medusa_3d should be unlocked because empty_rectangle has 3+ clears
+    // medusa_3d should be unlocked because all 3 branch ends meet threshold
     expect(state.get('medusa_3d')!.status).not.toBe('locked');
   });
 
-  it('medusa_3d should NOT unlock if none of the 3 branch ends have 3 clears', () => {
-    // Only clear the phase 1 prerequisites, not any branch end to 3
+  it('medusa_3d should stay locked if any required branch end is below threshold', () => {
+    // Make two branch ends pass and one fail (als_chain: 2)
     const prereqs = [
       { techKey: 'naked_single', count: 3 },
       { techKey: 'hidden_single', count: 3 },
@@ -127,8 +138,25 @@ describe('practice unlock tree', () => {
       { techKey: 'hidden_pair', count: 3 },
       { techKey: 'naked_triple', count: 3 },
       { techKey: 'hidden_triple', count: 3 },
-      { techKey: 'empty_rectangle', count: 2 },
-      { techKey: 'remote_pairs', count: 2 },
+      { techKey: 'x_wing', count: 3 },
+      { techKey: 'finned_x_wing', count: 3 },
+      { techKey: 'swordfish', count: 3 },
+      { techKey: 'finned_swordfish', count: 3 },
+      { techKey: 'jellyfish', count: 3 },
+      { techKey: 'finned_jellyfish', count: 3 },
+      { techKey: 'skyscraper', count: 3 },
+      { techKey: 'two_string_kite', count: 3 },
+      { techKey: 'empty_rectangle', count: 3 },
+      { techKey: 'x_cycle_simple_coloring', count: 3 },
+      { techKey: 'xy_wing', count: 3 },
+      { techKey: 'xyz_wing', count: 3 },
+      { techKey: 'w_wing', count: 3 },
+      { techKey: 'remote_pairs', count: 3 },
+      { techKey: 'unique_rectangle', count: 3 },
+      { techKey: 'bug_plus_one', count: 3 },
+      { techKey: 'als_xz', count: 3 },
+      { techKey: 'als_xy', count: 3 },
+      { techKey: 'als_w_wing', count: 3 },
       { techKey: 'als_chain', count: 2 },
     ];
     localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(buildRecords(prereqs)));

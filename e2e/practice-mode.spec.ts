@@ -50,12 +50,17 @@ test.describe('practice-mode', () => {
 
     // naked_single has no prerequisites, so should be unlocked (not .locked)
     const firstNode = page.locator('.tree-node').first();
-    await expect(firstNode).not.toHaveClass(/locked/);
-    await expect(firstNode).toHaveClass(/unlocked|partial|completed/);
+    await expect(firstNode).not.toHaveClass(/\btree-node--locked\b/);
+    await expect(firstNode).toHaveClass(/\btree-node--(unlocked|partial|completed)\b/);
 
     // Should have a name
-    const name = await firstNode.locator('.tree-node-name').textContent();
+    const name = await firstNode.locator('.tree-node-label').textContent();
     expect(name?.length).toBeGreaterThan(0);
+
+    // Should show Chinese progress-first copy (no GO/LOCK/DONE)
+    await expect(firstNode.locator('.tree-node-primary')).toContainText('剩');
+    await expect(firstNode.locator('.tree-node-secondary')).toContainText('已通關');
+    await expect(firstNode).not.toContainText(/GO|LOCK|DONE/);
   });
 
   test('clicking naked_single opens tier-view with correct title', async ({ page }) => {
@@ -63,8 +68,8 @@ test.describe('practice-mode', () => {
     await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 5000 });
 
     // Click the first unlocked node (naked_single)
-    const firstNode = page.locator('.tree-node:not(.locked)').first();
-    const techName = await firstNode.locator('.tree-node-name').textContent();
+    const firstNode = page.locator('.tree-node:not(.tree-node--locked)').first();
+    const techName = await firstNode.locator('.tree-node-label').textContent();
     await firstNode.click();
 
     // Tier view should appear, practice tree should be hidden
@@ -81,7 +86,7 @@ test.describe('practice-mode', () => {
     await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 5000 });
 
     // Enter first technique
-    await page.locator('.tree-node:not(.locked)').first().click();
+    await page.locator('.tree-node:not(.tree-node--locked)').first().click();
     await page.locator('#tier-view:not(.hidden)').waitFor({ timeout: 5000 });
 
     // Click back
@@ -97,7 +102,7 @@ test.describe('practice-mode', () => {
     await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 5000 });
 
     // Click first unlocked technique
-    await page.locator('.tree-node:not(.locked)').first().click();
+    await page.locator('.tree-node:not(.tree-node--locked)').first().click();
     await page.locator('#tier-view:not(.hidden)').waitFor({ timeout: 5000 });
 
     // Level list should have 25 items

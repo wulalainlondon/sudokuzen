@@ -3,7 +3,7 @@
 
 import { gs, type ActionRecord } from '../../game/state';
 import { SK, readJson } from '../../storage/keys';
-import { getPracticeLevels } from '../../data/dataRegistry';
+import { getPracticeLevels, hasTeachModule } from '../../data/dataRegistry';
 import { TECH_MAP } from '../teach-legacy';
 import { showFeedback } from '../../ui/feedback';
 import { syncLevelCardSize } from '../../game/board';
@@ -75,6 +75,27 @@ const UNLOCK_TREE: TreeNode[] = [
   { key: 'exocet_death_blossom', prerequisites: ['death_blossom'] },
 ];
 
+type PracticePhaseKey = 'phase1' | 'phase2' | 'phase3' | 'phase4' | 'phase5';
+
+const PHASE1_SET = new Set(['naked_single', 'hidden_single', 'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple']);
+const PHASE2_SET = new Set([
+  'x_wing', 'finned_x_wing', 'swordfish', 'finned_swordfish', 'jellyfish', 'finned_jellyfish', 'skyscraper', 'two_string_kite', 'empty_rectangle',
+  'x_cycle_simple_coloring', 'xy_wing', 'xyz_wing', 'w_wing', 'remote_pairs',
+  'unique_rectangle', 'bug_plus_one', 'als_xz', 'als_xy', 'als_w_wing', 'als_chain',
+]);
+const PHASE3_SET = new Set(['medusa_3d']);
+const PHASE4_SET = new Set(['xy_chain', 'aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop']);
+
+// Representative teach books for first-entry phase briefing.
+const PHASE_TEACH_BOOK: Record<PracticePhaseKey, number> = {
+  phase1: 1, // naked_single
+  phase2: 8, // x_wing
+  phase3: 26, // remote_pairs (convergence prep)
+  phase4: 18, // aic
+  phase5: 24, // forcing_chain_net
+};
+const PRACTICE_PHASE_TEACH_SEEN_KEY = 'sudoku_practice_phase_teach_seen_v1';
+
 // Deduplicate tree (als_xz appears twice above — keep first)
 const _seen = new Set<string>();
 export const TREE: TreeNode[] = [];
@@ -128,12 +149,6 @@ export function computeUnlockState(): Map<string, TechState> {
       }
     }
 
-    // medusa_3d special: ANY one of three branches completing suffices
-    if (node.key === 'medusa_3d') {
-      const branchEnds = ['empty_rectangle', 'remote_pairs', 'als_chain'];
-      allPrereqsMet = branchEnds.some(k => (clearedCount.get(k) || 0) >= Math.min(UNLOCK_THRESHOLD, 25));
-    }
-
     let status: TechStatus;
     if (!allPrereqsMet) {
       status = 'locked';
@@ -149,6 +164,42 @@ export function computeUnlockState(): Map<string, TechState> {
   }
 
   return result;
+}
+
+function getPracticePhaseKey(techKey: string): PracticePhaseKey {
+  if (PHASE1_SET.has(techKey)) return 'phase1';
+  if (PHASE2_SET.has(techKey)) return 'phase2';
+  if (PHASE3_SET.has(techKey)) return 'phase3';
+  if (PHASE4_SET.has(techKey)) return 'phase4';
+  return 'phase5';
+}
+
+function maybeShowPhaseTeachBrief(techKey: string): void {
+  const phase = getPracticePhaseKey(techKey);
+  const raw = localStorage.getItem(PRACTICE_PHASE_TEACH_SEEN_KEY);
+  let seen: Record<string, boolean> = {};
+  if (raw) {
+    try {
+      seen = JSON.parse(raw) as Record<string, boolean>;
+    } catch {
+      seen = {};
+    }
+  }
+  if (seen[phase]) return;
+
+  const stars = PHASE_TEACH_BOOK[phase];
+  seen[phase] = true;
+  localStorage.setItem(PRACTICE_PHASE_TEACH_SEEN_KEY, JSON.stringify(seen));
+  if (!hasTeachModule(stars)) return;
+
+  window.setTimeout(() => {
+    const show = (window as any).showTeachModal as ((s: number, source?: 'tier' | 'library') => void) | undefined;
+    if (show) {
+      show(stars, 'tier');
+      return;
+    }
+    import('../teach-legacy').then((m) => m.showTeachModal(stars, 'tier'));
+  }, 320);
 }
 
 // ── View management ───────────────────────────────────────────────────
@@ -254,6 +305,7 @@ export function enterPracticeTechnique(techKey: string): void {
   }
 
   renderPracticeLevelGrid(techKey);
+  maybeShowPhaseTeachBrief(techKey);
 }
 
 function renderPracticeLevelGrid(techKey: string): void {

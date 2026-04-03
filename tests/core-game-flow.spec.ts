@@ -56,8 +56,8 @@ describe('saveGameStatus / loadGameStatus', () => {
     saveGameStatus();
     const loaded = loadGameStatus(42);
     expect(loaded).not.toBeNull();
-    expect(loaded.levelId).toBe(42);
-    expect(loaded.seconds).toBe(100);
+    expect(loaded!.levelId).toBe(42);
+    expect(loaded!.seconds).toBe(100);
   });
 
   it('returns null for non-existent saves', () => {

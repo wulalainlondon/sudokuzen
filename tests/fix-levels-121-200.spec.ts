@@ -26,6 +26,7 @@ const TECHNIQUE_ORDER: TechniqueName[] = [
   'w_wing',
   'unique_rectangle',
   'x_cycle_simple_coloring',
+  'medusa_3d',
   'swordfish',
   'finned_swordfish',
   'remote_pairs',
