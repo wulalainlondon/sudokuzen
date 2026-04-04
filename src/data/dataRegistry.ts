@@ -135,6 +135,11 @@ export async function getWorldTierLevels(tier: string): Promise<LevelData[]> {
   return loadShard(`world-${tier}`, 'world');
 }
 
+/** Get duo mode levels for a specific tier (async, cached). Independent pool. */
+export async function loadDuoShard(tier: string): Promise<LevelData[]> {
+  return loadShard(`duo-${tier}`, 'world');
+}
+
 /** Get ALL world mode levels (fetches all world shards). */
 export async function getAllWorldLevels(): Promise<LevelData[]> {
   const manifest = await getDataManifest();
