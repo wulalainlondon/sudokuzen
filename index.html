@@ -222,9 +222,9 @@
                 <div class="leaderboard-title">首通榜 TOP 3</div>
                 <div class="leaderboard-list" id="leaderboard-list">載入中...</div>
             </div>
-            <button class="resume-btn" onclick="resumeGame()">繼續遊戲</button>
-            <button class="back-btn" class="back-btn-light"
-                onclick="showLevelScreen(true)">放棄關卡</button>
+            <button class="resume-btn" id="pause-resume-btn" onclick="resumeGame()">繼續遊戲</button>
+            <button class="back-btn back-btn-light" id="pause-leave-btn" onclick="showLevelScreen(true)">放棄關卡</button>
+            <button class="back-btn back-btn-light" id="pause-abandon-btn" style="display:none;">放棄遭遇</button>
         </div>
 
         <!-- Win celebration is now rendered by React (src/react/win/WinCelebration.tsx) -->
@@ -371,7 +371,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.04-V6';
+        var INLINE_VER = '2026.04.04-V7';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

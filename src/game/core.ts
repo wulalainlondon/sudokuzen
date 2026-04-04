@@ -933,7 +933,49 @@ export function pauseGame(): void {
   setPauseScreenContent(gs.currentLevel!.displayName, formatSeconds(gs.seconds));
   saveGameStatus();
   loadLevelLeaderboard(gs.currentLevel!.id);
+  const isWild = !!(gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild');
+  const resumeBtn = document.getElementById('pause-resume-btn') as HTMLButtonElement | null;
+  const leaveBtn = document.getElementById('pause-leave-btn') as HTMLButtonElement | null;
+  const abandonBtn = document.getElementById('pause-abandon-btn') as HTMLButtonElement | null;
+  if (resumeBtn) resumeBtn.textContent = t('nav.resumeGame');
+  if (leaveBtn) {
+    leaveBtn.textContent = isWild ? t('nav.tempLeaveEncounter') : t('nav.abandonLevel');
+    leaveBtn.onclick = isWild
+      ? () => {
+          void leaveWildFromPause();
+        }
+      : () => {
+          import('../features/levels').then((m) => m.showLevelScreen(true));
+        };
+  }
+  if (abandonBtn) {
+    abandonBtn.style.display = isWild ? '' : 'none';
+    abandonBtn.textContent = t('wild.abandonEncounter');
+    abandonBtn.onclick = isWild
+      ? () => {
+          void abandonWildFromPause();
+        }
+      : null;
+  }
   showPauseScreen();
+}
+
+export async function leaveWildFromPause(): Promise<void> {
+  hidePauseScreen();
+  const { exitWild } = await import('../features/wild/wildController');
+  const { showLevelScreen } = await import('../features/levels');
+  exitWild();
+  showLevelScreen(true);
+}
+
+export async function abandonWildFromPause(): Promise<void> {
+  if (!confirm(t('wild.abandonConfirm'))) return;
+  hidePauseScreen();
+  const { abandonWildEncounter } = await import('../features/wild/wildController');
+  const { showLevelScreen } = await import('../features/levels');
+  abandonWildEncounter();
+  showFeedback(t('wild.abandonEncounter'), 'success');
+  showLevelScreen(true);
 }
 
 export function resumeGame(): void {

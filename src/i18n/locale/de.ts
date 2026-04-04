@@ -43,6 +43,7 @@ export const de: Widen<Locale> = {
     startChallenge: 'Herausforderung starten',
     selectOther: 'Anderes Level w\u00E4hlen',
     abandonLevel: 'Level aufgeben',
+    tempLeaveEncounter: 'Begegnung verlassen',
     resumeGame: 'Spiel fortsetzen',
     resumeGameWithLevel: 'Fortsetzen: {level}',
     quitNormal: 'Beenden',

@@ -40,6 +40,7 @@ export const ja: Widen<Locale> = {
     startChallenge: '挑戦開始',
     selectOther: '他のステージを選ぶ',
     abandonLevel: 'ステージを放棄',
+    tempLeaveEncounter: '一時離脱',
     resumeGame: 'ゲームを再開',
     resumeGameWithLevel: 'ゲームを再開：{level}',
     quitNormal: 'Quit',

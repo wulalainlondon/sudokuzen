@@ -34,6 +34,7 @@ export const zhTW = {
     startChallenge: '開始挑戰',
     selectOther: '選擇其他關卡',
     abandonLevel: '放棄關卡',
+    tempLeaveEncounter: '暫離遭遇',
     resumeGame: '繼續遊戲',
     resumeGameWithLevel: '繼續遊戲：{level}',
     quitNormal: 'Quit',

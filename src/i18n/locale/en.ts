@@ -45,6 +45,7 @@ export const en: Widen<Locale> = {
     startChallenge: 'Start Challenge',
     selectOther: 'Select Another Level',
     abandonLevel: 'Abandon Level',
+    tempLeaveEncounter: 'Leave Temporarily',
     resumeGame: 'Resume Game',
     resumeGameWithLevel: 'Resume: {level}',
     quitNormal: 'Quit',
