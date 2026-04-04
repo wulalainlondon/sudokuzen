@@ -3666,6 +3666,18 @@ header h1 {
     line-height: 1.35;
 }
 
+.wild-intro-btn {
+    align-self: flex-start;
+    margin-top: 4px;
+    border: 1px solid color-mix(in srgb, var(--accent, #0984E3) 28%, transparent);
+    background: color-mix(in srgb, var(--accent, #0984E3) 9%, transparent);
+    color: var(--accent, #0984E3);
+    font-size: 0.74rem;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
 /* Enter Button */
 .wild-enter-btn {
     display: flex;
@@ -4553,6 +4565,32 @@ header h1 {
 }
 .duo-ready-btn:active { transform: scale(0.95); }
 
+.duo-lobby-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.duo-level-label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.duo-level-select {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--line-soft);
+    background: var(--surface-1);
+    color: var(--text-main);
+    padding: 10px 12px;
+    font-size: 0.92rem;
+}
+
+.duo-lobby-create,
+.duo-lobby-join {
+    width: 100%;
+}
+
 /* Duo progress during gameplay */
 .duo-progress-container {
     display: none;
@@ -5243,6 +5281,15 @@ body.library-open {
     box-shadow: var(--teach-focus-ring);
     z-index: 1;
 }
+.practice-cell.fill-selected {
+    background: rgba(52, 152, 219, 0.12);
+}
+.practice-cell.fill-correct {
+    background: rgba(39, 174, 96, 0.16);
+}
+.practice-cell.fill-wrong {
+    background: rgba(230, 126, 34, 0.16);
+}
 .practice-cell .tc-notes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -5290,6 +5337,16 @@ body.library-open {
     font-weight: 700;
     background: var(--teach-elim-bg);
     animation: teach-elim-digit calc(0.65s * var(--teach-anim-speed)) ease-out both;
+}
+.practice-cell .tc-note.fill-pick {
+    color: #2980b9;
+    font-weight: 700;
+    background: rgba(52, 152, 219, 0.18);
+}
+.practice-cell .tc-note.fill-correct-reveal {
+    color: var(--success-color);
+    font-weight: 700;
+    background: rgba(39, 174, 96, 0.2);
 }
 .practice-status {
     display: flex;

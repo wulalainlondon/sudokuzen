@@ -6,6 +6,12 @@ import { getAllLevels } from '../data/dataRegistry';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds, cellLabel, normalizeSavedCells } from './utils';
 import {
+  canInputByErrorGate,
+  getModePolicy,
+  getSaveKeyForCurrentMode,
+  getRecordsStorageKeyForLevelList,
+} from './modePolicy';
+import {
   playFillSound,
   playUnitCompleteSound,
   playWinSound,
@@ -257,7 +263,7 @@ function resetGameState(): void {
   resetSkillState();
 
   // Show undo button only in speedrun/blind modes
-  const showUndo = gs.isSpeedrunMode || gs.wildBlindMode;
+  const showUndo = getModePolicy().showUndo;
   setUndoButtonVisible(showUndo);
 }
 
@@ -270,7 +276,7 @@ export function saveGameStatus(): void {
     import('../features/wild/wildController').then(m => m.saveCurrentEncounter());
     return;
   }
-  const saveKey = SK.save(gs.currentLevel.id, gs.isSpeedrunMode);
+  const saveKey = getSaveKeyForCurrentMode(gs.currentLevel.id);
   const data = {
     levelId: gs.currentLevel.id,
     cellsData: gs.cellsData,
@@ -301,7 +307,7 @@ export interface SavedGameState {
 }
 
 export function loadGameStatus(levelId: number): SavedGameState | null {
-  const saved = localStorage.getItem(SK.save(levelId, gs.isSpeedrunMode));
+  const saved = localStorage.getItem(getSaveKeyForCurrentMode(levelId));
   if (!saved) return null;
   try {
     return JSON.parse(saved);
@@ -311,7 +317,7 @@ export function loadGameStatus(levelId: number): SavedGameState | null {
 }
 
 export function clearGameStatus(levelId: number): void {
-  const saveKey = SK.save(levelId, gs.isSpeedrunMode);
+  const saveKey = getSaveKeyForCurrentMode(levelId);
   localStorage.removeItem(saveKey);
 }
 
@@ -330,7 +336,7 @@ export function handleInput(num: number): void {
   if (blindRevealing) return;
   if (isDigitCompletedOnBoard(num)) return;
   if (gs.selectedIdx === null || gs.cellsData[gs.selectedIdx].fixed) return;
-  if (!gs.isDuoMode && gs.errors >= gs.maxErrors) return;
+  if (!canInputByErrorGate()) return;
   if (isDuoCooldownActive()) return;
 
   const data = gs.cellsData[gs.selectedIdx];
@@ -437,7 +443,7 @@ export function handleInput(num: number): void {
       }, 400);
       saveGameStatus();
       evaluateLockedSkill();
-      if (!gs.isDuoMode && gs.errors >= gs.maxErrors) showGameOver();
+      if (!canInputByErrorGate()) showGameOver();
       return;
     }
 
@@ -460,7 +466,7 @@ export function handleInput(num: number): void {
       recalculatePlayerFilledCount();
       updateGhostProgressUI();
     }
-    if (!gs.isSpeedrunMode) celebrateCompletedUnits(gs.selectedIdx, beforeState);
+    if (!getModePolicy().useSubmissionValidation) celebrateCompletedUnits(gs.selectedIdx, beforeState);
     if (gs.isDuoMode) callDuoProgress();
     checkWin();
   }
@@ -653,8 +659,8 @@ async function checkBlindComplete(): Promise<void> {
 }
 
 export function saveProgress(): number {
-  if (gs.isSpeedrunMode) {
-    const records = readJson<Record<string, any>>(SK.SPEED_RECORDS, {});
+  if (getModePolicy().useSubmissionValidation) {
+    const records = readJson<Record<string, any>>(getRecordsStorageKeyForLevelList(false), {});
     const existing = records[gs.currentLevel!.id];
     const currentSubs = gs.submissionCount + 1;
     const shouldUpdate =
@@ -667,7 +673,7 @@ export function saveProgress(): number {
     }
     return currentSubs;
   } else {
-    const records = readJson<Record<string, any>>(SK.RECORDS, {});
+    const records = readJson<Record<string, any>>(getRecordsStorageKeyForLevelList(false), {});
     const existing = records[gs.currentLevel!.id];
     const earnedStars = Math.max(1, 3 - gs.errors);
     const shouldUpdate =
@@ -949,7 +955,7 @@ export function toggleTheme(): void {
 }
 
 export function toggleNoteMode(): void {
-  if (gs.wildNotesDisabled) {
+  if (!getModePolicy().allowNotes) {
     showFeedback(t('feedback.noNotesMode'), 'error');
     return;
   }
@@ -973,7 +979,7 @@ function highlightDigitOnBoard(digit: number): void {
 
 export async function fillAllCandidates(): Promise<void> {
   if (!gs.gridEl || !gs.cellsData.length) return;
-  if (gs.wildNotesDisabled) {
+  if (!getModePolicy().allowNotes) {
     showFeedback(t('feedback.noNotesMode'), 'error');
     return;
   }
@@ -1079,7 +1085,7 @@ function updateContinuousFillUI(): void {
 export function handleContinuousCellClick(idx: number): boolean {
   if (gs.continuousFillDigit === null || gs.continuousFillDigit === 0) return false;
   if (gs.cellsData[idx].fixed) return false;
-  if (!gs.isDuoMode && gs.errors >= gs.maxErrors) return false;
+  if (!canInputByErrorGate()) return false;
   if (isDuoCooldownActive()) return false;
 
   gs.selectedIdx = idx;

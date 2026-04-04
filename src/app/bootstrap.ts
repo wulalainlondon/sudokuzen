@@ -13,6 +13,13 @@ import { initGame, handleInput, erase, saveGameStatus } from '../game/core';
 import { selectCell } from '../game/board';
 import * as replay from '../features/replay';
 import { hydratePlayerProfileFromCloud, installPlayerCloudSyncBridge } from '../firebase/client';
+import {
+  openDuoLobby,
+  closeDuoLobby,
+  createDuoRoomFromLobby,
+  joinDuoRoomFromLobby,
+  refreshDuoLobbyRoom,
+} from '../features/duoLobby';
 
 declare global {
   interface Window {
@@ -33,6 +40,13 @@ export function bootstrapApp(): void {
     };
 
     bootLegacyRuntime(APP_VERSION);
+    Object.assign(window as unknown as Record<string, unknown>, {
+      openDuoLobby,
+      closeDuoLobby,
+      createDuoRoomFromLobby,
+      joinDuoRoomFromLobby,
+      refreshDuoLobbyRoom,
+    });
     if (gs.firebaseReady) {
       // IMPORTANT: hydrate MUST complete before bridge activates.
       // Otherwise the bridge pushes empty localStorage to cloud,

@@ -2,8 +2,8 @@
 
 import { loadWildProfile, saveWildProfile, loadWildSave } from './wildState';
 import { TECHNIQUE_TABLE, getAutoCastKeys, getTechniqueMeta, type Rarity } from './techniqueMeta';
-import { expForLevel } from './expSystem';
-import { getMentorNote } from './mentorController';
+import { expForLevel, getUnstudiedGateSkills, releaseGateOverflow } from './expSystem';
+import { getMentorNote, hasCompletedMentorIntro } from './mentorController';
 import { showFeedback } from '../../ui/feedback';
 import { getOnlineCount } from '../../firebase/client';
 import { t } from '../../i18n/t';
@@ -79,13 +79,17 @@ function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {
   const SESSION_LEVEL_GATE = 21;
   const canSession = profile.iqLevel >= SESSION_LEVEL_GATE;
   const session = profile.currentSession;
+  const gateRemaining = getUnstudiedGateSkills(profile).length;
+  const gateTotal = TECHNIQUE_TABLE.filter((t) => t.fragmentsRequired > 0).length;
+  const gateStudied = Math.max(0, gateTotal - gateRemaining);
+  const gateBanked = profile.gateOverflowExp ?? 0;
 
   if (!canSession) {
     // 新手村: free roam
     return {
       roundText: t('wild.freeExplore'),
       fillPct: 0,
-      metaText: t('wild.sessionUnlock', { level: String(SESSION_LEVEL_GATE) }),
+      metaText: `${t('wild.sessionUnlock', { level: String(SESSION_LEVEL_GATE) })} · ${t('wild.sessionUnlockProgress', { studied: String(gateStudied), total: String(gateTotal), remaining: String(gateRemaining) })}${gateBanked > 0 ? ` · ${t('wild.gateOverflowBanked', { exp: String(gateBanked) })}` : ''}`,
       techText: t('wild.techEncountered', { count: String(Object.keys(profile.bestiary).length) }),
       enterText: t('wild.enterWorld'),
       enterSub: t('wild.enterSub'),
@@ -175,6 +179,9 @@ export async function studyWildSkill(techKey: string): Promise<void> {
 
   // Mark as studied
   profile.studiedSkills.push(techKey);
+
+  // If Lv.20 gate EXP was banked, release it once all basics are studied.
+  const releasedExp = releaseGateOverflow(profile);
   saveWildProfile(profile);
 
   showFeedback(t('wild.studyComplete', { name: meta.name, subtitle: meta.subtitle }), 'success');
@@ -186,6 +193,11 @@ export async function studyWildSkill(techKey: string): Promise<void> {
     setTimeout(() => {
       showFeedback(t('wild.allBasicsComplete'), 'success');
     }, 1500);
+    if (releasedExp > 0) {
+      setTimeout(() => {
+        showFeedback(t('wild.gateOverflowReleased', { exp: String(releasedExp) }), 'success');
+      }, 2100);
+    }
   }
 
   // If this is locked_candidates, hint about long-press
@@ -308,6 +320,7 @@ export function renderWildLobby(): void {
     bestiaryTotal: TECHNIQUE_TABLE.length,
     bestiaryFilter: _bestiaryFilter as StoreBestiaryFilter,
     rarityFilter: _rarityFilter as StoreRarityFilter,
+    showIntroButton: !hasCompletedMentorIntro(),
   });
 
   // Online presence indicator
@@ -622,6 +635,7 @@ function setWorldViewActive(active: boolean): void {
   const stageView = document.getElementById('stage-view');
   const tierView = document.getElementById('tier-view');
   const lobby = document.getElementById('wild-lobby');
+  const duoLobby = document.getElementById('duo-lobby');
   const libraryBtn = document.getElementById('library-btn');
   if (levelScreen) levelScreen.classList.toggle('world-view-active', active);
   if (levelTitle) levelTitle.textContent = active ? t('wild.lobbyTitle') : 'SUDOKU ZEN';
@@ -631,6 +645,7 @@ function setWorldViewActive(active: boolean): void {
   if (stageView) stageView.style.display = active ? 'none' : 'flex';
   if (tierView) tierView.classList.toggle('hidden', true);
   if (lobby) lobby.classList.toggle('hidden', !active);
+  if (duoLobby) duoLobby.classList.add('hidden');
   // Hide library button in world view — teach is accessed via bestiary study
   if (libraryBtn) libraryBtn.style.display = active ? 'none' : '';
 }

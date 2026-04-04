@@ -156,6 +156,7 @@ function _attachSnapshotListener(): void {
 
 export function handleDuoSnapshot(d: DuoRoomData): void {
   if (!d || !gs.duoRole) return;
+  import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch(() => {});
 
   if (d.status === 'waiting' || d.status === 'countdown') {
     // Only update pre-level UI if player is on the level screen, not mid-game
@@ -865,6 +866,7 @@ export function resetDuoState(): void {
   const forfeitBtn = document.getElementById('duo-forfeit-btn');
   if (forfeitBtn) forfeitBtn.remove();
   gs.duoLastEmojiSeen = '';
+  import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch(() => {});
 }
 
 // ── Passive Glow Listener ────────────────────────────────────────────

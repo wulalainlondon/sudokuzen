@@ -42,8 +42,8 @@
                     aria-label="個人統計">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
                 </button>
-                <button id="speedrun-toggle-btn" class="header-icon-btn speedrun-btn" onclick="toggleSpeedrunMode()" title="切換純粹競速模式 (Speedrun)"
-                    aria-label="切換競速模式">⚡</button>
+                <button id="duo-entry-btn" class="header-icon-btn speedrun-btn" onclick="openDuoLobby()" title="雙人對決大廳"
+                    aria-label="雙人對決入口">Duo</button>
             </div>
         </div>
         <div class="alias-config">
@@ -131,6 +131,36 @@
                         <button class="wild-rarity-btn" data-rarity="mythic">神話</button>
                     </div>
                     <div class="wild-bestiary-grid" id="wild-bestiary-grid"></div>
+                </div>
+            </div>
+        </div>
+        <div id="duo-lobby" class="hidden">
+            <div class="wild-lobby-header">
+                <button class="tier-back-btn" onclick="closeDuoLobby()">← 返回</button>
+                <div class="wild-lobby-title">Duo 對戰大廳</div>
+            </div>
+            <div class="wild-lobby-body">
+                <div class="wild-profile-card duo-lobby-card">
+                    <div class="wild-session-title">建立房間</div>
+                    <label class="duo-level-label" for="duo-level-select">選擇關卡</label>
+                    <select id="duo-level-select" class="duo-level-select"></select>
+                    <button class="wild-enter-btn duo-lobby-create" onclick="createDuoRoomFromLobby()">
+                        <span class="wild-enter-chip">HOST</span>
+                        <span class="wild-enter-text">建立房間</span>
+                        <span class="wild-enter-sub">建立後會進入對戰準備區</span>
+                    </button>
+                </div>
+                <div class="wild-session-card duo-lobby-card">
+                    <div class="wild-session-head">
+                        <div class="wild-session-title">加入房間</div>
+                        <button class="wild-filter-btn" onclick="refreshDuoLobbyRoom()">重新整理</button>
+                    </div>
+                    <div class="wild-session-meta" id="duo-room-status">讀取中...</div>
+                    <button class="wild-enter-btn duo-lobby-join" id="duo-join-btn" onclick="joinDuoRoomFromLobby()">
+                        <span class="wild-enter-chip">JOIN</span>
+                        <span class="wild-enter-text">加入等待房</span>
+                        <span class="wild-enter-sub">與對方同一入口，直接加入對戰</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -328,7 +358,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.04-V1';
+        var INLINE_VER = '2026.04.04-V2';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);
