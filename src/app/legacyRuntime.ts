@@ -36,13 +36,22 @@ import {
   replayToggleSpeed,
 } from '../features/replay';
 import { toggleDuoReady, sendDuoEmoji, closeDuoResult, surrenderDuo, startDuoGlowListener } from '../features/duo';
+import {
+  openDuoLobby,
+  closeDuoLobby,
+  createDuoRoomFromLobby,
+  joinDuoRoomFromLobby,
+  updateDuoRoomLevelFromLobby,
+  toggleDuoLevelLockFromLobby,
+  refreshDuoLobbyRoom,
+} from '../features/duoLobby';
 import { openStatsModal, closeStatsModal } from '../features/stats';
 import {
   showLevelScreen,
   backToStageMap,
   toggleSpeedrunMode,
   startPoolRandom,
-  hidePreLevelModal,
+  startLevelFromModal,
 } from '../features/levels';
 import {
   openLibraryOverlay,
@@ -57,26 +66,12 @@ import {
   openTeachFromLibrary,
   closePracticeModal,
 } from '../features/teach-legacy';
-import { openWildLobby, closeWildLobby, toggleWildAutoCast, isWorldLobbyOpen } from '../features/wild/wildLobby';
+import { openWildLobby, closeWildLobby, toggleWildAutoCast } from '../features/wild/wildLobby';
 import { continueWild, exitWild, startWorldSession } from '../features/wild/wildController';
 import { dismissMentor } from '../features/wild/mentorController';
-import { openPracticeLobby, closePracticeLobby, isPracticeLobbyOpen, backToPracticeLobby } from '../features/practice/practiceLobby';
-import { useWinStore } from '../react/win/winStore';
-import { useGameOverStore } from '../react/gameover/gameOverStore';
-import { useStatsStore } from '../react/stats/statsStore';
-import { usePreLevelStore } from '../react/prelevel/preLevelStore';
-import { useDuoResultStore } from '../react/duoresult/duoResultStore';
-import { useLibraryStore } from '../react/library/libraryStore';
-import { useReplayStore } from '../react/replay/replayStore';
-import { useMentorStore } from '../react/mentor/mentorStore';
-import { useEncounterTransitionStore } from '../react/wild/encounterTransitionStore';
-import { bridgeCloseWin } from '../react/win/winBridge';
-import { bridgeCloseGameOver } from '../react/gameover/gameOverBridge';
-import { bridgeCloseWildMentorNote, bridgeHasWildMentorNoteOpen } from '../react/wild/wildLobbyBridge';
-
-function isWinCelebrationOpen(): boolean {
-  return useWinStore.getState().visible;
-}
+import { openPracticeLobby, closePracticeLobby } from '../features/practice/practiceLobby';
+import { initBackHandler } from './navigation/navigationOrchestrator';
+import { installHostBridge, notifyHostBeforeUnload, notifyHostBootReady, type HostBridgeApi } from '../platform/hostBridge';
 
 export function bootLegacyRuntime(appVersion: string): void {
   gs.appVersion = appVersion;
@@ -180,6 +175,7 @@ export function bootLegacyRuntime(appVersion: string): void {
 
   // 13. Global event handlers
   window.addEventListener('beforeunload', () => {
+    notifyHostBeforeUnload();
     if ((document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') saveGameStatus();
     // Clean up duo listener
     if (gs.duoUnsubscribe) { gs.duoUnsubscribe(); gs.duoUnsubscribe = null; }
@@ -188,10 +184,13 @@ export function bootLegacyRuntime(appVersion: string): void {
       const field = gs.duoRole === 'host' ? 'status' : 'guestId';
       const val = gs.duoRole === 'host' ? 'idle' : null;
       try {
-        gs.db
-          .collection('duo_room')
-          .doc('current')
-          .update({ [field]: val });
+        const roomId = localStorage.getItem('sudoku_duo_active_room_id');
+        if (roomId) {
+          gs.db
+            .collection('duo_rooms')
+            .doc(roomId)
+            .update({ [field]: val });
+        }
       } catch {
         /* ignore */
       }
@@ -215,112 +214,8 @@ export function bootLegacyRuntime(appVersion: string): void {
       saveGameStatus();
   });
 
-  // 14. Android back button — navigate within app, never leave
-  // Keep an extra guard entry so the first Back always triggers popstate
-  // instead of exiting the standalone PWA/webview.
-  history.replaceState({ screen: 'stage' }, '');
-  history.pushState({ screen: 'nav' }, '');
-  window.addEventListener('popstate', () => {
-    // Always push state back so we never run out of history
-    history.pushState({ screen: 'nav' }, '');
-
-    // Priority: close modals first
-    const teachModal = document.getElementById('teach-modal');
-    const practiceModal = document.getElementById('practice-modal');
-    const statsModal = document.getElementById('stats-modal');
-    // replay-modal, duo-result-modal and library-overlay are now React-managed (checked via stores below)
-
-    if (teachModal?.classList.contains('show')) {
-      hideTeachModal();
-      return;
-    }
-    if (practiceModal?.classList.contains('show')) {
-      closePracticeModal();
-      return;
-    }
-    if (statsModal?.style.display === 'flex' || useStatsStore.getState().visible) {
-      closeStatsModal();
-      return;
-    }
-    if (useReplayStore.getState().visible) {
-      closeReplayModal();
-      return;
-    }
-    if (useDuoResultStore.getState().visible) {
-      closeDuoResult();
-      return;
-    }
-    if (useLibraryStore.getState().visible) {
-      closeLibraryOverlay();
-      return;
-    }
-    if (usePreLevelStore.getState().visible) {
-      hidePreLevelModal();
-      return;
-    }
-    if (useWinStore.getState().visible) {
-      bridgeCloseWin();
-      return;
-    }
-    if (useGameOverStore.getState().visible) {
-      bridgeCloseGameOver();
-      return;
-    }
-    if (useMentorStore.getState().visible) {
-      dismissMentor();
-      return;
-    }
-    if (bridgeHasWildMentorNoteOpen()) {
-      bridgeCloseWildMentorNote();
-      return;
-    }
-    if (useEncounterTransitionStore.getState().active) {
-      import('../react/wild/encounterTransitionBridge').then(({ bridgeDismissEncounterTransition }) => bridgeDismissEncounterTransition());
-      return;
-    }
-
-    // Game screen → pause
-    if ((document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') {
-      const pauseScreen = document.getElementById('pause-screen');
-      if (pauseScreen?.style.display === 'flex') {
-        // Already paused → go back to level screen
-        showLevelScreen(true);
-      } else if (isWinCelebrationOpen() || useGameOverStore.getState().visible) {
-        // Game over or win → back to levels
-        showLevelScreen(true);
-      } else {
-        // Playing → pause
-        pauseGame();
-      }
-      return;
-    }
-
-    // Practice: tier-view showing a technique's levels → back to practice lobby
-    if (gs.practiceActiveTech && !document.getElementById('tier-view')?.classList.contains('hidden')) {
-      backToPracticeLobby();
-      return;
-    }
-
-    // Practice lobby → stage map
-    if (isPracticeLobbyOpen()) {
-      closePracticeLobby();
-      return;
-    }
-
-    // Wild lobby → stage map
-    if (isWorldLobbyOpen()) {
-      closeWildLobby();
-      return;
-    }
-
-    // Tier view → stage map
-    if (!document.getElementById('tier-view')?.classList.contains('hidden')) {
-      backToStageMap();
-      return;
-    }
-
-    // Stage map = top level → do nothing (stay in app)
-  });
+  // 14. Android back button — route through navigation orchestrator.
+  initBackHandler();
 
   // 15. Show level screen once normal data is warm (or timeout fallback).
   // This avoids first-paint empty stage map -> second-paint filled map flicker.
@@ -340,6 +235,13 @@ export function bootLegacyRuntime(appVersion: string): void {
     openLibraryOverlay,
     openStatsModal,
     toggleSpeedrunMode,
+    openDuoLobby,
+    closeDuoLobby,
+    createDuoRoomFromLobby,
+    joinDuoRoomFromLobby,
+    updateDuoRoomLevelFromLobby,
+    toggleDuoLevelLockFromLobby,
+    refreshDuoLobbyRoom,
     saveAlias,
     startPoolRandom,
     backToStageMap,
@@ -388,4 +290,22 @@ export function bootLegacyRuntime(appVersion: string): void {
     openPracticeLobby,
     closePracticeLobby,
   });
+
+  const hostApi: HostBridgeApi = {
+    apiVersion: '1',
+    appVersion,
+    showLevelScreen,
+    startLevelFromModal,
+    pauseGame,
+    resumeGame,
+    toggleSpeedrunMode,
+    openReplayModal,
+    closeReplayModal,
+    openWildLobby,
+    closeWildLobby,
+    startWorldSession,
+    continueWild,
+    exitWild,
+  };
+  void installHostBridge(hostApi).then(() => notifyHostBootReady(appVersion));
 }

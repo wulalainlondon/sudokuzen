@@ -24,102 +24,212 @@ interface DuoRecords {
   streakHolder: string;
 }
 
+export interface DuoRoomSummary {
+  roomId: string;
+  levelId: number;
+  status: DuoRoomData['status'];
+  hostId: string;
+  hostAlias: string;
+  guestAlias: string | null;
+  updatedAtMs: number;
+  levelLocked: boolean;
+}
+
 // ── Module-level guard flags ─────────────────────────────────────────
 let _countdownLaunched = false;
 let _duoFinishSubmitted = false;
 let _snapshotRetryCount = 0;
 let _lastSeenLevelId: number | null = null;
 const MAX_SNAPSHOT_RETRIES = 5;
+const DUO_ROOMS_COLLECTION = 'duo_rooms';
+const ACTIVE_ROOM_ID_KEY = 'sudoku_duo_active_room_id';
+let _activeRoomId: string | null = localStorage.getItem(ACTIVE_ROOM_ID_KEY);
+
+function setActiveRoomId(roomId: string | null): void {
+  _activeRoomId = roomId;
+  if (roomId) localStorage.setItem(ACTIVE_ROOM_ID_KEY, roomId);
+  else localStorage.removeItem(ACTIVE_ROOM_ID_KEY);
+}
+
+function makeRoomId(): string {
+  return `r_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
+}
 
 // ── Room Reference ───────────────────────────────────────────────────
 
-export function duoRoomRef() {
-  return gs.db.collection('duo_room').doc('current');
+export function duoRoomRef(roomId?: string) {
+  const id = roomId || _activeRoomId || 'public';
+  return gs.db.collection(DUO_ROOMS_COLLECTION).doc(id);
 }
 
 // ── Enter / Subscribe ────────────────────────────────────────────────
 
-export async function enterDuoRoom(levelId: number): Promise<void> {
-  if (!gs.firebaseReady) return;
+function buildHostRoom(levelId: number, playerId: string, alias: string): Record<string, unknown> {
+  const hostRec = loadDuoRecords();
+  const hostTotalWins = Object.values(hostRec.wins).reduce((s, v) => s + v, 0);
+  return {
+    levelId,
+    status: 'waiting',
+    hostId: playerId,
+    hostAlias: alias,
+    hostTitle: getEquippedTitleDisplay(),
+    hostReady: false,
+    hostProgress: 0,
+    hostFinishTime: null,
+    hostStars: null,
+    hostDuoWins: hostTotalWins,
+    guestId: null,
+    guestAlias: null,
+    guestTitle: null,
+    guestReady: false,
+    guestProgress: 0,
+    guestFinishTime: null,
+    guestStars: null,
+    guestDuoWins: null,
+    startAt: null,
+    levelLocked: false,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+}
+
+function docToSummary(roomId: string, d: DuoRoomData): DuoRoomSummary {
+  const updatedAtMs = d.updatedAt?.toDate?.()?.getTime?.() ?? 0;
+  return {
+    roomId,
+    levelId: d.levelId,
+    status: d.status,
+    hostId: d.hostId,
+    hostAlias: d.hostAlias || '--',
+    guestAlias: d.guestAlias || null,
+    updatedAtMs,
+    levelLocked: !!(d as any).levelLocked,
+  };
+}
+
+export async function listWaitingDuoRooms(limit = 20): Promise<DuoRoomSummary[]> {
+  if (!gs.firebaseReady) return [];
+  const normalize = (snap: any): DuoRoomSummary[] => {
+    const rows: DuoRoomSummary[] = [];
+    snap.forEach((doc: any) => {
+      const d = (doc.data() ?? null) as DuoRoomData | null;
+      if (!d || !d.levelId || !d.hostId) return;
+      rows.push(docToSummary(doc.id, d));
+    });
+    return rows.sort((a, b) => b.updatedAtMs - a.updatedAtMs).slice(0, Math.max(1, limit));
+  };
+  try {
+    const orderedSnap = await gs.db
+      .collection(DUO_ROOMS_COLLECTION)
+      .where('status', '==', 'waiting')
+      .orderBy('updatedAt', 'desc')
+      .limit(limit)
+      .get();
+    return normalize(orderedSnap);
+  } catch (e) {
+    // Fallback for environments missing composite index for where+orderBy.
+    try {
+      const fallbackSnap = await gs.db.collection(DUO_ROOMS_COLLECTION).where('status', '==', 'waiting').limit(limit * 2).get();
+      return normalize(fallbackSnap);
+    } catch (e2) {
+      console.warn('listWaitingDuoRooms failed:', e, e2);
+      return [];
+    }
+  }
+}
+
+export async function createDuoRoom(levelId: number): Promise<string | null> {
+  if (!gs.firebaseReady) return null;
+  const { playerId, alias } = getPlayerIdentity();
+  const roomId = makeRoomId();
+  try {
+    await duoRoomRef(roomId).set(buildHostRoom(levelId, playerId, alias));
+    setActiveRoomId(roomId);
+    gs.duoRole = 'host';
+    gs.duoMyReady = false;
+    _lastSeenLevelId = levelId;
+    subscribeDuoRoom();
+    return roomId;
+  } catch (e) {
+    console.warn('createDuoRoom failed:', e);
+    return null;
+  }
+}
+
+export async function joinDuoRoom(roomId: string): Promise<boolean> {
+  if (!gs.firebaseReady || !roomId) return false;
   const { playerId, alias } = getPlayerIdentity();
   try {
     await gs.db.runTransaction(async (tx: FirestoreTransaction) => {
-      const doc = await tx.get(duoRoomRef());
-      const d = doc.exists ? (doc.data() as unknown as DuoRoomData) : null;
-      const now = firebase.firestore.FieldValue.serverTimestamp();
-
-      // Check staleness (>2 min old waiting rooms can be overwritten)
-      const isStale = d && d.updatedAt && d.updatedAt.toDate && Date.now() - d.updatedAt.toDate().getTime() > 120000;
-
-      if (!d || d.status === 'idle' || d.status === 'finished' || isStale) {
-        // Create new room as host
-        const hostRec = loadDuoRecords();
-        const hostTotalWins = Object.values(hostRec.wins).reduce((s, v) => s + v, 0);
-        tx.set(duoRoomRef(), {
-          levelId,
-          status: 'waiting',
-          hostId: playerId,
-          hostAlias: alias,
-          hostTitle: getEquippedTitleDisplay(),
-          hostReady: false,
-          hostProgress: 0,
-          hostFinishTime: null,
-          hostStars: null,
-          hostDuoWins: hostTotalWins,
-          guestId: null,
-          guestAlias: null,
-          guestTitle: null,
-          guestReady: false,
-          guestProgress: 0,
-          guestFinishTime: null,
-          guestStars: null,
-          startAt: null,
-          updatedAt: now,
-        });
+      const doc = await tx.get(duoRoomRef(roomId));
+      if (!doc.exists) throw new Error('room_not_found');
+      const d = doc.data() as unknown as DuoRoomData;
+      if (d.status !== 'waiting') throw new Error('room_not_waiting');
+      if (d.hostId === playerId) {
         gs.duoRole = 'host';
-      } else if (d.status === 'waiting' && d.hostId !== playerId) {
-        // Join as guest
-        const guestRec = loadDuoRecords();
-        const guestTotalWins = Object.values(guestRec.wins).reduce((s, v) => s + v, 0);
-        tx.update(duoRoomRef(), {
-          guestId: playerId,
-          guestAlias: alias,
-          guestTitle: getEquippedTitleDisplay(),
-          guestReady: false,
-          guestProgress: 0,
-          guestFinishTime: null,
-          guestStars: null,
-          guestDuoWins: guestTotalWins,
-          updatedAt: now,
-        });
-        gs.duoRole = 'guest';
-      } else if (d.status === 'waiting' && d.hostId === playerId) {
-        // Re-opening my own room — update level, reset ready states, keep guest
-        tx.update(duoRoomRef(), {
-          levelId,
-          hostAlias: alias,
-          hostTitle: getEquippedTitleDisplay(),
-          hostReady: false,
-          guestReady: false,
-          updatedAt: now,
-        });
-        gs.duoRole = 'host';
-        gs.duoMyReady = false;
-      } else {
-        gs.duoRole = null;
+        gs.duoMyReady = !!d.hostReady;
+        return;
       }
+      if (d.guestId && d.guestId !== playerId) throw new Error('room_full');
+
+      const guestRec = loadDuoRecords();
+      const guestTotalWins = Object.values(guestRec.wins).reduce((s, v) => s + v, 0);
+      tx.update(duoRoomRef(roomId), {
+        guestId: playerId,
+        guestAlias: alias,
+        guestTitle: getEquippedTitleDisplay(),
+        guestReady: false,
+        guestProgress: 0,
+        guestFinishTime: null,
+        guestStars: null,
+        guestDuoWins: guestTotalWins,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      gs.duoRole = 'guest';
+      gs.duoMyReady = false;
     });
-    if (gs.duoRole) {
-      _lastSeenLevelId = levelId;
-      subscribeDuoRoom();
+
+    setActiveRoomId(roomId);
+    subscribeDuoRoom();
+    return true;
+  } catch (e) {
+    console.warn('joinDuoRoom failed:', e);
+    return false;
+  }
+}
+
+export async function enterDuoRoom(levelId: number): Promise<void> {
+  // Backward-compatible helper: try joining latest waiting room of this level, else create one.
+  if (!gs.firebaseReady) return;
+  const { playerId } = getPlayerIdentity();
+  try {
+    const rows = await listWaitingDuoRooms(20);
+    const candidate = rows.find((r) => r.levelId === levelId && r.hostId !== playerId);
+    if (candidate) {
+      const joined = await joinDuoRoom(candidate.roomId);
+      if (joined) {
+        _lastSeenLevelId = levelId;
+        return;
+      }
     }
+    const roomId = await createDuoRoom(levelId);
+    if (!roomId) gs.duoRole = null;
   } catch (e) {
     console.warn('enterDuoRoom failed:', e);
     gs.duoRole = null;
   }
+  // If the first waiting room belongs to me, keep host role.
+  if (gs.duoRole === 'guest' || gs.duoRole === 'host') return;
+  if (_activeRoomId) {
+    const d = await duoRoomRef(_activeRoomId).get();
+    if (d.exists) {
+      const data = d.data() as DuoRoomData;
+      if (data.hostId === playerId) gs.duoRole = 'host';
+    }
+  }
 }
 
 export function subscribeDuoRoom(): void {
+  if (!_activeRoomId) return;
   if (gs.duoUnsubscribe) gs.duoUnsubscribe();
   _snapshotRetryCount = 0;
   _attachSnapshotListener();
@@ -139,6 +249,7 @@ function _attachSnapshotListener(): void {
     (err: unknown) => {
       console.warn('duo snapshot error:', err);
       _snapshotRetryCount++;
+      import('./duoLobby').then((m) => m.setDuoLobbyConnectionState('reconnecting')).catch(() => {});
       if (_snapshotRetryCount <= MAX_SNAPSHOT_RETRIES) {
         showFeedback(t('duoRuntime.connectionRetry'), 'neutral');
         setTimeout(() => {
@@ -146,17 +257,100 @@ function _attachSnapshotListener(): void {
         }, 2000 * Math.pow(1.5, _snapshotRetryCount));
       } else {
         showFeedback(t('duoRuntime.connectionFailed'), 'error');
+        import('./duoLobby').then((m) => m.setDuoLobbyConnectionState('failed')).catch(() => {});
         resetDuoState();
       }
     },
   );
 }
 
+export async function resumeDuoRoomIfAny(): Promise<boolean> {
+  if (!gs.firebaseReady || !_activeRoomId) return false;
+  const { playerId } = getPlayerIdentity();
+  try {
+    const doc = await duoRoomRef(_activeRoomId).get();
+    if (!doc.exists) {
+      setActiveRoomId(null);
+      return false;
+    }
+    const d = doc.data() as DuoRoomData;
+    if (!d) {
+      setActiveRoomId(null);
+      return false;
+    }
+    if (d.hostId === playerId) {
+      gs.duoRole = 'host';
+      gs.duoMyReady = !!d.hostReady;
+    } else if (d.guestId === playerId) {
+      gs.duoRole = 'guest';
+      gs.duoMyReady = !!d.guestReady;
+    } else {
+      setActiveRoomId(null);
+      return false;
+    }
+    _lastSeenLevelId = d.levelId ?? null;
+    subscribeDuoRoom();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function updateDuoRoomLevel(levelId: number): Promise<boolean> {
+  if (!gs.firebaseReady || gs.duoRole !== 'host' || !_activeRoomId) return false;
+  try {
+    await gs.db.runTransaction(async (tx: FirestoreTransaction) => {
+      const doc = await tx.get(duoRoomRef());
+      if (!doc.exists) return;
+      const d = doc.data() as unknown as DuoRoomData;
+      if ((d as any).levelLocked) return;
+      tx.update(duoRoomRef(), {
+        levelId,
+        hostReady: false,
+        guestReady: false,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+    _lastSeenLevelId = levelId;
+    gs.duoMyReady = false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function toggleDuoLevelLock(): Promise<boolean> {
+  if (!gs.firebaseReady || gs.duoRole !== 'host' || !_activeRoomId) return false;
+  try {
+    await gs.db.runTransaction(async (tx: FirestoreTransaction) => {
+      const doc = await tx.get(duoRoomRef());
+      if (!doc.exists) return;
+      const d = doc.data() as unknown as DuoRoomData;
+      const next = !(d as any).levelLocked;
+      tx.update(duoRoomRef(), {
+        levelLocked: next,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function getActiveDuoRoomId(): string | null {
+  return _activeRoomId;
+}
+
 // ── Snapshot Handler ─────────────────────────────────────────────────
 
 export function handleDuoSnapshot(d: DuoRoomData): void {
   if (!d || !gs.duoRole) return;
-  import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch(() => {});
+  import('./duoLobby').then((m) => {
+    m.setDuoLobbyConnectionState('connected');
+    m.refreshDuoLobbyRoom();
+    m.syncDuoLobbyRoomState(d, _activeRoomId);
+  }).catch(() => {});
 
   if (d.status === 'waiting' || d.status === 'countdown') {
     // Only update pre-level UI if player is on the level screen, not mid-game
@@ -172,18 +366,8 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     gs.duoCountdownStartMs = null;
     _countdownLaunched = false;
 
-    // Detect level change (host switched to a different level)
-    // Only refresh if player is NOT mid-game (don't pull them out)
-    if (d.levelId && _lastSeenLevelId !== null && d.levelId !== _lastSeenLevelId) {
-      gs.duoMyReady = false;
-      const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
-      const isInGame = gameContainer && gameContainer.style.display !== 'none';
-      if (!isInGame) {
-        import('../features/levels').then(({ showPreLevelModal }) => {
-          showPreLevelModal(d.levelId, true);
-        }).catch(() => {});
-      }
-    }
+    // Host changed level while waiting: clear local ready latch.
+    if (d.levelId && _lastSeenLevelId !== null && d.levelId !== _lastSeenLevelId) gs.duoMyReady = false;
     _lastSeenLevelId = d.levelId;
 
     // Host: if both players are ready but status is still 'waiting',
@@ -481,6 +665,7 @@ export async function launchDuoGame(): Promise<void> {
   // Hide pre-level modal, start game
   const { hidePreLevelModal } = await import('../features/levels');
   hidePreLevelModal();
+  import('./duoLobby').then((m) => m.closeDuoLobby()).catch(() => {});
   const levelScreen = document.getElementById('level-screen');
   if (levelScreen) levelScreen.style.display = 'none';
   const { initGame } = await import('../game/core');
@@ -776,7 +961,7 @@ export async function surrenderDuo(): Promise<void> {
 export async function closeDuoResult(): Promise<void> {
   import('../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult());
   // Mark room finished — await to ensure Firebase update completes before state reset
-  if (gs.firebaseReady) {
+  if (gs.firebaseReady && _activeRoomId) {
     try {
       await duoRoomRef().update({ status: 'finished', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
     } catch { /* ignore */ }
@@ -787,7 +972,7 @@ export async function closeDuoResult(): Promise<void> {
 }
 
 export async function leaveDuoRoom(): Promise<void> {
-  if (!gs.firebaseReady || !gs.duoRole) {
+  if (!gs.firebaseReady || !gs.duoRole || !_activeRoomId) {
     resetDuoState();
     return;
   }
@@ -847,7 +1032,7 @@ export function resetDuoState(): void {
     gs.duoGlowUnsubscribe = null;
   }
   // Clean up emoji fields in room document
-  if (gs.firebaseReady) {
+  if (gs.firebaseReady && _activeRoomId) {
     duoRoomRef()
       .update({
         hostEmoji: null,
@@ -866,6 +1051,7 @@ export function resetDuoState(): void {
   const forfeitBtn = document.getElementById('duo-forfeit-btn');
   if (forfeitBtn) forfeitBtn.remove();
   gs.duoLastEmojiSeen = '';
+  setActiveRoomId(null);
   import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch(() => {});
 }
 
@@ -874,40 +1060,37 @@ export function resetDuoState(): void {
 export function startDuoGlowListener(): void {
   if (!gs.firebaseReady) return;
   if (gs.duoGlowUnsubscribe) gs.duoGlowUnsubscribe();
-  gs.duoGlowUnsubscribe = duoRoomRef().onSnapshot(
-    async (snap: FirestoreDoc) => {
+  gs.duoGlowUnsubscribe = gs.db.collection(DUO_ROOMS_COLLECTION).where('status', '==', 'waiting').onSnapshot(
+    async (snap: any) => {
       // Remove old glow
       document.querySelectorAll('.level-item.duo-glow').forEach((el) => el.classList.remove('duo-glow'));
       document.querySelectorAll('.stage-node.duo-waiting').forEach((el) => el.classList.remove('duo-waiting'));
-      if (!snap.exists) return;
-      const d = snap.data() as unknown as DuoRoomData;
-      if (d.status !== 'waiting' || !d.levelId) return;
+      if (!snap || (snap as any).empty) return;
       const { playerId } = getPlayerIdentity();
-      if (d.hostId === playerId) return; // Don't glow my own room
+      const waitingRows: DuoRoomData[] = [];
+      (snap as any).forEach((doc: any) => {
+        const d = (doc.data() ?? null) as DuoRoomData | null;
+        if (!d || d.hostId === playerId || d.status !== 'waiting' || !d.levelId) return;
+        waitingRows.push(d);
+      });
+      if (!waitingRows.length) return;
 
       const { getAllLevels } = await import('../data/dataRegistry');
       const levels = getAllLevels();
       const { getDifficultyTiers, getFilteredLevels } = await import('../features/levels');
+      const waitingLevelIds = new Set(waitingRows.map((r) => r.levelId));
 
-      // Mark the stage node for the waiting level's tier
-      const waitingLevel = levels.find((l) => l.id === d.levelId);
-      if (waitingLevel) {
-        const stageNodes = document.querySelectorAll('.stage-node');
-        const tiers = getDifficultyTiers();
-        tiers.forEach((tierName: string, i: number) => {
-          if (tierName === waitingLevel.difficultyName && stageNodes[i]) {
-            stageNodes[i].classList.add('duo-waiting');
-          }
-        });
-      }
+      const stageNodes = document.querySelectorAll('.stage-node');
+      const tiers = getDifficultyTiers();
+      tiers.forEach((tierName: string, i: number) => {
+        const hasWaiting = waitingRows.some((r) => levels.find((l) => l.id === r.levelId)?.difficultyName === tierName);
+        if (hasWaiting && stageNodes[i]) stageNodes[i].classList.add('duo-waiting');
+      });
 
-      // Find the matching level card and make it glow
       const items = document.querySelectorAll('#level-list .level-item');
       const filtered = getFilteredLevels().filter((l: { hidden?: boolean }) => !l.hidden);
       filtered.forEach((l: { id: number }, i: number) => {
-        if (l.id === d.levelId && items[i]) {
-          items[i].classList.add('duo-glow');
-        }
+        if (waitingLevelIds.has(l.id) && items[i]) items[i].classList.add('duo-glow');
       });
     },
     () => {},

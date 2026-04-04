@@ -18,6 +18,8 @@ import {
   closeDuoLobby,
   createDuoRoomFromLobby,
   joinDuoRoomFromLobby,
+  updateDuoRoomLevelFromLobby,
+  toggleDuoLevelLockFromLobby,
   refreshDuoLobbyRoom,
 } from '../features/duoLobby';
 
@@ -45,6 +47,8 @@ export function bootstrapApp(): void {
       closeDuoLobby,
       createDuoRoomFromLobby,
       joinDuoRoomFromLobby,
+      updateDuoRoomLevelFromLobby,
+      toggleDuoLevelLockFromLobby,
       refreshDuoLobbyRoom,
     });
     if (gs.firebaseReady) {

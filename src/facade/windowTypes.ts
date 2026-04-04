@@ -13,6 +13,13 @@ export interface SudokuWindow extends Window {
   showTeachModal?: (stars: number | string, source?: string) => void;
   startPoolRandom?: () => Promise<void>;
   toggleDuoReady?: () => void;
+  openDuoLobby?: () => void;
+  closeDuoLobby?: () => void;
+  createDuoRoomFromLobby?: () => void;
+  joinDuoRoomFromLobby?: () => void;
+  updateDuoRoomLevelFromLobby?: () => void;
+  toggleDuoLevelLockFromLobby?: () => void;
+  refreshDuoLobbyRoom?: () => void;
   // Firebase
   firebase?: unknown;
   SUDOKU_FIREBASE_CONFIG?: Record<string, string>;
@@ -20,6 +27,14 @@ export interface SudokuWindow extends Window {
   __e2e?: Record<string, unknown>;
   __pwaRuntime: { enforceAppVersion: (v: string) => Promise<boolean>; registerServiceWorkerUpdateFlow: () => void };
   __reactTeachBridge?: { openTeach: (stars: string | number, source?: string) => Promise<boolean>; closeTeach: () => void };
+  __SUDOKU_HOST_BRIDGE?: {
+    name: string;
+    version?: string;
+    setup?: (api: unknown) => void | Promise<void>;
+    onBootReady?: (ctx: { appVersion: string; apiVersion: '1' }) => void;
+    onBeforeUnload?: () => void;
+  };
+  __SUDOKU_HOST_API?: unknown;
   // Audio
   AudioContext?: typeof AudioContext;
   webkitAudioContext?: typeof AudioContext;

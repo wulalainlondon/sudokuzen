@@ -6,16 +6,17 @@ import { test, expect, type Page, type BrowserContext } from '@playwright/test';
  * see each other's progress, and produce consistent results.
  *
  * Requires: real Firebase project (sudokuzen-f2aa3) accessible from test env.
- * Uses duo_room/current — tests clean up after themselves.
+ * Uses duo_rooms/<active-room-id> — tests clean up after themselves.
  */
 
 const TEST_LEVEL_ID = 1;
+const E2E_TIMEOUT_MS = 20_000;
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as any).__e2e, { timeout: E2E_TIMEOUT_MS });
 }
 
 async function waitForFirebase(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs?.firebaseReady, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as any).__e2e?.gs?.firebaseReady, { timeout: E2E_TIMEOUT_MS });
 }
 
 async function setAlias(page: Page, alias: string) {
@@ -28,31 +29,36 @@ async function setAlias(page: Page, alias: string) {
 
 /** Clean up the shared duo room into a known idle schema. */
 async function cleanupDuoRoom(page: Page) {
-  await page.evaluate(async (levelId) => {
-    const e2e = (window as any).__e2e;
-    if (!e2e?.gs?.firebaseReady) return;
-    try {
-      const now = (window as any).firebase?.firestore?.FieldValue?.serverTimestamp?.();
-      await e2e.gs.db.collection('duo_room').doc('current').set({
-        levelId,
-        status: 'idle',
-        hostId: 'cleanup',
-        hostAlias: 'cleanup',
-        hostReady: false,
-        hostProgress: 0,
-        hostFinishTime: null,
-        hostStars: null,
-        guestId: null,
-        guestAlias: null,
-        guestReady: false,
-        guestProgress: 0,
-        guestFinishTime: null,
-        guestStars: null,
-        startAt: null,
-        updatedAt: now ?? null,
-      });
-    } catch { /* ignore */ }
-  }, TEST_LEVEL_ID);
+  await Promise.race([
+    page.evaluate(async (levelId) => {
+      const e2e = (window as any).__e2e;
+      if (!e2e?.gs?.firebaseReady) return;
+      try {
+        const activeRoomId = localStorage.getItem('sudoku_duo_active_room_id');
+        if (activeRoomId) {
+          await e2e.gs.db.collection('duo_rooms').doc(activeRoomId).set({
+            levelId,
+            status: 'idle',
+            hostId: 'cleanup',
+            hostAlias: 'cleanup',
+            hostReady: false,
+            hostProgress: 0,
+            hostFinishTime: null,
+            hostStars: null,
+            guestId: null,
+            guestAlias: null,
+            guestReady: false,
+            guestProgress: 0,
+            guestFinishTime: null,
+            guestStars: null,
+            startAt: null,
+            updatedAt: Date.now(),
+          });
+        }
+      } catch { /* ignore */ }
+    }, TEST_LEVEL_ID),
+    page.waitForTimeout(5000),
+  ]);
 }
 
 /** Enter the duo room for a given level. */
@@ -76,8 +82,11 @@ async function getDuoRoomData(page: Page): Promise<any> {
   return page.evaluate(async () => {
     const e2e = (window as any).__e2e;
     if (!e2e?.gs?.firebaseReady) return null;
-    const ref = e2e.gs.db.collection('duo_room').doc('current');
-    const doc = await ref.get({ source: 'server' }).catch(() => ref.get());
+    const roomId = localStorage.getItem('sudoku_duo_active_room_id');
+    if (!roomId) return null;
+    const ref = e2e.gs.db.collection('duo_rooms').doc(roomId);
+    const doc = await ref.get().catch(() => null);
+    if (!doc) return null;
     return doc.exists ? doc.data() : null;
   });
 }
@@ -87,8 +96,11 @@ async function waitForRoomStatus(page: Page, status: string, timeoutMs = 10000):
     async (targetStatus) => {
       const e2e = (window as any).__e2e;
       if (!e2e?.gs?.firebaseReady) return false;
-      const ref = e2e.gs.db.collection('duo_room').doc('current');
-      const doc = await ref.get({ source: 'server' }).catch(() => ref.get());
+      const roomId = localStorage.getItem('sudoku_duo_active_room_id');
+      if (!roomId) return false;
+      const ref = e2e.gs.db.collection('duo_rooms').doc(roomId);
+      const doc = await ref.get().catch(() => null);
+      if (!doc) return false;
       const data = doc.exists ? doc.data() : null;
       return data?.status === targetStatus;
     },
@@ -102,20 +114,20 @@ async function ensureRoleAndStatus(
   levelId: number,
   expectedRole: 'host' | 'guest',
   expectedStatus: string,
-  attempts = 3,
+  attempts = 5,
 ): Promise<void> {
   for (let i = 0; i < attempts; i++) {
     await enterDuoRoom(page, levelId);
     const role = await getDuoRole(page);
     if (role === expectedRole) {
       try {
-        await waitForRoomStatus(page, expectedStatus, 5000);
+        await waitForRoomStatus(page, expectedStatus, 8000);
         return;
       } catch {
         // Room can be overwritten by stale clients in shared env; retry create/join.
       }
     }
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(900);
   }
   throw new Error(`Failed to reach role=${expectedRole}, status=${expectedStatus}`);
 }
@@ -141,6 +153,8 @@ async function solveAllCells(page: Page) {
 }
 
 test.describe('duo-sync', () => {
+  test.describe.configure({ mode: 'serial', timeout: 180_000 });
+  test.skip(process.env.E2E_LIVE_FIREBASE !== '1', 'Requires isolated live Firebase room state (set E2E_LIVE_FIREBASE=1)');
   let hostContext: BrowserContext;
   let guestContext: BrowserContext;
   let hostPage: Page;
@@ -154,10 +168,8 @@ test.describe('duo-sync', () => {
   });
 
   test.afterAll(async () => {
-    // Clean up duo room
-    try { await cleanupDuoRoom(hostPage); } catch { /* ignore */ }
-    await hostContext.close();
-    await guestContext.close();
+    try { await Promise.race([hostContext.close(), new Promise((r) => setTimeout(r, 8000))]); } catch { /* ignore */ }
+    try { await Promise.race([guestContext.close(), new Promise((r) => setTimeout(r, 8000))]); } catch { /* ignore */ }
   });
 
   test.beforeEach(async () => {
