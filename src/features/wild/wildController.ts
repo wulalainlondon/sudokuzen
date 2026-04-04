@@ -11,6 +11,9 @@ import { calculateExp, applyExp, expForLevel, getUnstudiedGateSkills } from './e
 import { autoSolve } from './autoSolver';
 import {
   triggerIntroIfNeeded,
+  hasCompletedMentorIntro,
+  isMentorIntroDeferred,
+  deferMentorIntro,
   triggerFirstKillIfNeeded,
   triggerMilestoneIfNeeded,
   triggerFinaleIfNeeded,
@@ -162,11 +165,16 @@ function resetWildGsFields(): void {
 // ── Countdown timer for timed mode ──────────────────────────────────
 
 function startCountdown(seconds: number): void {
+  if (gs.wildTimerInterval) {
+    clearInterval(gs.wildTimerInterval);
+    gs.wildTimerInterval = null;
+  }
   gs.wildTimerCountdown = seconds;
   // Show initial countdown display
   if (gs.timerEl) gs.timerEl.textContent = formatSeconds(gs.wildTimerCountdown);
   gs.wildTimerInterval = setInterval(() => {
     gs.wildTimerCountdown--;
+    gs.seconds++;
     if (gs.timerEl) gs.timerEl.textContent = formatSeconds(gs.wildTimerCountdown);
     if (gs.wildTimerCountdown <= 0) {
       clearInterval(gs.wildTimerInterval!);
@@ -175,6 +183,13 @@ function startCountdown(seconds: number): void {
       import('../../game/core').then((m) => m.showGameOver());
     }
   }, 1000);
+}
+
+export function resumeTimedCountdown(): void {
+  if (gs.wildChallengeMode !== 'timed') return;
+  if (gs.wildTimerCountdown <= 0) return;
+  if (gs.wildTimerInterval) return;
+  startCountdown(gs.wildTimerCountdown);
 }
 
 // ── Session (修行輪) management ──────────────────────────────────────
@@ -211,8 +226,16 @@ export async function startWorldSession(): Promise<void> {
 export async function startWildEncounter(): Promise<void> {
   const profile = getWildProfile();
 
-  // Show mentor intro on first ever entry
-  await triggerIntroIfNeeded();
+  // First entry: allow skipping/deferring mentor prologue so the first puzzle starts immediately.
+  if (!hasCompletedMentorIntro() && !isMentorIntroDeferred()) {
+    const shouldWatchNow = window.confirm(t('wild.introPrompt'));
+    if (shouldWatchNow) {
+      await triggerIntroIfNeeded();
+    } else {
+      deferMentorIntro();
+      showFeedback(t('wild.introDeferred'), 'success');
+    }
+  }
 
   // If in a session, advance the round
   const session = profile.currentSession;
@@ -270,7 +293,6 @@ export async function startWildEncounter(): Promise<void> {
 
   // Auto-solve mastered techniques to produce bottleneck state
   let puzzleToUse = _encounter.puzzle;
-  let prefilledNotes: number[][] | null = null;
   if (profile.autoCastEnabled) {
     const autoCastKeys = getAutoCastKeys(profile.iqLevel);
     // Don't auto-cast the target technique itself
@@ -282,7 +304,7 @@ export async function startWildEncounter(): Promise<void> {
       const emptyCount = result.partialPuzzle.filter(v => v === 0).length;
       if (emptyCount >= 5) {
         puzzleToUse = result.partialPuzzle;
-        prefilledNotes = result.notes;
+        // Keep encounters manual: do not auto-fill candidates.
       }
       // else: skip auto-solve entirely to avoid empty-board encounters
     }
@@ -336,19 +358,6 @@ export async function startWildEncounter(): Promise<void> {
   document.getElementById('level-screen')?.style.setProperty('display', 'none');
   const { initGame } = await import('../../game/core');
   initGame(wildLevel.id, true, false, null, wildLevel);
-
-  // Inject pre-computed candidate notes from auto-solver
-  if (prefilledNotes) {
-    const { updateCellDisplay } = await import('../../game/board');
-    for (let i = 0; i < 81; i++) {
-      if (gs.cellsData[i].value === 0 && prefilledNotes[i].length > 0) {
-        gs.cellsData[i].notes = prefilledNotes[i];
-        if (gs.gridEl) {
-          updateCellDisplay(gs.gridEl.children[i] as HTMLElement, gs.cellsData[i]);
-        }
-      }
-    }
-  }
 
   // Apply challenge mode settings AFTER initGame
   gs.wildChallengeMode = mode;
@@ -644,7 +653,8 @@ export function onWildComplete(
   // P0: Show clear feedback when Lv.20 gate blocks progression
   if (result.gated) {
     const unstudied = getUnstudiedGateSkills(profile);
-    showFeedback(t('wild.gateBlocked', { count: String(unstudied.length) }), 'error');
+    const banked = profile.gateOverflowExp ?? 0;
+    showFeedback(t('wild.gateBlockedWithOverflow', { count: String(unstudied.length), exp: String(banked) }), 'error');
   }
 
   // Update bestiary

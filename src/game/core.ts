@@ -915,6 +915,10 @@ export function isDuoCooldownActive(): boolean {
 
 export function pauseGame(): void {
   if (gs.timerInterval) clearInterval(gs.timerInterval);
+  if (gs.wildTimerInterval) {
+    clearInterval(gs.wildTimerInterval);
+    gs.wildTimerInterval = null;
+  }
   setPauseScreenContent(gs.currentLevel!.displayName, formatSeconds(gs.seconds));
   saveGameStatus();
   loadLevelLeaderboard(gs.currentLevel!.id);
@@ -923,6 +927,16 @@ export function pauseGame(): void {
 
 export function resumeGame(): void {
   hidePauseScreen();
+  const isWildTimed = !!(
+    gs.currentLevel
+    && gs.currentLevel.id < 0
+    && gs.currentLevel.source === 'wild'
+    && gs.wildChallengeMode === 'timed'
+  );
+  if (isWildTimed) {
+    import('../features/wild/wildController').then((m) => m.resumeTimedCountdown());
+    return;
+  }
   startTimer(false);
 }
 
