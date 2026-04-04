@@ -333,6 +333,7 @@ function isDigitCompletedOnBoard(num: number): boolean {
 }
 
 export function handleInput(num: number): void {
+  const policy = getModePolicy();
   if (blindRevealing) return;
   if (isDigitCompletedOnBoard(num)) return;
   if (gs.selectedIdx === null || gs.cellsData[gs.selectedIdx].fixed) return;
@@ -357,7 +358,7 @@ export function handleInput(num: number): void {
     playNoteToggleSound();
     if (navigator.vibrate) navigator.vibrate(5);
   } else {
-    if (gs.isSpeedrunMode) {
+    if (policy.useSubmissionValidation) {
       // Push to undo stack before changing
       gs.undoStack.push({ idx: gs.selectedIdx, prevValue: data.value, prevNotes: data.notes.slice() });
       data.value = num;
@@ -375,7 +376,7 @@ export function handleInput(num: number): void {
     }
 
     // ── Blind mode: skip error check, just fill ──
-    if (gs.wildBlindMode) {
+    if (policy.mode === 'wild' && gs.wildBlindMode) {
       gs.undoStack.push({ idx: gs.selectedIdx, prevValue: data.value, prevNotes: data.notes.slice() });
       data.value = num;
       data.notes = [];
@@ -466,7 +467,7 @@ export function handleInput(num: number): void {
       recalculatePlayerFilledCount();
       updateGhostProgressUI();
     }
-    if (!getModePolicy().useSubmissionValidation) celebrateCompletedUnits(gs.selectedIdx, beforeState);
+    if (!policy.useSubmissionValidation) celebrateCompletedUnits(gs.selectedIdx, beforeState);
     if (gs.isDuoMode) callDuoProgress();
     checkWin();
   }
@@ -516,6 +517,7 @@ export function erase(): void {
 // ── Win / Game Over ─────────────────────────────────────────────────
 
 function checkWin(): void {
+  const policy = getModePolicy();
   const isComplete = gs.cellsData.every((data, i) => data.value === solutionDigitAt(i));
   if (!isComplete) return;
   if (gs.timerInterval) clearInterval(gs.timerInterval);
@@ -553,12 +555,12 @@ function checkWin(): void {
   clearGameStatus(gs.currentLevel!.id);
   const earnedValue = saveProgress();
   showWinCelebration(earnedValue);
-  if (gs.isDuoMode) callDuoFinish(gs.seconds, gs.isSpeedrunMode ? 0 : earnedValue);
+  if (gs.isDuoMode) callDuoFinish(gs.seconds, policy.useSubmissionValidation ? 0 : earnedValue);
   setTimeout(() => {
     if (gs.isGhostMode) unlockAchievement('ghost_win');
     checkAllAchievements();
   }, 1000);
-  if (!gs.isSpeedrunMode) {
+  if (!policy.useSubmissionValidation) {
     submitFirstClear(gs.currentLevel!.id, gs.seconds, earnedValue).then(() =>
       loadLevelLeaderboard(gs.currentLevel!.id),
     );
@@ -659,8 +661,9 @@ async function checkBlindComplete(): Promise<void> {
 }
 
 export function saveProgress(): number {
+  const recordsKey = getRecordsStorageKeyForLevelList(false);
   if (getModePolicy().useSubmissionValidation) {
-    const records = readJson<Record<string, any>>(getRecordsStorageKeyForLevelList(false), {});
+    const records = readJson<Record<string, any>>(recordsKey, {});
     const existing = records[gs.currentLevel!.id];
     const currentSubs = gs.submissionCount + 1;
     const shouldUpdate =
@@ -669,11 +672,11 @@ export function saveProgress(): number {
       (currentSubs === (existing.submissions || Infinity) && gs.seconds < (existing.time || Infinity));
     if (shouldUpdate) {
       records[gs.currentLevel!.id] = { time: gs.seconds, submissions: currentSubs, replayHistory: gs.actionHistory };
-      writeJson(SK.SPEED_RECORDS, records);
+      writeJson(recordsKey, records);
     }
     return currentSubs;
   } else {
-    const records = readJson<Record<string, any>>(getRecordsStorageKeyForLevelList(false), {});
+    const records = readJson<Record<string, any>>(recordsKey, {});
     const existing = records[gs.currentLevel!.id];
     const earnedStars = Math.max(1, 3 - gs.errors);
     const shouldUpdate =
@@ -682,7 +685,7 @@ export function saveProgress(): number {
       (earnedStars === (existing.stars || 1) && gs.seconds < (existing.time || Infinity));
     if (shouldUpdate) {
       records[gs.currentLevel!.id] = { time: gs.seconds, stars: earnedStars, replayHistory: gs.actionHistory };
-      writeJson(SK.RECORDS, records);
+      writeJson(recordsKey, records);
     }
     return earnedStars;
   }
@@ -741,11 +744,12 @@ export function resetGame(): void {
 // ── UI helpers ──────────────────────────────────────────────────────
 
 export function updateLivesUI(): void {
-  if (gs.isSpeedrunMode) {
+  const policy = getModePolicy();
+  if (policy.useSubmissionValidation) {
     setLivesSpeedrun(gs.livesEl);
     return;
   }
-  if (gs.wildBlindMode) {
+  if (policy.mode === 'wild' && gs.wildBlindMode) {
     setLivesBlind(gs.livesEl, t('misc.blindLabel'));
     return;
   }
@@ -763,14 +767,15 @@ export function updateLivesUI(): void {
 // ── Win celebrations (delegated to React WinCelebration component) ────
 
 function showWinCelebration(earnedValue: number): void {
+  const policy = getModePolicy();
   import('../react/win/winBridge').then(({ bridgeShowWin }) => {
     bridgeShowWin({
       mode: 'normal',
       levelName: gs.currentLevel!.displayName,
       timeSeconds: gs.seconds,
-      stars: gs.isSpeedrunMode ? 0 : earnedValue,
-      isSpeedrun: gs.isSpeedrunMode,
-      submissions: gs.isSpeedrunMode ? earnedValue : 0,
+      stars: policy.useSubmissionValidation ? 0 : earnedValue,
+      isSpeedrun: policy.useSubmissionValidation,
+      submissions: policy.useSubmissionValidation ? earnedValue : 0,
       showLeaderboard: true,
       showReplay: true,
     });

@@ -41,11 +41,11 @@ function renderLevelOptions(selectedLevelId: number | null): void {
 }
 
 function roomSummaryText(room: DuoRoomData | null): string {
-  if (!room || room.status === 'idle' || room.status === 'finished') return '目前沒有公開房間';
-  if (room.status !== 'waiting') return '房間進行中，稍後再試';
+  if (!room || room.status === 'idle' || room.status === 'finished') return t('duo.noPublicRoom');
+  if (room.status !== 'waiting') return t('duo.roomInProgress');
   const level = getAllLevels().find((l) => l.id === room.levelId);
   const levelName = level ? `${level.difficultyName} · ${level.displayName}` : `Level ${room.levelId}`;
-  return `房主 ${room.hostAlias || '--'} · ${levelName}`;
+  return t('duo.roomHostLevel', { host: room.hostAlias || '--', level: levelName });
 }
 
 async function loadCurrentRoom(): Promise<DuoRoomData | null> {
@@ -72,9 +72,33 @@ async function refreshRoomCard(): Promise<void> {
 
 export async function openDuoLobby(): Promise<void> {
   if (!gs.firebaseReady) {
-    showFeedback('Duo 需要連線，請稍後再試', 'error');
+    showFeedback(t('duo.networkRequired'), 'error');
     return;
   }
+  const titleEl = document.getElementById('duo-lobby-title');
+  const backBtnEl = document.getElementById('duo-back-btn');
+  const createTitleEl = document.getElementById('duo-create-title');
+  const levelLabelEl = document.getElementById('duo-level-label');
+  const hostChipEl = document.getElementById('duo-host-chip');
+  const createBtnTextEl = document.getElementById('duo-create-btn-text');
+  const createBtnSubEl = document.getElementById('duo-create-btn-sub');
+  const joinTitleEl = document.getElementById('duo-join-title');
+  const refreshBtnEl = document.getElementById('duo-refresh-btn');
+  const joinChipEl = document.getElementById('duo-join-chip');
+  const joinBtnTextEl = document.getElementById('duo-join-btn-text');
+  const joinBtnSubEl = document.getElementById('duo-join-btn-sub');
+  if (titleEl) titleEl.textContent = t('duo.lobbyTitle');
+  if (backBtnEl) backBtnEl.textContent = t('nav.back');
+  if (createTitleEl) createTitleEl.textContent = t('duo.createRoom');
+  if (levelLabelEl) levelLabelEl.textContent = t('duo.selectLevel');
+  if (hostChipEl) hostChipEl.textContent = t('duo.hostChip');
+  if (createBtnTextEl) createBtnTextEl.textContent = t('duo.createRoom');
+  if (createBtnSubEl) createBtnSubEl.textContent = t('duo.createSub');
+  if (joinTitleEl) joinTitleEl.textContent = t('duo.joinRoom');
+  if (refreshBtnEl) refreshBtnEl.textContent = t('duo.refreshRoom');
+  if (joinChipEl) joinChipEl.textContent = t('duo.joinChip');
+  if (joinBtnTextEl) joinBtnTextEl.textContent = t('duo.joinRoom');
+  if (joinBtnSubEl) joinBtnSubEl.textContent = t('duo.joinSub');
   renderLevelOptions(gs.pendingLevelId);
   setDuoViewActive(true);
   await refreshRoomCard();
@@ -98,21 +122,21 @@ export async function createDuoRoomFromLobby(): Promise<void> {
   const { enterDuoRoom } = await import('./duo');
   const { showPreLevelModal } = await import('./levels');
   await enterDuoRoom(levelId);
-  showPreLevelModal(levelId, true);
+  showPreLevelModal(levelId, true, undefined, { skipDuoEnter: true });
 }
 
 export async function joinDuoRoomFromLobby(): Promise<void> {
   const room = await loadCurrentRoom();
   const { playerId } = getPlayerIdentity();
   if (!room || room.status !== 'waiting' || room.hostId === playerId || !room.levelId) {
-    showFeedback('目前沒有可加入的房間', 'error');
+    showFeedback(t('duo.noJoinableRoom'), 'error');
     await refreshRoomCard();
     return;
   }
   const { enterDuoRoom } = await import('./duo');
   const { showPreLevelModal } = await import('./levels');
   await enterDuoRoom(room.levelId);
-  showPreLevelModal(room.levelId, true);
+  showPreLevelModal(room.levelId, true, undefined, { skipDuoEnter: true });
 }
 
 export async function refreshDuoLobbyRoom(): Promise<void> {

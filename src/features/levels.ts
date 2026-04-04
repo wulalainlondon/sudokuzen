@@ -4,13 +4,17 @@ import { gs, type LevelData, type ActionRecord } from '../game/state';
 import { getAllLevels, hasTeachModule } from '../data/dataRegistry';
 import { SK, readJson } from '../storage/keys';
 import { formatSeconds } from '../game/utils';
+import { getRecordsStorageKeyForLevelList, getSaveKeyForCurrentMode } from '../game/modePolicy';
 import { showFeedback } from '../ui/feedback';
 import { loadPreLevelLeaderboard } from '../firebase/client';
 import { syncLevelCardSize } from '../game/board';
 import { TECH_MAP, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
 import { closeWildLobby } from './wild/wildLobby';
+import { closeDuoLobby } from './duoLobby';
 import { closePracticeLobby, enterPracticeTechnique } from './practice/practiceLobby';
 import { t } from '../i18n/t';
+import { requestRefresh } from '../app/ui/refreshBus';
+import { openPreLevel, closePreLevel } from '../app/ui/uiOrchestrator';
 
 // Route through window so the React bridge can intercept
 function showTeachModal(stars: number, source = 'tier') {
@@ -35,21 +39,11 @@ function callStartDuoGlowListener() {
   import('./duo').then((m) => m.startDuoGlowListener());
 }
 
-let normalLevelListRefreshQueued = false;
-function queueNormalLevelListRefresh(): void {
-  if (normalLevelListRefreshQueued) return;
-  normalLevelListRefreshQueued = true;
-  requestAnimationFrame(() => {
-    normalLevelListRefreshQueued = false;
-    window.dispatchEvent(new Event('normal-level-list-refresh'));
-  });
-}
-
 // ── Helpers ─────────────────────────────────────────────────────────
 
 /** Check if there is an active save for a level (without importing core). */
 function hasActiveSave(levelId: number): boolean {
-  const saveKey = SK.save(levelId, gs.isSpeedrunMode);
+  const saveKey = getSaveKeyForCurrentMode(levelId);
   return localStorage.getItem(saveKey) !== null;
 }
 
@@ -213,7 +207,7 @@ export function renderStageMap(): void {
   }
 
   const levels = getAllLevels();
-  const recordsKey = gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
+  const recordsKey = getRecordsStorageKeyForLevelList(false);
   const records = readJson<Record<string, any>>(recordsKey, {});
   const tiers = getDifficultyTiers();
   const unlockState = getRealmUnlockState();
@@ -265,7 +259,7 @@ export function enterTier(tierName: string): void {
   document.getElementById('stage-view')!.style.display = 'none';
   document.getElementById('tier-view')!.classList.remove('hidden');
 
-  const recordsKey = gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
+  const recordsKey = getRecordsStorageKeyForLevelList(false);
   const records = readJson<Record<string, any>>(recordsKey, {});
   const levels = getAllLevels();
   const tierLevels = levels.filter((l) => l.difficultyName === tierName && !l.hidden);
@@ -300,11 +294,11 @@ export function backToStageMap(): void {
 
 export function renderLevelGrid(): void {
   if (document.body?.dataset.reactNormalLevelList === '1') {
-    queueNormalLevelListRefresh();
+    requestRefresh('normal-level-list');
     return;
   }
 
-  const recordsKey = gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
+  const recordsKey = getRecordsStorageKeyForLevelList(false);
   const records = readJson<Record<string, any>>(recordsKey, {});
   const list = document.getElementById('level-list');
   if (!list) return;
@@ -393,7 +387,12 @@ export function renderLevelGrid(): void {
 
 let _pendingLevelData: LevelData | null = null;
 
-export function showPreLevelModal(levelId: number, ignoreTierLock = false, externalLevel?: LevelData): void {
+export function showPreLevelModal(
+  levelId: number,
+  ignoreTierLock = false,
+  externalLevel?: LevelData,
+  options?: { skipDuoEnter?: boolean },
+): void {
   closeLibraryOverlay();
   gs.pendingLevelId = levelId;
   const levels = getAllLevels();
@@ -408,7 +407,7 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false, exter
   const techName = TECH_MAP[level.maxTechnique || ''] || level.maxTechnique || '-';
   const techTier = level.techTier || '';
   const isPractice = level.mode === 'practice';
-  const recKey = isPractice ? SK.PRACTICE_RECORDS : gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
+  const recKey = getRecordsStorageKeyForLevelList(isPractice);
   const records = readJson<Record<string, any>>(recKey, {});
   const record = records[levelId];
 
@@ -428,28 +427,25 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false, exter
     hasReplay = !!(record.replayHistory && record.replayHistory.length > 0);
   }
 
-  // Delegate to React PreLevelModal
-  import('../react/prelevel/preLevelBridge').then(({ bridgeOpenPreLevel }) => {
-    bridgeOpenPreLevel({
-      levelId,
-      displayName: level.displayName,
-      techName,
-      techTier,
-      bestRecord,
-      hasRecord,
-      hasReplay,
-      isPractice,
-      isSpeedrun: gs.isSpeedrunMode,
-    });
+  openPreLevel({
+    levelId,
+    displayName: level.displayName,
+    techName,
+    techTier,
+    bestRecord,
+    hasRecord,
+    hasReplay,
+    isPractice,
+    isSpeedrun: gs.isSpeedrunMode,
   });
 
   loadPreLevelLeaderboard(levelId);
   // Duo not supported for practice levels
-  if (gs.firebaseReady && !isPractice) callEnterDuoRoom(levelId);
+  if (gs.firebaseReady && !isPractice && !options?.skipDuoEnter) callEnterDuoRoom(levelId);
 }
 
 export function hidePreLevelModal(): void {
-  import('../react/prelevel/preLevelBridge').then(({ bridgeClosePreLevel }) => bridgeClosePreLevel());
+  closePreLevel('legacy-hide');
   gs.pendingLevelId = null;
   _pendingLevelData = null;
   if (!gs.isDuoMode && gs.duoRole === 'guest') callLeaveDuoRoom();
@@ -492,6 +488,7 @@ export function showLevelScreen(returnToTier = false): void {
   import('./duo').then((m) => m.closeDuoResult());
   hidePreLevelModal();
   closeWildLobby();
+  closeDuoLobby();
   const practiceReturnTech = gs.practiceActiveTech;
   closePracticeLobby();
   if (gs.isDuoMode) callResetDuoState();
