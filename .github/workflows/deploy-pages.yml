@@ -49,6 +49,12 @@ jobs:
           fi
           echo "Bundle size OK"
 
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Smoke Test (boot + main thread responsive)
+        run: node scripts/smoke-test-dist.mjs --base=/sudokuzen
+
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:

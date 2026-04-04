@@ -490,7 +490,21 @@ export function resolveLevelScreenReturnTarget(
   return 'stage';
 }
 
+let _showLevelScreenActive = false;
 export function showLevelScreen(returnToTier = false): void {
+  if (_showLevelScreenActive) {
+    console.warn('[showLevelScreen] re-entrant call blocked');
+    return;
+  }
+  _showLevelScreenActive = true;
+  try {
+    _showLevelScreenInner(returnToTier);
+  } finally {
+    _showLevelScreenActive = false;
+  }
+}
+
+function _showLevelScreenInner(returnToTier: boolean): void {
   const wasWildContext = gs.currentLevel?.source === 'wild' || gs.wildChallengeMode !== null;
   const practiceReturnTech = gs.practiceActiveTech;
   const currentTab = gs.currentTab;
