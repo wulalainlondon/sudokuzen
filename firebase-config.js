@@ -1,5 +1,7 @@
 window.SUDOKU_FIREBASE_CONFIG = {
-  apiKey: "REVOKED_FIREBASE_API_KEY",
+  // Keep this file safe for git. Put your real key in firebase-config.local.js (gitignored)
+  // or inject it at deploy time.
+  apiKey: "REPLACE_WITH_NEW_API_KEY",
   authDomain: "sudokuzen-f2aa3.firebaseapp.com",
   projectId: "sudokuzen-f2aa3",
   storageBucket: "sudokuzen-f2aa3.firebasestorage.app",

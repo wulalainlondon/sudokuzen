@@ -5,8 +5,10 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
 import { readFileSync } from 'fs';
 
+const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'REPLACE_WITH_NEW_API_KEY';
+
 const firebaseConfig = {
-  apiKey: "REVOKED_FIREBASE_API_KEY",
+  apiKey: FIREBASE_API_KEY,
   authDomain: "sudokuzen-f2aa3.firebaseapp.com",
   projectId: "sudokuzen-f2aa3",
   storageBucket: "sudokuzen-f2aa3.firebasestorage.app",
@@ -145,6 +147,9 @@ async function writeProfiles(players) {
 
 // Main
 async function main() {
+  if (!FIREBASE_API_KEY || FIREBASE_API_KEY === 'REPLACE_WITH_NEW_API_KEY') {
+    throw new Error('Missing FIREBASE_API_KEY. Run with FIREBASE_API_KEY=... node scripts/migrate-players.mjs');
+  }
   console.log('=== Player Profile Migration ===\n');
 
   const players = await findPlayerIds();
