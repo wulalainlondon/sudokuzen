@@ -414,7 +414,7 @@ function showReplayScore(): void {
       } else {
         audio.playUnitCompleteSound();
       }
-    });
+    }).catch(() => {});
     if (navigator.vibrate) {
       navigator.vibrate(score.grade === 'S' ? [20, 40, 20, 40, 20, 60, 40] : [15, 30, 15]);
     }
@@ -427,7 +427,7 @@ function showReplayScore(): void {
         import('../game/audio').then((audio) => {
           if (r.penalty) audio.playErrorFeedback();
           else audio.playFillSound();
-        });
+        }).catch(() => {});
       },
       300 + i * 120,
     );

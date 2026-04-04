@@ -33,7 +33,7 @@ export function PreLevelModal(): ReactElement {
   }, [visible]);
 
   const handleStart = useCallback(() => {
-    import('../../features/levels').then((m) => m.startLevelFromModal(true, false, null));
+    import('../../features/levels').then((m) => m.startLevelFromModal(true, false, null)).catch(() => {});
   }, []);
 
   const handleReplay = useCallback(async () => {
@@ -62,7 +62,7 @@ export function PreLevelModal(): ReactElement {
     const records = readJson<Record<string, any>>(recKey, {});
     const record = records[levelId];
     if (record?.replayHistory) {
-      import('../../features/levels').then((m) => m.startLevelFromModal(true, true, record.replayHistory));
+      import('../../features/levels').then((m) => m.startLevelFromModal(true, true, record.replayHistory)).catch(() => {});
     }
   }, []);
 

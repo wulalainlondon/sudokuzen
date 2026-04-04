@@ -53,7 +53,7 @@ async function callLeaveDuoRoom() {
   m.leaveDuoRoom();
 }
 function callResetDuoState() {
-  import('./duo').then((m) => m.resetDuoState());
+  import('./duo').then((m) => m.resetDuoState()).catch(() => {});
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ export function updateResumeBanner(): void {
     // Resume: hide level screen, show game board, restart timer
     document.getElementById('level-screen')!.style.display = 'none';
     (document.querySelector('.game-container') as HTMLElement).style.display = 'flex';
-    import('../game/timer').then((m) => m.startTimer(false));
+    import('../game/timer').then((m) => m.startTimer(false)).catch(() => {});
   };
 }
 
@@ -408,7 +408,7 @@ function _showLevelScreenInner(returnToTier: boolean): void {
 
   // Save progress before leaving game screen
   if (gs.currentLevel && (document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') {
-    import('../game/core').then((m) => m.saveGameStatus());
+    import('../game/core').then((m) => m.saveGameStatus()).catch(() => {});
   }
   closeLibraryOverlay();
   updateSpeedrunToggleUI();
@@ -416,14 +416,14 @@ function _showLevelScreenInner(returnToTier: boolean): void {
   document.getElementById('level-screen')!.style.display = 'flex';
   (document.querySelector('.game-container') as HTMLElement).style.display = 'none';
   if (gs.timerInterval) clearInterval(gs.timerInterval);
-  import('./replay').then((m) => m.closeReplayModal());
-  import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin());
-  import('../react/gameover/gameOverBridge').then(({ bridgeCloseGameOver }) => bridgeCloseGameOver());
-  import('../react/stats/statsStore').then(({ useStatsStore }) => useStatsStore.getState().close());
-  import('../react/mentor/mentorBridge').then(({ bridgeDismissMentor }) => bridgeDismissMentor());
+  import('./replay').then((m) => m.closeReplayModal()).catch(() => {});
+  import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin()).catch(() => {});
+  import('../react/gameover/gameOverBridge').then(({ bridgeCloseGameOver }) => bridgeCloseGameOver()).catch(() => {});
+  import('../react/stats/statsStore').then(({ useStatsStore }) => useStatsStore.getState().close()).catch(() => {});
+  import('../react/mentor/mentorBridge').then(({ bridgeDismissMentor }) => bridgeDismissMentor()).catch(() => {});
   // Only dismiss the duo result UI — do NOT call closeDuoResult() as it
   // calls showLevelScreen() back, creating an infinite loop.
-  import('../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult());
+  import('../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult()).catch(() => {});
   hidePreLevelModal();
   closeWildLobby();
   closeDuoLobby();
@@ -447,7 +447,7 @@ function _showLevelScreenInner(returnToTier: boolean): void {
     renderStageMap();
   }
   if (gs.firebaseReady) {
-    import('./duo').then((m) => m.stopDuoGlowListener());
+    import('./duo').then((m) => m.stopDuoGlowListener()).catch(() => {});
   }
 }
 
@@ -484,7 +484,7 @@ export function advanceToNextLevel(): void {
   }
 
   // Close React win, show level screen, open pre-level modal for next level
-  import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin());
+  import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin()).catch(() => {});
   document.getElementById('level-screen')!.style.display = 'flex';
   (document.querySelector('.game-container') as HTMLElement).style.display = 'none';
   showPreLevelModal(tierLevels[nextIdx].id);
@@ -497,7 +497,7 @@ let worldLaunchInFlight = false;
 export async function startPoolRandom(): Promise<void> {
   if (worldLaunchInFlight) return;
   worldLaunchInFlight = true;
-  import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(true));
+  import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(true)).catch(() => {});
 
   const enterBtn = document.getElementById('wild-enter-btn') as HTMLButtonElement | null;
   if (enterBtn) {
@@ -529,7 +529,7 @@ export async function startPoolRandom(): Promise<void> {
     showFeedback(t('wild.worldLoadError'), 'error');
   } finally {
     worldLaunchInFlight = false;
-    import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(false));
+    import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(false)).catch(() => {});
     if (enterBtn) {
       enterBtn.classList.remove('is-loading');
       enterBtn.removeAttribute('aria-busy');

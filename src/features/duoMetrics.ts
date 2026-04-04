@@ -55,7 +55,11 @@ let _duoMetrics = loadDuoMetrics();
 
 function saveDuoMetrics(): void {
   _duoMetrics.lastUpdatedAtMs = Date.now();
-  localStorage.setItem(DUO_METRICS_KEY, JSON.stringify(_duoMetrics));
+  try {
+    localStorage.setItem(DUO_METRICS_KEY, JSON.stringify(_duoMetrics));
+  } catch (e) {
+    console.warn('[saveDuoMetrics] localStorage quota exceeded', e);
+  }
 }
 
 export function bumpDuoMetric(key: DuoMetricKey, amount = 1): void {

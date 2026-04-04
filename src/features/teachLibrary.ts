@@ -168,11 +168,11 @@ function renderLibraryCardsFromItems(items: LibraryItem[]): void {
 }
 
 export function openLibraryOverlay(): void {
-  import('../react/library/libraryBridge').then(({ bridgeOpenLibrary }) => bridgeOpenLibrary());
+  import('../react/library/libraryBridge').then(({ bridgeOpenLibrary }) => bridgeOpenLibrary()).catch(() => {});
 }
 
 export function closeLibraryOverlay(): void {
-  import('../react/library/libraryBridge').then(({ bridgeCloseLibrary }) => bridgeCloseLibrary());
+  import('../react/library/libraryBridge').then(({ bridgeCloseLibrary }) => bridgeCloseLibrary()).catch(() => {});
 }
 
 export function openTeachFromLibrary(stars: string | number): void {

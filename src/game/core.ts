@@ -220,8 +220,8 @@ export function initGame(
 
   updateLivesUI();
   hidePauseScreen();
-  import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin());
-  import('../react/gameover/gameOverBridge').then(({ bridgeCloseGameOver }) => bridgeCloseGameOver());
+  import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin()).catch(() => {});
+  import('../react/gameover/gameOverBridge').then(({ bridgeCloseGameOver }) => bridgeCloseGameOver()).catch(() => {});
   renderGrid();
   applyGridSkillClass();
   evaluateLockedSkill();
@@ -585,7 +585,7 @@ export function resumeGame(): void {
     && gs.wildChallengeMode === 'timed'
   );
   if (isWildTimed) {
-    import('../features/wild/wildController').then((m) => m.resumeTimedCountdown());
+    import('../features/wild/wildController').then((m) => m.resumeTimedCountdown()).catch(() => {});
     return;
   }
   startTimer(false);

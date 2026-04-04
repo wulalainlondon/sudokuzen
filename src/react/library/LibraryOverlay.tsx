@@ -18,7 +18,7 @@ export function LibraryOverlay(): ReactElement {
       // Legacy renderLibraryCards uses gs.libraryListEl — we wire it up
       import('../../features/teach-legacy').then(({ renderLibraryCards }) => {
         renderLibraryCards();
-      });
+      }).catch(() => {});
     }
   }, [visible]);
 

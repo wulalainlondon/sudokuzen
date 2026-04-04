@@ -261,10 +261,10 @@ export function PracticeTree(): ReactElement | null {
     if (node.status === 'locked') {
       import('../../ui/feedback').then(({ showFeedback }) => {
         showFeedback(t('practice.techLocked'), 'error');
-      });
+      }).catch(() => {});
       return;
     }
-    import('../../features/practice/practiceLobby').then((m) => m.enterPracticeTechnique(key));
+    import('../../features/practice/practiceLobby').then((m) => m.enterPracticeTechnique(key)).catch(() => {});
   }, [nodes]);
 
   if (!visible) return null;
@@ -296,7 +296,7 @@ export function PracticeTree(): ReactElement | null {
     <div className="practice-tree-container" id="practice-tree">
       <div className="practice-tree-header">
         <button className="tier-back-btn" onClick={() => {
-          import('../../features/practice/practiceLobby').then((m) => m.closePracticeLobby());
+          import('../../features/practice/practiceLobby').then((m) => m.closePracticeLobby()).catch(() => {});
         }}>
           {t('nav.back')}
         </button>

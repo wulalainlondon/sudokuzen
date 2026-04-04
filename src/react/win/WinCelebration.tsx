@@ -101,9 +101,9 @@ function ActionButtons(): ReactElement {
 
   const handleNext = useCallback(() => {
     if (mode === 'practice') {
-      import('../../features/practice/practiceLobby').then((m) => m.startNextPracticeLevel());
+      import('../../features/practice/practiceLobby').then((m) => m.startNextPracticeLevel()).catch(() => {});
     } else {
-      import('../../features/levels').then((m) => m.advanceToNextLevel());
+      import('../../features/levels').then((m) => m.advanceToNextLevel()).catch(() => {});
     }
     close();
   }, [mode, close]);

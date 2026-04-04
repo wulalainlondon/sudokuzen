@@ -120,7 +120,7 @@ export function failGauntlet(): void {
       const profile = getWildProfile();
       applyExp(profile, _gauntletTotalExp);
       saveWildProfile(profile);
-    });
+    }).catch(() => {});
   }
   _gauntletQueue = [];
   _gauntletIdx = 0;

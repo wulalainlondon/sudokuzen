@@ -50,10 +50,10 @@ export function DuoResultModal(): ReactElement {
       // Re-open pre-level for the same level after a short delay
       if (levelId) {
         setTimeout(() => {
-          import('../../features/levels').then((lm) => lm.showPreLevelModal(levelId));
+          import('../../features/levels').then((lm) => lm.showPreLevelModal(levelId)).catch(() => {});
         }, 300);
       }
-    });
+    }).catch(() => {});
   }, []);
 
   const handleBack = useCallback(() => {

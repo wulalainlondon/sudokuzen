@@ -39,19 +39,19 @@ function PlaybackControls({
   speed: number;
 }): ReactElement {
   const handleReset = useCallback(() => {
-    import('../../features/replay').then((m) => m.replayReset());
+    import('../../features/replay').then((m) => m.replayReset()).catch(() => {});
   }, []);
   const handlePrev = useCallback(() => {
-    import('../../features/replay').then((m) => m.replayStepBack());
+    import('../../features/replay').then((m) => m.replayStepBack()).catch(() => {});
   }, []);
   const handleTogglePlay = useCallback(() => {
-    import('../../features/replay').then((m) => m.replayTogglePlay());
+    import('../../features/replay').then((m) => m.replayTogglePlay()).catch(() => {});
   }, []);
   const handleNext = useCallback(() => {
-    import('../../features/replay').then((m) => m.replayStepForward());
+    import('../../features/replay').then((m) => m.replayStepForward()).catch(() => {});
   }, []);
   const handleSpeed = useCallback(() => {
-    import('../../features/replay').then((m) => m.replayToggleSpeed());
+    import('../../features/replay').then((m) => m.replayToggleSpeed()).catch(() => {});
   }, []);
 
   return (
@@ -84,7 +84,7 @@ function PlaybackControls({
 
 function FilterTabs({ active }: { active: ReplayFilter }): ReactElement {
   const handleFilter = useCallback((key: ReplayFilter) => {
-    import('../../features/replay').then((m) => m.setReplayFilter(key));
+    import('../../features/replay').then((m) => m.setReplayFilter(key)).catch(() => {});
   }, []);
 
   return (
@@ -126,7 +126,7 @@ function StepList({ html }: { html: string }): ReactElement {
       if (!target) return;
       const step = parseInt(target.dataset.step || '0');
       if (step > 0) {
-        import('../../features/replay').then((m) => (m as any).replayJumpToStep(step));
+        import('../../features/replay').then((m) => (m as any).replayJumpToStep(step)).catch(() => {});
       }
     };
 
@@ -163,7 +163,7 @@ export function ReplayModal(): ReactElement {
   useEffect(() => {
     if (!visible) return;
     const rafId = requestAnimationFrame(() => {
-      import('../../features/replay').then((m) => m.replayReset());
+      import('../../features/replay').then((m) => m.replayReset()).catch(() => {});
     });
     return () => {
       cancelAnimationFrame(rafId);
@@ -177,7 +177,7 @@ export function ReplayModal(): ReactElement {
     if (!visible) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        import('../../features/replay').then((m) => m.closeReplayModal());
+        import('../../features/replay').then((m) => m.closeReplayModal()).catch(() => {});
       }
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -185,7 +185,7 @@ export function ReplayModal(): ReactElement {
   }, [visible]);
 
   const handleClose = useCallback(() => {
-    import('../../features/replay').then((m) => m.closeReplayModal());
+    import('../../features/replay').then((m) => m.closeReplayModal()).catch(() => {});
   }, []);
 
   return (

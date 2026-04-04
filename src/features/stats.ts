@@ -113,7 +113,7 @@ export function processAchievementToasts(): void {
 
   import('../react/toast/achievementToastBridge').then(({ bridgeEnqueueToast }) => {
     bridgeEnqueueToast(a.icon, a.name);
-  });
+  }).catch(() => {});
 
   // Auto-clear active flag after toast duration (3s) + gap (0.4s)
   setTimeout(() => {
@@ -347,9 +347,9 @@ export function recordReplayWatch(): void {
 // ── Stats modal UI (React-managed via StatsModal.tsx) ─────────────────
 
 export function openStatsModal(): void {
-  import('../react/stats/statsBridge').then(({ bridgeOpenStats }) => bridgeOpenStats());
+  import('../react/stats/statsBridge').then(({ bridgeOpenStats }) => bridgeOpenStats()).catch(() => {});
 }
 
 export function closeStatsModal(): void {
-  import('../react/stats/statsBridge').then(({ bridgeCloseStats }) => bridgeCloseStats());
+  import('../react/stats/statsBridge').then(({ bridgeCloseStats }) => bridgeCloseStats()).catch(() => {});
 }

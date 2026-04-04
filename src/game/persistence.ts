@@ -19,7 +19,7 @@ export function saveGameStatus(): void {
   if (!gs.currentLevel) return;
   // Wild mode puzzles save to dedicated wild save key (pause/resume)
   if (gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild') {
-    import('../features/wild/wildController').then(m => m.saveCurrentEncounter());
+    import('../features/wild/wildController').then(m => m.saveCurrentEncounter()).catch(() => {});
     return;
   }
   const saveKey = getSaveKeyForCurrentMode(gs.currentLevel.id);

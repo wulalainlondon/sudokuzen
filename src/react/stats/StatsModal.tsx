@@ -171,7 +171,7 @@ export function StatsModal(): ReactElement {
       setAchievements(m.ACHIEVEMENTS);
       setAchievementRecords(m.loadAchievements());
       m.checkAllAchievements();
-    });
+    }).catch(() => {});
   }, [visible]);
 
   return (

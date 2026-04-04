@@ -62,7 +62,7 @@ export function checkWin(): void {
     import('../features/wild/wildController').then((m) => {
       const result = m.onWildComplete(gs.seconds, gs.errors);
       showWildWinCelebration(gs.seconds, result.expGained, result.leveledUp, result.newLevel, result.firstKill, result.firstKillSub, result.beatMentor);
-    });
+    }).catch(() => {});
     return;
   }
 
@@ -72,7 +72,7 @@ export function checkWin(): void {
   if (isPractice && gs.currentLevel!.maxTechnique) {
     import('../features/practice/practiceLobby').then((m) => {
       m.savePracticeRecord(gs.currentLevel!.id, gs.seconds, gs.errors, gs.currentLevel!.maxTechnique!, gs.actionHistory);
-    });
+    }).catch(() => {});
     clearGameStatus(gs.currentLevel!.id);
     const earnedStars = Math.max(1, 3 - gs.errors);
     showPracticeWinCelebration(earnedStars);
@@ -130,7 +130,7 @@ export function checkSpeedrunComplete(lastIdx: number): void {
       removeCellClasses(cellEl, 'error');
       updateCellDisplay(cellEl, gs.cellsData[lastIdx]);
     }, 400);
-    import('./persistence').then(({ saveGameStatus }) => saveGameStatus());
+    import('./persistence').then(({ saveGameStatus }) => saveGameStatus()).catch(() => {});
     updateNumpadState();
   }
 }
@@ -196,7 +196,7 @@ export function showGameOver(): void {
   const isPractice = gs.currentLevel?.mode === 'practice';
 
   if (isWild) {
-    import('../features/wild/wildController').then((m) => m.onWildEscape());
+    import('../features/wild/wildController').then((m) => m.onWildEscape()).catch(() => {});
   } else {
     clearGameStatus(gs.currentLevel!.id);
   }
@@ -217,7 +217,7 @@ export function showGameOver(): void {
               isIronman: gs.wildChallengeMode === 'ironman',
             };
             bridgeShowGameOver(mode, wildInfo);
-          });
+          }).catch(() => {});
         } else {
           bridgeShowGameOver(mode);
         }
@@ -225,11 +225,11 @@ export function showGameOver(): void {
         if (session) {
           bridgeSetGameOverWildSession({ round: session.round, hasMore: session.round < 10 });
         }
-      });
+      }).catch(() => {});
     } else {
       bridgeShowGameOver(mode);
     }
-  });
+  }).catch(() => {});
 }
 
 // ── Win celebrations (delegated to React WinCelebration component) ────
@@ -247,7 +247,7 @@ function showWinCelebration(earnedValue: number): void {
       showLeaderboard: true,
       showReplay: true,
     });
-  });
+  }).catch(() => {});
   showFeedback(t('feedback.complete'), 'success');
   playWinSound();
 }
@@ -279,9 +279,9 @@ function showPracticeWinCelebration(earnedStars: number): void {
       practiceCleared: cleared,
       practiceTotal: 25,
     });
-  });
+  }).catch(() => {});
   // Play softer zen complete sound for practice
-  import('./zenAudio').then(({ playZenComplete }) => playZenComplete(0.03));
+  import('./zenAudio').then(({ playZenComplete }) => playZenComplete(0.03)).catch(() => {});
 }
 
 function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number, firstKill?: string | null, firstKillSub?: string | null, beatMentor?: boolean): void {
@@ -290,7 +290,7 @@ function showWildWinCelebration(seconds: number, expGained: number, leveledUp: b
     ? import('../features/wild/mentorDialogue').then(({ MENTOR_MILESTONES }) => {
         const line = MENTOR_MILESTONES.find((m) => m.key === 'first_kill');
         return line?.text ?? null;
-      })
+      }).catch(() => null)
     : Promise.resolve(null);
 
   Promise.all([
@@ -312,8 +312,8 @@ function showWildWinCelebration(seconds: number, expGained: number, leveledUp: b
     import('../features/wild/wildController').then((m) => {
       const session = m.getSession();
       bridgeSetWildSession(session ? { round: session.round, wins: session.wins, totalExp: session.totalExp } : null);
-    });
-  });
+    }).catch(() => {});
+  }).catch(() => {});
   showFeedback(leveledUp ? t('wildRuntime.levelUpFeedback', { level: String(newLevel) }) : t('wildRuntime.huntSuccess'), 'success');
   playWinSound();
 }
@@ -346,6 +346,6 @@ export function celebrateCompletedUnits(idx: number, beforeState: { row: boolean
   if (justCol) parts.push(t('feedback.unitCol'));
   if (justBox) parts.push(t('feedback.unitBox'));
   showFeedback(t('feedback.unitComplete', { parts: parts.join(' + ') }), 'success');
-  import('./audio').then(({ playUnitCompleteSound }) => playUnitCompleteSound());
+  import('./audio').then(({ playUnitCompleteSound }) => playUnitCompleteSound()).catch(() => {});
   if (navigator.vibrate) navigator.vibrate([8, 20, 8, 20, 8]);
 }

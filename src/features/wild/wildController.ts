@@ -196,7 +196,7 @@ function startCountdown(seconds: number): void {
       clearInterval(gs.wildTimerInterval!);
       gs.wildTimerInterval = null;
       // Trigger game over via lazy import to avoid circular deps
-      import('../../game/core').then((m) => m.showGameOver());
+      import('../../game/core').then((m) => m.showGameOver()).catch(() => {});
     }
   }, 1000);
 }

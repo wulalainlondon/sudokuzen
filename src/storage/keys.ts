@@ -47,5 +47,9 @@ export function readJson<T>(key: string, fallback: T): T {
 }
 
 export function writeJson<T>(key: string, value: T): void {
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.warn(`[writeJson] localStorage quota exceeded for key "${key}"`, e);
+  }
 }

@@ -38,6 +38,7 @@ export interface DuoRoomSummary {
 
 // ── Module-level guard flags ─────────────────────────────────────────
 let _countdownLaunched = false;
+let _countdownRafCancelled = false;
 let _duoFinishSubmitted = false;
 let _snapshotRetryCount = 0;
 let _lastSeenLevelId: number | null = null;
@@ -786,10 +787,12 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
   }
   gs.duoCountdownStartMs = targetMs;
   _countdownLaunched = true;
+  _countdownRafCancelled = false;
 
   // Animate countdown UI using requestAnimationFrame
   let lastShown: number | null = null;
   function updateCountdownUI() {
+    if (_countdownRafCancelled) return;
     const remaining = Math.max(0, Math.ceil((targetMs - Date.now()) / 1000));
     if (remaining > 0) {
       if (remaining !== lastShown) {
@@ -1043,7 +1046,7 @@ export function showDuoResult(d: DuoRoomData): void {
   // Open via React bridge
   import('../react/duoresult/duoResultBridge').then(({ bridgeOpenDuoResult }) => {
     bridgeOpenDuoResult({ contentHtml, iWon, isDraw, levelId: d.levelId ?? null });
-  });
+  }).catch(() => {});
 }
 
 // ── Duo Emoji Reactions ──────────────────────────────────────────────
@@ -1107,7 +1110,7 @@ export async function surrenderDuo(): Promise<void> {
 // ── Close / Leave / Reset ────────────────────────────────────────────
 
 export async function closeDuoResult(): Promise<void> {
-  import('../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult());
+  import('../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult()).catch(() => {});
   // Mark room finished — await to ensure Firebase update completes before state reset
   if (gs.firebaseReady && _activeRoomId) {
     try {
@@ -1149,6 +1152,7 @@ export async function leaveDuoRoom(): Promise<void> {
 }
 
 export function resetDuoState(): void {
+  _countdownRafCancelled = true;
   duoResultShown = false;
   _countdownLaunched = false;
   _duoFinishSubmitted = false;

@@ -138,8 +138,14 @@ export function loadWildProfile(): WildProfile {
   return { ...DEFAULT_PROFILE, ...raw };
 }
 
+let _saveProfileTimer: ReturnType<typeof setTimeout> | null = null;
+
 export function saveWildProfile(profile: WildProfile): void {
-  writeJson(SK.WILD_PROFILE, profile);
+  if (_saveProfileTimer) clearTimeout(_saveProfileTimer);
+  _saveProfileTimer = setTimeout(() => {
+    _saveProfileTimer = null;
+    writeJson(SK.WILD_PROFILE, profile);
+  }, 100);
 }
 
 // ── Wild Save (pause/resume) ────────────────────────────────────────

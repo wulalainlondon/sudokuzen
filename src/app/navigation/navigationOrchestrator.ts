@@ -148,7 +148,7 @@ export function back(): void {
   if (useEncounterTransitionStore.getState().active) {
     import('../../react/wild/encounterTransitionBridge').then(({ bridgeDismissEncounterTransition }) => {
       bridgeDismissEncounterTransition();
-    });
+    }).catch(() => {});
     return;
   }
 

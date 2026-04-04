@@ -199,7 +199,7 @@ function maybeShowPhaseTeachBrief(techKey: string): void {
       show(stars, 'tier');
       return;
     }
-    import('../teach-legacy').then((m) => m.showTeachModal(stars, 'tier'));
+    import('../teach-legacy').then((m) => m.showTeachModal(stars, 'tier')).catch(() => {});
   }, 320);
 }
 
@@ -390,7 +390,7 @@ export function backToPracticeLobby(): void {
             t('practiceLobby.allCompleteQuote'),
             t('practiceLobby.allCompleteAttr'),
           );
-        });
+        }).catch(() => {});
       }, 3500);
     } else {
       // Single technique completed

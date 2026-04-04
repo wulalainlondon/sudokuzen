@@ -73,6 +73,7 @@ function sm(): SkillModeState {
 }
 
 let _preview: SkillPreview | null = null;
+let _casting = false;
 
 // ── Panel UI (delegated to skillPanelUI.ts) ─────────────────────────
 
@@ -372,7 +373,7 @@ function findNoteSpan(cellEl: HTMLElement, digit: number): HTMLElement | null {
 
 export async function castSkill(): Promise<void> {
   const skill = sm();
-  if (!skill.enabled || skill.casting) return;
+  if (_casting || !skill.enabled || skill.casting) return;
 
   if (!_preview?.valid) {
     showFeedback(_preview?.reason || t('skills.conditionNotMet'), 'error');
@@ -389,37 +390,42 @@ export async function castSkill(): Promise<void> {
     return;
   }
 
-  skill.casting = true;
-  skill.castMessage = `${result.skillName}...`;
-  updatePanelUI();
+  _casting = true;
+  try {
+    skill.casting = true;
+    skill.castMessage = `${result.skillName}...`;
+    updatePanelUI();
 
-  // Delegate animation to per-skill choreography
-  const choreography = getChoreography(result.skillId);
-  if (gs.gridEl) {
-    await choreography({
-      gridEl: gs.gridEl,
-      result,
-      findNoteSpan,
-      wait,
-      recordAction,
-      recordElimination,
-      cellLabel,
-    });
+    // Delegate animation to per-skill choreography
+    const choreography = getChoreography(result.skillId);
+    if (gs.gridEl) {
+      await choreography({
+        gridEl: gs.gridEl,
+        result,
+        findNoteSpan,
+        wait,
+        recordAction,
+        recordElimination,
+        cellLabel,
+      });
+    }
+
+    // Redraw affected cells to reflect data changes
+    const affectedCells = new Set(result.targets.map((t) => t.cell));
+    for (const cellIdx of affectedCells) {
+      const cellEl = gs.gridEl?.children[cellIdx] as HTMLElement | undefined;
+      if (cellEl) updateCellDisplay(cellEl, gs.cellsData[cellIdx]);
+    }
+
+    // Phase 3: Done — show count + exit
+    showFeedback(t('skills.elimCount', { count: String(result.targets.length) }), 'success');
+    exitSkillMode();
+
+    const { saveGameStatus } = await import('../../game/core');
+    saveGameStatus();
+  } finally {
+    _casting = false;
   }
-
-  // Redraw affected cells to reflect data changes
-  const affectedCells = new Set(result.targets.map((t) => t.cell));
-  for (const cellIdx of affectedCells) {
-    const cellEl = gs.gridEl?.children[cellIdx] as HTMLElement | undefined;
-    if (cellEl) updateCellDisplay(cellEl, gs.cellsData[cellIdx]);
-  }
-
-  // Phase 3: Done — show count + exit
-  showFeedback(t('skills.elimCount', { count: String(result.targets.length) }), 'success');
-  exitSkillMode();
-
-  const { saveGameStatus } = await import('../../game/core');
-  saveGameStatus();
 }
 
 /** Reset skill state. Called by core.ts on game reset. */

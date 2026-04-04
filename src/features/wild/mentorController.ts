@@ -45,7 +45,7 @@ let _dismissResolve: (() => void) | null = null;
 function showMentorMessage(line: MentorLine): Promise<void> {
   return new Promise((resolve) => {
     _dismissResolve = () => {
-      import('../../react/mentor/mentorBridge').then(({ bridgeDismissMentor }) => bridgeDismissMentor());
+      import('../../react/mentor/mentorBridge').then(({ bridgeDismissMentor }) => bridgeDismissMentor()).catch(() => {});
       markSeen(line.key);
       _dismissResolve = null;
       resolve();
@@ -53,7 +53,7 @@ function showMentorMessage(line: MentorLine): Promise<void> {
 
     import('../../react/mentor/mentorBridge').then(({ bridgeShowMentor }) => {
       bridgeShowMentor(line.text, line.sub ?? '');
-    });
+    }).catch(() => {});
   });
 }
 
