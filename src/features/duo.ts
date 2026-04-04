@@ -59,6 +59,7 @@ let _lastWaitingRoomsFetchMs = 0;
 let _duoHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
 let _lastStaleGuestPruneMs = 0;
 let _lastDuoCleanupMs = 0;
+let _duoOpponentOfflineNotified = false;
 
 function setActiveRoomId(roomId: string | null): void {
   _activeRoomId = roomId;
@@ -577,6 +578,16 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     const oppAlias = gs.duoRole === 'host' ? d.guestAlias || t('duoRuntime.opponent') : d.hostAlias || t('duoRuntime.opponent');
     updateDuoProgressUI(oppAlias, oppProgress || 0);
 
+    // Detect opponent disconnect (stale heartbeat or offline flag)
+    if (!_duoOpponentOfflineNotified) {
+      const oppHeartbeat = gs.duoRole === 'host' ? Number(d.guestHeartbeatAtMs || 0) : Number(d.hostHeartbeatAtMs || 0);
+      const oppOnline = gs.duoRole === 'host' ? d.guestOnline : d.hostOnline;
+      if ((oppHeartbeat > 0 && Date.now() - oppHeartbeat > DUO_STALE_HEARTBEAT_MS) || oppOnline === false) {
+        _duoOpponentOfflineNotified = true;
+        showFeedback(t('duoRuntime.opponentOffline'), 'error');
+      }
+    }
+
     // Handle emoji reactions
     handleDuoEmoji(d);
 
@@ -713,6 +724,7 @@ export function updateDuoPreLevelUI(d: DuoRoomData): void {
       readyBtn.style.display = d.guestId ? 'inline-block' : 'none';
       readyBtn.textContent = myReady ? t('duoRuntime.readyConfirm') : t('duoRuntime.readyPrompt');
       readyBtn.classList.toggle('is-ready', myReady);
+      readyBtn.setAttribute('aria-label', myReady ? t('duoRuntime.ariaReady') : t('duoRuntime.ariaNotReady'));
     }
     if (countdownArea) countdownArea.style.display = 'none';
     if (startBtn) startBtn.style.display = '';
@@ -799,6 +811,7 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
         area!.innerHTML = `<div class="duo-countdown-display">${remaining}</div>`;
         lastShown = remaining;
         playCountdownBeep();
+        if (navigator.vibrate) navigator.vibrate(50);
       }
       requestAnimationFrame(updateCountdownUI);
     }
@@ -815,6 +828,7 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
     gs.duoRoundLaunched = true;
     area!.innerHTML = `<div class="duo-countdown-display">GO!</div>`;
     playCountdownBeep(true);
+    if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 100]);
     setTimeout(() => launchDuoGame(), 600);
   }, delay) as unknown as ReturnType<typeof setInterval>;
 }
@@ -1174,6 +1188,7 @@ export function resetDuoState(): void {
   gs.duoRoundLaunched = false;
   gs.duoCountdownStartMs = null;
   gs.duoOpponentNotified = false;
+  _duoOpponentOfflineNotified = false;
   gs.duoProgressThrottle = 0;
   if (gs.duoCountdownTimer) {
     clearTimeout(gs.duoCountdownTimer as unknown as ReturnType<typeof setTimeout>);

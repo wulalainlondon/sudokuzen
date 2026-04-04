@@ -43,7 +43,7 @@
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
                 </button>
                 <button id="duo-entry-btn" class="header-icon-btn speedrun-btn" onclick="openDuoLobby()" title="雙人對決大廳"
-                    aria-label="雙人對決入口">Duo</button>
+                    aria-label="雙人對決入口">⚔️</button>
             </div>
         </div>
         <div class="alias-config">
@@ -305,11 +305,11 @@
             </div>
         </div>
         <div class="duo-emoji-bar" id="duo-emoji-bar">
-            <button class="duo-emoji-btn" onclick="sendDuoEmoji('💪')">💪</button>
-            <button class="duo-emoji-btn" onclick="sendDuoEmoji('😱')">😱</button>
-            <button class="duo-emoji-btn" onclick="sendDuoEmoji('😂')">😂</button>
-            <button class="duo-emoji-btn" onclick="sendDuoEmoji('💕')">💕</button>
-            <button class="duo-emoji-btn" onclick="sendDuoEmoji('🔥')">🔥</button>
+            <button class="duo-emoji-btn" aria-label="發送加油表情" onclick="sendDuoEmoji('💪')">💪</button>
+            <button class="duo-emoji-btn" aria-label="發送驚嚇表情" onclick="sendDuoEmoji('😱')">😱</button>
+            <button class="duo-emoji-btn" aria-label="發送大笑表情" onclick="sendDuoEmoji('😂')">😂</button>
+            <button class="duo-emoji-btn" aria-label="發送愛心表情" onclick="sendDuoEmoji('💕')">💕</button>
+            <button class="duo-emoji-btn" aria-label="發送火焰表情" onclick="sendDuoEmoji('🔥')">🔥</button>
         </div>
         <div class="controls">
     </div>
@@ -371,7 +371,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.04-V15';
+        var INLINE_VER = '2026.04.04-V16';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

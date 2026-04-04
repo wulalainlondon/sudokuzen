@@ -440,6 +440,7 @@ export const de: Widen<Locale> = {
     resultFaster: '{winner} war {diff} schneller',
     historyRecord: 'Spielverlauf: ',
     historyRecordSingle: 'Spielverlauf: {name} {wins} Siege',
+    opponentOffline: 'Gegner scheint offline zu sein',
   },
 
   // ── Level grid (levels.ts runtime strings) ───────────────────────

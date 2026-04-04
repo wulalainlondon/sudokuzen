@@ -323,6 +323,10 @@ export const zhTW = {
     connectionFailed: '連線失敗',
     connectionError: '連線異常，請重試',
     opponentFinished: '⚡ {alias} 已完成！{time}{stars} — 加油！',
+    backToLobby: '返回關卡',
+    timeJustNow: '剛剛',
+    timeMinAgo: '{min} 分鐘前',
+    timeHourAgo: '超過 1 小時前',
   },
 
   // ── Replay ──────────────────────────────────────────────────────────
@@ -441,6 +445,9 @@ export const zhTW = {
     resultFaster: '{winner} 快了 {diff}',
     historyRecord: '歷史戰績：',
     historyRecordSingle: '歷史戰績：{name} {wins} 勝',
+    opponentOffline: '對手似乎已離線',
+    ariaReady: '已準備，點擊取消準備',
+    ariaNotReady: '未準備，點擊確認準備',
   },
 
   // ── Level grid (levels.ts runtime strings) ───────────────────────

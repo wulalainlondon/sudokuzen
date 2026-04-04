@@ -45,6 +45,14 @@ function renderLevelOptions(selectedLevelId: number | null): void {
     .join('');
 }
 
+function relativeTime(ms: number): string {
+  const sec = Math.floor((Date.now() - ms) / 1000);
+  if (sec < 60) return t('duo.timeJustNow');
+  const min = Math.floor(sec / 60);
+  if (min < 60) return t('duo.timeMinAgo', { min: String(min) });
+  return t('duo.timeHourAgo');
+}
+
 function waitingRoomText(room: DuoRoomSummary): string {
   const level = getAllLevels().find((l) => l.id === room.levelId);
   const levelName = level ? `${level.difficultyName} · ${level.displayName}` : `Level ${room.levelId}`;
@@ -75,20 +83,27 @@ function renderRoomList(rooms: DuoRoomSummary[]): void {
     .map((r) => {
       const guest = r.guestAlias ? ` · ${r.guestAlias}` : '';
       const lock = r.levelLocked ? ` · ${t('duo.locked')}` : '';
+      const time = r.updatedAtMs ? ` · ${relativeTime(r.updatedAtMs)}` : '';
       return `<button class="duo-room-item" data-room="${r.roomId}">
         <span class="duo-room-line1">${waitingRoomText(r)}</span>
-        <span class="duo-room-line2">${r.roomId}${guest}${lock}</span>
+        <span class="duo-room-line2">${r.roomId}${guest}${lock}${time}</span>
       </button>`;
     })
     .join('');
   list.querySelectorAll('.duo-room-item').forEach((el) => {
     el.addEventListener('click', async () => {
-      const roomId = (el as HTMLElement).dataset.room;
-      if (!roomId) return;
-      const { joinDuoRoom } = await import('./duo');
-      const ok = await joinDuoRoom(roomId);
-      if (!ok) showFeedback(t('duo.noJoinableRoom'), 'error');
-      await refreshDuoLobbyRoom({ force: true });
+      const btn = el as HTMLButtonElement;
+      const roomId = btn.dataset.room;
+      if (!roomId || btn.disabled) return;
+      btn.disabled = true;
+      try {
+        const { joinDuoRoom } = await import('./duo');
+        const ok = await joinDuoRoom(roomId);
+        if (!ok) showFeedback(t('duo.noJoinableRoom'), 'error');
+        await refreshDuoLobbyRoom({ force: true });
+      } finally {
+        btn.disabled = false;
+      }
     });
   });
 }
@@ -202,10 +217,17 @@ export async function createDuoRoomFromLobby(): Promise<void> {
   if (!select) return;
   const levelId = Number(select.value);
   if (!Number.isFinite(levelId)) return;
-  const { createDuoRoom } = await import('./duo');
-  const roomId = await createDuoRoom(levelId);
-  if (!roomId) showFeedback(t('duo.connectionError'), 'error');
-  await refreshDuoLobbyRoom({ force: true });
+  const createBtn = document.getElementById('duo-create-btn-text') as HTMLButtonElement | null;
+  const savedText = createBtn?.textContent ?? '';
+  if (createBtn) { createBtn.textContent = '...'; (createBtn.closest('button') as HTMLButtonElement | null)?.setAttribute('disabled', ''); }
+  try {
+    const { createDuoRoom } = await import('./duo');
+    const roomId = await createDuoRoom(levelId);
+    if (!roomId) showFeedback(t('duo.connectionError'), 'error');
+    await refreshDuoLobbyRoom({ force: true });
+  } finally {
+    if (createBtn) { createBtn.textContent = savedText; (createBtn.closest('button') as HTMLButtonElement | null)?.removeAttribute('disabled'); }
+  }
 }
 
 export async function joinDuoRoomFromLobby(): Promise<void> {
@@ -216,10 +238,19 @@ export async function joinDuoRoomFromLobby(): Promise<void> {
     await refreshDuoLobbyRoom();
     return;
   }
-  const { joinDuoRoom } = await import('./duo');
-  const ok = await joinDuoRoom(roomId);
-  if (!ok) showFeedback(t('duo.noJoinableRoom'), 'error');
-  await refreshDuoLobbyRoom({ force: true });
+  const joinBtnText = document.getElementById('duo-join-btn-text');
+  const savedText = joinBtnText?.textContent ?? '';
+  if (joinBtn) joinBtn.disabled = true;
+  if (joinBtnText) joinBtnText.textContent = '...';
+  try {
+    const { joinDuoRoom } = await import('./duo');
+    const ok = await joinDuoRoom(roomId);
+    if (!ok) showFeedback(t('duo.noJoinableRoom'), 'error');
+    await refreshDuoLobbyRoom({ force: true });
+  } finally {
+    if (joinBtn) joinBtn.disabled = false;
+    if (joinBtnText) joinBtnText.textContent = savedText;
+  }
 }
 
 export async function updateDuoRoomLevelFromLobby(): Promise<void> {

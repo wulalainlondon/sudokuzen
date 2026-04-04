@@ -44,13 +44,14 @@ export function DuoResultModal(): ReactElement {
 
   const handlePlayAgain = useCallback(() => {
     const levelId = useDuoResultStore.getState().levelId;
-    // Close result modal via bridge (resets duo state)
+    // Close result modal, re-enter duo room, then open pre-level modal for rematch
     import('../../features/duo').then((m) => {
       m.closeDuoResult();
-      // Re-open pre-level for the same level after a short delay
       if (levelId) {
         setTimeout(() => {
-          import('../../features/levels').then((lm) => lm.showPreLevelModal(levelId)).catch(() => {});
+          m.enterDuoRoom(levelId).then(() => {
+            import('../../features/levels').then((lm) => lm.showPreLevelModal(levelId)).catch(() => {});
+          }).catch(() => {});
         }, 300);
       }
     }).catch(() => {});
@@ -73,7 +74,7 @@ export function DuoResultModal(): ReactElement {
         {/* Safety: contentHtml built by our own duo.ts code (trusted) */}
         <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
         <button className="resume-btn" onClick={handlePlayAgain}>{t('duo.playAgain')}</button>
-        <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleBack}>{t('nav.backToLevels')}</button>
+        <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleBack}>{t('duo.backToLobby')}</button>
       </div>
     </ZenOverlay>
   );

@@ -437,6 +437,7 @@ export const ja: Widen<Locale> = {
     resultFaster: '{winner} が {diff} 速かった',
     historyRecord: '対戦履歴：',
     historyRecordSingle: '対戦履歴：{name} {wins} 勝',
+    opponentOffline: '対戦相手がオフラインのようです',
   },
 
   // ── Level grid (levels.ts runtime strings) ───────────────────────
