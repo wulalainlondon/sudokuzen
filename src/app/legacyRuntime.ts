@@ -229,7 +229,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     .then(bootLevelScreen)
     .catch(bootLevelScreen);
 
-  // 15. Bind window facade for onclick="" handlers in HTML
+  // 15b. Bind window facade for onclick="" handlers in HTML
   bindLegacyFacade({
     openLibraryOverlay,
     openStatsModal,

@@ -511,7 +511,9 @@ export function showLevelScreen(returnToTier = false): void {
   import('../react/gameover/gameOverBridge').then(({ bridgeCloseGameOver }) => bridgeCloseGameOver());
   import('../react/stats/statsStore').then(({ useStatsStore }) => useStatsStore.getState().close());
   import('../react/mentor/mentorBridge').then(({ bridgeDismissMentor }) => bridgeDismissMentor());
-  import('./duo').then((m) => m.closeDuoResult());
+  // Only dismiss the duo result UI — do NOT call closeDuoResult() as it
+  // calls showLevelScreen() back, creating an infinite loop.
+  import('../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult());
   hidePreLevelModal();
   closeWildLobby();
   closeDuoLobby();
