@@ -33,6 +33,10 @@ interface CompactLevel {
   ls: boolean;     // logicSolvable
   sr: number;      // singleRatio
   src: string;     // source
+  // Duo-exclusive metadata
+  gv?: number;     // givens count
+  cd?: number;     // total candidates at start
+  ac?: number;     // avg candidates per empty cell
 }
 
 // ── Internal state ─────────────────────────────────────────────────
@@ -71,6 +75,9 @@ function expandLevel(c: CompactLevel, mode: GameMode): LevelData {
     singleRatio: c.sr,
     mode,
     source: c.src || undefined,
+    givens: c.gv,
+    candidates: c.cd,
+    avgCandidatesPerCell: c.ac,
   };
 }
 

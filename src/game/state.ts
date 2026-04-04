@@ -93,6 +93,10 @@ export interface LevelData {
   mode?: GameMode;
   hidden?: boolean;
   source?: string;
+  // Duo-exclusive metadata
+  givens?: number;
+  candidates?: number;
+  avgCandidatesPerCell?: number;
 }
 
 export const gs = {
