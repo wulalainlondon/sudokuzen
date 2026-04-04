@@ -75,63 +75,63 @@
     },
     "duo-T01": {
       "file": "duo-T01.json",
-      "count": 200,
-      "size": 95469
+      "count": 1350,
+      "size": 652623
     },
     "duo-T02": {
       "file": "duo-T02.json",
-      "count": 200,
-      "size": 95573
+      "count": 582,
+      "size": 282660
     },
     "duo-T03": {
       "file": "duo-T03.json",
-      "count": 150,
-      "size": 71667
+      "count": 300,
+      "size": 147049
     },
     "duo-T04": {
       "file": "duo-T04.json",
-      "count": 150,
-      "size": 71625
+      "count": 450,
+      "size": 222483
     },
     "duo-T05": {
       "file": "duo-T05.json",
-      "count": 150,
-      "size": 71638
+      "count": 1200,
+      "size": 592749
     },
     "duo-T06": {
       "file": "duo-T06.json",
-      "count": 150,
-      "size": 71625
+      "count": 900,
+      "size": 446852
     },
     "duo-T07": {
       "file": "duo-T07.json",
-      "count": 100,
-      "size": 47740
+      "count": 450,
+      "size": 221050
     },
     "duo-T08": {
       "file": "duo-T08.json",
-      "count": 100,
-      "size": 47745
+      "count": 450,
+      "size": 225274
     },
     "duo-T09": {
       "file": "duo-T09.json",
-      "count": 100,
-      "size": 47766
+      "count": 600,
+      "size": 294522
     },
     "duo-T10": {
       "file": "duo-T10.json",
-      "count": 100,
-      "size": 47758
+      "count": 450,
+      "size": 227492
     },
     "duo-T11": {
       "file": "duo-T11.json",
-      "count": 100,
-      "size": 47766
+      "count": 300,
+      "size": 149143
     },
     "duo-T12": {
       "file": "duo-T12.json",
-      "count": 100,
-      "size": 47763
+      "count": 300,
+      "size": 150308
     }
   }
 }
