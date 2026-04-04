@@ -5,6 +5,7 @@ import type { CellData } from './state';
 import { playCellSelectSound } from './audio';
 import { showFeedback } from '../ui/feedback';
 import { t } from '../i18n/t';
+import { showUnitAnalysis, hideUnitAnalysis } from './unitAnalysisPanel';
 
 // ── Callback hooks (injected by core.ts to avoid circular imports) ───
 let _onContinuousCellClick: ((idx: number) => boolean) | null = null;
@@ -170,6 +171,15 @@ export function selectCell(idx: number): void {
       }
     }
   });
+
+  // Show unit analysis panel when selecting a filled cell (not in skill/continuous mode)
+  const isFilled = gs.cellsData[idx].value !== 0;
+  const inSpecialMode = gs.skillMode?.enabled || (gs.continuousFillDigit !== null && gs.continuousFillDigit >= 1);
+  if (isFilled && !inSpecialMode) {
+    showUnitAnalysis(idx);
+  } else {
+    hideUnitAnalysis();
+  }
 }
 
 export function getUnitIndices(idx: number): {

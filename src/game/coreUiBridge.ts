@@ -6,6 +6,7 @@ interface GameHeaderPayload {
   quitWildLabel: string;
   quitPracticeLabel: string;
   quitNormalLabel: string;
+  encounterName?: string;
 }
 
 export function setGameHeaderByMode(payload: GameHeaderPayload): void {
@@ -15,14 +16,25 @@ export function setGameHeaderByMode(payload: GameHeaderPayload): void {
   const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
 
   if (gameTitle) gameTitle.textContent = payload.isWild ? payload.worldLabel : payload.isPractice ? payload.practiceLabel : 'SUDOKU';
+  // In Wild mode, show encounter name in the mode chip
   if (gameModeChip) {
-    gameModeChip.textContent = payload.isWild ? payload.worldLabel : payload.practiceLabel;
-    gameModeChip.classList.toggle('hidden', !payload.isWild && !payload.isPractice);
+    if (payload.isWild && payload.encounterName) {
+      gameModeChip.textContent = payload.encounterName;
+      gameModeChip.classList.remove('hidden');
+    } else {
+      gameModeChip.classList.add('hidden');
+    }
   }
   if (gameContainer) gameContainer.classList.toggle('world-play-active', payload.isWild);
   if (quitBtn) {
-    quitBtn.textContent = payload.isWild ? payload.quitWildLabel : payload.isPractice ? payload.quitPracticeLabel : payload.quitNormalLabel;
-    quitBtn.setAttribute('onclick', payload.isWild ? 'exitWild(); showLevelScreen(true)' : 'showLevelScreen(true)');
+    // Wild mode: hide quit btn — pause screen has leave/abandon actions
+    if (payload.isWild) {
+      quitBtn.style.display = 'none';
+    } else {
+      quitBtn.style.display = '';
+      quitBtn.textContent = payload.isPractice ? payload.quitPracticeLabel : payload.quitNormalLabel;
+      quitBtn.setAttribute('onclick', 'showLevelScreen(true)');
+    }
   }
 }
 

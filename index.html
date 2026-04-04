@@ -294,6 +294,7 @@
 
         <div class="numpad-skill-wrapper">
             <div class="numpad" id="numpad"></div>
+            <div class="unit-analysis-panel hidden" id="unit-analysis-panel"></div>
             <div class="skill-panel hidden" id="skill-panel">
                 <div class="skill-subtitle" id="skill-subtitle"></div>
                 <div class="skill-status" id="skill-status"></div>
@@ -367,11 +368,12 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-    <script type="module" src="firebase-config.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="firebase-config.local.js" onerror=""></script>
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.04-V16';
+        var INLINE_VER = '2026.04.04-V17';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

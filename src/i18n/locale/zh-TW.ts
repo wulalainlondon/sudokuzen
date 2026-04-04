@@ -185,6 +185,13 @@ export const zhTW = {
     savedEncounterInfo: '上次遭遇：{tech} · {time}',
     abandonEncounter: '放棄遭遇',
     abandonConfirm: '放棄將視為逃脫（觸發冷卻）',
+    challengeRulesTitle: '挑戰規則',
+    challengeExp: '經驗 ×{mult}',
+    challengeOneLife: '一命通關',
+    challengeNoCheck: '不即時驗證',
+    challengeLives: '{n} 條命',
+    challengeNoNotes: '禁用筆記',
+    challengeTimer: '限時 {sec} 秒',
   },
 
   // ── Timer & game chrome ─────────────────────────────────────────────
@@ -802,6 +809,13 @@ export const zhTW = {
       text: '你做到了。\n我走了那麼久都沒能到達的地方，你到了。\n\n這片數字的世界，不再有什麼能困住你了。\n但如果你偶爾回頭看看這些殘篇，\n記得，有個叫弈塵的人，曾經也在這條路上走過。',
       sub: '—— 弈塵《殘篇·終章》',
     },
+  },
+
+  // ── Unit Analysis Panel ────────────────────────────────────────────
+  unitAnalysis: {
+    row: '行 {n}',
+    col: '列 {n}',
+    box: '宮',
   },
 
   // ── Misc ────────────────────────────────────────────────────────────

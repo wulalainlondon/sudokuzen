@@ -272,8 +272,8 @@ header {
 /* 去掉原本 header 內的舊佈局，讓它變簡單 */
 header h1 {
     font-size: 1.1rem;
-    font-weight: 300;
-    letter-spacing: 2px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
     margin: 0;
 }
 .game-title-wrap {
@@ -289,10 +289,14 @@ header h1 {
     border: 1px solid color-mix(in srgb, var(--accent-strong) 45%, var(--cell-border));
     color: var(--accent-strong);
     background: color-mix(in srgb, var(--accent-soft) 70%, transparent);
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    padding: 3px 8px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    max-width: 60vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Quit 按鈕移動到最右上角，風格更輕盈 */
@@ -342,7 +346,7 @@ header h1 {
     width: min(100%, 420px);
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     margin-bottom: 8px;
     /* 緊貼在格子上方 */
 }
@@ -418,70 +422,36 @@ header h1 {
     transform: scale(1.08);
 }
 
-/* 計時器與關卡名 (左上) */
+/* 計時器與關卡名 (左上) — 統一所有模式的 pill 風格 */
 .grid-info-bar .stats {
     font-size: 0.75rem;
-    color: var(--text-light);
-    font-weight: 400;
-    margin: 0;
-}
-
-/* 生命值 ✖ ✖ ✖ (右上) */
-.grid-info-bar .life-container {
-    font-size: 1rem;
-    letter-spacing: 3px;
-    /* 稍微縮小間隔，看起來更優雅 */
-    line-height: 1;
-    color: var(--error-color);
-}
-
-.life-container span.lost {
-    color: var(--cell-border);
-}
-
-/* World battle HUD */
-.game-container.world-play-active header h1 {
-    letter-spacing: 3px;
-    font-weight: 500;
-}
-
-.game-container.world-play-active .game-mode-chip {
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-strong) 18%, transparent);
-}
-
-.game-container.world-play-active .grid-info-bar {
-    margin-bottom: 10px;
-    align-items: center;
-}
-
-.game-container.world-play-active .grid-info-bar .stats {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--accent-strong);
     border: 1px solid color-mix(in srgb, var(--accent-strong) 42%, var(--cell-border));
     border-radius: 999px;
     padding: 5px 10px;
-    color: var(--accent-strong);
     background: color-mix(in srgb, var(--accent-soft) 75%, transparent);
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    margin: 0;
 }
 
-.game-container.world-play-active .grid-info-bar .life-container {
+/* 生命值 ✖ ✖ ✖ (右上) — 統一 pill 風格 */
+.grid-info-bar .life-container {
+    font-size: 1rem;
+    letter-spacing: 3px;
+    line-height: 1;
+    color: var(--error-color);
     border: 1px solid color-mix(in srgb, var(--error-color) 38%, var(--cell-border));
     border-radius: 999px;
     padding: 4px 9px;
     background: color-mix(in srgb, var(--grid-bg) 86%, var(--btn-bg));
 }
 
-.game-container.world-play-active .mini-btn {
-    border-color: color-mix(in srgb, var(--accent-strong) 34%, var(--cell-border));
-    background: color-mix(in srgb, var(--btn-bg) 90%, transparent);
+.life-container span.lost {
+    color: var(--cell-border);
 }
 
-.game-container.world-play-active .mini-btn.active {
-    background: var(--accent-strong);
-    color: #fff;
-    border-color: var(--accent-strong);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-soft) 90%, transparent);
-}
+/* World battle HUD — only keep rarity tint & skill panel override */
 
 .game-container.world-play-active .skill-panel {
     border-color: color-mix(in srgb, var(--accent-strong) 45%, var(--cell-border));
@@ -785,6 +755,28 @@ header h1 {
 .leaderboard-list {
     font-size: 0.78rem;
     line-height: 1.5;
+}
+
+/* ── Challenge Rule Card (Wild pause screen) ─────────────────────── */
+.challenge-rule-card {
+    text-align: center;
+    padding: 4px 0;
+}
+.challenge-rule-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent-strong);
+    margin-bottom: 6px;
+}
+.challenge-rule-desc {
+    font-size: 0.82rem;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+.challenge-rule-detail {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    line-height: 1.6;
 }
 
 #pre-level-modal {
@@ -2893,6 +2885,68 @@ header h1 {
 @keyframes skill-panel-in {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Unit Analysis Panel ─────────────────────────────────────────── */
+.unit-analysis-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    border: 1px solid color-mix(in srgb, var(--accent-strong) 20%, var(--cell-border));
+    border-radius: 12px;
+    padding: 14px 18px;
+    background: color-mix(in srgb, var(--btn-bg) 97%, var(--grid-bg));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    animation: ua-panel-in 0.25s ease-out;
+}
+.unit-analysis-panel.hidden { display: none; }
+
+@keyframes ua-panel-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.ua-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ua-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-light);
+    min-width: 3.2em;
+    flex-shrink: 0;
+}
+
+.ua-digits {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.ua-digit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--accent-strong) 12%, var(--btn-bg));
+    color: var(--accent-strong);
+    border: 1px solid color-mix(in srgb, var(--accent-strong) 25%, transparent);
+}
+
+.ua-complete {
+    font-size: 0.85rem;
+    color: var(--success, #4caf50);
+    font-weight: 700;
 }
 
 .skill-subtitle {

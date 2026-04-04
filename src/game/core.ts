@@ -168,6 +168,7 @@ function updateGameHeaderByMode(isWild: boolean): void {
     quitWildLabel: t('nav.quitWild'),
     quitPracticeLabel: t('nav.quitPractice'),
     quitNormalLabel: t('nav.quitNormal'),
+    encounterName: isWild ? gs.currentLevel?.displayName : undefined,
   });
 }
 
@@ -532,8 +533,29 @@ export function pauseGame(): void {
   }
   setPauseScreenContent(gs.currentLevel!.displayName, formatSeconds(gs.seconds));
   saveGameStatus();
-  loadLevelLeaderboard(gs.currentLevel!.id);
   const isWild = !!(gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild');
+
+  // Leaderboard area: show challenge rules for Wild, leaderboard for Normal
+  const leaderboardTitle = document.querySelector('.leaderboard-title') as HTMLElement | null;
+  const leaderboardList = document.getElementById('leaderboard-list');
+  if (isWild) {
+    if (leaderboardTitle) leaderboardTitle.textContent = t('wild.challengeRulesTitle');
+    if (leaderboardList) {
+      import('../features/wild/wildState').then(({ CHALLENGE_CONFIGS }) => {
+        const mode = gs.wildChallengeMode || 'standard';
+        const config = CHALLENGE_CONFIGS[mode];
+        leaderboardList.innerHTML = `
+          <div class="challenge-rule-card">
+            <div class="challenge-rule-name">${config.displayName} · ${config.subtitle}</div>
+            <div class="challenge-rule-desc">${config.description}</div>
+            <div class="challenge-rule-detail">${t('wild.challengeExp', { mult: String(config.expMultiplier) })}${config.maxErrors === 1 ? ' · ' + t('wild.challengeOneLife') : config.maxErrors === 81 ? ' · ' + t('wild.challengeNoCheck') : ' · ' + t('wild.challengeLives', { n: String(config.maxErrors) })}${config.notesDisabled ? ' · ' + t('wild.challengeNoNotes') : ''}${config.timerCountdown ? ' · ' + t('wild.challengeTimer', { sec: String(config.timerCountdown) }) : ''}</div>
+          </div>`;
+      }).catch(() => {});
+    }
+  } else {
+    if (leaderboardTitle) leaderboardTitle.textContent = '首通榜 TOP 3';
+    loadLevelLeaderboard(gs.currentLevel!.id);
+  }
   const resumeBtn = document.getElementById('pause-resume-btn') as HTMLButtonElement | null;
   const leaveBtn = document.getElementById('pause-leave-btn') as HTMLButtonElement | null;
   const abandonBtn = document.getElementById('pause-abandon-btn') as HTMLButtonElement | null;
