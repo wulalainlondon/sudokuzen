@@ -556,6 +556,19 @@ export function pauseGame(): void {
     if (leaderboardTitle) leaderboardTitle.textContent = '首通榜 TOP 3';
     loadLevelLeaderboard(gs.currentLevel!.id);
   }
+  // Unit analysis toggle — Wild mode only
+  const uaToggle = document.getElementById('pause-unit-analysis-toggle');
+  const uaCheckbox = document.getElementById('unit-analysis-checkbox') as HTMLInputElement | null;
+  const uaLabel = document.getElementById('unit-analysis-label');
+  if (uaToggle) uaToggle.classList.toggle('hidden', !isWild);
+  if (uaCheckbox) {
+    uaCheckbox.checked = localStorage.getItem(SK.UNIT_ANALYSIS) === '1';
+    uaCheckbox.onchange = () => {
+      localStorage.setItem(SK.UNIT_ANALYSIS, uaCheckbox.checked ? '1' : '0');
+    };
+  }
+  if (uaLabel) uaLabel.textContent = t('wild.unitAnalysisToggle');
+
   const resumeBtn = document.getElementById('pause-resume-btn') as HTMLButtonElement | null;
   const leaveBtn = document.getElementById('pause-leave-btn') as HTMLButtonElement | null;
   const abandonBtn = document.getElementById('pause-abandon-btn') as HTMLButtonElement | null;

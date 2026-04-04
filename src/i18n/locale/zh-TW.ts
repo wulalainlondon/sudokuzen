@@ -185,6 +185,7 @@ export const zhTW = {
     savedEncounterInfo: '上次遭遇：{tech} · {time}',
     abandonEncounter: '放棄遭遇',
     abandonConfirm: '放棄將視為逃脫（觸發冷卻）',
+    unitAnalysisToggle: '候選提示',
     challengeRulesTitle: '挑戰規則',
     challengeExp: '經驗 ×{mult}',
     challengeOneLife: '一命通關',

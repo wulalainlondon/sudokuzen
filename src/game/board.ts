@@ -172,10 +172,12 @@ export function selectCell(idx: number): void {
     }
   });
 
-  // Show unit analysis panel when selecting a filled cell (not in skill/continuous mode)
+  // Show unit analysis panel when selecting a filled cell in Wild mode (opt-in)
+  const isWild = !!(gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild');
+  const uaEnabled = localStorage.getItem('sudoku_unit_analysis') === '1';
   const isFilled = gs.cellsData[idx].value !== 0;
   const inSpecialMode = gs.skillMode?.enabled || (gs.continuousFillDigit !== null && gs.continuousFillDigit >= 1);
-  if (isFilled && !inSpecialMode) {
+  if (isWild && uaEnabled && isFilled && !inSpecialMode) {
     showUnitAnalysis(idx);
   } else {
     hideUnitAnalysis();
