@@ -7,6 +7,7 @@ import {
   showLevelScreen,
   showPreLevelModal,
 } from '../../features/levels';
+import { onNavigation } from './navigationBus';
 import { hideTeachModal, closePracticeModal, closeLibraryOverlay } from '../../features/teach-legacy';
 import { closeReplayModal } from '../../features/replay';
 import { closeDuoResult } from '../../features/duo';
@@ -45,6 +46,24 @@ export function initBackHandler(): void {
     back();
   };
   window.addEventListener('popstate', onPopStateRef);
+
+  onNavigation((intent) => {
+    switch (intent.type) {
+      case 'show-level-screen':
+        showLevelScreen(intent.returnToTier);
+        break;
+      case 'hide-pre-level-modal':
+        hidePreLevelModal();
+        break;
+      case 'show-pre-level-modal':
+        showPreLevelModal(intent.levelId, intent.ignoreTierLock, intent.externalLevel);
+        break;
+      case 'back-to-stage-map':
+        backToStageMap();
+        break;
+    }
+  });
+
   backHandlerInitialized = true;
 }
 

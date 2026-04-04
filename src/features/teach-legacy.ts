@@ -1,11 +1,37 @@
 // Legacy teach / practice modal logic — DOM-based fallback
 // Extracted from legacyRuntime.ts for modularity.
+// Library UI split to teachLibrary.ts, practice mode split to teachPractice.ts.
 
 import { gs } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
-import { getTeachData, getTeachManifest, getTeachShard, hasTeachModule } from '../data/dataRegistry';
-import type { TeachModuleMeta } from '../data/dataRegistry';
+import { getTeachData, getTeachShard, hasTeachModule } from '../data/dataRegistry';
 import { t } from '../i18n/t';
+import { renderLibraryCards, openLibraryOverlay } from './teachLibrary';
+
+// ── Re-exports from teachLibrary ──────────────────────────────────
+export {
+  isTeachReadable,
+  getLibraryItemsFromTeachData,
+  getLibraryItemsAsync,
+  getLibraryLearningGroups,
+  renderLibraryCards,
+  openLibraryOverlay,
+  closeLibraryOverlay,
+  openTeachFromLibrary,
+} from './teachLibrary';
+export type { LibraryItem } from './teachLibrary';
+
+// ── Re-exports from teachPractice ─────────────────────────────────
+export {
+  startPractice,
+  renderPracticeBoard,
+  toggleElimination,
+  updatePracticeCounter,
+  confirmPractice,
+  showPracticeHint,
+  revealPracticeAnswer,
+  formatPracticeExplanation,
+} from './teachPractice';
 
 // ── Tech name mapping ─────────────────────────────────────────────
 
@@ -21,7 +47,7 @@ export const TECH_MAP: Record<string, string> = new Proxy({} as Record<string, s
 
 // ── Learning order & group definitions ────────────────────────────
 
-const LEARNING_ORDER = [
+export const LEARNING_ORDER = [
   1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13, 12, 14, 27, 29, 9, 16, 17, 30, 31, 26, 28, 32, 15, 18, 19, 20, 33, 21, 24, 34, 35,
   22, 23, 37, 38, 39, 36, 25, 40,
 ];
@@ -35,104 +61,12 @@ const GROUP_DEFS = [
   { id: 'legend', ids: [25, 40] },
 ];
 
-function getGroups() {
+export function getGroups() {
   return GROUP_DEFS.map((g) => ({
     ...g,
     name: t(`learnGroups.${g.id}`),
     hint: t(`learnGroups.${g.id}Hint`),
   }));
-}
-
-// ── Library functions ─────────────────────────────────────────────
-
-export function isTeachReadable(stars: number | string): boolean {
-  return hasTeachModule(stars);
-}
-
-export type LibraryItem = { book: number; key: string; teach: TeachModuleMeta };
-
-export function getLibraryItemsFromTeachData(): LibraryItem[] {
-  // Try manifest first (Phase 3 — no full blob needed)
-  // Falls back to full blob for backwards compat
-  const td = getTeachData();
-  const entries: [string, TeachModuleMeta][] = [];
-
-  if (td && Object.keys(td).length > 0) {
-    // Full blob path (backwards compat)
-    for (const [k, v] of Object.entries(td)) {
-      entries.push([
-        k,
-        {
-          technique: (v as any).technique ?? '',
-          name: (v as any).name ?? '',
-          subtitle: (v as any).subtitle ?? '',
-          hasPractice: Array.isArray((v as any).practice) && (v as any).practice.length > 0,
-          size: 0,
-        },
-      ]);
-    }
-  }
-
-  if (entries.length === 0) return [];
-
-  const orderIndex = new Map(LEARNING_ORDER.map((id, idx) => [id, idx]));
-
-  return entries
-    .map(([book, teach]) => ({ book: parseFloat(book), key: String(book), teach }))
-    .filter((item) => Number.isFinite(item.book))
-    .sort((a, b) => {
-      const ai = orderIndex.has(a.book) ? orderIndex.get(a.book)! : Number.MAX_SAFE_INTEGER;
-      const bi = orderIndex.has(b.book) ? orderIndex.get(b.book)! : Number.MAX_SAFE_INTEGER;
-      if (ai !== bi) return ai - bi;
-      return a.book - b.book;
-    });
-}
-
-/** Async version — uses manifest for library rendering without full blob. */
-export async function getLibraryItemsAsync(): Promise<LibraryItem[]> {
-  // Try sync first (full blob already loaded)
-  const syncItems = getLibraryItemsFromTeachData();
-  if (syncItems.length > 0) return syncItems;
-
-  // Fall back to manifest
-  const manifest = await getTeachManifest();
-  if (!manifest) return [];
-
-  const orderIndex = new Map(LEARNING_ORDER.map((id, idx) => [id, idx]));
-
-  return Object.entries(manifest.modules)
-    .map(([book, teach]) => ({ book: parseFloat(book), key: String(book), teach }))
-    .filter((item) => Number.isFinite(item.book))
-    .sort((a, b) => {
-      const ai = orderIndex.has(a.book) ? orderIndex.get(a.book)! : Number.MAX_SAFE_INTEGER;
-      const bi = orderIndex.has(b.book) ? orderIndex.get(b.book)! : Number.MAX_SAFE_INTEGER;
-      if (ai !== bi) return ai - bi;
-      return a.book - b.book;
-    });
-}
-
-export function getLibraryLearningGroups(items: LibraryItem[]) {
-  const byId = new Map(items.map((item) => [item.book, item]));
-  const used = new Set<number>();
-
-  const groups = getGroups().map((group) => {
-    const groupItems = group.ids.map((id) => byId.get(id)).filter(Boolean) as LibraryItem[];
-    groupItems.forEach((item) => used.add(item.book));
-    return { ...group, items: groupItems };
-  }).filter((group) => group.items.length > 0);
-
-  const ungrouped = items.filter((item) => !used.has(item.book));
-  if (ungrouped.length) {
-    groups.push({
-      id: 'extra',
-      name: t('learnGroups.extra'),
-      hint: t('learnGroups.extraHint'),
-      ids: [],
-      items: ungrouped,
-    });
-  }
-
-  return groups;
 }
 
 export function getTeachStageLabel(stars: number | string): string {
@@ -143,89 +77,6 @@ export function getTeachStageLabel(stars: number | string): string {
   if (n <= 25) return t('stageLabels.advanced');
   if (n <= 35) return t('stageLabels.expert');
   return t('stageLabels.godlike');
-}
-
-export function renderLibraryCards(): void {
-  // React now manages the #library-list element; find it from the DOM
-  const listEl = document.getElementById('library-list');
-  if (!listEl) return;
-
-  // Try sync first, fall back to async manifest
-  const syncItems = getLibraryItemsFromTeachData();
-  if (syncItems.length > 0) {
-    renderLibraryCardsFromItems(syncItems);
-  } else {
-    listEl.innerHTML = '<div class="library-empty">載入秘笈目錄…</div>';
-    getLibraryItemsAsync().then((items) => renderLibraryCardsFromItems(items));
-  }
-}
-
-function renderLibraryCardsFromItems(items: LibraryItem[]): void {
-  const listEl = document.getElementById('library-list');
-  if (!listEl) return;
-  const read = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
-
-  if (!items.length) {
-    listEl.innerHTML = '<div class="library-empty">目前沒有可研讀的秘笈內容</div>';
-    return;
-  }
-
-  const orderIndex = new Map(items.map((item, idx) => [item.book, idx + 1]));
-  const groups = getLibraryLearningGroups(items);
-
-  listEl.innerHTML = groups
-    .map((group) => {
-      const cardsHtml = group.items
-        .map(({ book, key, teach }) => {
-          const isRead = !!read[key];
-          const orderNo = orderIndex.get(book) || '-';
-          const stage = getTeachStageLabel(book);
-          return `
-        <article class="library-card" data-star="${key}" role="button" tabindex="0"
-            onclick="openTeachFromLibrary('${key}')"
-            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openTeachFromLibrary('${key}'); }">
-            <div class="library-card-head">
-                <span class="library-star">#${orderNo} ・秘笈 ${book} ・${stage}</span>
-                <div class="library-badges">
-                    ${isRead ? '<span class="library-badge read">已讀</span>' : ''}
-                    ${teach.hasPractice ? '<span class="library-badge practice">可練習</span>' : ''}
-                </div>
-            </div>
-            <h3 class="library-card-title">${teach.name}</h3>
-            <p class="library-card-subtitle">${teach.subtitle}</p>
-            <div class="library-card-key">${teach.technique || '-'}</div>
-            <button class="library-open-btn" onclick="event.stopPropagation(); openTeachFromLibrary('${key}')">研讀秘笈</button>
-        </article>
-      `;
-        })
-        .join('');
-
-      return `
-      <section class="library-group" data-group="${group.id}">
-          <header class="library-group-head">
-              <h3 class="library-group-title">${group.name}</h3>
-              <p class="library-group-hint">${group.hint}</p>
-          </header>
-          <div class="library-group-cards">${cardsHtml}</div>
-      </section>
-    `;
-    })
-    .join('');
-}
-
-export function openLibraryOverlay(): void {
-  import('../react/library/libraryBridge').then(({ bridgeOpenLibrary }) => bridgeOpenLibrary());
-}
-
-export function closeLibraryOverlay(): void {
-  import('../react/library/libraryBridge').then(({ bridgeCloseLibrary }) => bridgeCloseLibrary());
-}
-
-export function openTeachFromLibrary(stars: string | number): void {
-  // Route through window.showTeachModal so the React bridge can intercept
-  const wShow = (window as any).showTeachModal;
-  if (wShow) wShow(parseFloat(String(stars)), 'library');
-  else showTeachModal(parseFloat(String(stars)), 'library');
 }
 
 // ── Teach modal functions ─────────────────────────────────────────
@@ -244,7 +95,7 @@ export function showTeachModal(stars: number | string, source = 'tier'): void {
   }
 }
 
-function renderTeachModalContent(data: any, stars: number | string, source: string): void {
+export function renderTeachModalContent(data: any, stars: number | string, source: string): void {
   gs.teachData = data;
   gs.teachStarsKey = String(stars);
   gs.teachLaunchSource = source;
@@ -411,251 +262,6 @@ export function shouldShowTeach(stars: number | string): boolean {
   if (!hasTeachModule(stars)) return false;
   const read = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
   return !read[String(stars)];
-}
-
-// ── Practice functions ────────────────────────────────────────────
-
-export function startPractice(): void {
-  if (!gs.teachData || !gs.teachData.practice || gs.teachData.practice.length === 0) {
-    hideTeachModal(false);
-    return;
-  }
-
-  // Practice should not keep the library overlay mounted behind modals
-  closeLibraryOverlay();
-
-  // Save refs before hideTeachModal clears them
-  const td = gs.teachData;
-  const stars = gs.teachStarsKey ? parseFloat(gs.teachStarsKey) : null;
-  hideTeachModal(false);
-
-  // Pick a random puzzle
-  const idx = Math.floor(Math.random() * td.practice.length);
-  const pData = td.practice[idx];
-
-  gs.practiceState = {
-    stars,
-    puzzleIdx: idx,
-    marked: new Set<string>(),
-    hintLevel: 0,
-    data: pData,
-    teachRef: td,
-    revealed: false,
-  };
-
-  // Set title
-  const nameEl = document.getElementById('practice-tech-name')!;
-  nameEl.textContent = (td.name || '') + ' \u00b7 ' + (td.technique || '');
-
-  document.getElementById('practice-result')!.textContent = '';
-  document.getElementById('practice-result')!.className = 'practice-result';
-  const actionsEl = document.getElementById('practice-actions')!;
-  actionsEl.style.display = 'flex';
-  actionsEl.innerHTML =
-    '<button class="practice-confirm-btn" onclick="confirmPractice()">確認消去</button>' +
-    '<button class="practice-reveal-btn" onclick="revealPracticeAnswer()">看答案</button>';
-
-  renderPracticeBoard();
-  document.getElementById('practice-modal')!.classList.add('show');
-}
-
-export function renderPracticeBoard(): void {
-  const boardEl = document.getElementById('practice-board')!;
-  boardEl.innerHTML = '';
-  if (!gs.practiceState) return;
-
-  const p = gs.practiceState.data;
-  const board = p.board;
-  const given = p.given;
-  const notes = p.notes || {};
-
-  for (let i = 0; i < 81; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'practice-cell';
-    cell.dataset.idx = String(i);
-
-    if (board[i] !== 0) {
-      cell.textContent = board[i];
-      if (given[i] !== 0) cell.classList.add('given-cell');
-    } else if (notes[i] || notes[String(i)]) {
-      const noteArr = notes[i] || notes[String(i)];
-      const notesGrid = document.createElement('div');
-      notesGrid.className = 'tc-notes';
-      for (let d = 1; d <= 9; d++) {
-        const span = document.createElement('span');
-        span.className = 'tc-note';
-        span.dataset.digit = String(d);
-        span.dataset.cell = String(i);
-        if (noteArr.includes(d)) {
-          span.textContent = String(d);
-          span.addEventListener('click', () => toggleElimination(i, d, span));
-        }
-        notesGrid.appendChild(span);
-      }
-      cell.appendChild(notesGrid);
-    }
-    boardEl.appendChild(cell);
-  }
-  updatePracticeCounter();
-}
-
-export function toggleElimination(cellIdx: number, digit: number, spanEl: HTMLElement): void {
-  if (!gs.practiceState || gs.practiceState.revealed) return;
-  const key = cellIdx + ':' + digit;
-  if (gs.practiceState.marked.has(key)) {
-    gs.practiceState.marked.delete(key);
-    spanEl.classList.remove('strike');
-  } else {
-    gs.practiceState.marked.add(key);
-    spanEl.classList.add('strike');
-  }
-  updatePracticeCounter();
-  // Clear previous result message
-  document.getElementById('practice-result')!.textContent = '';
-  document.getElementById('practice-result')!.className = 'practice-result';
-}
-
-export function updatePracticeCounter(): void {
-  const el = document.getElementById('practice-counter');
-  if (el && gs.practiceState) {
-    el.textContent = '已選 ' + gs.practiceState.marked.size + ' 個';
-  }
-}
-
-export function confirmPractice(): void {
-  if (!gs.practiceState || gs.practiceState.revealed) return;
-  const answer = gs.practiceState.data.answer;
-  const correctSet = new Set(answer.eliminates.map((e: any) => e.cell + ':' + e.digit));
-  const markedSet: Set<string> = gs.practiceState.marked;
-
-  // Check correctness
-  let wrongCount = 0;
-  let correctCount = 0;
-
-  for (const key of markedSet) {
-    if (correctSet.has(key)) {
-      correctCount++;
-    } else {
-      wrongCount++;
-    }
-  }
-  const missingCount = correctSet.size - correctCount;
-
-  const resultEl = document.getElementById('practice-result')!;
-  const boardEl = document.getElementById('practice-board')!;
-
-  if (wrongCount === 0 && missingCount === 0) {
-    // Perfect!
-    resultEl.textContent = '太棒了！完全正確！';
-    resultEl.className = 'practice-result success';
-    document.getElementById('practice-panel')!.classList.add('success-flash');
-    gs.practiceState.revealed = true;
-    // Mark done
-    const done = readJson<Record<string, boolean>>(SK.PRACTICE_DONE, {});
-    if (gs.practiceState.stars !== null) done[gs.practiceState.stars] = true;
-    writeJson(SK.PRACTICE_DONE, done);
-    // Auto close after delay
-    setTimeout(() => closePracticeModal(), 1800);
-  } else if (wrongCount === 0 && missingCount > 0) {
-    resultEl.textContent = '還有 ' + missingCount + ' 個候選數可以消去';
-    resultEl.className = 'practice-result partial';
-  } else {
-    resultEl.textContent = '有些消去不正確';
-    resultEl.className = 'practice-result error';
-    // Mark wrong ones orange
-    for (const key of markedSet) {
-      if (!correctSet.has(key)) {
-        const [c, d] = key.split(':');
-        const noteEl = boardEl.querySelector(`.practice-cell[data-idx="${c}"] .tc-note[data-digit="${d}"]`);
-        if (noteEl) {
-          noteEl.classList.remove('strike');
-          noteEl.classList.add('wrong');
-          // Remove from marked
-          gs.practiceState.marked.delete(key);
-        }
-      }
-    }
-    updatePracticeCounter();
-    // Clear wrong highlight after 2s
-    setTimeout(() => {
-      boardEl.querySelectorAll('.tc-note.wrong').forEach((n) => n.classList.remove('wrong'));
-    }, 2000);
-  }
-}
-
-export function showPracticeHint(): void {
-  if (!gs.practiceState) return;
-  const answer = gs.practiceState.data.answer;
-  const boardEl = document.getElementById('practice-board')!;
-  const cells = boardEl.querySelectorAll('.practice-cell');
-
-  gs.practiceState.hintLevel++;
-
-  if (gs.practiceState.hintLevel === 1) {
-    // Highlight pattern cells
-    (answer.patternCells || []).forEach((idx: number) => {
-      if (cells[idx]) cells[idx].classList.add('focus');
-    });
-  } else if (gs.practiceState.hintLevel === 2) {
-    // Show description
-    const resultEl = document.getElementById('practice-result')!;
-    resultEl.textContent = formatPracticeExplanation(answer);
-    resultEl.className = 'practice-result';
-  } else if (gs.practiceState.hintLevel >= 3) {
-    // Auto-mark correct answers
-    revealPracticeAnswer();
-  }
-}
-
-export function formatPracticeExplanation(answer: any): string {
-  const lines: string[] = [];
-  if (answer && answer.description) lines.push(answer.description);
-  if (answer && Array.isArray(answer.aicChain) && answer.aicChain.length > 0) {
-    lines.push('');
-    lines.push('推理節點鏈：');
-    answer.aicChain.forEach((line: string, i: number) => {
-      lines.push(i + 1 + '. ' + line);
-    });
-  }
-  if (answer && Array.isArray(answer.proof) && answer.proof.length > 0) {
-    lines.push('');
-    lines.push('推理鏈：');
-    answer.proof.forEach((line: string, i: number) => {
-      lines.push(i + 1 + '. ' + line);
-    });
-  }
-  return lines.join('\n');
-}
-
-export function revealPracticeAnswer(): void {
-  if (!gs.practiceState) return;
-  gs.practiceState.revealed = true;
-  const answer = gs.practiceState.data.answer;
-  const boardEl = document.getElementById('practice-board')!;
-  const cells = boardEl.querySelectorAll('.practice-cell');
-
-  // Clear all current marks
-  boardEl.querySelectorAll('.tc-note.strike').forEach((n) => n.classList.remove('strike'));
-  boardEl.querySelectorAll('.tc-note.wrong').forEach((n) => n.classList.remove('wrong'));
-
-  // Show correct eliminations
-  answer.eliminates.forEach(({ cell: idx, digit }: { cell: number; digit: number }) => {
-    const noteEl = boardEl.querySelector(`.practice-cell[data-idx="${idx}"] .tc-note[data-digit="${digit}"]`);
-    if (noteEl) noteEl.classList.add('correct-reveal');
-  });
-
-  // Highlight pattern cells
-  (answer.patternCells || []).forEach((idx: number) => {
-    if (cells[idx]) cells[idx].classList.add('focus');
-  });
-
-  const resultEl = document.getElementById('practice-result')!;
-  resultEl.textContent = formatPracticeExplanation(answer) || '答案已顯示';
-  resultEl.className = 'practice-result';
-
-  // Replace actions with close button
-  document.getElementById('practice-actions')!.innerHTML =
-    '<button class="practice-confirm-btn" onclick="closePracticeModal()">關閉</button>';
 }
 
 export function closePracticeModal(): void {

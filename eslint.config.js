@@ -29,6 +29,7 @@ export default tseslint.config(
           { group: ['../features/levels', '../features/levels.*'], message: 'Use dynamic import() to avoid circular dependency: core ↔ levels' },
           { group: ['../features/replay', '../features/replay.*'], message: 'Use dynamic import() to avoid circular dependency: core ↔ replay' },
           { group: ['../features/teach-legacy', '../features/teach-legacy.*'], message: 'Use dynamic import() to avoid circular dependency: core ↔ teach-legacy' },
+          { group: ['**/app/navigation/navigationOrchestrator*'], message: 'Use emitNavigation() from navigationBus, not the orchestrator.' },
         ],
       }],
     },
@@ -40,6 +41,7 @@ export default tseslint.config(
         patterns: [
           { group: ['../game/core', '../game/core.*'], message: 'Use dynamic import() to avoid circular dependency: duo ↔ core' },
           { group: ['../features/levels', './levels', './levels.*'], message: 'Use dynamic import() to avoid circular dependency: duo ↔ levels' },
+          { group: ['**/app/navigation/navigationOrchestrator*'], message: 'Use emitNavigation() from navigationBus, not the orchestrator.' },
         ],
       }],
     },
@@ -63,6 +65,21 @@ export default tseslint.config(
         patterns: [
           { group: ['./core', './core.*'], message: 'Use dynamic import() to avoid circular dependency: board ↔ core' },
         ],
+      }],
+    },
+  },
+  // ── Navigation bus guard ──────────────────────────────────────
+  // Feature modules must use emitNavigation() instead of importing the orchestrator.
+  // (core.ts, duo.ts, levels.ts already have their own no-restricted-imports above)
+  {
+    files: ['src/features/**/*.ts'],
+    ignores: ['src/features/duo.ts', 'src/features/levels.ts'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['**/app/navigation/navigationOrchestrator*'],
+          message: 'Features must not import orchestrator. Use emitNavigation() from navigationBus.',
+        }],
       }],
     },
   },

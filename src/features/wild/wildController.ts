@@ -25,17 +25,32 @@ import { t } from '../../i18n/t';
 import { getEquippedTitle, getTitleResonanceBonus } from '../titles';
 import { setNextLevelScreenReturnTarget } from '../levels';
 
+// ── Extracted modules ────────────────────────────────────────────────
+
+import {
+  initGauntlet,
+  isGauntletActive,
+  advanceGauntletOnWin,
+  failGauntlet,
+  launchGauntletNext,
+  getGauntletQueue,
+  resetGauntletState,
+} from './gauntletEngine';
+
+import {
+  sessionStreakMultiplier,
+} from './sessionManager';
+
+// ── Re-exports from extracted modules ────────────────────────────────
+
+export { initGauntlet, isGauntletActive, failGauntlet, launchGauntletNext, getGauntletQueue } from './gauntletEngine';
+export { getSession, sessionStreakMultiplier, startWorldSession } from './sessionManager';
+
 // ── Runtime state (non-persisted) ────────────────────────────────────
 
 let _profile: WildProfile | null = null;
 let _encounter: WildEncounter | null = null;
 let _active = false;
-
-// ── Gauntlet state ───────────────────────────────────────────────────
-
-let _gauntletQueue: WildEncounter[] = [];
-let _gauntletIdx = 0;
-let _gauntletTotalExp = 0;
 
 export function isWildActive(): boolean {
   return _active;
@@ -191,35 +206,6 @@ export function resumeTimedCountdown(): void {
   if (gs.wildTimerCountdown <= 0) return;
   if (gs.wildTimerInterval) return;
   startCountdown(gs.wildTimerCountdown);
-}
-
-// ── Session (修行輪) management ──────────────────────────────────────
-
-export function getSession(): import('./wildState').WildSession | null {
-  return getWildProfile().currentSession;
-}
-
-/** Calculate streak bonus multiplier for session summary. */
-function sessionStreakMultiplier(wins: number): number {
-  if (wins >= 10) return 1.5;
-  if (wins >= 8) return 1.3;
-  if (wins >= 5) return 1.1;
-  return 1.0;
-}
-
-const SESSION_LEVEL_GATE = 21; // Lv.21+ unlocks 修行輪; below is free roam
-
-export async function startWorldSession(): Promise<void> {
-  const profile = getWildProfile();
-  if (profile.iqLevel >= SESSION_LEVEL_GATE) {
-    // 修行輪: 10-round structured session
-    profile.currentSession = { round: 0, wins: 0, totalExp: 0, techniques: [] };
-  } else {
-    // 新手村: free roam, no session structure
-    profile.currentSession = null;
-  }
-  saveWildProfile(profile);
-  await startWildEncounter();
 }
 
 // ── Enter Wild (replaces startPoolRandom) ────────────────────────────
@@ -382,7 +368,7 @@ export async function startWildEncounter(): Promise<void> {
 
   // Handle gauntlet mode: pre-select 5 encounters
   if (mode === 'gauntlet') {
-    await initGauntlet(profile);
+    await initGauntlet(profile, _encounter);
   }
 
   // Track technique in session
@@ -420,147 +406,6 @@ export async function startWildEncounter(): Promise<void> {
   }
 }
 
-// ── Gauntlet mode ───────────────────────────────────────────────────
-
-async function initGauntlet(profile: WildProfile): Promise<void> {
-  _gauntletQueue = [_encounter!];
-  _gauntletIdx = 0;
-  _gauntletTotalExp = 0;
-
-  // Pre-select 4 more encounters (total 5), restrict to tier 0-1
-  for (let i = 1; i < 5; i++) {
-    try {
-      const enc = await selectEncounter(profile);
-      // Override challenge mode to standard for sub-encounters in gauntlet
-      enc.challengeMode = 'standard';
-      _gauntletQueue.push(enc);
-    } catch {
-      // If we can't load enough, use whatever we have
-      break;
-    }
-  }
-}
-
-function isGauntletActive(): boolean {
-  return _gauntletQueue.length > 0 && _gauntletIdx < _gauntletQueue.length;
-}
-
-async function _advanceGauntlet(
-  seconds: number,
-  errors: number,
-): Promise<{ expGained: number; leveledUp: boolean; newLevel: number } | null> {
-  const profile = getWildProfile();
-  const meta = getTechniqueMeta(_encounter!.technique);
-  const baseExp = meta?.expBase ?? 10;
-
-  // Calculate EXP at 1.0x for this sub-puzzle (multiplier applied at end)
-  const subExp = calculateExp(baseExp, _encounter!.rarity, seconds, errors);
-  _gauntletTotalExp += subExp;
-
-  _gauntletIdx++;
-
-  if (_gauntletIdx >= _gauntletQueue.length) {
-    // Gauntlet complete — apply 3.0x multiplier
-    const totalExp = Math.round(_gauntletTotalExp * CHALLENGE_CONFIGS.gauntlet.expMultiplier);
-    const result = applyExp(profile, totalExp);
-
-    // Update bestiary for final technique
-    const entry = profile.bestiary[_encounter!.technique];
-    if (entry) {
-      entry.kills++;
-      if (entry.bestTime === null || seconds < entry.bestTime) {
-        entry.bestTime = seconds;
-      }
-    }
-    profile.puzzlesCompleted++;
-    tickCooldowns(profile);
-    saveWildProfile(profile);
-
-    _gauntletQueue = [];
-    _gauntletIdx = 0;
-    _gauntletTotalExp = 0;
-    _active = false;
-
-    return result;
-  }
-
-  // More puzzles to go — update bestiary for current, advance to next
-  const entry = profile.bestiary[_encounter!.technique];
-  if (entry) {
-    entry.kills++;
-    if (entry.bestTime === null || seconds < entry.bestTime) {
-      entry.bestTime = seconds;
-    }
-  }
-  profile.puzzlesCompleted++;
-  tickCooldowns(profile);
-  saveWildProfile(profile);
-
-  // Load next gauntlet puzzle
-  _encounter = _gauntletQueue[_gauntletIdx];
-  const nextMeta = getTechniqueMeta(_encounter.technique);
-
-  // Record next encounter in bestiary
-  if (nextMeta) {
-    if (!profile.bestiary[_encounter.technique]) {
-      profile.bestiary[_encounter.technique] = {
-        discovered: new Date().toISOString().slice(0, 10),
-        encounters: 0,
-        kills: 0,
-        escapes: 0,
-        bestTime: null,
-        modesCleared: [],
-      };
-    }
-    profile.bestiary[_encounter.technique].encounters++;
-    saveWildProfile(profile);
-  }
-
-  const wildLevel: LevelData = {
-    id: -Date.now(),
-    stars: 0,
-    difficultyName: t('wildRuntime.difficultyWorld'),
-    displayName: nextMeta
-      ? t('wildRuntime.gauntletLabel', { name: nextMeta.name, subtitle: nextMeta.subtitle, idx: String(_gauntletIdx + 1) })
-      : t('wildRuntime.gauntletLabelFallback', { idx: String(_gauntletIdx + 1) }),
-    puzzle: _encounter.puzzle,
-    solution: _encounter.solution,
-    maxTechnique: _encounter.technique,
-    source: 'wild',
-  };
-
-  applyRarityTint(_encounter.rarity);
-
-  const { initGame } = await import('../../game/core');
-  // Don't reset accumulated seconds — pass them through
-  initGame(wildLevel.id, true, false, null, wildLevel);
-
-  // Keep standard mode settings for gauntlet sub-puzzles
-  gs.wildChallengeMode = 'gauntlet';
-  gs.maxErrors = CHALLENGE_CONFIGS.gauntlet.maxErrors;
-  gs.wildBlindMode = false;
-  gs.wildNotesDisabled = false;
-
-  const { updateLivesUI } = await import('../../game/core');
-  updateLivesUI();
-
-  showFeedback(t('wild.gauntletCount', { idx: String(_gauntletIdx + 1) }), 'success');
-
-  return null; // Not done yet
-}
-
-function failGauntlet(): void {
-  // On failure: award 1.0x EXP for completed puzzles only
-  if (_gauntletTotalExp > 0) {
-    const profile = getWildProfile();
-    applyExp(profile, _gauntletTotalExp);
-    saveWildProfile(profile);
-  }
-  _gauntletQueue = [];
-  _gauntletIdx = 0;
-  _gauntletTotalExp = 0;
-}
-
 // ── Win handler (called from core.ts checkWin) ───────────────────────
 
 export function onWildComplete(
@@ -571,58 +416,21 @@ export function onWildComplete(
 
   // Handle gauntlet advancement
   if (isGauntletActive()) {
-    // advanceGauntlet is async — we handle it via a then chain
-    // But onWildComplete is sync. We need to return synchronously.
-    // For gauntlet, we trigger the advance asynchronously and return partial result.
     const profile = getWildProfile();
-    const meta = getTechniqueMeta(_encounter.technique);
-    const baseExp = meta?.expBase ?? 10;
-    const subExp = calculateExp(baseExp, _encounter.rarity, seconds, errors);
+    const gauntletResult = advanceGauntletOnWin(_encounter, profile, seconds, errors);
 
-    if (_gauntletIdx + 1 >= _gauntletQueue.length) {
-      // Final gauntlet puzzle — apply full multiplier
-      _gauntletTotalExp += subExp;
-      const totalExp = Math.round(_gauntletTotalExp * CHALLENGE_CONFIGS.gauntlet.expMultiplier);
-      const result = applyExp(profile, totalExp);
-
-      const entry = profile.bestiary[_encounter.technique];
-      if (entry) {
-        entry.kills++;
-        if (entry.bestTime === null || seconds < entry.bestTime) {
-          entry.bestTime = seconds;
-        }
-      }
-      profile.puzzlesCompleted++;
-      tickCooldowns(profile);
-      saveWildProfile(profile);
-
-      _gauntletQueue = [];
-      _gauntletIdx = 0;
-      _gauntletTotalExp = 0;
+    if (gauntletResult.done) {
+      // Gauntlet complete
       _active = false;
       resetWildGsFields();
-
-      return { ...result, firstKill: null, firstKillSub: null, beatMentor: false };
+      return { ...gauntletResult.result!, firstKill: null, firstKillSub: null, beatMentor: false };
     }
 
-    // Not final — advance to next (async, but we still return a partial result)
-    _gauntletTotalExp += subExp;
-    const entry = profile.bestiary[_encounter.technique];
-    if (entry) {
-      entry.kills++;
-      if (entry.bestTime === null || seconds < entry.bestTime) {
-        entry.bestTime = seconds;
-      }
-    }
-    profile.puzzlesCompleted++;
-    tickCooldowns(profile);
-    saveWildProfile(profile);
-
-    _gauntletIdx++;
-    _encounter = _gauntletQueue[_gauntletIdx];
+    // Not final — advance to next encounter
+    _encounter = gauntletResult.nextEncounter!;
 
     // Async: launch next puzzle
-    launchGauntletNext(profile);
+    launchGauntletNext(profile, _encounter, applyRarityTint);
 
     // Return 0 exp (not finished yet) — the win celebration should show gauntlet progress
     return { expGained: 0, leveledUp: false, newLevel: profile.iqLevel, firstKill: null, firstKillSub: null, beatMentor: false };
@@ -747,51 +555,6 @@ export function onWildComplete(
   return { ...result, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null, beatMentor };
 }
 
-async function launchGauntletNext(profile: WildProfile): Promise<void> {
-  const nextMeta = getTechniqueMeta(_encounter!.technique);
-
-  if (nextMeta) {
-    if (!profile.bestiary[_encounter!.technique]) {
-      profile.bestiary[_encounter!.technique] = {
-        discovered: new Date().toISOString().slice(0, 10),
-        encounters: 0,
-        kills: 0,
-        escapes: 0,
-        bestTime: null,
-        modesCleared: [],
-      };
-    }
-    profile.bestiary[_encounter!.technique].encounters++;
-    saveWildProfile(profile);
-  }
-
-  const wildLevel: LevelData = {
-    id: -Date.now(),
-    stars: 0,
-    difficultyName: t('wildRuntime.difficultyWorld'),
-    displayName: nextMeta
-      ? t('wildRuntime.gauntletLabel', { name: nextMeta.name, subtitle: nextMeta.subtitle, idx: String(_gauntletIdx + 1) })
-      : t('wildRuntime.gauntletLabelFallback', { idx: String(_gauntletIdx + 1) }),
-    puzzle: _encounter!.puzzle,
-    solution: _encounter!.solution,
-    maxTechnique: _encounter!.technique,
-    source: 'wild',
-  };
-
-  applyRarityTint(_encounter!.rarity);
-
-  const { initGame, updateLivesUI } = await import('../../game/core');
-  initGame(wildLevel.id, true, false, null, wildLevel);
-
-  gs.wildChallengeMode = 'gauntlet';
-  gs.maxErrors = CHALLENGE_CONFIGS.gauntlet.maxErrors;
-  gs.wildBlindMode = false;
-  gs.wildNotesDisabled = false;
-  updateLivesUI();
-
-  showFeedback(t('wild.gauntletCount', { idx: String(_gauntletIdx + 1) }), 'success');
-}
-
 // ── Fail / escape handler (called from core.ts showGameOver) ─────────
 
 export function onWildEscape(): void {
@@ -845,15 +608,13 @@ export async function continueWild(): Promise<void> {
 export function exitWild(): void {
   setNextLevelScreenReturnTarget('world');
   // Save encounter state for resume (if mid-encounter and not gauntlet)
-  if (_active && _encounter && _gauntletQueue.length === 0) {
+  if (_active && _encounter && getGauntletQueue().length === 0) {
     saveCurrentEncounter();
   }
 
   _active = false;
   _encounter = null;
-  _gauntletQueue = [];
-  _gauntletIdx = 0;
-  _gauntletTotalExp = 0;
+  resetGauntletState();
   resetWildGsFields();
   clearRarityTint();
 

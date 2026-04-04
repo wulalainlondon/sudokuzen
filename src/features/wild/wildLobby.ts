@@ -1,7 +1,7 @@
 // Wild Lobby UI — profile display, bestiary grid, entry point.
 
 import { loadWildProfile, saveWildProfile, loadWildSave } from './wildState';
-import { TECHNIQUE_TABLE, getAutoCastKeys, getTechniqueMeta, type Rarity } from './techniqueMeta';
+import { TECHNIQUE_TABLE, getAutoCastKeys, getTechniqueMeta } from './techniqueMeta';
 import { expForLevel, getUnstudiedGateSkills, releaseGateOverflow } from './expSystem';
 import { getMentorNote, hasCompletedMentorIntro } from './mentorController';
 import { showFeedback } from '../../ui/feedback';
@@ -10,63 +10,20 @@ import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
 import { bridgeSetWildLobbyViewModel, bridgeSetWildLobbyVisible } from '../../react/wild/wildLobbyBridge';
 import type { EnterButtonState, RarityFilter as StoreRarityFilter, BestiaryFilter as StoreBestiaryFilter } from '../../react/wild/wildLobbyStore';
+import {
+  getLevelTitle,
+  getWildBestiaryFilters,
+  RARITY_LABEL,
+  getEnterChip,
+  ensureWildFilterBindings,
+  _setBestiaryRenderCallback,
+} from './bestiaryUI';
 
-// ── Level titles by IQ level range ───────────────────────────────────
+// Re-export bestiary UI symbols so existing consumers keep working.
+export { type BestiaryFilter, type RarityFilter, getWildBestiaryFilters, setWildBestiaryFilter, setWildRarityFilter, LEVEL_TITLES, RARITY_LABEL, getEnterChip } from './bestiaryUI';
 
-const LEVEL_TITLES: [number, string][] = [
-  [1, t('wild.levelTitle1')],
-  [5, t('wild.levelTitle5')],
-  [11, t('wild.levelTitle11')],
-  [21, t('wild.levelTitle21')],
-  [31, t('wild.levelTitle31')],
-  [41, t('wild.levelTitle41')],
-  [51, t('wild.levelTitle51')],
-  [61, t('wild.levelTitle61')],
-  [71, t('wild.levelTitle71')],
-  [80, t('wild.levelTitle80')],
-];
-
-function getLevelTitle(level: number): string {
-  let title = LEVEL_TITLES[0][1];
-  for (const [gate, name] of LEVEL_TITLES) {
-    if (level >= gate) title = name;
-  }
-  return title;
-}
-
-export type BestiaryFilter = 'all' | 'discovered' | 'conquered';
-export type RarityFilter = 'all' | Rarity;
-
-let _bestiaryFilter: BestiaryFilter = 'all';
-let _rarityFilter: RarityFilter = 'all';
-
-export function getWildBestiaryFilters(): { bestiaryFilter: BestiaryFilter; rarityFilter: RarityFilter } {
-  return { bestiaryFilter: _bestiaryFilter, rarityFilter: _rarityFilter };
-}
-
-export function setWildBestiaryFilter(filter: BestiaryFilter): void {
-  _bestiaryFilter = filter;
-  renderWildLobby();
-}
-
-export function setWildRarityFilter(rarity: RarityFilter): void {
-  _rarityFilter = rarity;
-  renderWildLobby();
-}
-
-const RARITY_LABEL: Record<Rarity, string> = {
-  common: t('wild.rarityCommon'),
-  rare: t('wild.rarityRare'),
-  legendary: t('wild.rarityLegendary'),
-  mythic: t('wild.rarityMythic'),
-};
-
-function getEnterChip(level: number): string {
-  if (level >= 71) return t('wild.poolHighRisk');
-  if (level >= 41) return t('wild.poolElite');
-  if (level >= 21) return t('wild.poolAdvanced');
-  return t('wild.poolStable');
-}
+// Wire the render callback so filter changes trigger renderWildLobby.
+_setBestiaryRenderCallback(() => renderWildLobby());
 
 function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {
   roundText: string;
@@ -123,32 +80,6 @@ function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {
     enterText,
     enterSub,
   };
-}
-
-function ensureWildFilterBindings(): void {
-  const controls = document.getElementById('wild-bestiary-controls');
-  if (controls && controls.getAttribute('data-bound') !== '1') {
-    controls.setAttribute('data-bound', '1');
-    controls.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest('button[data-filter]') as HTMLButtonElement | null;
-      if (!btn) return;
-      const filter = btn.dataset.filter as BestiaryFilter | undefined;
-      if (!filter) return;
-      setWildBestiaryFilter(filter);
-    });
-  }
-
-  const rarityControls = document.getElementById('wild-rarity-controls');
-  if (rarityControls && rarityControls.getAttribute('data-bound') !== '1') {
-    rarityControls.setAttribute('data-bound', '1');
-    rarityControls.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest('button[data-rarity]') as HTMLButtonElement | null;
-      if (!btn) return;
-      const rarity = btn.dataset.rarity as RarityFilter | undefined;
-      if (!rarity) return;
-      setWildRarityFilter(rarity);
-    });
-  }
 }
 
 // ── Study skill (fragment system) ────────────────────────────────────
@@ -243,6 +174,7 @@ export function renderWildLobby(): void {
   const reactTakeover = document.body?.dataset.reactWildLobby === '1';
   if (!reactTakeover) ensureWildFilterBindings();
 
+  const { bestiaryFilter: _bestiaryFilter, rarityFilter: _rarityFilter } = getWildBestiaryFilters();
   const profile = loadWildProfile();
   // expForLevel(n) = cumulative EXP to reach level n.
   // Progress within current level = totalExp - floor, where floor = expForLevel(currentLevel).

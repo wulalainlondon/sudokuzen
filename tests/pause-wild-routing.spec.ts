@@ -3,9 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { gs } from '../src/game/state';
 import { pauseGame, leaveWildFromPause, abandonWildFromPause } from '../src/game/core';
 
-const exitWildMock = vi.fn();
-const showLevelScreenMock = vi.fn();
-const abandonWildEncounterMock = vi.fn();
+const { exitWildMock, emitNavigationMock, abandonWildEncounterMock } = vi.hoisted(() => ({
+  exitWildMock: vi.fn(),
+  emitNavigationMock: vi.fn(),
+  abandonWildEncounterMock: vi.fn(),
+}));
 
 vi.mock('../src/features/wild/wildController', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../src/features/wild/wildController')>();
@@ -16,11 +18,11 @@ vi.mock('../src/features/wild/wildController', async (importOriginal) => {
   };
 });
 
-vi.mock('../src/features/levels', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../src/features/levels')>();
+vi.mock('../src/app/navigation/navigationBus', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../src/app/navigation/navigationBus')>();
   return {
     ...actual,
-    showLevelScreen: showLevelScreenMock,
+    emitNavigation: emitNavigationMock,
   };
 });
 
@@ -39,8 +41,8 @@ describe('wild pause routing', () => {
     `;
     localStorage.clear();
     vi.stubGlobal('confirm', vi.fn(() => true));
-    exitWildMock.mockClear();
-    showLevelScreenMock.mockClear();
+    exitWildMock.mockClear().mockImplementation(() => { gs.wildChallengeMode = null; });
+    emitNavigationMock.mockClear();
     abandonWildEncounterMock.mockClear();
     gs.timerInterval = null;
     gs.wildTimerInterval = null;
@@ -99,7 +101,7 @@ describe('wild pause routing', () => {
     await leaveWildFromPause();
 
     expect(gs.wildChallengeMode).toBeNull();
-    expect(showLevelScreenMock).toHaveBeenCalledWith(true);
+    expect(emitNavigationMock).toHaveBeenCalledWith({ type: 'show-level-screen', returnToTier: true });
   });
 
   it('abandonWildFromPause clears the encounter and returns to level screen', async () => {
@@ -116,6 +118,6 @@ describe('wild pause routing', () => {
     await abandonWildFromPause();
 
     expect(abandonWildEncounterMock).toHaveBeenCalledTimes(1);
-    expect(showLevelScreenMock).toHaveBeenCalledWith(true);
+    expect(emitNavigationMock).toHaveBeenCalledWith({ type: 'show-level-screen', returnToTier: true });
   });
 });

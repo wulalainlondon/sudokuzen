@@ -2,7 +2,6 @@
 // Extracted from legacyRuntime.ts
 
 import { gs, type LevelData, type DuoRoomData } from '../game/state';
-import { SK, readJson, writeJson } from '../storage/keys';
 import { formatSeconds } from '../game/utils';
 import { getPlayerIdentity } from '../firebase/client';
 import { showFeedback } from '../ui/feedback';
@@ -10,6 +9,14 @@ import { t } from '../i18n/t';
 import { getEquippedTitleDisplay } from './titles';
 import type { FirestoreDoc, FirestoreTransaction } from '../firebase/types';
 import type { SudokuWindow } from '../facade/windowTypes';
+import { emitNavigation } from '../app/navigation/navigationBus';
+import { bumpDuoMetric } from './duoMetrics';
+import { loadDuoRecords, recordDuoWin, recordDuoDraw, type DuoRecords } from './duoRecords';
+
+// Re-export extracted modules for backward compatibility
+export { getDuoMetrics, resetDuoMetrics } from './duoMetrics';
+export { loadDuoRecords, saveDuoRecords, recordDuoWin, recordDuoDraw } from './duoRecords';
+export type { DuoRecords } from './duoRecords';
 
 declare const firebase: {
   firestore: {
@@ -17,12 +24,6 @@ declare const firebase: {
     Timestamp: { fromMillis(ms: number): unknown };
   };
 };
-
-interface DuoRecords {
-  wins: Record<string, number>;
-  streak: number;
-  streakHolder: string;
-}
 
 export interface DuoRoomSummary {
   roomId: string;
@@ -43,7 +44,6 @@ let _lastSeenLevelId: number | null = null;
 const MAX_SNAPSHOT_RETRIES = 5;
 const DUO_ROOMS_COLLECTION = 'duo_rooms';
 const ACTIVE_ROOM_ID_KEY = 'sudoku_duo_active_room_id';
-const DUO_METRICS_KEY = 'sudoku_duo_metrics_v1';
 const WAITING_ROOMS_CACHE_MS = 5000;
 const WAITING_ROOMS_MIN_FETCH_GAP_MS = 1200;
 const DUO_HEARTBEAT_MS = 15_000;
@@ -58,74 +58,6 @@ let _lastWaitingRoomsFetchMs = 0;
 let _duoHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
 let _lastStaleGuestPruneMs = 0;
 let _lastDuoCleanupMs = 0;
-
-type DuoMetricKey =
-  | 'lobbyFetches'
-  | 'lobbyFetchHits'
-  | 'lobbyFetchThrottled'
-  | 'roomReadOps'
-  | 'roomWriteOps'
-  | 'snapshotEvents'
-  | 'reconnects'
-  | 'heartbeatWrites'
-  | 'staleGuestReleases'
-  | 'staleRoomCleanups';
-type DuoMetrics = Record<DuoMetricKey, number> & { lastUpdatedAtMs: number };
-
-function loadDuoMetrics(): DuoMetrics {
-  try {
-    const raw = localStorage.getItem(DUO_METRICS_KEY);
-    if (!raw) throw new Error('empty');
-    const parsed = JSON.parse(raw) as Partial<DuoMetrics>;
-    return {
-      lobbyFetches: Number(parsed.lobbyFetches || 0),
-      lobbyFetchHits: Number(parsed.lobbyFetchHits || 0),
-      lobbyFetchThrottled: Number(parsed.lobbyFetchThrottled || 0),
-      roomReadOps: Number(parsed.roomReadOps || 0),
-      roomWriteOps: Number(parsed.roomWriteOps || 0),
-      snapshotEvents: Number(parsed.snapshotEvents || 0),
-      reconnects: Number(parsed.reconnects || 0),
-      heartbeatWrites: Number(parsed.heartbeatWrites || 0),
-      staleGuestReleases: Number(parsed.staleGuestReleases || 0),
-      staleRoomCleanups: Number(parsed.staleRoomCleanups || 0),
-      lastUpdatedAtMs: Number(parsed.lastUpdatedAtMs || 0),
-    };
-  } catch {
-    return {
-      lobbyFetches: 0,
-      lobbyFetchHits: 0,
-      lobbyFetchThrottled: 0,
-      roomReadOps: 0,
-      roomWriteOps: 0,
-      snapshotEvents: 0,
-      reconnects: 0,
-      heartbeatWrites: 0,
-      staleGuestReleases: 0,
-      staleRoomCleanups: 0,
-      lastUpdatedAtMs: 0,
-    };
-  }
-}
-
-let _duoMetrics = loadDuoMetrics();
-function saveDuoMetrics(): void {
-  _duoMetrics.lastUpdatedAtMs = Date.now();
-  localStorage.setItem(DUO_METRICS_KEY, JSON.stringify(_duoMetrics));
-}
-function bumpDuoMetric(key: DuoMetricKey, amount = 1): void {
-  _duoMetrics[key] = Number(_duoMetrics[key] || 0) + amount;
-  saveDuoMetrics();
-}
-export function getDuoMetrics(): DuoMetrics {
-  return { ..._duoMetrics };
-}
-export function resetDuoMetrics(): void {
-  _duoMetrics = loadDuoMetrics();
-  (Object.keys(_duoMetrics) as Array<keyof DuoMetrics>).forEach((k) => {
-    (_duoMetrics[k] as number) = 0;
-  });
-  saveDuoMetrics();
-}
 
 function setActiveRoomId(roomId: string | null): void {
   _activeRoomId = roomId;
@@ -910,8 +842,7 @@ export async function launchDuoGame(): Promise<void> {
   }
 
   // Hide pre-level modal, start game
-  const { hidePreLevelModal } = await import('../features/levels');
-  hidePreLevelModal();
+  emitNavigation({ type: 'hide-pre-level-modal' });
   import('./duoLobby').then((m) => m.closeDuoLobby()).catch(() => {});
   const levelScreen = document.getElementById('level-screen');
   if (levelScreen) levelScreen.style.display = 'none';
@@ -1115,40 +1046,6 @@ export function showDuoResult(d: DuoRoomData): void {
   });
 }
 
-// ── Duo Records & Streaks ────────────────────────────────────────────
-
-export function loadDuoRecords(): DuoRecords {
-  return readJson<DuoRecords>(SK.DUO_RECORDS, { wins: {}, streak: 0, streakHolder: '' });
-}
-
-export function saveDuoRecords(data: DuoRecords): void {
-  writeJson(SK.DUO_RECORDS, data);
-}
-
-export function recordDuoWin(winnerAlias: string, loserAlias: string): DuoRecords {
-  const rec = loadDuoRecords();
-  if (!rec.wins) rec.wins = {};
-  rec.wins[winnerAlias] = (rec.wins[winnerAlias] || 0) + 1;
-  if (!rec.wins[loserAlias]) rec.wins[loserAlias] = 0;
-  // Update streak
-  if (rec.streakHolder === winnerAlias) {
-    rec.streak = (rec.streak || 0) + 1;
-  } else {
-    rec.streakHolder = winnerAlias;
-    rec.streak = 1;
-  }
-  saveDuoRecords(rec);
-  return rec;
-}
-
-export function recordDuoDraw(): DuoRecords {
-  const rec = loadDuoRecords();
-  rec.streak = 0;
-  rec.streakHolder = '';
-  saveDuoRecords(rec);
-  return rec;
-}
-
 // ── Duo Emoji Reactions ──────────────────────────────────────────────
 
 export function sendDuoEmoji(emoji: string): void {
@@ -1219,8 +1116,7 @@ export async function closeDuoResult(): Promise<void> {
     } catch { /* ignore */ }
   }
   resetDuoState();
-  const { showLevelScreen } = await import('../features/levels');
-  showLevelScreen(true);
+  emitNavigation({ type: 'show-level-screen', returnToTier: true });
 }
 
 export async function leaveDuoRoom(): Promise<void> {

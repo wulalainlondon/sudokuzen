@@ -1,26 +1,24 @@
-// Core game logic — init, input, win detection, save/load
+// Core game logic — init, input, pause/resume, UI helpers
+// Win detection lives in winDetection.ts, persistence in persistence.ts.
 // Skill mode logic lives in features/skills/skillController.ts.
 
 import { gs, type LevelData, type ActionRecord } from './state';
 import { getAllLevels } from '../data/dataRegistry';
-import { SK, readJson, writeJson } from '../storage/keys';
+import { SK } from '../storage/keys';
 import { formatSeconds, cellLabel, normalizeSavedCells } from './utils';
 import {
   canInputByErrorGate,
   getModePolicy,
-  getSaveKeyForCurrentMode,
-  getRecordsStorageKeyForLevelList,
 } from './modePolicy';
 import {
   playFillSound,
-  playUnitCompleteSound,
-  playWinSound,
   playErrorFeedback,
   playNoteToggleSound,
   playEraseSound,
 } from './audio';
 import { showFeedback, markErrorArea } from '../ui/feedback';
 import { t } from '../i18n/t';
+import { emitNavigation } from '../app/navigation/navigationBus';
 import {
   setGameHeaderByMode,
   setGhostProgressVisible,
@@ -38,17 +36,11 @@ import {
   setNumpadContinuousState,
   addCellClasses,
   removeCellClasses,
-  addGridClass,
-  removeGridClass,
-  markBlindReveal,
-  clearBlindRevealClasses,
   setLivesSpeedrun,
   setLivesBlind,
   setLivesNoRemaining,
   setLivesRemaining,
   setDuoCooldownText,
-  applyUnitCompleteClass,
-  clearUnitCompleteClass,
   addCooldownMask,
   removeCooldownMasks,
   highlightDigitOnGrid,
@@ -65,9 +57,9 @@ import {
   setBoardCallbacks,
 } from './board';
 import { startTimer } from './timer';
-import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
+import { loadLevelLeaderboard } from '../firebase/client';
 import { recalculatePlayerFilledCount, updateGhostProgressUI } from '../features/ghost';
-import { checkAllAchievements, unlockAchievement, recordElimination } from '../features/stats';
+import { recordElimination } from '../features/stats';
 import {
   evaluateLockedSkill,
   toggleSkillMode,
@@ -80,14 +72,25 @@ import {
   castSkill,
   tryQuickCast,
 } from '../features/skills/skillController';
+import { saveGameStatus, loadGameStatus, clearGameStatus } from './persistence';
+import {
+  checkWin,
+  checkSpeedrunComplete,
+  checkBlindComplete,
+  showGameOver,
+  celebrateCompletedUnits,
+  solutionDigitAt,
+  isBlindRevealing,
+} from './winDetection';
+
+// Re-export extracted modules for backward compatibility
+export { saveGameStatus, loadGameStatus, clearGameStatus, saveProgress } from './persistence';
+export type { SavedGameState } from './persistence';
+export { checkWin, showGameOver } from './winDetection';
 
 // Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
 async function callDuoProgress() {
   try { const m = await import('../features/duo'); m.updateDuoProgress(); }
-  catch (e) { console.warn('lazy import duo failed:', e); }
-}
-async function callDuoFinish(sec: number, stars: number) {
-  try { const m = await import('../features/duo'); m.submitDuoFinish(sec, stars); }
   catch (e) { console.warn('lazy import duo failed:', e); }
 }
 async function callCloseReplay() {
@@ -98,9 +101,6 @@ async function callCloseLibrary() {
   try { const m = await import('../features/teach-legacy'); m.closeLibraryOverlay(); }
   catch (e) { console.warn('lazy import teach-legacy failed:', e); }
 }
-
-// ── Blind reveal guard ──────────────────────────────────────────────
-let blindRevealing = false;
 
 // ── Auto-eliminate notes from peers ─────────────────────────────────
 
@@ -132,14 +132,6 @@ function recordAction(
 ): void {
   gs.actionHistory.push({ t: gs.seconds, type, detail, idx, val, notes: notes ? notes.slice() : null });
   if (gs.actionHistory.length > 1200) gs.actionHistory.shift();
-}
-
-function solutionDigitAt(idx: number): number {
-  const raw = gs.currentLevel?.solution?.[idx];
-  const n = Number(raw);
-  if (!Number.isFinite(n)) return 0;
-  const d = Math.round(n);
-  return d >= 1 && d <= 9 ? d : 0;
 }
 
 // Re-export skill functions for legacy call sites (window facade, legacyRuntime).
@@ -267,60 +259,6 @@ function resetGameState(): void {
   setUndoButtonVisible(showUndo);
 }
 
-// ── Save / Load ─────────────────────────────────────────────────────
-
-export function saveGameStatus(): void {
-  if (!gs.currentLevel) return;
-  // Wild mode puzzles save to dedicated wild save key (pause/resume)
-  if (gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild') {
-    import('../features/wild/wildController').then(m => m.saveCurrentEncounter());
-    return;
-  }
-  const saveKey = getSaveKeyForCurrentMode(gs.currentLevel.id);
-  const data = {
-    levelId: gs.currentLevel.id,
-    cellsData: gs.cellsData,
-    seconds: gs.seconds,
-    errors: gs.errors,
-    submissionCount: gs.submissionCount,
-    actionHistory: gs.actionHistory,
-    isGhostMode: gs.isGhostMode,
-    ghostHistory: gs.isGhostMode ? gs.ghostHistory : null,
-  };
-  try {
-    localStorage.setItem(saveKey, JSON.stringify(data));
-    localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
-  } catch (e) {
-    console.warn('saveGameStatus: localStorage quota exceeded, skipping save', e);
-  }
-}
-
-export interface SavedGameState {
-  levelId: number;
-  cellsData: import('./state').CellData[];
-  seconds: number;
-  errors: number;
-  submissionCount: number;
-  actionHistory: ActionRecord[];
-  isGhostMode: boolean;
-  ghostHistory: ActionRecord[] | null;
-}
-
-export function loadGameStatus(levelId: number): SavedGameState | null {
-  const saved = localStorage.getItem(getSaveKeyForCurrentMode(levelId));
-  if (!saved) return null;
-  try {
-    return JSON.parse(saved);
-  } catch {
-    return null;
-  }
-}
-
-export function clearGameStatus(levelId: number): void {
-  const saveKey = getSaveKeyForCurrentMode(levelId);
-  localStorage.removeItem(saveKey);
-}
-
 // ── Input handling ──────────────────────────────────────────────────
 
 function isDigitCompletedOnBoard(num: number): boolean {
@@ -334,7 +272,7 @@ function isDigitCompletedOnBoard(num: number): boolean {
 
 export function handleInput(num: number): void {
   const policy = getModePolicy();
-  if (blindRevealing) return;
+  if (isBlindRevealing()) return;
   if (isDigitCompletedOnBoard(num)) return;
   if (gs.selectedIdx === null || gs.cellsData[gs.selectedIdx].fixed) return;
   if (!canInputByErrorGate()) return;
@@ -514,226 +452,6 @@ export function erase(): void {
   }
 }
 
-// ── Win / Game Over ─────────────────────────────────────────────────
-
-function checkWin(): void {
-  const policy = getModePolicy();
-  const isComplete = gs.cellsData.every((data, i) => data.value === solutionDigitAt(i));
-  if (!isComplete) return;
-  if (gs.timerInterval) clearInterval(gs.timerInterval);
-  // Clear duo cooldown if active
-  if (gs.duoCooldownTimer) {
-    clearInterval(gs.duoCooldownTimer);
-    gs.duoCooldownTimer = null;
-  }
-  gs.duoCooldownUntil = 0;
-
-  // ── Wild mode: delegate to Wild controller ──
-  if (gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild') {
-    import('../features/wild/wildController').then((m) => {
-      const result = m.onWildComplete(gs.seconds, gs.errors);
-      showWildWinCelebration(gs.seconds, result.expGained, result.leveledUp, result.newLevel, result.firstKill, result.firstKillSub, result.beatMentor);
-    });
-    return;
-  }
-
-  const isPractice = gs.currentLevel?.mode === 'practice';
-
-  // ── Practice mode: save to practice records (skip normal records & leaderboard) ──
-  if (isPractice && gs.currentLevel!.maxTechnique) {
-    import('../features/practice/practiceLobby').then((m) => {
-      m.savePracticeRecord(gs.currentLevel!.id, gs.seconds, gs.errors, gs.currentLevel!.maxTechnique!, gs.actionHistory);
-    });
-    clearGameStatus(gs.currentLevel!.id);
-    const earnedStars = Math.max(1, 3 - gs.errors);
-    showPracticeWinCelebration(earnedStars);
-    if (gs.isDuoMode) callDuoFinish(gs.seconds, earnedStars);
-    setTimeout(() => checkAllAchievements(), 1000);
-    return;
-  }
-
-  clearGameStatus(gs.currentLevel!.id);
-  const earnedValue = saveProgress();
-  showWinCelebration(earnedValue);
-  if (gs.isDuoMode) callDuoFinish(gs.seconds, policy.useSubmissionValidation ? 0 : earnedValue);
-  setTimeout(() => {
-    if (gs.isGhostMode) unlockAchievement('ghost_win');
-    checkAllAchievements();
-  }, 1000);
-  if (!policy.useSubmissionValidation) {
-    submitFirstClear(gs.currentLevel!.id, gs.seconds, earnedValue).then(() =>
-      loadLevelLeaderboard(gs.currentLevel!.id),
-    );
-  }
-}
-
-function checkSpeedrunComplete(lastIdx: number): void {
-  const isFull = gs.cellsData.every((c) => c.value !== 0);
-  if (!isFull) return;
-  let isCorrect = true;
-  for (let i = 0; i < 81; i++) {
-    if (gs.cellsData[i].value !== solutionDigitAt(i)) {
-      isCorrect = false;
-      break;
-    }
-  }
-  if (isCorrect) {
-    checkWin();
-    return;
-  }
-
-  gs.submissionCount++;
-  showFeedback(t('feedback.boardError', { count: String(gs.submissionCount) }), 'error');
-  playErrorFeedback();
-  addGridClass(gs.gridEl, 'error-strong');
-  setTimeout(() => {
-    removeGridClass(gs.gridEl, 'error-strong');
-  }, 500);
-
-  if (lastIdx !== null) {
-    gs.cellsData[lastIdx].value = 0;
-    gs.cellsData[lastIdx].isError = true;
-    const cellEl = gs.gridEl!.children[lastIdx] as HTMLElement;
-    addCellClasses(cellEl, 'error');
-    updateCellDisplay(cellEl, gs.cellsData[lastIdx]);
-    setTimeout(() => {
-      gs.cellsData[lastIdx].isError = false;
-      removeCellClasses(cellEl, 'error');
-      updateCellDisplay(cellEl, gs.cellsData[lastIdx]);
-    }, 400);
-    saveGameStatus();
-    updateNumpadState();
-  }
-}
-
-async function checkBlindComplete(): Promise<void> {
-  // In blind mode, check when all 81 cells are filled
-  const isFull = gs.cellsData.every((c) => c.value !== 0);
-  if (!isFull) return;
-
-  // Disable input during reveal
-  blindRevealing = true;
-
-  // Scan phase: reveal cells one by one
-  let correct = 0;
-  let errors = 0;
-
-  for (let i = 0; i < 81; i++) {
-    if (gs.cellsData[i].fixed) {
-      correct++;
-      continue; // skip clue cells, they are always correct
-    }
-
-    const cellEl = gs.gridEl!.children[i] as HTMLElement;
-    const isCorrect = gs.cellsData[i].value === solutionDigitAt(i);
-
-    if (isCorrect) {
-      correct++;
-      markBlindReveal(cellEl, true);
-    } else {
-      errors++;
-      gs.cellsData[i].isError = true;
-      markBlindReveal(cellEl, false);
-      updateCellDisplay(cellEl, gs.cellsData[i]);
-    }
-
-    // Update running count
-    showFeedback(t('feedback.blindRevealing', { correct: String(correct), errors: String(errors) }), errors > 0 ? 'error' : 'neutral');
-
-    await new Promise((r) => setTimeout(r, 30));
-  }
-
-  // Re-enable input
-  blindRevealing = false;
-
-  // Result phase
-  if (errors === 0) {
-    checkWin();
-  } else {
-    showFeedback(t('feedback.blindResult', { correct: String(correct), errors: String(errors) }), 'error');
-    showGameOver();
-  }
-
-  // Clean up animation classes after animations finish
-  setTimeout(() => {
-    clearBlindRevealClasses(gs.gridEl);
-  }, 600);
-}
-
-export function saveProgress(): number {
-  const recordsKey = getRecordsStorageKeyForLevelList(false);
-  if (getModePolicy().useSubmissionValidation) {
-    const records = readJson<Record<string, any>>(recordsKey, {});
-    const existing = records[gs.currentLevel!.id];
-    const currentSubs = gs.submissionCount + 1;
-    const shouldUpdate =
-      !existing ||
-      currentSubs < (existing.submissions || Infinity) ||
-      (currentSubs === (existing.submissions || Infinity) && gs.seconds < (existing.time || Infinity));
-    if (shouldUpdate) {
-      records[gs.currentLevel!.id] = { time: gs.seconds, submissions: currentSubs, replayHistory: gs.actionHistory };
-      writeJson(recordsKey, records);
-    }
-    return currentSubs;
-  } else {
-    const records = readJson<Record<string, any>>(recordsKey, {});
-    const existing = records[gs.currentLevel!.id];
-    const earnedStars = Math.max(1, 3 - gs.errors);
-    const shouldUpdate =
-      !existing ||
-      earnedStars > (existing.stars || 1) ||
-      (earnedStars === (existing.stars || 1) && gs.seconds < (existing.time || Infinity));
-    if (shouldUpdate) {
-      records[gs.currentLevel!.id] = { time: gs.seconds, stars: earnedStars, replayHistory: gs.actionHistory };
-      writeJson(recordsKey, records);
-    }
-    return earnedStars;
-  }
-}
-
-export function showGameOver(): void {
-  if (gs.timerInterval) clearInterval(gs.timerInterval);
-
-  const isWild = gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
-  const isPractice = gs.currentLevel?.mode === 'practice';
-
-  if (isWild) {
-    import('../features/wild/wildController').then((m) => m.onWildEscape());
-  } else {
-    clearGameStatus(gs.currentLevel!.id);
-  }
-
-  // Delegate to React GameOverOverlay
-  const mode = isWild ? 'wild' : isPractice ? 'practice' : 'normal';
-  import('../react/gameover/gameOverBridge').then(({ bridgeShowGameOver, bridgeSetGameOverWildSession }) => {
-    if (isWild) {
-      import('../features/wild/wildController').then((wc) => {
-        const enc = wc.getCurrentEncounter();
-        let wildInfo: { techName?: string; techSubtitle?: string; isIronman?: boolean } | undefined;
-        if (enc) {
-          import('../features/wild/techniqueMeta').then(({ getTechniqueMeta }) => {
-            const meta = getTechniqueMeta(enc.technique);
-            wildInfo = {
-              techName: meta?.name ?? '',
-              techSubtitle: meta?.subtitle ?? '',
-              isIronman: gs.wildChallengeMode === 'ironman',
-            };
-            bridgeShowGameOver(mode, wildInfo);
-          });
-        } else {
-          bridgeShowGameOver(mode);
-        }
-        const session = wc.getSession();
-        if (session) {
-          bridgeSetGameOverWildSession({ round: session.round, hasMore: session.round < 10 });
-        }
-      });
-    } else {
-      bridgeShowGameOver(mode);
-    }
-  });
-}
-
 export function resetGame(): void {
   if (confirm(t('misc.resetConfirm'))) {
     clearGameStatus(gs.currentLevel!.id);
@@ -762,124 +480,6 @@ export function updateLivesUI(): void {
   }
   const remaining = gs.maxErrors - gs.errors;
   setLivesRemaining(gs.livesEl, remaining);
-}
-
-// ── Win celebrations (delegated to React WinCelebration component) ────
-
-function showWinCelebration(earnedValue: number): void {
-  const policy = getModePolicy();
-  import('../react/win/winBridge').then(({ bridgeShowWin }) => {
-    bridgeShowWin({
-      mode: 'normal',
-      levelName: gs.currentLevel!.displayName,
-      timeSeconds: gs.seconds,
-      stars: policy.useSubmissionValidation ? 0 : earnedValue,
-      isSpeedrun: policy.useSubmissionValidation,
-      submissions: policy.useSubmissionValidation ? earnedValue : 0,
-      showLeaderboard: true,
-      showReplay: true,
-    });
-  });
-  showFeedback(t('feedback.complete'), 'success');
-  playWinSound();
-}
-
-function showPracticeWinCelebration(earnedStars: number): void {
-  // Compute practice progress for this technique
-  const techKey = gs.currentLevel?.maxTechnique || '';
-  import('../features/practice/practiceLobby').then(async () => {
-    const { TECH_MAP } = await import('../features/teach-legacy');
-    const { SK, readJson } = await import('../storage/keys');
-    const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
-    // Count how many levels of this technique are cleared (including the one just won)
-    let cleared = 0;
-    for (const rec of Object.values(records)) {
-      if (rec && rec.techKey === techKey) cleared++;
-    }
-    // The current win may not be saved yet, so add 1 if not already counted
-    if (!records[gs.currentLevel!.id]) cleared++;
-
-    const { bridgeShowWin } = await import('../react/win/winBridge');
-    bridgeShowWin({
-      mode: 'practice',
-      levelName: gs.currentLevel!.displayName,
-      timeSeconds: gs.seconds,
-      stars: earnedStars,
-      showLeaderboard: false,
-      showReplay: true,
-      practiceTechName: TECH_MAP[techKey] || techKey,
-      practiceCleared: cleared,
-      practiceTotal: 25,
-    });
-  });
-  // Play softer zen complete sound for practice
-  import('./zenAudio').then(({ playZenComplete }) => playZenComplete(0.03));
-}
-
-function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number, firstKill?: string | null, firstKillSub?: string | null, beatMentor?: boolean): void {
-  // Look up mentor note for first kill, then show celebration
-  const mentorNotePromise: Promise<string | null> = firstKill
-    ? import('../features/wild/mentorDialogue').then(({ MENTOR_MILESTONES }) => {
-        const line = MENTOR_MILESTONES.find((m) => m.key === 'first_kill');
-        return line?.text ?? null;
-      })
-    : Promise.resolve(null);
-
-  Promise.all([
-    mentorNotePromise,
-    import('../react/win/winBridge'),
-  ]).then(([mentorNote, { bridgeShowWildWin, bridgeSetWildSession }]) => {
-    bridgeShowWildWin({
-      levelName: gs.currentLevel!.displayName,
-      timeSeconds: seconds,
-      expGained,
-      leveledUp,
-      newLevel,
-      firstKill,
-      firstKillSub,
-      beatMentor,
-      mentorNote,
-    });
-    // Fetch session info async and update store
-    import('../features/wild/wildController').then((m) => {
-      const session = m.getSession();
-      bridgeSetWildSession(session ? { round: session.round, wins: session.wins, totalExp: session.totalExp } : null);
-    });
-  });
-  showFeedback(leveledUp ? t('wildRuntime.levelUpFeedback', { level: String(newLevel) }) : t('wildRuntime.huntSuccess'), 'success');
-  playWinSound();
-}
-
-function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: boolean; box: boolean }): void {
-  const { rowIndices, colIndices, boxIndices } = getUnitIndices(idx);
-  const justRow = !beforeState.row && isUnitComplete(rowIndices);
-  const justCol = !beforeState.col && isUnitComplete(colIndices);
-  const justBox = !beforeState.box && isUnitComplete(boxIndices);
-  if (!justRow && !justCol && !justBox) return;
-
-  const flashSet = new Set<number>();
-  if (justRow) rowIndices.forEach((i) => flashSet.add(i));
-  if (justCol) colIndices.forEach((i) => flashSet.add(i));
-  if (justBox) boxIndices.forEach((i) => flashSet.add(i));
-
-  // Staggered ripple from the trigger cell
-  const sorted = [...flashSet].sort((a, b) => {
-    const dA = Math.abs(Math.floor(a / 9) - Math.floor(idx / 9)) + Math.abs((a % 9) - (idx % 9));
-    const dB = Math.abs(Math.floor(b / 9) - Math.floor(idx / 9)) + Math.abs((b % 9) - (idx % 9));
-    return dA - dB;
-  });
-  applyUnitCompleteClass(gs.gridEl, sorted, 25);
-  setTimeout(() => {
-    clearUnitCompleteClass(gs.gridEl, [...flashSet]);
-  }, 900);
-
-  const parts: string[] = [];
-  if (justRow) parts.push(t('feedback.unitRow'));
-  if (justCol) parts.push(t('feedback.unitCol'));
-  if (justBox) parts.push(t('feedback.unitBox'));
-  showFeedback(t('feedback.unitComplete', { parts: parts.join(' + ') }), 'success');
-  playUnitCompleteSound();
-  if (navigator.vibrate) navigator.vibrate([8, 20, 8, 20, 8]);
 }
 
 // ── Duo Cooldown Lock ───────────────────────────────────────────────
@@ -945,7 +545,7 @@ export function pauseGame(): void {
           void leaveWildFromPause();
         }
       : () => {
-          import('../features/levels').then((m) => m.showLevelScreen(true));
+          emitNavigation({ type: 'show-level-screen', returnToTier: true });
         };
   }
   if (abandonBtn) {
@@ -963,19 +563,17 @@ export function pauseGame(): void {
 export async function leaveWildFromPause(): Promise<void> {
   hidePauseScreen();
   const { exitWild } = await import('../features/wild/wildController');
-  const { showLevelScreen } = await import('../features/levels');
   exitWild();
-  showLevelScreen(true);
+  emitNavigation({ type: 'show-level-screen', returnToTier: true });
 }
 
 export async function abandonWildFromPause(): Promise<void> {
   if (!confirm(t('wild.abandonConfirm'))) return;
   hidePauseScreen();
   const { abandonWildEncounter } = await import('../features/wild/wildController');
-  const { showLevelScreen } = await import('../features/levels');
   abandonWildEncounter();
   showFeedback(t('wild.abandonEncounter'), 'success');
-  showLevelScreen(true);
+  emitNavigation({ type: 'show-level-screen', returnToTier: true });
 }
 
 export function resumeGame(): void {

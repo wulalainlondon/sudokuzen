@@ -10,6 +10,7 @@ import { syncLevelCardSize } from '../../game/board';
 import { playZenMentor, playZenEncounter, playZenDiscover, playZenLevelUp, playZenSessionComplete } from '../../game/zenAudio';
 import { t } from '../../i18n/t';
 import { usePracticeTreeStore } from '../../react/practice/practiceTreeStore';
+import { emitNavigation } from '../../app/navigation/navigationBus';
 
 // ── Unlock tree definition ────────────────────────────────────────────
 
@@ -344,7 +345,7 @@ function renderPracticeLevelGrid(techKey: string): void {
 
     item.onclick = () => {
       // Route to pre-level modal with practice context, passing level data directly
-      import('../levels').then(m => m.showPreLevelModal(l.id, true, l));
+      emitNavigation({ type: 'show-pre-level-modal', levelId: l.id, ignoreTierLock: true, externalLevel: l });
     };
 
     list.appendChild(item);
@@ -368,7 +369,7 @@ export function backToPracticeLobby(): void {
   const backBtn = tierView?.querySelector('.tier-back-btn') as HTMLElement | null;
   if (backBtn) {
     backBtn.onclick = () => {
-      import('../levels').then(m => m.backToStageMap());
+      emitNavigation({ type: 'back-to-stage-map' });
     };
   }
 
@@ -417,8 +418,7 @@ export function backToPracticeLobby(): void {
 export async function startNextPracticeLevel(): Promise<void> {
   if (!_practiceData || !gs.practiceActiveTech || !gs.currentLevel) {
     // Fallback: go to level screen
-    const { showLevelScreen } = await import('../levels');
-    showLevelScreen(true);
+    emitNavigation({ type: 'show-level-screen', returnToTier: true });
     return;
   }
 
@@ -430,13 +430,11 @@ export async function startNextPracticeLevel(): Promise<void> {
   if (nextIdx >= techLevels.length) {
     // All levels in this technique done — go back to level grid
     showFeedback(t('practice.allComplete'), 'success');
-    const { showLevelScreen } = await import('../levels');
-    showLevelScreen(true);
+    emitNavigation({ type: 'show-level-screen', returnToTier: true });
     return;
   }
 
   const nextLevel = techLevels[nextIdx];
-  const { showPreLevelModal } = await import('../levels');
   // Close React win celebration
   const { bridgeCloseWin } = await import('../../react/win/winBridge');
   bridgeCloseWin();
@@ -444,7 +442,7 @@ export async function startNextPracticeLevel(): Promise<void> {
   const winEl = document.getElementById('win-celebration');
   if (winEl) winEl.style.display = 'none';
   document.getElementById('level-screen')!.style.display = 'flex';
-  showPreLevelModal(nextLevel.id, true, nextLevel);
+  emitNavigation({ type: 'show-pre-level-modal', levelId: nextLevel.id, ignoreTierLock: true, externalLevel: nextLevel });
 }
 
 // ── Save practice record ──────────────────────────────────────────────

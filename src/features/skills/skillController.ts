@@ -31,6 +31,11 @@ import { finnedXWingSkill } from './finnedXWing';
 import { bugPlusOneSkill } from './bugPlusOne';
 import type { SkillPreview } from './types';
 import { getChoreography } from './castChoreography';
+import {
+  showSkillPanel,
+  hideSkillPanel,
+  updatePanelUI as _updatePanelUI,
+} from './skillPanelUI';
 
 // ── Register skills (order = evaluation priority) ────────────────────
 // Quick-cast singles (evaluated first for speed)
@@ -69,64 +74,10 @@ function sm(): SkillModeState {
 
 let _preview: SkillPreview | null = null;
 
-// ── UI refs ──────────────────────────────────────────────────────────
-
-function getNumpad(): HTMLElement | null {
-  return document.getElementById('numpad');
-}
-function getSkillPanel(): HTMLElement | null {
-  return document.getElementById('skill-panel');
-}
-
-// ── Panel swap (numpad ↔ skill panel) ────────────────────────────────
-
-function showSkillPanel(): void {
-  const numpad = getNumpad();
-  const panel = getSkillPanel();
-  if (numpad) numpad.style.visibility = 'hidden';
-  if (panel) panel.classList.remove('hidden');
-}
-
-function hideSkillPanel(): void {
-  const numpad = getNumpad();
-  const panel = getSkillPanel();
-  if (numpad) numpad.style.visibility = '';
-  if (panel) panel.classList.add('hidden');
-}
-
-// ── Skill panel UI ──────────────────────────────────────────────────
+// ── Panel UI (delegated to skillPanelUI.ts) ─────────────────────────
 
 function updatePanelUI(): void {
-  const skill = sm();
-  const castBtn = document.getElementById('skill-cast-btn') as HTMLButtonElement | null;
-  const fillBtn = document.getElementById('skill-fill-btn') as HTMLButtonElement | null;
-  const subtitle = document.getElementById('skill-subtitle');
-  const status = document.getElementById('skill-status');
-  if (!castBtn || !fillBtn || !subtitle || !status) return;
-
-  const p = _preview;
-
-  if (skill.casting && p) {
-    subtitle.textContent = `${p.skillName} · {${p.digits?.join(',') ?? '-'}}`;
-    status.textContent = skill.castMessage || t('skills.computing');
-    castBtn.disabled = true;
-    fillBtn.disabled = true;
-    castBtn.textContent = t('skills.casting');
-    return;
-  }
-
-  fillBtn.disabled = false;
-  if (p?.valid) {
-    subtitle.textContent = `${p.skillName} · {${p.digits?.join(',') ?? ''}}`;
-    status.textContent = t('skills.canCast', { unit: p.unitLabel ?? '', count: String(p.targets.length) });
-    castBtn.disabled = false;
-    castBtn.textContent = `${p.skillName}（-${p.targets.length}）`;
-  } else {
-    subtitle.textContent = p?.reason || t('skills.noSkillFormed');
-    status.textContent = t('skills.selectedCount', { count: String(skill.selectedCells.length) });
-    castBtn.disabled = true;
-    castBtn.textContent = t('skills.castLabel');
-  }
+  _updatePanelUI(sm(), _preview);
 }
 
 // ── Grid visuals ────────────────────────────────────────────────────
@@ -494,3 +445,7 @@ export function handleCandidateProbeTap(): void {
 export function castLockedSkill(): Promise<void> {
   return castSkill();
 }
+
+// ── Re-exports from skillPanelUI.ts ─────────────────────────────────
+export { showSkillPanel, hideSkillPanel, getNumpad, getSkillPanel } from './skillPanelUI';
+export { updatePanelUI as updatePanelUIWithState } from './skillPanelUI';
