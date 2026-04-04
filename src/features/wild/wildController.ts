@@ -23,6 +23,7 @@ import { bridgeShowEncounterTransition } from '../../react/wild/encounterTransit
 import { playZenEnter, playZenEncounter, playZenBoss } from '../../game/zenAudio';
 import { t } from '../../i18n/t';
 import { getEquippedTitle, getTitleResonanceBonus } from '../titles';
+import { setNextLevelScreenReturnTarget } from '../levels';
 
 // ── Runtime state (non-persisted) ────────────────────────────────────
 
@@ -842,6 +843,7 @@ export async function continueWild(): Promise<void> {
 // ── Exit Wild (return to level screen) ───────────────────────────────
 
 export function exitWild(): void {
+  setNextLevelScreenReturnTarget('world');
   // Save encounter state for resume (if mid-encounter and not gauntlet)
   if (_active && _encounter && _gauntletQueue.length === 0) {
     saveCurrentEncounter();

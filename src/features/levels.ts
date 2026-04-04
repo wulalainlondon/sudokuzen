@@ -9,7 +9,7 @@ import { showFeedback } from '../ui/feedback';
 import { loadPreLevelLeaderboard } from '../firebase/client';
 import { syncLevelCardSize } from '../game/board';
 import { TECH_MAP, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
-import { closeWildLobby } from './wild/wildLobby';
+import { closeWildLobby, openWildLobby } from './wild/wildLobby';
 import { closeDuoLobby } from './duoLobby';
 import { closePracticeLobby, enterPracticeTechnique } from './practice/practiceLobby';
 import { t } from '../i18n/t';
@@ -466,7 +466,36 @@ export async function startLevelFromModal(
 
 // ── Navigation ──────────────────────────────────────────────────────
 
+export type LevelScreenReturnTarget = 'world' | 'practice' | 'tier' | 'stage';
+
+let _forcedLevelScreenReturnTarget: LevelScreenReturnTarget | null = null;
+
+export function setNextLevelScreenReturnTarget(target: LevelScreenReturnTarget | null): void {
+  _forcedLevelScreenReturnTarget = target;
+}
+
+function consumeLevelScreenReturnTarget(): LevelScreenReturnTarget | null {
+  const target = _forcedLevelScreenReturnTarget;
+  _forcedLevelScreenReturnTarget = null;
+  return target;
+}
+
+export function resolveLevelScreenReturnTarget(
+  returnToTier: boolean,
+  context: { practiceReturnTech: string | null; currentTab: string | null; isWildContext: boolean },
+): LevelScreenReturnTarget {
+  if (context.isWildContext) return 'world';
+  if (returnToTier && context.practiceReturnTech) return 'practice';
+  if (returnToTier && context.currentTab !== null) return 'tier';
+  return 'stage';
+}
+
 export function showLevelScreen(returnToTier = false): void {
+  const wasWildContext = gs.currentLevel?.source === 'wild' || gs.wildChallengeMode !== null;
+  const practiceReturnTech = gs.practiceActiveTech;
+  const currentTab = gs.currentTab;
+  const forcedTarget = consumeLevelScreenReturnTarget();
+
   // Save progress before leaving game screen
   if (gs.currentLevel && (document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') {
     import('../game/core').then((m) => m.saveGameStatus());
@@ -486,13 +515,20 @@ export function showLevelScreen(returnToTier = false): void {
   hidePreLevelModal();
   closeWildLobby();
   closeDuoLobby();
-  const practiceReturnTech = gs.practiceActiveTech;
   closePracticeLobby();
   if (gs.isDuoMode) callResetDuoState();
-  if (returnToTier && practiceReturnTech) {
-    enterPracticeTechnique(practiceReturnTech);
-  } else if (returnToTier && gs.currentTab !== null) {
-    enterTier(gs.currentTab);
+
+  const target = forcedTarget ?? resolveLevelScreenReturnTarget(returnToTier, {
+    practiceReturnTech,
+    currentTab,
+    isWildContext: wasWildContext,
+  });
+  if (target === 'world') {
+    openWildLobby();
+  } else if (target === 'practice') {
+    enterPracticeTechnique(practiceReturnTech!);
+  } else if (target === 'tier' && currentTab !== null) {
+    enterTier(currentTab);
   } else {
     document.getElementById('tier-view')!.classList.add('hidden');
     document.getElementById('stage-view')!.style.display = 'flex';
