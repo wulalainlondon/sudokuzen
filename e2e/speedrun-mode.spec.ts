@@ -34,8 +34,9 @@ test.describe('speedrun-mode', () => {
     const afterOn = await page.evaluate(() => (window as any).__e2e.gs.isSpeedrunMode);
     expect(afterOn).toBe(true);
 
-    // Button should have active class
-    await expect(page.locator('#speedrun-toggle-btn')).toHaveClass(/active/);
+    // Verify mode persisted to localStorage
+    const stored = await page.evaluate(() => localStorage.getItem('sudoku_speedrun'));
+    expect(stored).toBe('true');
 
     // Toggle off
     await page.evaluate(() => (window as any).toggleSpeedrunMode());
