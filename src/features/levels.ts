@@ -35,9 +35,6 @@ async function callLeaveDuoRoom() {
 function callResetDuoState() {
   import('./duo').then((m) => m.resetDuoState());
 }
-function callStartDuoGlowListener() {
-  import('./duo').then((m) => m.startDuoGlowListener());
-}
 
 // ── Helpers ─────────────────────────────────────────────────────────
 
@@ -501,7 +498,9 @@ export function showLevelScreen(returnToTier = false): void {
     document.getElementById('stage-view')!.style.display = 'flex';
     renderStageMap();
   }
-  if (gs.firebaseReady) callStartDuoGlowListener();
+  if (gs.firebaseReady) {
+    import('./duo').then((m) => m.stopDuoGlowListener());
+  }
 }
 
 export function toggleSpeedrunMode(): void {

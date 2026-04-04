@@ -35,7 +35,7 @@ import {
   replayTogglePlay,
   replayToggleSpeed,
 } from '../features/replay';
-import { toggleDuoReady, sendDuoEmoji, closeDuoResult, surrenderDuo, startDuoGlowListener } from '../features/duo';
+import { toggleDuoReady, sendDuoEmoji, closeDuoResult, surrenderDuo } from '../features/duo';
 import {
   openDuoLobby,
   closeDuoLobby,
@@ -142,7 +142,6 @@ export function bootLegacyRuntime(appVersion: string): void {
   // 9. Firebase
   initFirebase();
   if (gs.firebaseReady) {
-    startDuoGlowListener();
     initPresence();
   }
 

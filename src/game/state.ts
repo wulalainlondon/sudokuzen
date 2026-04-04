@@ -57,6 +57,11 @@ export interface DuoRoomData {
   guestEmojiTs?: number | null;
   hostDuoWins?: number;
   guestDuoWins?: number;
+  levelLocked?: boolean;
+  hostHeartbeatAtMs?: number | null;
+  guestHeartbeatAtMs?: number | null;
+  hostOnline?: boolean;
+  guestOnline?: boolean;
 }
 
 export interface SkillModeState {

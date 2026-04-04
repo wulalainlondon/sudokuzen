@@ -22,6 +22,7 @@ import {
   toggleDuoLevelLockFromLobby,
   refreshDuoLobbyRoom,
 } from '../features/duoLobby';
+import { getDuoMetrics, resetDuoMetrics } from '../features/duo';
 
 declare global {
   interface Window {
@@ -50,6 +51,8 @@ export function bootstrapApp(): void {
       updateDuoRoomLevelFromLobby,
       toggleDuoLevelLockFromLobby,
       refreshDuoLobbyRoom,
+      getDuoMetrics,
+      resetDuoMetrics,
     });
     if (gs.firebaseReady) {
       // IMPORTANT: hydrate MUST complete before bridge activates.

@@ -6,6 +6,8 @@ import { t } from '../i18n/t';
 import type { DuoRoomSummary } from './duo';
 
 type ConnState = 'connected' | 'reconnecting' | 'failed';
+const LOBBY_POLL_MS = 10_000;
+let _duoLobbyPollTimer: ReturnType<typeof setInterval> | null = null;
 
 function duoLobbyEl(): HTMLElement | null {
   return document.getElementById('duo-lobby');
@@ -86,7 +88,7 @@ function renderRoomList(rooms: DuoRoomSummary[]): void {
       const { joinDuoRoom } = await import('./duo');
       const ok = await joinDuoRoom(roomId);
       if (!ok) showFeedback(t('duo.noJoinableRoom'), 'error');
-      await refreshDuoLobbyRoom();
+      await refreshDuoLobbyRoom({ force: true });
     });
   });
 }
@@ -113,6 +115,22 @@ async function refreshRoomCard(): Promise<void> {
   if (lockBtn) {
     lockBtn.disabled = gs.duoRole !== 'host';
     lockBtn.textContent = activeRoom?.levelLocked ? t('duo.unlockLevel') : t('duo.lockLevel');
+  }
+}
+
+function startLobbyPolling(): void {
+  if (_duoLobbyPollTimer) return;
+  _duoLobbyPollTimer = setInterval(() => {
+    if (!isDuoLobbyOpen() || document.visibilityState !== 'visible') return;
+    void import('./duo').then((m) => m.cleanupStaleDuoRooms()).catch(() => {});
+    void refreshDuoLobbyRoom();
+  }, LOBBY_POLL_MS);
+}
+
+function stopLobbyPolling(): void {
+  if (_duoLobbyPollTimer) {
+    clearInterval(_duoLobbyPollTimer);
+    _duoLobbyPollTimer = null;
   }
 }
 
@@ -154,18 +172,23 @@ export async function openDuoLobby(): Promise<void> {
     showFeedback(t('duo.networkRequired'), 'error');
     return;
   }
-  const { resumeDuoRoomIfAny } = await import('./duo');
+  const { resumeDuoRoomIfAny, startDuoGlowListener, cleanupStaleDuoRooms } = await import('./duo');
+  startDuoGlowListener();
+  void cleanupStaleDuoRooms();
   await resumeDuoRoomIfAny();
   hydrateLabels();
   renderLevelOptions(gs.pendingLevelId);
   setDuoViewActive(true);
   ensureDuoReadyZoneHost();
+  startLobbyPolling();
   await refreshRoomCard();
 }
 
 export function closeDuoLobby(): void {
   setDuoViewActive(false);
   restoreDuoReadyZoneToBody();
+  stopLobbyPolling();
+  import('./duo').then((m) => m.stopDuoGlowListener()).catch(() => {});
 }
 
 export function isDuoLobbyOpen(): boolean {
@@ -182,7 +205,7 @@ export async function createDuoRoomFromLobby(): Promise<void> {
   const { createDuoRoom } = await import('./duo');
   const roomId = await createDuoRoom(levelId);
   if (!roomId) showFeedback(t('duo.connectionError'), 'error');
-  await refreshDuoLobbyRoom();
+  await refreshDuoLobbyRoom({ force: true });
 }
 
 export async function joinDuoRoomFromLobby(): Promise<void> {
@@ -196,7 +219,7 @@ export async function joinDuoRoomFromLobby(): Promise<void> {
   const { joinDuoRoom } = await import('./duo');
   const ok = await joinDuoRoom(roomId);
   if (!ok) showFeedback(t('duo.noJoinableRoom'), 'error');
-  await refreshDuoLobbyRoom();
+  await refreshDuoLobbyRoom({ force: true });
 }
 
 export async function updateDuoRoomLevelFromLobby(): Promise<void> {
@@ -207,14 +230,14 @@ export async function updateDuoRoomLevelFromLobby(): Promise<void> {
   const { updateDuoRoomLevel } = await import('./duo');
   const ok = await updateDuoRoomLevel(levelId);
   if (!ok) showFeedback(t('duo.hostOnlyAction'), 'error');
-  await refreshDuoLobbyRoom();
+  await refreshDuoLobbyRoom({ force: true });
 }
 
 export async function toggleDuoLevelLockFromLobby(): Promise<void> {
   const { toggleDuoLevelLock } = await import('./duo');
   const ok = await toggleDuoLevelLock();
   if (!ok) showFeedback(t('duo.hostOnlyAction'), 'error');
-  await refreshDuoLobbyRoom();
+  await refreshDuoLobbyRoom({ force: true });
 }
 
 export function syncDuoLobbyRoomState(room: DuoRoomData | null, roomId: string | null): void {
@@ -238,6 +261,10 @@ export function setDuoLobbyConnectionState(state: ConnState): void {
   el.textContent = state === 'reconnecting' ? t('duo.connectionLost') : t('duo.connectionFailed');
 }
 
-export async function refreshDuoLobbyRoom(): Promise<void> {
+export async function refreshDuoLobbyRoom(opts: { force?: boolean } = {}): Promise<void> {
+  if (opts.force) {
+    const { listWaitingDuoRooms } = await import('./duo');
+    await listWaitingDuoRooms(20, { force: true });
+  }
   await refreshRoomCard();
 }

@@ -13,14 +13,46 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Duo room minimal hardening for current architecture:
-    // only the fixed room doc is writable and key fields must be typed.
+    // Legacy Duo room (backward compatibility for old clients).
     match /duo_room/current {
       allow read: if true;
       allow write: if request.resource.data.levelId is int
                    && request.resource.data.status is string
                    && request.resource.data.hostId is string
                    && (request.resource.data.guestId == null || request.resource.data.guestId is string);
+    }
+
+    // New Duo multi-room model.
+    match /duo_rooms/{roomId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.levelId is int
+                            && request.resource.data.status in ['idle', 'waiting', 'countdown', 'playing', 'finished']
+                            && request.resource.data.hostId is string
+                            && request.resource.data.hostAlias is string
+                            && request.resource.data.hostAlias.size() >= 1
+                            && request.resource.data.hostAlias.size() <= 24
+                            && (request.resource.data.guestId == null || request.resource.data.guestId is string)
+                            && (request.resource.data.guestAlias == null || request.resource.data.guestAlias is string)
+                            && (request.resource.data.hostReady is bool)
+                            && (request.resource.data.guestReady is bool)
+                            && (request.resource.data.hostProgress is int)
+                            && (request.resource.data.guestProgress is int)
+                            && (request.resource.data.hostFinishTime == null || request.resource.data.hostFinishTime is int)
+                            && (request.resource.data.guestFinishTime == null || request.resource.data.guestFinishTime is int)
+                            && (request.resource.data.levelLocked == null || request.resource.data.levelLocked is bool)
+                            && (request.resource.data.hostHeartbeatAtMs == null || request.resource.data.hostHeartbeatAtMs is int)
+                            && (request.resource.data.guestHeartbeatAtMs == null || request.resource.data.guestHeartbeatAtMs is int)
+                            && (request.resource.data.hostOnline == null || request.resource.data.hostOnline is bool)
+                            && (request.resource.data.guestOnline == null || request.resource.data.guestOnline is bool);
+      allow delete: if true;
+    }
+
+    // Lightweight online presence.
+    match /presence/{playerId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.playerId is string
+                            && request.resource.data.playerId == playerId;
+      allow delete: if true;
     }
 
     // Player profile (achievements cloud sync)

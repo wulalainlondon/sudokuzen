@@ -43,7 +43,89 @@ let _lastSeenLevelId: number | null = null;
 const MAX_SNAPSHOT_RETRIES = 5;
 const DUO_ROOMS_COLLECTION = 'duo_rooms';
 const ACTIVE_ROOM_ID_KEY = 'sudoku_duo_active_room_id';
+const DUO_METRICS_KEY = 'sudoku_duo_metrics_v1';
+const WAITING_ROOMS_CACHE_MS = 5000;
+const WAITING_ROOMS_MIN_FETCH_GAP_MS = 1200;
+const DUO_HEARTBEAT_MS = 15_000;
+const DUO_STALE_HEARTBEAT_MS = 45_000;
+const DUO_ROOM_WAITING_TTL_MS = 15 * 60_000;
+const DUO_ROOM_FINISHED_RETENTION_MS = 6 * 60 * 60_000;
+const DUO_CLEANUP_INTERVAL_MS = 5 * 60_000;
 let _activeRoomId: string | null = localStorage.getItem(ACTIVE_ROOM_ID_KEY);
+let _waitingRoomsCache: { rows: DuoRoomSummary[]; ts: number; limit: number } | null = null;
+let _waitingRoomsInFlight: Promise<DuoRoomSummary[]> | null = null;
+let _lastWaitingRoomsFetchMs = 0;
+let _duoHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
+let _lastStaleGuestPruneMs = 0;
+let _lastDuoCleanupMs = 0;
+
+type DuoMetricKey =
+  | 'lobbyFetches'
+  | 'lobbyFetchHits'
+  | 'lobbyFetchThrottled'
+  | 'roomReadOps'
+  | 'roomWriteOps'
+  | 'snapshotEvents'
+  | 'reconnects'
+  | 'heartbeatWrites'
+  | 'staleGuestReleases'
+  | 'staleRoomCleanups';
+type DuoMetrics = Record<DuoMetricKey, number> & { lastUpdatedAtMs: number };
+
+function loadDuoMetrics(): DuoMetrics {
+  try {
+    const raw = localStorage.getItem(DUO_METRICS_KEY);
+    if (!raw) throw new Error('empty');
+    const parsed = JSON.parse(raw) as Partial<DuoMetrics>;
+    return {
+      lobbyFetches: Number(parsed.lobbyFetches || 0),
+      lobbyFetchHits: Number(parsed.lobbyFetchHits || 0),
+      lobbyFetchThrottled: Number(parsed.lobbyFetchThrottled || 0),
+      roomReadOps: Number(parsed.roomReadOps || 0),
+      roomWriteOps: Number(parsed.roomWriteOps || 0),
+      snapshotEvents: Number(parsed.snapshotEvents || 0),
+      reconnects: Number(parsed.reconnects || 0),
+      heartbeatWrites: Number(parsed.heartbeatWrites || 0),
+      staleGuestReleases: Number(parsed.staleGuestReleases || 0),
+      staleRoomCleanups: Number(parsed.staleRoomCleanups || 0),
+      lastUpdatedAtMs: Number(parsed.lastUpdatedAtMs || 0),
+    };
+  } catch {
+    return {
+      lobbyFetches: 0,
+      lobbyFetchHits: 0,
+      lobbyFetchThrottled: 0,
+      roomReadOps: 0,
+      roomWriteOps: 0,
+      snapshotEvents: 0,
+      reconnects: 0,
+      heartbeatWrites: 0,
+      staleGuestReleases: 0,
+      staleRoomCleanups: 0,
+      lastUpdatedAtMs: 0,
+    };
+  }
+}
+
+let _duoMetrics = loadDuoMetrics();
+function saveDuoMetrics(): void {
+  _duoMetrics.lastUpdatedAtMs = Date.now();
+  localStorage.setItem(DUO_METRICS_KEY, JSON.stringify(_duoMetrics));
+}
+function bumpDuoMetric(key: DuoMetricKey, amount = 1): void {
+  _duoMetrics[key] = Number(_duoMetrics[key] || 0) + amount;
+  saveDuoMetrics();
+}
+export function getDuoMetrics(): DuoMetrics {
+  return { ..._duoMetrics };
+}
+export function resetDuoMetrics(): void {
+  _duoMetrics = loadDuoMetrics();
+  (Object.keys(_duoMetrics) as Array<keyof DuoMetrics>).forEach((k) => {
+    (_duoMetrics[k] as number) = 0;
+  });
+  saveDuoMetrics();
+}
 
 function setActiveRoomId(roomId: string | null): void {
   _activeRoomId = roomId;
@@ -67,6 +149,7 @@ export function duoRoomRef(roomId?: string) {
 function buildHostRoom(levelId: number, playerId: string, alias: string): Record<string, unknown> {
   const hostRec = loadDuoRecords();
   const hostTotalWins = Object.values(hostRec.wins).reduce((s, v) => s + v, 0);
+  const now = Date.now();
   return {
     levelId,
     status: 'waiting',
@@ -88,6 +171,10 @@ function buildHostRoom(levelId: number, playerId: string, alias: string): Record
     guestDuoWins: null,
     startAt: null,
     levelLocked: false,
+    hostHeartbeatAtMs: now,
+    guestHeartbeatAtMs: null,
+    hostOnline: true,
+    guestOnline: false,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
 }
@@ -106,8 +193,22 @@ function docToSummary(roomId: string, d: DuoRoomData): DuoRoomSummary {
   };
 }
 
-export async function listWaitingDuoRooms(limit = 20): Promise<DuoRoomSummary[]> {
+export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } = {}): Promise<DuoRoomSummary[]> {
   if (!gs.firebaseReady) return [];
+  const force = !!opts.force;
+  const now = Date.now();
+  if (!force && _waitingRoomsCache && now - _waitingRoomsCache.ts <= WAITING_ROOMS_CACHE_MS && limit <= _waitingRoomsCache.limit) {
+    bumpDuoMetric('lobbyFetchHits');
+    return _waitingRoomsCache.rows.slice(0, limit);
+  }
+  if (!force && _waitingRoomsInFlight) {
+    bumpDuoMetric('lobbyFetchHits');
+    return _waitingRoomsInFlight;
+  }
+  if (!force && _waitingRoomsCache && now - _lastWaitingRoomsFetchMs < WAITING_ROOMS_MIN_FETCH_GAP_MS) {
+    bumpDuoMetric('lobbyFetchThrottled');
+    return _waitingRoomsCache.rows.slice(0, limit);
+  }
   const normalize = (snap: any): DuoRoomSummary[] => {
     const rows: DuoRoomSummary[] = [];
     snap.forEach((doc: any) => {
@@ -117,23 +218,135 @@ export async function listWaitingDuoRooms(limit = 20): Promise<DuoRoomSummary[]>
     });
     return rows.sort((a, b) => b.updatedAtMs - a.updatedAtMs).slice(0, Math.max(1, limit));
   };
+  const fetchPromise = (async (): Promise<DuoRoomSummary[]> => {
+    bumpDuoMetric('lobbyFetches');
+    _lastWaitingRoomsFetchMs = Date.now();
+    try {
+      bumpDuoMetric('roomReadOps');
+      const orderedSnap = await gs.db
+        .collection(DUO_ROOMS_COLLECTION)
+        .where('status', '==', 'waiting')
+        .orderBy('updatedAt', 'desc')
+        .limit(limit)
+        .get();
+      const rows = normalize(orderedSnap);
+      _waitingRoomsCache = { rows, ts: Date.now(), limit };
+      return rows;
+    } catch (e) {
+      // Fallback for environments missing composite index for where+orderBy.
+      try {
+        bumpDuoMetric('roomReadOps');
+        const fallbackSnap = await gs.db.collection(DUO_ROOMS_COLLECTION).where('status', '==', 'waiting').limit(limit * 2).get();
+        const rows = normalize(fallbackSnap);
+        _waitingRoomsCache = { rows, ts: Date.now(), limit };
+        return rows;
+      } catch (e2) {
+        console.warn('listWaitingDuoRooms failed:', e, e2);
+        return [];
+      }
+    }
+  })();
+  _waitingRoomsInFlight = fetchPromise;
   try {
+    return await fetchPromise;
+  } finally {
+    _waitingRoomsInFlight = null;
+  }
+}
+
+function invalidateWaitingRoomsCache(): void {
+  _waitingRoomsCache = null;
+}
+
+function startDuoRoomHeartbeat(): void {
+  if (_duoHeartbeatTimer) return;
+  const tick = async () => {
+    if (!gs.firebaseReady || !_activeRoomId || !gs.duoRole) return;
+    const hbField = gs.duoRole === 'host' ? 'hostHeartbeatAtMs' : 'guestHeartbeatAtMs';
+    const onlineField = gs.duoRole === 'host' ? 'hostOnline' : 'guestOnline';
+    try {
+      bumpDuoMetric('heartbeatWrites');
+      bumpDuoMetric('roomWriteOps');
+      await duoRoomRef().update({
+        [hbField]: Date.now(),
+        [onlineField]: true,
+      });
+    } catch {
+      // noop
+    }
+  };
+  void tick();
+  _duoHeartbeatTimer = setInterval(() => {
+    void tick();
+  }, DUO_HEARTBEAT_MS);
+}
+
+function stopDuoRoomHeartbeat(): void {
+  if (_duoHeartbeatTimer) {
+    clearInterval(_duoHeartbeatTimer);
+    _duoHeartbeatTimer = null;
+  }
+}
+
+export async function cleanupStaleDuoRooms(force = false): Promise<void> {
+  if (!gs.firebaseReady) return;
+  const now = Date.now();
+  if (!force && now - _lastDuoCleanupMs < DUO_CLEANUP_INTERVAL_MS) return;
+  _lastDuoCleanupMs = now;
+  try {
+    bumpDuoMetric('roomReadOps');
     const orderedSnap = await gs.db
       .collection(DUO_ROOMS_COLLECTION)
       .where('status', '==', 'waiting')
-      .orderBy('updatedAt', 'desc')
-      .limit(limit)
+      .orderBy('updatedAt', 'asc')
+      .limit(30)
       .get();
-    return normalize(orderedSnap);
-  } catch (e) {
-    // Fallback for environments missing composite index for where+orderBy.
-    try {
-      const fallbackSnap = await gs.db.collection(DUO_ROOMS_COLLECTION).where('status', '==', 'waiting').limit(limit * 2).get();
-      return normalize(fallbackSnap);
-    } catch (e2) {
-      console.warn('listWaitingDuoRooms failed:', e, e2);
-      return [];
+    const writes: Promise<unknown>[] = [];
+    orderedSnap.forEach((doc: any) => {
+      const d = (doc.data() ?? null) as DuoRoomData | null;
+      const updatedAtMs = d?.updatedAt?.toDate?.()?.getTime?.() ?? 0;
+      if (!d || !updatedAtMs || now - updatedAtMs < DUO_ROOM_WAITING_TTL_MS) return;
+      bumpDuoMetric('staleRoomCleanups');
+      bumpDuoMetric('roomWriteOps');
+      writes.push(doc.ref.update({
+        status: 'idle',
+        guestId: null,
+        guestAlias: null,
+        guestTitle: null,
+        guestReady: false,
+        guestProgress: 0,
+        guestFinishTime: null,
+        guestStars: null,
+        guestDuoWins: null,
+        guestHeartbeatAtMs: null,
+        guestOnline: false,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      }));
+    });
+    if (writes.length) await Promise.allSettled(writes);
+
+    bumpDuoMetric('roomReadOps');
+    const finishedSnap = await gs.db
+      .collection(DUO_ROOMS_COLLECTION)
+      .where('status', '==', 'finished')
+      .orderBy('updatedAt', 'asc')
+      .limit(30)
+      .get();
+    const deleteOps: Promise<unknown>[] = [];
+    finishedSnap.forEach((doc: any) => {
+      const d = (doc.data() ?? null) as DuoRoomData | null;
+      const updatedAtMs = d?.updatedAt?.toDate?.()?.getTime?.() ?? 0;
+      if (!updatedAtMs || now - updatedAtMs < DUO_ROOM_FINISHED_RETENTION_MS) return;
+      bumpDuoMetric('staleRoomCleanups');
+      deleteOps.push(doc.ref.delete());
+    });
+    if (deleteOps.length) {
+      bumpDuoMetric('roomWriteOps', deleteOps.length);
+      await Promise.allSettled(deleteOps);
     }
+    invalidateWaitingRoomsCache();
+  } catch (e) {
+    console.warn('cleanupStaleDuoRooms failed:', e);
   }
 }
 
@@ -143,6 +356,7 @@ export async function createDuoRoom(levelId: number): Promise<string | null> {
   const roomId = makeRoomId();
   try {
     await duoRoomRef(roomId).set(buildHostRoom(levelId, playerId, alias));
+    bumpDuoMetric('roomWriteOps');
     setActiveRoomId(roomId);
     gs.duoRole = 'host';
     gs.duoMyReady = false;
@@ -182,6 +396,8 @@ export async function joinDuoRoom(roomId: string): Promise<boolean> {
         guestFinishTime: null,
         guestStars: null,
         guestDuoWins: guestTotalWins,
+        guestHeartbeatAtMs: Date.now(),
+        guestOnline: true,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
       gs.duoRole = 'guest';
@@ -233,11 +449,13 @@ export function subscribeDuoRoom(): void {
   if (gs.duoUnsubscribe) gs.duoUnsubscribe();
   _snapshotRetryCount = 0;
   _attachSnapshotListener();
+  startDuoRoomHeartbeat();
 }
 
 function _attachSnapshotListener(): void {
   gs.duoUnsubscribe = duoRoomRef().onSnapshot(
     (snap: FirestoreDoc) => {
+      bumpDuoMetric('snapshotEvents');
       _snapshotRetryCount = 0; // reset on success
       if (!snap.exists) {
         resetDuoState();
@@ -249,6 +467,7 @@ function _attachSnapshotListener(): void {
     (err: unknown) => {
       console.warn('duo snapshot error:', err);
       _snapshotRetryCount++;
+      bumpDuoMetric('reconnects');
       import('./duoLobby').then((m) => m.setDuoLobbyConnectionState('reconnecting')).catch(() => {});
       if (_snapshotRetryCount <= MAX_SNAPSHOT_RETRIES) {
         showFeedback(t('duoRuntime.connectionRetry'), 'neutral');
@@ -378,6 +597,34 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
         startAt: firebase.firestore.Timestamp.fromMillis(Date.now() + 4000),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       }).catch(() => {});
+      bumpDuoMetric('roomWriteOps');
+    }
+
+    // Host can auto-release stale guest seats in waiting room.
+    const guestHb = Number(d.guestHeartbeatAtMs || 0);
+    if (
+      gs.duoRole === 'host' &&
+      d.guestId &&
+      guestHb > 0 &&
+      Date.now() - guestHb > DUO_STALE_HEARTBEAT_MS &&
+      Date.now() - _lastStaleGuestPruneMs > 10_000
+    ) {
+      _lastStaleGuestPruneMs = Date.now();
+      duoRoomRef().update({
+        guestId: null,
+        guestAlias: null,
+        guestTitle: null,
+        guestReady: false,
+        guestProgress: 0,
+        guestFinishTime: null,
+        guestStars: null,
+        guestDuoWins: null,
+        guestHeartbeatAtMs: null,
+        guestOnline: false,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      }).catch(() => {});
+      bumpDuoMetric('staleGuestReleases');
+      bumpDuoMetric('roomWriteOps');
     }
   }
 
@@ -691,10 +938,12 @@ export async function launchDuoGame(): Promise<void> {
   }
 
   try {
+    bumpDuoMetric('roomWriteOps');
     await duoRoomRef().set(statusUpdate, { merge: true });
   } catch (e) {
     console.warn('launchDuoGame status update failed, retrying:', e);
     try {
+      bumpDuoMetric('roomWriteOps');
       await duoRoomRef().set(statusUpdate, { merge: true });
     } catch (e2) {
       console.error('launchDuoGame status update retry failed:', e2);
@@ -718,6 +967,7 @@ export function updateDuoProgress(): void {
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     })
     .catch(() => {});
+  bumpDuoMetric('roomWriteOps');
 }
 
 export function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
@@ -764,6 +1014,7 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
   const starsField = gs.duoRole === 'host' ? 'hostStars' : 'guestStars';
   const progressField = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
   try {
+    bumpDuoMetric('roomWriteOps');
     await duoRoomRef().update({
       [timeField]: timeSec,
       [starsField]: stars,
@@ -963,6 +1214,7 @@ export async function closeDuoResult(): Promise<void> {
   // Mark room finished — await to ensure Firebase update completes before state reset
   if (gs.firebaseReady && _activeRoomId) {
     try {
+      bumpDuoMetric('roomWriteOps');
       await duoRoomRef().update({ status: 'finished', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
     } catch { /* ignore */ }
   }
@@ -978,8 +1230,10 @@ export async function leaveDuoRoom(): Promise<void> {
   }
   try {
     if (gs.duoRole === 'host') {
+      bumpDuoMetric('roomWriteOps');
       await duoRoomRef().update({ status: 'idle' });
     } else {
+      bumpDuoMetric('roomWriteOps');
       await duoRoomRef().update({
         guestId: null,
         guestAlias: null,
@@ -987,6 +1241,8 @@ export async function leaveDuoRoom(): Promise<void> {
         guestProgress: 0,
         guestFinishTime: null,
         guestStars: null,
+        guestOnline: false,
+        guestHeartbeatAtMs: null,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
     }
@@ -1027,9 +1283,12 @@ export function resetDuoState(): void {
     gs.duoUnsubscribe();
     gs.duoUnsubscribe = null;
   }
+  stopDuoRoomHeartbeat();
   if (gs.duoGlowUnsubscribe) {
     gs.duoGlowUnsubscribe();
     gs.duoGlowUnsubscribe = null;
+    document.querySelectorAll('.level-item.duo-glow').forEach((el) => el.classList.remove('duo-glow'));
+    document.querySelectorAll('.stage-node.duo-waiting').forEach((el) => el.classList.remove('duo-waiting'));
   }
   // Clean up emoji fields in room document
   if (gs.firebaseReady && _activeRoomId) {
@@ -1052,6 +1311,7 @@ export function resetDuoState(): void {
   if (forfeitBtn) forfeitBtn.remove();
   gs.duoLastEmojiSeen = '';
   setActiveRoomId(null);
+  invalidateWaitingRoomsCache();
   import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch(() => {});
 }
 
@@ -1095,4 +1355,13 @@ export function startDuoGlowListener(): void {
     },
     () => {},
   );
+}
+
+export function stopDuoGlowListener(): void {
+  if (gs.duoGlowUnsubscribe) {
+    gs.duoGlowUnsubscribe();
+    gs.duoGlowUnsubscribe = null;
+  }
+  document.querySelectorAll('.level-item.duo-glow').forEach((el) => el.classList.remove('duo-glow'));
+  document.querySelectorAll('.stage-node.duo-waiting').forEach((el) => el.classList.remove('duo-waiting'));
 }

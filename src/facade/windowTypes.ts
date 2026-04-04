@@ -20,6 +20,8 @@ export interface SudokuWindow extends Window {
   updateDuoRoomLevelFromLobby?: () => void;
   toggleDuoLevelLockFromLobby?: () => void;
   refreshDuoLobbyRoom?: () => void;
+  getDuoMetrics?: () => Record<string, number>;
+  resetDuoMetrics?: () => void;
   // Firebase
   firebase?: unknown;
   SUDOKU_FIREBASE_CONFIG?: Record<string, string>;
