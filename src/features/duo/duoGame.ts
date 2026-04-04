@@ -1,0 +1,677 @@
+// Duo game logic — countdown, progress, emoji, result
+// Extracted from duo.ts, adapted for tier/mode system.
+
+import { gs, type DuoRoomData } from '../../game/state';
+import { formatSeconds } from '../../game/utils';
+import { showFeedback } from '../../ui/feedback';
+import { t } from '../../i18n/t';
+import { emitNavigation } from '../../app/navigation/navigationBus';
+import { bumpDuoMetric } from './duoMetrics';
+import {
+  duoRoomRef,
+  getFirebaseFieldValue,
+  getFirebaseTimestamp,
+  invalidateWaitingRoomsCache,
+  stopDuoRoomHeartbeat,
+  clearActiveRoomId,
+  setSnapshotHandler,
+  setResetHandler,
+  DUO_STALE_HEARTBEAT_MS,
+  setLastStaleGuestPruneMs,
+} from './duoRoom';
+import { pickDuoPuzzle, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
+import {
+  loadDuoProfile,
+  recordDuoMatch,
+  checkNewUnlocks,
+  type DuoProfile,
+} from './duoProfile';
+import type { SudokuWindow } from '../../facade/windowTypes';
+
+// ── Module-level guards ──────────────────────────────────────────────
+
+let _countdownLaunched = false;
+let _countdownRafCancelled = false;
+let _duoFinishSubmitted = false;
+let duoResultShown = false;
+let _duoOpponentOfflineNotified = false;
+
+// ── Register with duoRoom ────────────────────────────────────────────
+
+setSnapshotHandler(handleDuoSnapshot);
+setResetHandler(resetDuoState);
+
+// ── Snapshot Handler ─────────────────────────────────────────────────
+
+export function handleDuoSnapshot(d: DuoRoomData): void {
+  if (!d || !gs.duoRole) return;
+  import('./duoLobby').then((m) => {
+    m.setDuoLobbyConnectionState('connected');
+    m.refreshDuoLobbyRoom();
+  }).catch(() => {});
+
+  if (d.status === 'waiting' || d.status === 'countdown') {
+    const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
+    const isInGame = gameContainer && gameContainer.style.display !== 'none' && !gs.isDuoMode;
+    if (!isInGame) {
+      updateDuoPreLevelUI(d);
+    }
+  }
+
+  if (d.status === 'waiting') {
+    gs.duoRoundLaunched = false;
+    gs.duoCountdownStartMs = null;
+    _countdownLaunched = false;
+
+    // Host: if both ready, trigger countdown
+    if (gs.duoRole === 'host' && d.hostReady && d.guestReady && d.guestId && !_countdownLaunched) {
+      duoRoomRef().update({
+        status: 'countdown',
+        startAt: getFirebaseTimestamp().fromMillis(Date.now() + 4000),
+        updatedAt: getFirebaseFieldValue().serverTimestamp(),
+      }).catch(() => {});
+      bumpDuoMetric('roomWriteOps');
+    }
+
+    // Host: prune stale guest
+    const guestHb = Number(d.guestHeartbeatAtMs || 0);
+    if (
+      gs.duoRole === 'host' && d.guestId && guestHb > 0 &&
+      Date.now() - guestHb > DUO_STALE_HEARTBEAT_MS &&
+      Date.now() - 0 > 10_000 // simplified check
+    ) {
+      setLastStaleGuestPruneMs(Date.now());
+      duoRoomRef().update({
+        guestId: null, guestAlias: null, guestTitle: null,
+        guestReady: false, guestProgress: 0, guestFinishTime: null, guestStars: null, guestDuoWins: null,
+        guestHeartbeatAtMs: null, guestOnline: false,
+        updatedAt: getFirebaseFieldValue().serverTimestamp(),
+      }).catch(() => {});
+      bumpDuoMetric('staleGuestReleases');
+      bumpDuoMetric('roomWriteOps');
+    }
+  }
+
+  if (d.status === 'countdown' && d.startAt) {
+    const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
+    const isInGame = gameContainer && gameContainer.style.display !== 'none' && !gs.isDuoMode;
+    if (!isInGame) {
+      startDuoCountdown(d.startAt);
+    }
+  }
+
+  if (d.status === 'playing') {
+    gs.duoRoundLaunched = true;
+    const oppProgress = gs.duoRole === 'host' ? d.guestProgress : d.hostProgress;
+    const oppAlias = gs.duoRole === 'host' ? d.guestAlias || t('duoRuntime.opponent') : d.hostAlias || t('duoRuntime.opponent');
+    updateDuoProgressUI(oppAlias, oppProgress || 0);
+
+    // Detect opponent disconnect
+    if (!_duoOpponentOfflineNotified) {
+      const oppHeartbeat = gs.duoRole === 'host' ? Number(d.guestHeartbeatAtMs || 0) : Number(d.hostHeartbeatAtMs || 0);
+      const oppOnline = gs.duoRole === 'host' ? d.guestOnline : d.hostOnline;
+      if ((oppHeartbeat > 0 && Date.now() - oppHeartbeat > DUO_STALE_HEARTBEAT_MS) || oppOnline === false) {
+        _duoOpponentOfflineNotified = true;
+        showFeedback(t('duoRuntime.opponentOffline'), 'error');
+      }
+    }
+
+    handleDuoEmoji(d);
+
+    // Check opponent finished
+    const oppFinish = gs.duoRole === 'host' ? d.guestFinishTime : d.hostFinishTime;
+    const oppStars = gs.duoRole === 'host' ? d.guestStars : d.hostStars;
+    if (oppFinish !== null && oppFinish !== undefined) {
+      showDuoOpponentFinished(oppAlias, oppFinish, oppStars);
+    }
+
+    // Check if both finished
+    if (d.hostFinishTime != null && d.guestFinishTime != null) {
+      showDuoResult(d);
+    }
+  }
+
+  if (d.status === 'finished') {
+    showDuoResult(d);
+  }
+}
+
+// ── Pre-Level UI ─────────────────────────────────────────────────────
+
+export function updateDuoPreLevelUI(d: DuoRoomData): void {
+  const zone = document.getElementById('duo-ready-zone');
+  const readyBtn = document.getElementById('duo-ready-btn');
+  const countdownArea = document.getElementById('duo-countdown-area');
+  if (!zone) return;
+  zone.classList.remove('hidden');
+
+  // Tier + mode display
+  const tierLabel = DUO_TIER_MAP.get((d as any).tierId)?.label || '';
+  const modeLabel = DUO_MODE_MAP.get((d as any).modeId)?.label || '';
+  const zoneTitle = document.querySelector('.duo-zone-title');
+  if (zoneTitle) zoneTitle.textContent = `💑 ${tierLabel} · ${modeLabel}`;
+
+  // Host slot
+  const hostAliasEl = document.getElementById('duo-host-alias');
+  if (hostAliasEl) hostAliasEl.textContent = d.hostAlias || '--';
+  const hostTitleEl = document.getElementById('duo-host-title');
+  if (hostTitleEl) {
+    hostTitleEl.textContent = d.hostTitle || '';
+    hostTitleEl.style.display = d.hostTitle ? '' : 'none';
+  }
+  const hostSlot = document.getElementById('duo-slot-host');
+  const hostStatus = document.getElementById('duo-host-status');
+  if (hostSlot) hostSlot.classList.toggle('ready', !!d.hostReady);
+  if (hostStatus) {
+    hostStatus.textContent = d.hostReady ? t('duoRuntime.statusReady') : t('duoRuntime.statusWaiting');
+    hostStatus.classList.toggle('is-ready', !!d.hostReady);
+  }
+
+  // Guest slot
+  const guestSlot = document.getElementById('duo-slot-guest');
+  const guestAlias = document.getElementById('duo-guest-alias');
+  const guestStatus = document.getElementById('duo-guest-status');
+  if (d.guestId) {
+    if (guestSlot) { guestSlot.classList.remove('empty'); guestSlot.classList.toggle('ready', !!d.guestReady); }
+    if (guestAlias) guestAlias.textContent = d.guestAlias || '--';
+    const guestTitleEl = document.getElementById('duo-guest-title');
+    if (guestTitleEl) { guestTitleEl.textContent = d.guestTitle || ''; guestTitleEl.style.display = d.guestTitle ? '' : 'none'; }
+    if (guestStatus) {
+      guestStatus.textContent = d.guestReady ? t('duoRuntime.statusReady') : t('duoRuntime.statusWaiting');
+      guestStatus.classList.toggle('is-ready', !!d.guestReady);
+    }
+  } else {
+    if (guestSlot) guestSlot.classList.add('empty');
+    if (guestAlias) guestAlias.textContent = t('duoRuntime.waitingJoin');
+    const guestTitleEl = document.getElementById('duo-guest-title');
+    if (guestTitleEl) guestTitleEl.style.display = 'none';
+    if (guestStatus) { guestStatus.textContent = ''; guestStatus.classList.remove('is-ready'); }
+  }
+
+  // Stats
+  const preStreak = document.getElementById('duo-pre-streak');
+  if (preStreak && d.guestId) {
+    preStreak.textContent = '';
+    const profile = loadDuoProfile();
+    if (profile.currentStreak >= 2) {
+      const badge = document.createElement('div');
+      badge.className = 'duo-streak-badge';
+      badge.textContent = t('duoRuntime.streakBadge', { holder: '你', count: String(profile.currentStreak) });
+      preStreak.appendChild(badge);
+    }
+    if (d.hostDuoWins != null && d.guestDuoWins != null) {
+      const winsDiv = document.createElement('div');
+      winsDiv.style.cssText = 'font-size:0.72rem;color:var(--text-light);margin-bottom:6px;';
+      winsDiv.textContent = t('duoRuntime.winsVs', {
+        a: d.hostAlias || '--', aWins: String(d.hostDuoWins),
+        b: d.guestAlias || '--', bWins: String(d.guestDuoWins),
+      });
+      preStreak.appendChild(winsDiv);
+    }
+  } else if (preStreak) {
+    preStreak.textContent = '';
+  }
+
+  // Ready button
+  const myReady = gs.duoRole === 'host' ? d.hostReady : d.guestReady;
+  const startBtn = document.getElementById('pre-level-start-btn');
+  const ghostBtn = document.getElementById('pre-level-ghost-btn');
+  const backBtn = document.getElementById('pre-level-back-btn');
+  if (d.status === 'countdown') {
+    if (readyBtn) readyBtn.style.display = 'none';
+    if (countdownArea) countdownArea.style.display = 'block';
+    if (startBtn) startBtn.style.display = 'none';
+    if (ghostBtn) ghostBtn.style.display = 'none';
+    if (backBtn) backBtn.style.display = 'none';
+  } else {
+    if (readyBtn) {
+      readyBtn.style.display = d.guestId ? 'inline-block' : 'none';
+      readyBtn.textContent = myReady ? t('duoRuntime.readyConfirm') : t('duoRuntime.readyPrompt');
+      readyBtn.classList.toggle('is-ready', myReady);
+    }
+    if (countdownArea) countdownArea.style.display = 'none';
+    if (startBtn) startBtn.style.display = '';
+    if (backBtn) backBtn.style.display = '';
+  }
+}
+
+// ── Ready Toggle ─────────────────────────────────────────────────────
+
+export async function toggleDuoReady(): Promise<void> {
+  if (!gs.firebaseReady || !gs.duoRole) return;
+  const field = gs.duoRole === 'host' ? 'hostReady' : 'guestReady';
+  const newReady = !gs.duoMyReady;
+  try {
+    await gs.db.runTransaction(async (tx: any) => {
+      const doc = await tx.get(duoRoomRef());
+      if (!doc.exists) return;
+      const d = doc.data() as unknown as DuoRoomData;
+      const update: Record<string, unknown> = { [field]: newReady, updatedAt: getFirebaseFieldValue().serverTimestamp() };
+      if (gs.duoRole === 'host') {
+        const hostReady = newReady;
+        const guestReady = d.guestReady;
+        if (hostReady && guestReady && d.guestId) {
+          update.status = 'countdown';
+          update.startAt = getFirebaseTimestamp().fromMillis(Date.now() + 4000);
+        }
+      }
+      tx.update(duoRoomRef(), update);
+    });
+    gs.duoMyReady = newReady;
+  } catch (e) {
+    console.warn('toggleDuoReady failed:', e);
+  }
+}
+
+// ── Countdown ────────────────────────────────────────────────────────
+
+function playCountdownBeep(final = false): void {
+  try {
+    const win = window as unknown as SudokuWindow;
+    const AudioCtx = win.AudioContext || win.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = final ? 880 : 440;
+    gain.gain.value = 0.15;
+    osc.start();
+    osc.stop(ctx.currentTime + (final ? 0.3 : 0.15));
+  } catch {}
+}
+
+export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?: number }): void {
+  if (gs.duoRoundLaunched || _countdownLaunched) return;
+  const area = document.getElementById('duo-countdown-area');
+  if (!area) return;
+
+  const targetMs = startAtTs.toMillis ? startAtTs.toMillis() : (startAtTs.seconds ?? 0) * 1000;
+  if (gs.duoCountdownTimer && gs.duoCountdownStartMs === targetMs) return;
+  if (gs.duoCountdownTimer && gs.duoCountdownStartMs !== targetMs) {
+    clearTimeout(gs.duoCountdownTimer as ReturnType<typeof setTimeout>);
+    gs.duoCountdownTimer = null;
+  }
+  gs.duoCountdownStartMs = targetMs;
+  _countdownLaunched = true;
+  _countdownRafCancelled = false;
+
+  let lastShown: number | null = null;
+  function updateCountdownUI() {
+    if (_countdownRafCancelled) return;
+    const remaining = Math.max(0, Math.ceil((targetMs - Date.now()) / 1000));
+    if (remaining > 0) {
+      if (remaining !== lastShown) {
+        area!.innerHTML = `<div class="duo-countdown-display">${remaining}</div>`;
+        lastShown = remaining;
+        playCountdownBeep();
+        if (navigator.vibrate) navigator.vibrate(50);
+      }
+      requestAnimationFrame(updateCountdownUI);
+    }
+  }
+  updateCountdownUI();
+
+  const now = Date.now();
+  const delay = Math.max(0, targetMs - now);
+  gs.duoCountdownTimer = setTimeout(() => {
+    gs.duoCountdownTimer = null;
+    if (gs.duoRoundLaunched) return;
+    gs.duoRoundLaunched = true;
+    area!.innerHTML = `<div class="duo-countdown-display">GO!</div>`;
+    playCountdownBeep(true);
+    if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 100]);
+    setTimeout(() => launchDuoGame(), 600);
+  }, delay) as unknown as ReturnType<typeof setInterval>;
+}
+
+// ── Launch Game ──────────────────────────────────────────────────────
+
+export async function launchDuoGame(): Promise<void> {
+  if (!gs.duoRoomData) return;
+  gs.isDuoMode = true;
+  gs.continuousFillDigit = null;
+  gs.duoProgressThrottle = 0;
+
+  const roomData = gs.duoRoomData as any;
+  const tierId: string = roomData.tierId || 'tierI';
+  const puzzleSeed: number = roomData.puzzleSeed || 0;
+  const modeId: string = roomData.modeId || 'standard';
+
+  // Pick puzzle from tier pool using shared seed
+  const level = await pickDuoPuzzle(tierId, puzzleSeed);
+  if (!level) {
+    showFeedback(t('duo.connectionError'), 'error');
+    return;
+  }
+
+  gs.duoTotalToFill = level.puzzle.filter((v: number) => v === 0).length;
+
+  // Apply mode rules
+  const mode = DUO_MODE_MAP.get(modeId);
+  if (mode) {
+    gs.maxErrors = mode.maxErrors;
+    if (!mode.allowNotes) gs.wildNotesDisabled = true;
+  }
+
+  // Hide lobby, start game
+  emitNavigation({ type: 'hide-pre-level-modal' });
+  import('./duoLobby').then((m) => m.closeDuoLobby()).catch(() => {});
+  const levelScreen = document.getElementById('level-screen');
+  if (levelScreen) levelScreen.style.display = 'none';
+  const { initGame } = await import('../../game/core');
+  initGame(level.id, true, false, null, level);
+
+  // Show duo progress bar and emoji bar
+  const progressContainer = document.getElementById('duo-progress-container');
+  if (progressContainer) progressContainer.style.display = 'flex';
+  const emojiBar = document.getElementById('duo-emoji-bar');
+  if (emojiBar) emojiBar.style.display = 'flex';
+
+  // Update room status to playing
+  const statusUpdate: Record<string, unknown> = {
+    status: 'playing',
+    updatedAt: getFirebaseFieldValue().serverTimestamp(),
+  };
+  if (gs.duoRole === 'host') {
+    statusUpdate.hostProgress = 0;
+    statusUpdate.guestProgress = 0;
+    statusUpdate.hostFinishTime = null;
+    statusUpdate.guestFinishTime = null;
+  }
+  try {
+    bumpDuoMetric('roomWriteOps');
+    await duoRoomRef().set(statusUpdate, { merge: true });
+  } catch (e) {
+    console.warn('launchDuoGame status update failed, retrying:', e);
+    try {
+      bumpDuoMetric('roomWriteOps');
+      await duoRoomRef().set(statusUpdate, { merge: true });
+    } catch (e2) {
+      console.error('launchDuoGame status update retry failed:', e2);
+      showFeedback(t('duoRuntime.connectionError'), 'error');
+    }
+  }
+}
+
+// ── Progress ─────────────────────────────────────────────────────────
+
+export function updateDuoProgress(): void {
+  if (!gs.isDuoMode || !gs.firebaseReady) return;
+  const now = Date.now();
+  if (now - gs.duoProgressThrottle < 1000) return;
+  gs.duoProgressThrottle = now;
+  const filled = gs.cellsData.filter((c) => !c.fixed && c.value !== 0).length;
+  const field = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
+  duoRoomRef().update({ [field]: filled, updatedAt: getFirebaseFieldValue().serverTimestamp() }).catch(() => {});
+  bumpDuoMetric('roomWriteOps');
+}
+
+function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
+  const el = document.getElementById('duo-progress-text');
+  const fill = document.getElementById('duo-progress-fill');
+  if (!el || !fill) return;
+  const pct = gs.duoTotalToFill > 0 ? Math.min(100, Math.round((oppProgress / gs.duoTotalToFill) * 100)) : 0;
+  el.textContent = `\u{1F495} ${oppAlias}: ${oppProgress}/${gs.duoTotalToFill}`;
+  fill.style.width = `${pct}%`;
+}
+
+// ── Opponent finished ────────────────────────────────────────────────
+
+function showDuoOpponentFinished(alias: string, timeSec: number, stars: number | null): void {
+  if (gs.duoOpponentNotified) return;
+  gs.duoOpponentNotified = true;
+  const starsStr = stars ? ' ' + '\u2605'.repeat(stars) : '';
+  showFeedback(t('duoRuntime.opponentFinished', { alias, time: formatSeconds(timeSec), stars: starsStr }), 'error');
+  if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 50]);
+
+  const existing = document.getElementById('duo-forfeit-btn');
+  if (!existing) {
+    const btn = document.createElement('button');
+    btn.id = 'duo-forfeit-btn';
+    btn.className = 'duo-forfeit-btn';
+    btn.textContent = t('duoRuntime.forfeit');
+    btn.onclick = async () => {
+      btn.remove();
+      await submitDuoFinish(9999, 0);
+    };
+    const emojiBarEl = document.getElementById('duo-emoji-bar');
+    if (emojiBarEl) emojiBarEl.insertAdjacentElement('afterend', btn);
+  }
+}
+
+// ── Submit Finish ────────────────────────────────────────────────────
+
+export async function submitDuoFinish(timeSec: number, stars: number): Promise<void> {
+  if (!gs.isDuoMode || !gs.firebaseReady) return;
+  if (_duoFinishSubmitted) return;
+  _duoFinishSubmitted = true;
+  const timeField = gs.duoRole === 'host' ? 'hostFinishTime' : 'guestFinishTime';
+  const starsField = gs.duoRole === 'host' ? 'hostStars' : 'guestStars';
+  const progressField = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
+  try {
+    bumpDuoMetric('roomWriteOps');
+    await duoRoomRef().update({
+      [timeField]: timeSec, [starsField]: stars, [progressField]: gs.duoTotalToFill,
+      updatedAt: getFirebaseFieldValue().serverTimestamp(),
+    });
+  } catch (e) {
+    console.warn('submitDuoFinish failed:', e);
+  }
+}
+
+// ── Result ───────────────────────────────────────────────────────────
+
+export function showDuoResult(d: DuoRoomData): void {
+  if (duoResultShown) return;
+  duoResultShown = true;
+
+  const hTime = d.hostFinishTime;
+  const gTime = d.guestFinishTime;
+  if (hTime == null || gTime == null) return;
+
+  const hWin = hTime < gTime;
+  const gWin = gTime < hTime;
+  const isDraw = hTime === gTime;
+  const diff = Math.abs(hTime - gTime);
+
+  // Record match using new DuoProfile
+  const profileBefore = loadDuoProfile();
+  const beforeSnapshot: DuoProfile = JSON.parse(JSON.stringify(profileBefore));
+  const tierId = (d as any).tierId || 'tierI';
+  const modeId = (d as any).modeId || 'standard';
+  const myTime = gs.duoRole === 'host' ? hTime : gTime;
+  const oppTime = gs.duoRole === 'host' ? gTime : hTime;
+  const iWon = myTime < oppTime;
+  const oppAlias = gs.duoRole === 'host' ? (d.guestAlias || '') : d.hostAlias;
+
+  let result: 'win' | 'loss' | 'draw';
+  if (isDraw) result = 'draw';
+  else if (iWon) result = 'win';
+  else result = 'loss';
+
+  const profileAfter = recordDuoMatch(profileBefore, tierId, modeId, result, oppAlias);
+
+  // Check for new unlocks
+  const unlocks = checkNewUnlocks(beforeSnapshot, profileAfter);
+
+  // Build content HTML
+  let contentHtml = '';
+
+  if (profileAfter.currentStreak >= 2) {
+    contentHtml += `<div id="duo-result-streak"><div class="duo-streak-badge">${t('duoRuntime.streakBadgeExcl', { holder: '你', count: String(profileAfter.currentStreak) })}</div></div>`;
+  }
+
+  function makeCard(alias: string, time: number, stars: number | null, isWinner: boolean): string {
+    const resultLabel = isWinner ? `<div class="duo-result-label win">${t('duoRuntime.resultWin')}</div>` : (isDraw ? '' : `<div class="duo-result-label lose">${t('duoRuntime.resultLose')}</div>`);
+    return `<div class="duo-result-card ${isWinner ? 'winner' : ''}">
+      ${resultLabel}
+      <div class="duo-result-crown">${isWinner ? '\u{1F451}' : ''}</div>
+      <div class="duo-result-alias">${alias || '--'}</div>
+      <div class="duo-result-time">${formatSeconds(time)}</div>
+      <div class="duo-result-stars">${stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars) : ''}</div>
+    </div>`;
+  }
+
+  contentHtml += `<div class="duo-result-cards" id="duo-result-cards">${makeCard(d.hostAlias, hTime, d.hostStars, hWin)}${makeCard(d.guestAlias || '', gTime, d.guestStars, gWin)}</div>`;
+
+  // Tier + mode info
+  const tierLabel = DUO_TIER_MAP.get(tierId)?.label || tierId;
+  const modeLabelStr = DUO_MODE_MAP.get(modeId)?.label || modeId;
+  contentHtml += `<div class="duo-result-tier-mode">${tierLabel} · ${modeLabelStr}</div>`;
+
+  if (isDraw) {
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultDraw')}</div>`;
+  } else {
+    const winnerAlias = hWin ? d.hostAlias : (d.guestAlias || '');
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultFaster', { winner: winnerAlias, diff: formatSeconds(diff) })}</div>`;
+  }
+
+  // Stats
+  contentHtml += `<div class="duo-result-record" id="duo-result-record">${t('duoRuntime.historyRecord')}<span>${profileAfter.wins}W ${profileAfter.losses}L ${profileAfter.draws}D</span></div>`;
+
+  // Unlock notification
+  if (unlocks.newTiers.length || unlocks.newModes.length) {
+    const items = [
+      ...unlocks.newTiers.map(tid => DUO_TIER_MAP.get(tid)?.label || tid),
+      ...unlocks.newModes.map(mid => DUO_MODE_MAP.get(mid)?.label || mid),
+    ];
+    contentHtml += `<div class="duo-unlock-toast">${t('duo.unlockNew')}: ${items.join(', ')}</div>`;
+    showFeedback(t('duo.unlockNew') + ': ' + items.join(', '), 'success');
+  }
+
+  // Hide emoji bar
+  const emojiBarEl = document.getElementById('duo-emoji-bar');
+  if (emojiBarEl) emojiBarEl.style.display = 'none';
+  const forfeitBtn = document.getElementById('duo-forfeit-btn');
+  if (forfeitBtn) forfeitBtn.remove();
+
+  if (iWon) {
+    if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
+  } else if (isDraw) {
+    if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25]);
+  }
+
+  import('../../react/duoresult/duoResultBridge').then(({ bridgeOpenDuoResult }) => {
+    bridgeOpenDuoResult({ contentHtml, iWon, isDraw, levelId: d.levelId ?? null });
+  }).catch(() => {});
+}
+
+// ── Emoji ────────────────────────────────────────────────────────────
+
+export function sendDuoEmoji(emoji: string): void {
+  if (!gs.isDuoMode || !gs.firebaseReady) return;
+  const now = Date.now();
+  if (now - gs.duoEmojiCooldown < 1500) return;
+  gs.duoEmojiCooldown = now;
+  const field = gs.duoRole === 'host' ? 'hostEmoji' : 'guestEmoji';
+  const tsField = gs.duoRole === 'host' ? 'hostEmojiTs' : 'guestEmojiTs';
+  duoRoomRef().update({ [field]: emoji, [tsField]: Date.now() }).catch(() => {});
+  spawnEmojiFloat(emoji, true);
+}
+
+function handleDuoEmoji(d: DuoRoomData): void {
+  if (!gs.isDuoMode) return;
+  const emojiField = gs.duoRole === 'host' ? 'guestEmoji' : 'hostEmoji';
+  const tsField = gs.duoRole === 'host' ? 'guestEmojiTs' : 'hostEmojiTs';
+  const emoji = d[emojiField];
+  const ts = d[tsField];
+  if (!emoji || !ts) return;
+  const key = `${ts}`;
+  if (key === gs.duoLastEmojiSeen) return;
+  gs.duoLastEmojiSeen = key;
+  spawnEmojiFloat(emoji, false);
+}
+
+function spawnEmojiFloat(emoji: string, isSelf: boolean): void {
+  const el = document.createElement('div');
+  el.className = 'duo-emoji-float';
+  el.textContent = emoji;
+  const x = 50 + (Math.random() - 0.5) * 30;
+  if (isSelf) {
+    el.style.bottom = '120px';
+    el.style.left = `${x}%`;
+  } else {
+    el.style.top = '80px';
+    el.style.left = `${x}%`;
+    if (navigator.vibrate) navigator.vibrate(15);
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1500);
+}
+
+// ── Surrender ────────────────────────────────────────────────────────
+
+export async function surrenderDuo(): Promise<void> {
+  if (!gs.isDuoMode) return;
+  await submitDuoFinish(9999, 0);
+  showFeedback(t('duo.surrender'), 'success');
+}
+
+// ── Close Result ─────────────────────────────────────────────────────
+
+export async function closeDuoResult(): Promise<void> {
+  import('../../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult()).catch(() => {});
+  if (gs.firebaseReady) {
+    try {
+      bumpDuoMetric('roomWriteOps');
+      await duoRoomRef().update({ status: 'finished', updatedAt: getFirebaseFieldValue().serverTimestamp() });
+    } catch { /* ignore */ }
+  }
+  resetDuoState();
+  // Navigate back to duo lobby instead of level screen
+  emitNavigation({ type: 'show-duo-lobby' });
+}
+
+// ── Reset ────────────────────────────────────────────────────────────
+
+export function resetDuoState(): void {
+  _countdownRafCancelled = true;
+  duoResultShown = false;
+  _countdownLaunched = false;
+  _duoFinishSubmitted = false;
+  _duoOpponentOfflineNotified = false;
+  gs.duoPenaltySeconds = 0;
+  gs.duoCooldownUntil = 0;
+  gs.duoLastErrorCell = -1;
+  gs.duoLastErrorTime = 0;
+  gs.duoSameCellStreak = 0;
+  if (gs.duoCooldownTimer) { clearInterval(gs.duoCooldownTimer); gs.duoCooldownTimer = null; }
+  gs.isDuoMode = false;
+  gs.duoRole = null;
+  gs.duoRoomData = null;
+  gs.duoMyReady = false;
+  gs.duoRoundLaunched = false;
+  gs.duoCountdownStartMs = null;
+  gs.duoOpponentNotified = false;
+  gs.duoProgressThrottle = 0;
+  gs.maxErrors = 3; // restore default
+  gs.wildNotesDisabled = false; // restore
+  if (gs.duoCountdownTimer) {
+    clearTimeout(gs.duoCountdownTimer as unknown as ReturnType<typeof setTimeout>);
+    gs.duoCountdownTimer = null;
+  }
+  if (gs.duoUnsubscribe) { gs.duoUnsubscribe(); gs.duoUnsubscribe = null; }
+  stopDuoRoomHeartbeat();
+  // Clean up emoji fields
+  if (gs.firebaseReady) {
+    try {
+      duoRoomRef().update({
+        hostEmoji: null, hostEmojiTs: null, guestEmoji: null, guestEmojiTs: null,
+      }).catch(() => {});
+    } catch { /* no active room */ }
+  }
+  const readyZone = document.getElementById('duo-ready-zone');
+  if (readyZone) readyZone.classList.add('hidden');
+  const progressContainer = document.getElementById('duo-progress-container');
+  if (progressContainer) progressContainer.style.display = 'none';
+  const emojiBarEl = document.getElementById('duo-emoji-bar');
+  if (emojiBarEl) emojiBarEl.style.display = 'none';
+  const forfeitBtn = document.getElementById('duo-forfeit-btn');
+  if (forfeitBtn) forfeitBtn.remove();
+  gs.duoLastEmojiSeen = '';
+  clearActiveRoomId();
+  invalidateWaitingRoomsCache();
+  import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch(() => {});
+}

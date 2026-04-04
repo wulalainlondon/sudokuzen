@@ -3,74 +3,128 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 /**
  * Duo pure logic tests — no Firebase, no DOM rendering.
- * Tests: win/draw recording, streak tracking, cooldown calculation, winner detection.
+ * Tests: profile recording, streak tracking, cooldown calculation, winner detection, unlock logic.
  */
 
 // Import the pure functions directly
-import { recordDuoWin, recordDuoDraw, loadDuoRecords } from '../src/features/duo';
+import { loadDuoProfile, saveDuoProfile, recordDuoMatch, getUnlockedTiers, getUnlockedModes, checkNewUnlocks, type DuoProfile } from '../src/features/duo/duoProfile';
 
-describe('duo records & streaks', () => {
+function emptyProfile(): DuoProfile {
+  return { playCount: {}, wins: 0, losses: 0, draws: 0, currentStreak: 0, bestStreak: 0, rivals: {} };
+}
+
+describe('duo profile & match recording', () => {
   beforeEach(() => {
     localStorage.clear();
   });
 
   it('records a win and increments winner count', () => {
-    const rec = recordDuoWin('Alice', 'Bob');
-    expect(rec.wins['Alice']).toBe(1);
-    expect(rec.wins['Bob']).toBe(0);
+    const p = emptyProfile();
+    const result = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    expect(result.wins).toBe(1);
+    expect(result.losses).toBe(0);
+    expect(result.rivals['Bob'].wins).toBe(1);
   });
 
   it('accumulates wins across multiple rounds', () => {
-    recordDuoWin('Alice', 'Bob');
-    recordDuoWin('Alice', 'Bob');
-    const rec = recordDuoWin('Bob', 'Alice');
-    expect(rec.wins['Alice']).toBe(2);
-    expect(rec.wins['Bob']).toBe(1);
+    let p = emptyProfile();
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'standard', 'loss', 'Bob');
+    expect(p.wins).toBe(2);
+    expect(p.losses).toBe(1);
+    expect(p.rivals['Bob'].wins).toBe(2);
+    expect(p.rivals['Bob'].losses).toBe(1);
   });
 
-  it('tracks streak for consecutive wins by same player', () => {
-    recordDuoWin('Alice', 'Bob');
-    recordDuoWin('Alice', 'Bob');
-    const rec = recordDuoWin('Alice', 'Bob');
-    expect(rec.streak).toBe(3);
-    expect(rec.streakHolder).toBe('Alice');
+  it('tracks streak for consecutive wins', () => {
+    let p = emptyProfile();
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    expect(p.currentStreak).toBe(3);
+    expect(p.bestStreak).toBe(3);
   });
 
-  it('resets streak when different player wins', () => {
-    recordDuoWin('Alice', 'Bob');
-    recordDuoWin('Alice', 'Bob');
-    const rec = recordDuoWin('Bob', 'Alice');
-    expect(rec.streak).toBe(1);
-    expect(rec.streakHolder).toBe('Bob');
+  it('resets streak on loss', () => {
+    let p = emptyProfile();
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'standard', 'loss', 'Bob');
+    expect(p.currentStreak).toBe(0);
+    expect(p.bestStreak).toBe(2);
   });
 
-  it('draw resets streak to 0', () => {
-    recordDuoWin('Alice', 'Bob');
-    recordDuoWin('Alice', 'Bob');
-    const rec = recordDuoDraw();
-    expect(rec.streak).toBe(0);
-    expect(rec.streakHolder).toBe('');
+  it('draw resets streak', () => {
+    let p = emptyProfile();
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'standard', 'draw', 'Bob');
+    expect(p.currentStreak).toBe(0);
+    expect(p.draws).toBe(1);
   });
 
   it('persists to localStorage', () => {
-    recordDuoWin('Alice', 'Bob');
-    // Load from fresh read
-    const rec = loadDuoRecords();
-    expect(rec.wins['Alice']).toBe(1);
-    expect(rec.streak).toBe(1);
-    expect(rec.streakHolder).toBe('Alice');
+    let p = emptyProfile();
+    recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    const loaded = loadDuoProfile();
+    expect(loaded.wins).toBe(1);
+    expect(loaded.currentStreak).toBe(1);
   });
 
   it('handles empty/missing localStorage gracefully', () => {
-    const rec = loadDuoRecords();
-    expect(rec.wins).toEqual({});
-    expect(rec.streak).toBe(0);
-    expect(rec.streakHolder).toBe('');
+    const p = loadDuoProfile();
+    expect(p.wins).toBe(0);
+    expect(p.losses).toBe(0);
+    expect(p.playCount).toEqual({});
+  });
+
+  it('tracks play count per tier-mode', () => {
+    let p = emptyProfile();
+    p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'standard', 'loss', 'Bob');
+    p = recordDuoMatch(p, 'tierI', 'noNotes', 'win', 'Bob');
+    expect(p.playCount['tierI-standard']).toBe(2);
+    expect(p.playCount['tierI-noNotes']).toBe(1);
+  });
+});
+
+describe('duo unlock logic', () => {
+  it('tierI is always unlocked', () => {
+    const p = emptyProfile();
+    expect(getUnlockedTiers(p)).toEqual(['tierI']);
+  });
+
+  it('tierII unlocks after 5 tierI plays', () => {
+    const p = emptyProfile();
+    p.playCount['tierI-standard'] = 5;
+    expect(getUnlockedTiers(p)).toContain('tierII');
+  });
+
+  it('noNotes unlocks after 3 standard plays', () => {
+    const p = emptyProfile();
+    p.playCount['tierI-standard'] = 3;
+    expect(getUnlockedModes(p)).toContain('noNotes');
+  });
+
+  it('checkNewUnlocks detects new tier', () => {
+    const before = emptyProfile();
+    before.playCount['tierI-standard'] = 4;
+    const after = { ...before, playCount: { ...before.playCount, 'tierI-standard': 5 } };
+    const unlocks = checkNewUnlocks(before, after);
+    expect(unlocks.newTiers).toEqual(['tierII']);
+  });
+
+  it('checkNewUnlocks detects new mode', () => {
+    const before = emptyProfile();
+    before.playCount['tierI-standard'] = 2;
+    const after = { ...before, playCount: { ...before.playCount, 'tierI-standard': 3 } };
+    const unlocks = checkNewUnlocks(before, after);
+    expect(unlocks.newModes).toEqual(['noNotes']);
   });
 });
 
 describe('duo winner detection logic', () => {
-  // Pure logic extracted from showDuoResult — no DOM needed
   function determineWinner(hTime: number, gTime: number) {
     const hWin = hTime < gTime;
     const gWin = gTime < hTime;
@@ -104,14 +158,13 @@ describe('duo winner detection logic', () => {
 });
 
 describe('duo cooldown calculation', () => {
-  // Pure logic extracted from handleInput duo error path
   function calculateCooldown(
     sameCell: boolean,
     currentStreak: number,
     timeSinceLastError: number,
   ): { cooldownSec: number; newStreak: number } {
     const BASE_CD = 5;
-    const STREAK_WINDOW = 30000; // 30 seconds
+    const STREAK_WINDOW = 30000;
 
     let streak: number;
     if (sameCell && timeSinceLastError < STREAK_WINDOW) {

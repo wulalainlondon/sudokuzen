@@ -27,7 +27,7 @@ import { clearGameStatus, saveProgress } from './persistence';
 
 // Lazy import to break circular: core ↔ duo
 async function callDuoFinish(sec: number, stars: number) {
-  try { const m = await import('../features/duo'); m.submitDuoFinish(sec, stars); }
+  try { const m = await import('../features/duo/duoGame'); m.submitDuoFinish(sec, stars); }
   catch (e) { console.warn('lazy import duo failed:', e); }
 }
 

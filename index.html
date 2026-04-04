@@ -142,15 +142,12 @@
             </div>
             <div class="wild-lobby-body">
                 <div class="wild-profile-card duo-lobby-card">
-                    <div class="wild-session-title" id="duo-create-title">建立房間</div>
-                    <label class="duo-level-label" id="duo-level-label" for="duo-level-select">選擇關卡</label>
-                    <select id="duo-level-select" class="duo-level-select"></select>
-                    <div class="duo-host-tools">
-                        <button class="wild-filter-btn" id="duo-update-level-btn" onclick="updateDuoRoomLevelFromLobby()">更新房間關卡</button>
-                        <button class="wild-filter-btn" id="duo-lock-level-btn" onclick="toggleDuoLevelLockFromLobby()">鎖定關卡</button>
-                    </div>
+                    <div class="wild-session-title">難度</div>
+                    <div id="duo-tier-selector" class="duo-pill-row"></div>
+                    <div class="wild-session-title" style="margin-top:8px;">模式</div>
+                    <div id="duo-mode-selector" class="duo-pill-row"></div>
+                    <div id="duo-mode-rules" class="duo-mode-rules"></div>
                     <button class="wild-enter-btn duo-lobby-create" onclick="createDuoRoomFromLobby()">
-                        <span class="wild-enter-chip" id="duo-host-chip">HOST</span>
                         <span class="wild-enter-text" id="duo-create-btn-text">建立房間</span>
                         <span class="wild-enter-sub" id="duo-create-btn-sub">建立後會進入對戰準備區</span>
                     </button>
@@ -164,7 +161,6 @@
                     <div class="wild-session-meta" id="duo-room-status">讀取中...</div>
                     <div id="duo-room-list" class="duo-room-list"></div>
                     <button class="wild-enter-btn duo-lobby-join" id="duo-join-btn" onclick="joinDuoRoomFromLobby()">
-                        <span class="wild-enter-chip" id="duo-join-chip">JOIN</span>
                         <span class="wild-enter-text" id="duo-join-btn-text">加入等待房</span>
                         <span class="wild-enter-sub" id="duo-join-btn-sub">與對方同一入口，直接加入對戰</span>
                     </button>
@@ -174,6 +170,10 @@
                         <div class="wild-session-title" id="duo-ready-title">對戰準備</div>
                     </div>
                     <div id="duo-ready-zone-host"></div>
+                </div>
+                <div class="wild-session-card duo-lobby-card">
+                    <div class="wild-session-title">戰績</div>
+                    <div id="duo-stats-card" class="duo-stats-card"></div>
                 </div>
             </div>
         </div>
@@ -377,7 +377,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.04-V18';
+        var INLINE_VER = '2026.04.04-V19';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

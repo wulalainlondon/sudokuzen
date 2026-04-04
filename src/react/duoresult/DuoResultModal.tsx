@@ -5,7 +5,6 @@ import { useCallback, useMemo, type ReactElement } from 'react';
 import { useDuoResultStore } from './duoResultStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { t } from '../../i18n/t';
-import type { SudokuWindow } from '../../facade/windowTypes';
 
 const CONFETTI_COLORS_WIN = ['#FFD700', '#FF6B6B', '#74b9ff', '#55efc4', '#a29bfe'];
 const CONFETTI_COLORS_DRAW = ['#fd79a8', '#a29bfe', '#74b9ff', '#dfe6e9', '#fab1a0'];
@@ -43,23 +42,14 @@ export function DuoResultModal(): ReactElement {
   const { visible, contentHtml, iWon, isDraw } = useDuoResultStore();
 
   const handlePlayAgain = useCallback(() => {
-    const levelId = useDuoResultStore.getState().levelId;
-    // Close result modal, re-enter duo room, then open pre-level modal for rematch
-    import('../../features/duo').then((m) => {
+    // Close result modal and navigate back to duo lobby for rematch
+    import('../../features/duo/duoGame').then((m) => {
       m.closeDuoResult();
-      if (levelId) {
-        setTimeout(() => {
-          m.enterDuoRoom(levelId).then(() => {
-            import('../../features/levels').then((lm) => lm.showPreLevelModal(levelId)).catch(() => {});
-          }).catch(() => {});
-        }, 300);
-      }
     }).catch(() => {});
   }, []);
 
   const handleBack = useCallback(() => {
-    const win = window as unknown as SudokuWindow;
-    win.closeDuoResult?.();
+    import('../../features/duo/duoGame').then((m) => m.closeDuoResult()).catch(() => {});
   }, []);
 
   const showConfetti = iWon || isDraw;

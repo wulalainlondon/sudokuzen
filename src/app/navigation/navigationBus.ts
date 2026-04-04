@@ -4,7 +4,8 @@ export type NavigationIntent =
   | { type: 'show-level-screen'; returnToTier: boolean }
   | { type: 'hide-pre-level-modal' }
   | { type: 'show-pre-level-modal'; levelId: number; ignoreTierLock: boolean; externalLevel?: LevelData }
-  | { type: 'back-to-stage-map' };
+  | { type: 'back-to-stage-map' }
+  | { type: 'show-duo-lobby' };
 
 type Listener = (intent: NavigationIntent) => void;
 const listeners = new Set<Listener>();

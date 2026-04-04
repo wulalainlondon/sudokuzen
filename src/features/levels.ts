@@ -10,7 +10,10 @@ import { loadPreLevelLeaderboard } from '../firebase/client';
 import { syncLevelCardSize } from '../game/board';
 import { TECH_MAP, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
 import { closeWildLobby, openWildLobby } from './wild/wildLobby';
-import { closeDuoLobby } from './duoLobby';
+// Dynamic import to avoid circular: levels ↔ duo
+function closeDuoLobby() {
+  import('./duo/duoLobby').then((m) => m.closeDuoLobby()).catch(() => {});
+}
 import { closePracticeLobby, enterPracticeTechnique } from './practice/practiceLobby';
 import { t } from '../i18n/t';
 import { requestRefresh } from '../app/ui/refreshBus';
@@ -40,20 +43,6 @@ import {
 function showTeachModal(stars: number, source = 'tier') {
   const wShow = (window as any).showTeachModal;
   if (wShow) wShow(stars, source);
-}
-import { getPlayerIdentity } from '../firebase/client';
-
-// Lazy imports to break circular: levels ↔ duo ↔ core
-async function callEnterDuoRoom(levelId: number) {
-  const m = await import('./duo');
-  m.enterDuoRoom(levelId);
-}
-async function callLeaveDuoRoom() {
-  const m = await import('./duo');
-  m.leaveDuoRoom();
-}
-function callResetDuoState() {
-  import('./duo').then((m) => m.resetDuoState()).catch(() => {});
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────
@@ -263,17 +252,6 @@ export function renderLevelGrid(): void {
     list.appendChild(item);
   });
   requestAnimationFrame(syncLevelCardSize);
-
-  const roomData = gs.duoRoomData;
-  if (roomData && roomData.status === 'waiting' && roomData.levelId) {
-    const { playerId } = getPlayerIdentity();
-    if (roomData.hostId !== playerId) {
-      const items = document.querySelectorAll('#level-list .level-item');
-      filtered.forEach((l, i) => {
-        if (l.id === roomData.levelId && items[i]) items[i].classList.add('duo-glow');
-      });
-    }
-  }
 }
 
 // ── Pre-level modal ─────────────────────────────────────────────────
@@ -284,7 +262,6 @@ export function showPreLevelModal(
   levelId: number,
   ignoreTierLock = false,
   externalLevel?: LevelData,
-  options?: { skipDuoEnter?: boolean },
 ): void {
   closeLibraryOverlay();
   gs.pendingLevelId = levelId;
@@ -333,15 +310,12 @@ export function showPreLevelModal(
   });
 
   loadPreLevelLeaderboard(levelId);
-  // Duo not supported for practice levels
-  if (gs.firebaseReady && !isPractice && !options?.skipDuoEnter) callEnterDuoRoom(levelId);
 }
 
 export function hidePreLevelModal(): void {
   closePreLevel('legacy-hide');
   gs.pendingLevelId = null;
   _pendingLevelData = null;
-  if (!gs.isDuoMode && gs.duoRole === 'guest') callLeaveDuoRoom();
 }
 
 export async function startLevelFromModal(
@@ -428,7 +402,9 @@ function _showLevelScreenInner(returnToTier: boolean): void {
   closeWildLobby();
   closeDuoLobby();
   closePracticeLobby();
-  if (gs.isDuoMode) callResetDuoState();
+  if (gs.isDuoMode) {
+    import('./duo/duoGame').then((m) => m.resetDuoState()).catch(() => {});
+  }
 
   const target = forcedTarget ?? resolveLevelScreenReturnTarget(returnToTier, {
     practiceReturnTech,
@@ -446,9 +422,7 @@ function _showLevelScreenInner(returnToTier: boolean): void {
     document.getElementById('stage-view')!.style.display = 'flex';
     renderStageMap();
   }
-  if (gs.firebaseReady) {
-    import('./duo').then((m) => m.stopDuoGlowListener()).catch(() => {});
-  }
+  // Duo glow listener removed — duo is now fully independent
 }
 
 export function toggleSpeedrunMode(): void {

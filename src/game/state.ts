@@ -34,6 +34,9 @@ export interface AchievementToastItem {
 
 export interface DuoRoomData {
   levelId: number;
+  tierId: string;
+  modeId: string;
+  puzzleSeed: number;
   status: 'idle' | 'waiting' | 'countdown' | 'playing' | 'finished';
   hostId: string;
   hostAlias: string;
@@ -137,7 +140,6 @@ export const gs = {
   // ── Duo mode ──────────────────────────────────────────────────────
   isDuoMode: false,
   duoUnsubscribe: null as (() => void) | null,
-  duoGlowUnsubscribe: null as (() => void) | null,
   duoRole: null as 'host' | 'guest' | null,
   duoRoomData: null as DuoRoomData | null,
   duoCountdownTimer: null as ReturnType<typeof setInterval> | null,

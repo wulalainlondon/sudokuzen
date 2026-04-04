@@ -18,11 +18,9 @@ import {
   closeDuoLobby,
   createDuoRoomFromLobby,
   joinDuoRoomFromLobby,
-  updateDuoRoomLevelFromLobby,
-  toggleDuoLevelLockFromLobby,
   refreshDuoLobbyRoom,
-} from '../features/duoLobby';
-import { getDuoMetrics, resetDuoMetrics } from '../features/duo';
+} from '../features/duo/duoLobby';
+import { getDuoMetrics, resetDuoMetrics } from '../features/duo/duoMetrics';
 
 declare global {
   interface Window {
@@ -48,8 +46,6 @@ export function bootstrapApp(): void {
       closeDuoLobby,
       createDuoRoomFromLobby,
       joinDuoRoomFromLobby,
-      updateDuoRoomLevelFromLobby,
-      toggleDuoLevelLockFromLobby,
       refreshDuoLobbyRoom,
       getDuoMetrics,
       resetDuoMetrics,

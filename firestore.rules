@@ -22,7 +22,7 @@ service cloud.firestore {
                    && (request.resource.data.guestId == null || request.resource.data.guestId is string);
     }
 
-    // New Duo multi-room model.
+    // Duo multi-room model (v2: tier/mode/seed).
     match /duo_rooms/{roomId} {
       allow read: if true;
       allow create, update: if request.resource.data.levelId is int
@@ -43,7 +43,11 @@ service cloud.firestore {
                             && (request.resource.data.hostHeartbeatAtMs == null || request.resource.data.hostHeartbeatAtMs is int)
                             && (request.resource.data.guestHeartbeatAtMs == null || request.resource.data.guestHeartbeatAtMs is int)
                             && (request.resource.data.hostOnline == null || request.resource.data.hostOnline is bool)
-                            && (request.resource.data.guestOnline == null || request.resource.data.guestOnline is bool);
+                            && (request.resource.data.guestOnline == null || request.resource.data.guestOnline is bool)
+                            // Duo 2.0 — tier/mode/seed
+                            && (request.resource.data.tierId == null || request.resource.data.tierId is string)
+                            && (request.resource.data.modeId == null || request.resource.data.modeId is string)
+                            && (request.resource.data.puzzleSeed == null || request.resource.data.puzzleSeed is int);
       allow delete: if true;
     }
 

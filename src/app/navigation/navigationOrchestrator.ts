@@ -10,8 +10,8 @@ import {
 import { onNavigation } from './navigationBus';
 import { hideTeachModal, closePracticeModal, closeLibraryOverlay } from '../../features/teach-legacy';
 import { closeReplayModal } from '../../features/replay';
-import { closeDuoResult } from '../../features/duo';
-import { closeDuoLobby, isDuoLobbyOpen } from '../../features/duoLobby';
+import { closeDuoResult } from '../../features/duo/duoGame';
+import { closeDuoLobby, isDuoLobbyOpen, openDuoLobby } from '../../features/duo/duoLobby';
 import { closeStatsModal } from '../../features/stats';
 import { dismissMentor } from '../../features/wild/mentorController';
 import { closeWildLobby, isWorldLobbyOpen } from '../../features/wild/wildLobby';
@@ -60,6 +60,10 @@ export function initBackHandler(): void {
         break;
       case 'back-to-stage-map':
         backToStageMap();
+        break;
+      case 'show-duo-lobby':
+        showLevelScreen(false);
+        openDuoLobby();
         break;
     }
   });

@@ -35,16 +35,14 @@ import {
   replayTogglePlay,
   replayToggleSpeed,
 } from '../features/replay';
-import { toggleDuoReady, sendDuoEmoji, closeDuoResult, surrenderDuo } from '../features/duo';
+import { toggleDuoReady, sendDuoEmoji, closeDuoResult, surrenderDuo } from '../features/duo/duoGame';
 import {
   openDuoLobby,
   closeDuoLobby,
   createDuoRoomFromLobby,
   joinDuoRoomFromLobby,
-  updateDuoRoomLevelFromLobby,
-  toggleDuoLevelLockFromLobby,
   refreshDuoLobbyRoom,
-} from '../features/duoLobby';
+} from '../features/duo/duoLobby';
 import { openStatsModal, closeStatsModal } from '../features/stats';
 import {
   showLevelScreen,
@@ -178,7 +176,6 @@ export function bootLegacyRuntime(appVersion: string): void {
     if ((document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') saveGameStatus();
     // Clean up duo listener
     if (gs.duoUnsubscribe) { gs.duoUnsubscribe(); gs.duoUnsubscribe = null; }
-    if (gs.duoGlowUnsubscribe) { gs.duoGlowUnsubscribe(); gs.duoGlowUnsubscribe = null; }
     if (gs.isDuoMode && gs.firebaseReady && gs.duoRole) {
       const field = gs.duoRole === 'host' ? 'status' : 'guestId';
       const val = gs.duoRole === 'host' ? 'idle' : null;
@@ -238,8 +235,6 @@ export function bootLegacyRuntime(appVersion: string): void {
     closeDuoLobby,
     createDuoRoomFromLobby,
     joinDuoRoomFromLobby,
-    updateDuoRoomLevelFromLobby,
-    toggleDuoLevelLockFromLobby,
     refreshDuoLobbyRoom,
     saveAlias,
     startPoolRandom,

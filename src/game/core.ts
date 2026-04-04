@@ -90,7 +90,7 @@ export { checkWin, showGameOver } from './winDetection';
 
 // Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
 async function callDuoProgress() {
-  try { const m = await import('../features/duo'); m.updateDuoProgress(); }
+  try { const m = await import('../features/duo/duoGame'); m.updateDuoProgress(); }
   catch (e) { console.warn('lazy import duo failed:', e); }
 }
 async function callCloseReplay() {
