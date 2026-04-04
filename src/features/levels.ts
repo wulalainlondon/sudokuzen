@@ -128,6 +128,21 @@ export function renderStageMap(): void {
   });
 }
 
+// ── View scroll position memory ──────────────────────────────────────
+const _scrollPositions: Record<string, number> = {};
+
+export function saveScroll(id: string): void {
+  const el = document.getElementById(id);
+  if (el) _scrollPositions[id] = el.scrollTop;
+}
+
+export function restoreScroll(id: string): void {
+  const pos = _scrollPositions[id];
+  if (pos == null) return;
+  const el = document.getElementById(id);
+  if (el) el.scrollTop = pos;
+}
+
 // ── Tier view ───────────────────────────────────────────────────────
 
 export function enterTier(tierName: string): void {
@@ -138,6 +153,7 @@ export function enterTier(tierName: string): void {
     return;
   }
   gs.currentTab = tierName;
+  saveScroll('stage-map');
   document.getElementById('stage-view')!.style.display = 'none';
   document.getElementById('tier-view')!.classList.remove('hidden');
 
@@ -167,9 +183,11 @@ export function enterTier(tierName: string): void {
 }
 
 export function backToStageMap(): void {
+  saveScroll('level-list');
   document.getElementById('tier-view')!.classList.add('hidden');
   document.getElementById('stage-view')!.style.display = 'flex';
   renderStageMap();
+  restoreScroll('stage-map');
 }
 
 // ── Level grid ──────────────────────────────────────────────────────

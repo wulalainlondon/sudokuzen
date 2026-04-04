@@ -8,6 +8,7 @@ import { showFeedback } from '../../ui/feedback';
 import { getOnlineCount } from '../../firebase/client';
 import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
+import { saveScroll, restoreScroll } from '../levels';
 import { bridgeSetWildLobbyViewModel, bridgeSetWildLobbyVisible } from '../../react/wild/wildLobbyBridge';
 import type { EnterButtonState, RarityFilter as StoreRarityFilter, BestiaryFilter as StoreBestiaryFilter } from '../../react/wild/wildLobbyStore';
 import {
@@ -583,14 +584,17 @@ function setWorldViewActive(active: boolean): void {
 }
 
 export function openWildLobby(): void {
+  saveScroll('stage-map');
   renderWildLobby();
   setWorldViewActive(true);
   bridgeSetWildLobbyVisible(true);
 }
 
 export function closeWildLobby(): void {
+  saveScroll('wild-lobby');
   setWorldViewActive(false);
   bridgeSetWildLobbyVisible(false);
+  restoreScroll('stage-map');
 }
 
 export function isWorldLobbyOpen(): boolean {

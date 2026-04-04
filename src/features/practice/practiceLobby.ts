@@ -11,6 +11,7 @@ import { playZenMentor, playZenEncounter, playZenDiscover, playZenLevelUp, playZ
 import { t } from '../../i18n/t';
 import { usePracticeTreeStore } from '../../react/practice/practiceTreeStore';
 import { emitNavigation } from '../../app/navigation/navigationBus';
+import { saveScroll, restoreScroll } from '../levels';
 
 // ── Unlock tree definition ────────────────────────────────────────────
 
@@ -238,6 +239,7 @@ export async function openPracticeLobby(): Promise<void> {
     showFeedback(t('practice.dataLoadError'), 'error');
     return;
   }
+  saveScroll('stage-map');
   setPracticeViewActive(true);
   renderPracticeLobby();
   playZenMentor();
@@ -250,6 +252,7 @@ export function closePracticeLobby(): void {
   setPracticeViewActive(false);
   gs.practiceActiveTech = null;
   usePracticeTreeStore.getState().close();
+  restoreScroll('stage-map');
 }
 
 export function isPracticeLobbyOpen(): boolean {

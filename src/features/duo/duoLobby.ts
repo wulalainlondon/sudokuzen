@@ -7,6 +7,7 @@ import { t } from '../../i18n/t';
 import { DUO_TIERS, DUO_MODES, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import { loadDuoProfile, getUnlockedTiers, getUnlockedModes } from './duoProfile';
 import type { DuoRoomSummary } from './duoRoom';
+import { saveScroll, restoreScroll } from '../levels';
 
 type ConnState = 'connected' | 'reconnecting' | 'failed';
 const LOBBY_POLL_MS = 10_000;
@@ -218,6 +219,7 @@ export async function openDuoLobby(): Promise<void> {
     showFeedback(t('duo.networkRequired'), 'error');
     return;
   }
+  saveScroll('stage-map');
   const { resumeDuoRoomIfAny, cleanupStaleDuoRooms } = await import('./duoRoom');
   void cleanupStaleDuoRooms();
   await resumeDuoRoomIfAny();
@@ -233,9 +235,11 @@ export async function openDuoLobby(): Promise<void> {
 }
 
 export function closeDuoLobby(): void {
+  saveScroll('duo-lobby');
   setDuoViewActive(false);
   restoreDuoReadyZoneToBody();
   stopLobbyPolling();
+  restoreScroll('stage-map');
 }
 
 export function isDuoLobbyOpen(): boolean {

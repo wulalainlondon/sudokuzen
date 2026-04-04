@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 import { gs } from '../../game/state';
 import { SK, readJson } from '../../storage/keys';
 import { syncLevelCardSize } from '../../game/board';
-import { getPlayerIdentity } from '../../firebase/client';
 import {
   canAccessLevel,
   getFilteredLevels,
@@ -21,7 +20,6 @@ interface LevelCardModel {
   isLocked: boolean;
   isCurrent: boolean;
   isCompleted: boolean;
-  isDuoGlow: boolean;
   timeText: string;
   submissions: number;
   stars: number;
@@ -37,13 +35,6 @@ function buildLevelCards(): LevelCardModel[] {
   const records = readJson<Record<string, any>>(recordsKey, {});
   const unlockState = getRealmUnlockState();
   const filtered = getFilteredLevels().filter((l) => !l.hidden);
-
-  let waitingLevelId: number | null = null;
-  const roomData = gs.duoRoomData;
-  if (roomData && roomData.status === 'waiting' && roomData.levelId) {
-    const { playerId } = getPlayerIdentity();
-    if (roomData.hostId !== playerId) waitingLevelId = roomData.levelId;
-  }
 
   return filtered.map((l) => {
     const record = records[l.id];
@@ -74,7 +65,6 @@ function buildLevelCards(): LevelCardModel[] {
       isLocked,
       isCurrent,
       isCompleted: bestTime !== null,
-      isDuoGlow: waitingLevelId === l.id,
       timeText,
       submissions,
       stars: bestStars,
@@ -94,7 +84,7 @@ function starsView(stars: number): ReactElement {
 
 function buildCardsSignature(cards: LevelCardModel[]): string {
   return cards
-    .map((c) => `${c.id}:${Number(c.isLocked)}:${Number(c.isCurrent)}:${Number(c.isCompleted)}:${Number(c.isDuoGlow)}:${c.timeText}:${c.submissions}:${c.stars}`)
+    .map((c) => `${c.id}:${Number(c.isLocked)}:${Number(c.isCurrent)}:${Number(c.isCompleted)}:${c.timeText}:${c.submissions}:${c.stars}`)
     .join('|');
 }
 
@@ -159,7 +149,7 @@ export function NormalLevelList(): ReactElement | null {
   return createPortal(
     <>
       {renderedCards.map((card) => {
-        const itemClass = `level-item ${card.isCompleted ? 'completed' : ''}${card.isLocked ? ' locked' : ''}${card.isCurrent ? ' level-item--current' : ''}${card.isDuoGlow ? ' duo-glow' : ''}`;
+        const itemClass = `level-item ${card.isCompleted ? 'completed' : ''}${card.isLocked ? ' locked' : ''}${card.isCurrent ? ' level-item--current' : ''}`;
         if (card.isLocked) {
           return (
             <div
