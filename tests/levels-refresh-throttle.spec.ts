@@ -2,6 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderLevelGrid } from '../src/features/levels';
+import { __resetRefreshBusForTests, subscribeRefresh } from '../src/app/ui/refreshBus';
 
 describe('renderLevelGrid refresh coalescing', () => {
   const rafQueue: FrameRequestCallback[] = [];
@@ -9,6 +10,7 @@ describe('renderLevelGrid refresh coalescing', () => {
   beforeEach(() => {
     document.body.dataset.reactNormalLevelList = '1';
     rafQueue.length = 0;
+    __resetRefreshBusForTests();
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
       rafQueue.push(cb);
       return rafQueue.length;
@@ -17,25 +19,29 @@ describe('renderLevelGrid refresh coalescing', () => {
 
   afterEach(() => {
     delete document.body.dataset.reactNormalLevelList;
+    __resetRefreshBusForTests();
     vi.restoreAllMocks();
   });
 
-  it('dispatches one refresh event per frame even if called repeatedly', () => {
-    const dispatchSpy = vi.spyOn(window, 'dispatchEvent');
+  it('notifies normal-level-list subscribers once per frame even if called repeatedly', () => {
+    const listener = vi.fn();
+    const unsubscribe = subscribeRefresh('normal-level-list', listener);
 
     renderLevelGrid();
     renderLevelGrid();
     renderLevelGrid();
 
     expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledTimes(0);
+    expect(listener).toHaveBeenCalledTimes(0);
 
     rafQueue[0](0);
-    expect(dispatchSpy).toHaveBeenCalledTimes(1);
+    expect(listener).toHaveBeenCalledTimes(1);
 
     renderLevelGrid();
     expect(window.requestAnimationFrame).toHaveBeenCalledTimes(2);
     rafQueue[1](16);
-    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    expect(listener).toHaveBeenCalledTimes(2);
+
+    unsubscribe();
   });
 });

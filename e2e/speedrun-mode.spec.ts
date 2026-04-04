@@ -100,27 +100,35 @@ test.describe('speedrun-mode', () => {
     });
     await page.locator('.game-container').waitFor({ state: 'visible' });
 
-    // Fill all cells correctly except last one — put wrong digit in last
+    // Fill all cells correctly except last two — then swap the last two digits.
+    // This keeps global digit counts valid (passes completed-digit guard),
+    // but creates a wrong board state for speedrun submission.
     const result = await page.evaluate(() => {
       const e2e = (window as any).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
       const empties: number[] = [];
       for (let i = 0; i < 81; i++) { if (puzzle[i] === 0) empties.push(i); }
 
-      // Fill all but last correctly
-      for (let j = 0; j < empties.length - 1; j++) {
+      // Fill all but last two correctly
+      for (let j = 0; j < empties.length - 2; j++) {
         e2e.selectCell(empties[j]);
         e2e.handleInput(solution[empties[j]]);
       }
 
-      // Fill last with wrong digit
-      const lastIdx = empties[empties.length - 1];
-      const wrong = solution[lastIdx] === 9 ? 1 : solution[lastIdx] + 1;
-      e2e.selectCell(lastIdx);
-      e2e.handleInput(wrong);
+      const a = empties[empties.length - 2];
+      const b = empties[empties.length - 1];
+      const aDigit = Number(solution[a]);
+      const bDigit = Number(solution[b]);
+      if (aDigit === bDigit) throw new Error('Expected last two empties to have different solution digits');
+
+      // Swap placements intentionally: a<-bDigit, b<-aDigit
+      e2e.selectCell(a);
+      e2e.handleInput(bDigit);
+      e2e.selectCell(b);
+      e2e.handleInput(aDigit);
 
       return {
-        lastIdx,
+        lastIdx: b,
         submissionCount: e2e.gs.submissionCount,
       };
     });

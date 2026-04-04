@@ -33,3 +33,22 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci --legacy-peer-deps
+
+      - name: Install Playwright Browser
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E Smoke Gate
+        run: npm run test:e2e:smoke -- --reporter=line

@@ -7,6 +7,7 @@ describe('wild lobby enter state machine', () => {
   const baseProfile = {
     iqLevel: 1,
     totalExp: 0,
+    gateOverflowExp: 0,
     puzzlesCompleted: 0,
     totalEncounters: 0,
     cooldowns: {},

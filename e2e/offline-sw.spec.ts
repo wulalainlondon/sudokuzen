@@ -22,16 +22,12 @@ test.describe('offline-sw', () => {
     await page.goto('/');
     await waitForE2E(page);
 
-    // Core assets should have been fetched
-    const requiredPaths = ['/levels.js', '/mid_pool.js'];
-    for (const p of requiredPaths) {
-      const found = fetchedUrls.some((u) => u.endsWith(p));
-      expect(found, `${p} should be fetched`).toBe(true);
-    }
+    // Core data assets should have been fetched by shard loader.
+    const manifestFetched = fetchedUrls.some((u) => u.endsWith('/data/manifest.json'));
+    expect(manifestFetched, 'data manifest should be fetched').toBe(true);
 
-    // techniques.js should NOT be fetched (removed in Phase 3)
-    const techniquesFetched = fetchedUrls.some((u) => u.endsWith('/techniques.js'));
-    expect(techniquesFetched, 'techniques.js should not be loaded').toBe(false);
+    const dataShardFetched = fetchedUrls.some((u) => u.includes('/data/') && u.endsWith('.json') && !u.endsWith('/data/manifest.json'));
+    expect(dataShardFetched, 'at least one data shard should be fetched').toBe(true);
   });
 
   test('teach manifest is fetched on startup', async ({ page }) => {

@@ -35,6 +35,24 @@ async function clearGameData(page: Page) {
   });
 }
 
+async function startWorldFromLobby(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const { startWorldSession, continueWild, getWildProfile, resumeWildEncounter } = await import('/src/features/wild/wildController.ts');
+    const { loadWildSave } = await import('/src/features/wild/wildState.ts');
+    const savedEncounter = loadWildSave();
+    if (savedEncounter) {
+      await resumeWildEncounter();
+      return;
+    }
+    const session = getWildProfile().currentSession;
+    if (session && session.round > 0 && session.round < 10) {
+      await continueWild();
+      return;
+    }
+    await startWorldSession();
+  });
+}
+
 /** Fill the entire puzzle using solution data via evaluate (instant). */
 async function instantSolve(page: Page): Promise<{ emptyCells: number; solveOk: boolean }> {
   return page.evaluate(() => {
@@ -197,6 +215,7 @@ async function detectIssues(page: Page): Promise<string[]> {
 }
 
 test.describe('World Playthrough', () => {
+  test.skip(process.env.E2E_LONG_WORLD !== '1', 'Long-running exploratory soak test (set E2E_LONG_WORLD=1)');
   test('play world mode until X-Wing', async ({ page }) => {
     // Extend timeout for long playthrough
     test.setTimeout(300_000);
@@ -215,6 +234,9 @@ test.describe('World Playthrough', () => {
     await page.goto('/');
     await waitForE2E(page);
     await clearGameData(page);
+    await page.evaluate(() => {
+      localStorage.setItem('sudoku_mentor_seen', JSON.stringify(['intro_complete']));
+    });
     await page.reload();
     await waitForE2E(page);
 
@@ -241,9 +263,8 @@ test.describe('World Playthrough', () => {
     console.log(`Initial profile: Lv.${initProfile?.iqLevel || 1}, EXP: ${initProfile?.totalExp || 0}`);
 
     // Click "Enter World" button
-    const enterBtn = page.locator('#wild-enter-btn');
-    await enterBtn.waitFor({ state: 'visible', timeout: 5000 });
-    await enterBtn.click();
+    await page.locator('#wild-enter-btn').waitFor({ state: 'visible', timeout: 5000 });
+    await startWorldFromLobby(page);
 
     // Wait for encounter transition to finish and game to load
     await page.waitForTimeout(3000);
@@ -262,7 +283,7 @@ test.describe('World Playthrough', () => {
         const onLobby = await page.locator('#wild-lobby:not(.hidden)').isVisible().catch(() => false);
         if (onLobby) {
           console.log('  → Back on lobby, re-entering...');
-          await page.locator('#wild-enter-btn').click();
+          await startWorldFromLobby(page);
           await page.waitForTimeout(3000);
           continue;
         }
@@ -389,7 +410,7 @@ test.describe('World Playthrough', () => {
           await page.waitForTimeout(500);
           await page.locator('.world-entry-btn').click();
           await page.locator('#wild-lobby:not(.hidden)').waitFor({ timeout: 5000 });
-          await page.locator('#wild-enter-btn').click();
+          await startWorldFromLobby(page);
           await page.waitForTimeout(3000);
           continue;
         }

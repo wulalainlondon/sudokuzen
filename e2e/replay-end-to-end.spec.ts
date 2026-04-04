@@ -93,7 +93,7 @@ test.describe('replay-end-to-end', () => {
 
     // Replay modal should be visible
     const replayModal = page.locator('#replay-modal');
-    await expect(replayModal).toHaveClass(/show/, { timeout: 3000 });
+    await expect(replayModal).toBeVisible({ timeout: 3000 });
 
     // Replay board should have 81 cells
     const replayBoard = page.locator('#replay-board');
@@ -127,7 +127,7 @@ test.describe('replay-end-to-end', () => {
       const hist = records[levelId]?.replayHistory ?? records[String(levelId)]?.replayHistory;
       e2e.replay.openHistoricalReplay(1, hist);
     });
-    await page.locator('#replay-modal.show').waitFor({ timeout: 3000 });
+    await expect(page.locator('#replay-modal')).toBeVisible({ timeout: 3000 });
 
     // Get initial filled count (only fixed cells should have values)
     const initialFilled = await page.evaluate(() => {
@@ -172,7 +172,7 @@ test.describe('replay-end-to-end', () => {
       const hist = records[levelId]?.replayHistory ?? records[String(levelId)]?.replayHistory;
       e2e.replay.openHistoricalReplay(1, hist);
     });
-    await page.locator('#replay-modal.show').waitFor({ timeout: 3000 });
+    await expect(page.locator('#replay-modal')).toBeVisible({ timeout: 3000 });
 
     // Step forward 5, then back 2
     for (let i = 0; i < 5; i++) {
@@ -217,7 +217,7 @@ test.describe('replay-end-to-end', () => {
       const hist = records[levelId]?.replayHistory ?? records[String(levelId)]?.replayHistory;
       e2e.replay.openHistoricalReplay(1, hist);
     });
-    await page.locator('#replay-modal.show').waitFor({ timeout: 3000 });
+    await expect(page.locator('#replay-modal')).toBeVisible({ timeout: 3000 });
 
     const totalActions = await page.evaluate(() =>
       (window as any).__e2e.gs.actionHistory.length,
@@ -261,7 +261,7 @@ test.describe('replay-end-to-end', () => {
       const hist = records[levelId]?.replayHistory ?? records[String(levelId)]?.replayHistory;
       e2e.replay.openHistoricalReplay(1, hist);
     });
-    await page.locator('#replay-modal.show').waitFor({ timeout: 3000 });
+    await expect(page.locator('#replay-modal')).toBeVisible({ timeout: 3000 });
 
     // Initial speed is 1
     let speed = await page.evaluate(() => (window as any).__e2e.gs.rbSpeed);
@@ -304,7 +304,7 @@ test.describe('replay-end-to-end', () => {
       const hist = records[levelId]?.replayHistory ?? records[String(levelId)]?.replayHistory;
       e2e.replay.openHistoricalReplay(1, hist);
     });
-    await page.locator('#replay-modal.show').waitFor({ timeout: 3000 });
+    await expect(page.locator('#replay-modal')).toBeVisible({ timeout: 3000 });
 
     // Step forward 10
     for (let i = 0; i < 10; i++) {
@@ -341,7 +341,13 @@ test.describe('replay-end-to-end', () => {
       for (let i = 0; i < 81; i++) {
         if (puzzle[i] === 0) {
           e2e.selectCell(i);
-          const wrong = solution[i] === 9 ? 1 : solution[i] + 1;
+          const boardCount = Array.from({ length: 10 }, () => 0);
+          for (const c of e2e.gs.cellsData) {
+            if (c.value >= 1 && c.value <= 9) boardCount[c.value]++;
+          }
+          const correct = Number(solution[i]);
+          const wrong = [1, 2, 3, 4, 5, 6, 7, 8, 9].find((n) => n !== correct && boardCount[n] < 9);
+          if (!wrong) throw new Error('No injectable wrong digit found for replay mistake test');
           e2e.handleInput(wrong); // mistake
           break;
         }
@@ -372,7 +378,7 @@ test.describe('replay-end-to-end', () => {
       const hist = records[levelId]?.replayHistory ?? records[String(levelId)]?.replayHistory;
       e2e.replay.openHistoricalReplay(1, hist);
     });
-    await page.locator('#replay-modal.show').waitFor({ timeout: 3000 });
+    await expect(page.locator('#replay-modal')).toBeVisible({ timeout: 3000 });
 
     // Switch to mistake filter
     await page.evaluate(() => {

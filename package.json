@@ -23,6 +23,7 @@
     "format:check": "prettier --check 'src/**/*.{ts,tsx}' 'tests/**/*.ts'",
     "test": "npm run sync:version && vitest run",
     "test:e2e": "npx playwright test",
+    "test:e2e:smoke": "npx playwright test e2e/level-navigation.spec.ts e2e/single-player-full-run.spec.ts e2e/speedrun-mode.spec.ts e2e/offline-sw.spec.ts e2e/wild-mode.spec.ts",
     "test:e2e:solo": "npx playwright test e2e/single-player-full-run.spec.ts",
     "test:e2e:duo": "npx playwright test e2e/duo-sync.spec.ts",
     "test:e2e:replay": "npx playwright test e2e/replay-end-to-end.spec.ts",

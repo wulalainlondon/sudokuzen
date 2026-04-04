@@ -38,6 +38,7 @@ describe('teach store state machine', () => {
             notes: {},
             answer: {
               eliminates: [{ cell: 2, digit: 4 }],
+              fills: [{ cell: 10, digit: 7 }],
               patternCells: [2],
               description: 'ok',
               proof: [],
@@ -61,6 +62,7 @@ describe('teach store state machine', () => {
     await useTeachStore.getState().openTeach(1);
     useTeachStore.getState().startPractice();
     useTeachStore.getState().toggleSelection(2, 4);
+    useTeachStore.getState().toggleFillSelection(10, 7);
     useTeachStore.getState().submitPractice();
 
     expect(useTeachStore.getState().flow).toBe('result');
@@ -77,5 +79,6 @@ describe('teach store state machine', () => {
 
     expect(useTeachStore.getState().flow).toBe('result');
     expect(useTeachStore.getState().practice.revealed).toBe(true);
+    expect(useTeachStore.getState().practice.success).toBe(false);
   });
 });

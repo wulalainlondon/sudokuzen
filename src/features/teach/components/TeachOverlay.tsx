@@ -40,6 +40,7 @@ export function TeachOverlay(): ReactElement {
     prevStep,
     startPractice,
     toggleSelection,
+    toggleFillSelection,
     submitPractice,
     revealPractice,
     showHint,
@@ -53,6 +54,7 @@ export function TeachOverlay(): ReactElement {
   const step = module?.example?.steps?.[stepIndex] ?? null;
   const stepsTotal = Math.max(module?.example?.steps.length ?? 1, 1);
   const practiceItem = module?.practice?.[practiceIndex] ?? null;
+  const hasFillTargets = (practiceItem?.answer.fills?.length ?? 0) > 0;
   const stage = getTeachStageLabel(module?.stars);
 
   useEffect(() => {
@@ -159,9 +161,11 @@ export function TeachOverlay(): ReactElement {
                     <span className="practice-tech-name">
                       {module?.name} · {module?.technique}
                     </span>
-                    <span className="practice-instruction">{t('teachOverlay.practiceInstruction')}</span>
+                    <span className="practice-instruction">
+                      {hasFillTargets ? t('teachOverlay.practiceInstructionMixed') : t('teachOverlay.practiceInstruction')}
+                    </span>
                   </div>
-                  <PracticeBoard item={practiceItem} practice={practice} onToggle={toggleSelection} />
+                  <PracticeBoard item={practiceItem} practice={practice} onToggle={toggleSelection} onToggleFill={toggleFillSelection} />
                   <div className="practice-status">
                     <span id="practice-counter">{t('teachOverlay.selectedCount', { count: String(practice.selected.size) })}</span>
                     <button className="rz-focus-ring" onClick={showHint}>
@@ -200,7 +204,7 @@ export function TeachOverlay(): ReactElement {
                     {t('teachOverlay.revealAnswer')}
                   </button>
                   <button className="practice-confirm-btn rz-focus-ring" onClick={submitPractice}>
-                    {t('teachOverlay.confirmElim')}
+                    {hasFillTargets ? t('teachOverlay.confirmSelection') : t('teachOverlay.confirmElim')}
                   </button>
                 </>
               ) : null}

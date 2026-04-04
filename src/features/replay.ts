@@ -8,6 +8,7 @@ import { computeReplayScore } from '../solver/scoring';
 import type { TechniqueName } from '../solver/types';
 import { recordReplayWatch } from './stats';
 import { t } from '../i18n/t';
+import { closePreLevel } from '../app/ui/uiOrchestrator';
 import {
   bridgeOpenReplay,
   bridgeCloseReplay,
@@ -90,7 +91,7 @@ export function openHistoricalReplay(levelId: number, savedHistory: ActionRecord
     isError: false,
   }));
 
-  document.getElementById('pre-level-modal')!.style.display = 'none';
+  closePreLevel('system');
   openReplayModal();
 }
 

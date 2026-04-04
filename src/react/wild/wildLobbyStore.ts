@@ -30,6 +30,7 @@ export interface WildLobbyViewModel {
   bestiaryTotal: number;
   bestiaryFilter: BestiaryFilter;
   rarityFilter: RarityFilter;
+  showIntroButton: boolean;
 }
 
 export interface WildMentorNote {

@@ -25,12 +25,36 @@ type TeachStore = {
   prevStep: () => void;
   startPractice: () => void;
   toggleSelection: (cell: number, digit: number) => void;
+  toggleFillSelection: (cell: number, digit: number) => void;
   submitPractice: () => void;
   revealPractice: () => void;
   showHint: () => void;
   retryPractice: () => void;
   backToSteps: () => void;
 };
+
+const ELIM_PREFIX = 'elim';
+const FILL_PREFIX = 'fill';
+
+function elimKey(cell: number, digit: number): string {
+  return `${ELIM_PREFIX}:${cell}:${digit}`;
+}
+
+function fillKey(cell: number, digit: number): string {
+  return `${FILL_PREFIX}:${cell}:${digit}`;
+}
+
+function parseSelectionKey(
+  key: string,
+): { type: 'elim' | 'fill'; cell: number; digit: number } | null {
+  const [type, cellRaw, digitRaw] = key.split(':');
+  const cell = Number(cellRaw);
+  const digit = Number(digitRaw);
+  if (!Number.isFinite(cell) || !Number.isFinite(digit)) return null;
+  if (type === ELIM_PREFIX) return { type: 'elim', cell, digit };
+  if (type === FILL_PREFIX) return { type: 'fill', cell, digit };
+  return null;
+}
 
 function createPracticeState(overrides?: Partial<PracticeSessionState>): PracticeSessionState {
   return {
@@ -165,7 +189,26 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     const { practice } = get();
     if (practice.revealed) return;
 
-    const key = `${cell}:${digit}`;
+    const key = elimKey(cell, digit);
+    const selected = new Set(practice.selected);
+    if (selected.has(key)) selected.delete(key);
+    else selected.add(key);
+
+    set({
+      practice: {
+        ...practice,
+        selected,
+        message: '',
+        tone: 'neutral',
+      },
+    });
+  },
+
+  toggleFillSelection: (cell, digit) => {
+    const { practice } = get();
+    if (practice.revealed) return;
+
+    const key = fillKey(cell, digit);
     const selected = new Set(practice.selected);
     if (selected.has(key)) selected.delete(key);
     else selected.add(key);
@@ -187,18 +230,23 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     const item = module?.practice[practiceIndex];
     if (!item) return;
 
-    const correctSet = new Set(item.answer.eliminates.map(([c, d]) => `${c}:${d}`));
-    const selectedSet = new Set(practice.selected);
-
-    let wrongCount = 0;
-    let correctCount = 0;
-
-    for (const key of selectedSet) {
-      if (correctSet.has(key)) correctCount += 1;
-      else wrongCount += 1;
+    const correctElimSet = new Set(item.answer.eliminates.map(([c, d]) => elimKey(c, d)));
+    const correctFillSet = new Set((item.answer.fills ?? []).map(([c, d]) => fillKey(c, d)));
+    const selectedElims = new Set<string>();
+    const selectedFills = new Set<string>();
+    for (const key of practice.selected) {
+      const parsed = parseSelectionKey(key);
+      if (!parsed) continue;
+      if (parsed.type === 'elim') selectedElims.add(key);
+      else selectedFills.add(key);
     }
 
-    const missingCount = correctSet.size - correctCount;
+    const wrongElimKeys = [...selectedElims].filter((k) => !correctElimSet.has(k));
+    const wrongFillKeys = [...selectedFills].filter((k) => !correctFillSet.has(k));
+    const missingElimKeys = [...correctElimSet].filter((k) => !selectedElims.has(k));
+    const missingFillKeys = [...correctFillSet].filter((k) => !selectedFills.has(k));
+    const wrongCount = wrongElimKeys.length + wrongFillKeys.length;
+    const missingCount = missingElimKeys.length + missingFillKeys.length;
 
     if (wrongCount === 0 && missingCount === 0) {
       markPracticeDone(stars);
@@ -217,8 +265,9 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
 
     if (wrongCount === 0 && missingCount > 0) {
       // Partial: tell the user which REGION to look at
-      const missingKeys = [...correctSet].filter((k) => !selectedSet.has(k));
-      const missingCells = missingKeys.map((k) => parseInt(k.split(':')[0]));
+      const missingCells = [...missingElimKeys, ...missingFillKeys]
+        .map((k) => parseSelectionKey(k)?.cell)
+        .filter((x): x is number => Number.isFinite(x));
       const regions = new Set<string>();
       for (const c of missingCells) {
         const r = Math.floor(c / 9);
@@ -229,27 +278,52 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
         regions.add(`Box${box + 1}`);
       }
       const hint = regions.size <= 3 ? t('teachPractice.missingHint', { regions: [...regions].slice(0, 2).join(', ') }) : '';
+      const detail = [];
+      if (missingElimKeys.length > 0) {
+        detail.push(t('teachPractice.missingCandidates', { count: String(missingElimKeys.length) }));
+      }
+      if (missingFillKeys.length > 0) {
+        detail.push(t('teachPractice.missingFills', { count: String(missingFillKeys.length) }));
+      }
       set({
         flow: 'practice',
         practice: {
           ...practice,
           success: false,
           tone: 'partial',
-          message: t('teachPractice.missingCandidates', { count: String(missingCount) }) + hint,
+          message: `${detail.join('；')}${hint}`,
         },
       });
       return;
     }
 
     // Error: explain which selections were wrong and why
-    const wrongKeys = [...selectedSet].filter((k) => !correctSet.has(k));
-    const wrongDescs = wrongKeys.slice(0, 2).map((k) => {
-      const [c, d] = k.split(':').map(Number);
+    const wrongElimDescs = wrongElimKeys.slice(0, 2).map((k) => {
+      const parsed = parseSelectionKey(k);
+      if (!parsed) return '';
+      const c = parsed.cell;
+      const d = parsed.digit;
       return t('teachPractice.wrongCellDesc', { row: String(Math.floor(c / 9) + 1), col: String((c % 9) + 1), digit: String(d) });
-    });
-    const wrongMsg = t('teachPractice.wrongElim', { descs: wrongDescs.join(', ') });
+    }).filter(Boolean);
+    const wrongFillDescs = wrongFillKeys.slice(0, 2).map((k) => {
+      const parsed = parseSelectionKey(k);
+      if (!parsed) return '';
+      const c = parsed.cell;
+      const d = parsed.digit;
+      return t('teachPractice.wrongFillDesc', { row: String(Math.floor(c / 9) + 1), col: String((c % 9) + 1), digit: String(d) });
+    }).filter(Boolean);
+    const wrongMsgs: string[] = [];
+    if (wrongElimDescs.length > 0) {
+      wrongMsgs.push(t('teachPractice.wrongElim', { descs: wrongElimDescs.join(', ') }));
+    }
+    if (wrongFillDescs.length > 0) {
+      wrongMsgs.push(wrongFillDescs.join('，'));
+    }
 
-    const cleaned = new Set([...selectedSet].filter((k) => correctSet.has(k)));
+    const cleaned = new Set([
+      ...[...selectedElims].filter((k) => correctElimSet.has(k)),
+      ...[...selectedFills].filter((k) => correctFillSet.has(k)),
+    ]);
     set({
       flow: 'practice',
       practice: {
@@ -257,7 +331,7 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
         selected: cleaned,
         success: false,
         tone: 'error',
-        message: wrongMsg,
+        message: wrongMsgs.join('\n'),
       },
     });
   },
@@ -308,14 +382,17 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     const item = module?.practice[practiceIndex];
     if (!item) return;
 
-    const selected = new Set(item.answer.eliminates.map(([c, d]) => `${c}:${d}`));
+    const selected = new Set([
+      ...item.answer.eliminates.map(([c, d]) => elimKey(c, d)),
+      ...(item.answer.fills ?? []).map(([c, d]) => fillKey(c, d)),
+    ]);
     set({
       flow: 'result',
       practice: {
         ...practice,
         selected,
         revealed: true,
-        success: true,
+        success: false,
         tone: 'neutral',
         message: formatPracticeExplanation(item.answer) || t('teachPractice.answerRevealed'),
       },

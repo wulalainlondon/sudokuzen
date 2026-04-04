@@ -93,7 +93,13 @@ test.describe('single-player-full-run', () => {
       const e2e = (window as any).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
       const emptyIdx = puzzle.findIndex((v: number) => v === 0);
-      const wrong = solution[emptyIdx] === 9 ? 1 : solution[emptyIdx] + 1;
+      const boardCount = Array.from({ length: 10 }, () => 0);
+      for (const c of e2e.gs.cellsData) {
+        if (c.value >= 1 && c.value <= 9) boardCount[c.value]++;
+      }
+      const correct = Number(solution[emptyIdx]);
+      const wrong = [1, 2, 3, 4, 5, 6, 7, 8, 9].find((n) => n !== correct && boardCount[n] < 9);
+      if (!wrong) throw new Error('No injectable wrong digit found for game-over test');
       for (let i = 0; i < 3; i++) {
         e2e.selectCell(emptyIdx);
         e2e.handleInput(wrong);

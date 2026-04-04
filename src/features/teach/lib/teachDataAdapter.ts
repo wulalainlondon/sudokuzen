@@ -73,6 +73,11 @@ function normalizePracticeItem(item: any): PracticeItemModel {
             .map((x: any) => [Number(x?.cell ?? x?.[0]), Number(x?.digit ?? x?.[1])] as [number, number])
             .filter((pair: [number, number]) => Number.isFinite(pair[0]) && Number.isFinite(pair[1]))
         : [],
+      fills: Array.isArray(answer.fills)
+        ? answer.fills
+            .map((x: any) => [Number(x?.cell ?? x?.[0]), Number(x?.digit ?? x?.[1])] as [number, number])
+            .filter((pair: [number, number]) => Number.isFinite(pair[0]) && Number.isFinite(pair[1]))
+        : [],
       patternCells: normalizeIntArray(answer.patternCells),
       description: String(answer.description ?? ''),
       proof: Array.isArray(answer.proof) ? answer.proof.map(String) : [],

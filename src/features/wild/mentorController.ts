@@ -9,6 +9,7 @@ import { t } from '../../i18n/t';
 // ── Seen state persistence ───────────────────────────────────────────
 
 const SEEN_KEY = 'sudoku_mentor_seen';
+const INTRO_DEFER_KEY = 'sudoku_mentor_intro_deferred';
 
 function getSeenSet(): Set<string> {
   const arr = readJson<string[]>(SEEN_KEY, []);
@@ -23,6 +24,18 @@ function markSeen(key: string): void {
 
 function hasSeen(key: string): boolean {
   return getSeenSet().has(key);
+}
+
+export function hasCompletedMentorIntro(): boolean {
+  return hasSeen('intro_complete');
+}
+
+export function isMentorIntroDeferred(): boolean {
+  return readJson<boolean>(INTRO_DEFER_KEY, false) === true;
+}
+
+export function deferMentorIntro(): void {
+  writeJson(INTRO_DEFER_KEY, true);
 }
 
 // ── Display ──────────────────────────────────────────────────────────
@@ -74,6 +87,12 @@ export async function triggerIntroIfNeeded(): Promise<void> {
 
   // Mark intro as complete
   markSeen('intro_complete');
+  writeJson(INTRO_DEFER_KEY, false);
+}
+
+export async function startMentorIntroNow(): Promise<void> {
+  writeJson(INTRO_DEFER_KEY, false);
+  await triggerIntroIfNeeded();
 }
 
 /** Show milestone message on level-up (called from expSystem or wildController). */

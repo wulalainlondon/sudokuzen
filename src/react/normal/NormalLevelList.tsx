@@ -13,6 +13,7 @@ import {
 } from '../../features/levels';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
+import { subscribeRefresh } from '../../app/ui/refreshBus';
 
 interface LevelCardModel {
   id: number;
@@ -125,9 +126,9 @@ export function NormalLevelList(): ReactElement | null {
         setRevision((v) => v + 1);
       });
     };
-    window.addEventListener('normal-level-list-refresh', onRefresh);
+    const unsubscribe = subscribeRefresh('normal-level-list', onRefresh);
     return () => {
-      window.removeEventListener('normal-level-list-refresh', onRefresh);
+      unsubscribe();
       delete document.body.dataset.reactNormalLevelList;
       if (refreshRafRef.current !== null) cancelAnimationFrame(refreshRafRef.current);
     };
@@ -191,6 +192,7 @@ export function NormalLevelList(): ReactElement | null {
           <div
             key={card.id}
             className={itemClass}
+            data-id={String(card.id)}
             onClick={() => showPreLevelModal(card.id)}
           >
             {card.isCurrent && <div className="level-current-badge">{t('stage.inProgress')}</div>}

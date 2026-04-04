@@ -1,0 +1,45 @@
+name: E2E Nightly
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+jobs:
+  e2e-long:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci --legacy-peer-deps
+
+      - name: Install Playwright Browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Full E2E With Long/Live Suites
+        env:
+          E2E_LIVE_FIREBASE: '1'
+          E2E_LONG_WORLD: '1'
+        run: npm run test:e2e -- --reporter=line
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-nightly
+          path: playwright-report
+          if-no-files-found: ignore
+
+      - name: Upload Playwright Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results-nightly
+          path: test-results
+          if-no-files-found: ignore

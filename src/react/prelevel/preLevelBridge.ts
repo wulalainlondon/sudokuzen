@@ -1,27 +1,23 @@
-import { usePreLevelStore } from './preLevelStore';
+import {
+  closePreLevel,
+  isPreLevelOpen,
+  openPreLevel,
+  setPreLevelLeaderboard,
+  type PreLevelOpenPayload,
+} from '../../app/ui/uiOrchestrator';
 
-export function bridgeOpenPreLevel(payload: {
-  levelId: number;
-  displayName: string;
-  techName: string;
-  techTier: string;
-  bestRecord: string;
-  hasRecord: boolean;
-  hasReplay: boolean;
-  isPractice: boolean;
-  isSpeedrun: boolean;
-}): void {
-  usePreLevelStore.getState().open(payload);
+export function bridgeOpenPreLevel(payload: PreLevelOpenPayload): void {
+  openPreLevel(payload);
 }
 
-export function bridgeClosePreLevel(): void {
-  usePreLevelStore.getState().close();
+export function bridgeClosePreLevel(reason: string = 'legacy-hide'): void {
+  closePreLevel(reason);
 }
 
 export function bridgeSetPreLevelLeaderboard(html: string): void {
-  usePreLevelStore.getState().setLeaderboard(html);
+  setPreLevelLeaderboard(html);
 }
 
 export function bridgeIsPreLevelOpen(): boolean {
-  return usePreLevelStore.getState().visible;
+  return isPreLevelOpen();
 }

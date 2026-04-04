@@ -42,12 +42,24 @@ export function getUnstudiedGateSkills(profile: WildProfile): string[] {
   return requiredSkills.filter(k => !studied.includes(k));
 }
 
+/** Release any gate-banked EXP once all required skills are studied. */
+export function releaseGateOverflow(profile: WildProfile): number {
+  const banked = profile.gateOverflowExp ?? 0;
+  if (banked <= 0) return 0;
+  if (getUnstudiedGateSkills(profile).length > 0) return 0;
+  profile.totalExp += banked;
+  profile.gateOverflowExp = 0;
+  profile.iqLevel = levelFromExp(profile.totalExp);
+  return banked;
+}
+
 /** Apply EXP gain to profile. Returns { newLevel, leveledUp, expGained, gated }. */
 export function applyExp(
   profile: WildProfile,
   expGained: number,
 ): { newLevel: number; leveledUp: boolean; expGained: number; gated: boolean } {
   const oldLevel = profile.iqLevel;
+  releaseGateOverflow(profile);
   profile.totalExp += expGained;
   let newLevel = levelFromExp(profile.totalExp);
   let gated = false;
@@ -58,9 +70,10 @@ export function applyExp(
     if (unstudied.length > 0) {
       newLevel = 20;
       gated = true;
-      // Cap totalExp at Lv.20 threshold to prevent EXP/level desync
+      // Cap at Lv.20 and bank overflow so it can be released once all basics are studied.
       const lv20Threshold = expForLevel(20);
       if (profile.totalExp > lv20Threshold) {
+        profile.gateOverflowExp = (profile.gateOverflowExp ?? 0) + (profile.totalExp - lv20Threshold);
         profile.totalExp = lv20Threshold;
       }
     }

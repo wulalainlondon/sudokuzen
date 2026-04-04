@@ -5,6 +5,11 @@ export type TeachEliminateTarget = {
   digit: number;
 };
 
+export type TeachFillTarget = {
+  cell: number;
+  digit: number;
+};
+
 export type TeachStepModel = {
   text: string;
   focusCells: number[];
@@ -32,6 +37,7 @@ export type TeachExampleModel = {
 
 export type PracticeAnswer = {
   eliminates: Array<[number, number]>;
+  fills?: Array<[number, number]>;
   patternCells: number[];
   description: string;
   proof: string[];

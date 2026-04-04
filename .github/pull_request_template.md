@@ -7,6 +7,7 @@
 
 - [ ] `npm run lint`
 - [ ] `npm test`
+- [ ] `npm run test:e2e:smoke`
 - [ ] Manual verification notes:
 
 ## Architecture Rules (R1-R7)

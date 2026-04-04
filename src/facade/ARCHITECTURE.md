@@ -34,3 +34,13 @@ showTeachModal(3, 'tier');
 1. Override `window.fnName` in the bridge installer
 2. Search codebase for `import.*fnName` — convert ALL to `window.fnName`
 3. Add the function name to this list
+
+## Host Wrapper Rule (Steam / native shell)
+
+Wrapper integrations must not call core modules directly.
+Use the host boundary only:
+
+- `window.__SUDOKU_HOST_BRIDGE` (injected by wrapper)
+- `window.__SUDOKU_HOST_API` (exported by app, API v1)
+
+See: `docs/steam-host-bridge.md`

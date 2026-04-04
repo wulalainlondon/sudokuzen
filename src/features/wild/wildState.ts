@@ -95,6 +95,7 @@ export interface BestiaryEntry {
 export interface WildProfile {
   iqLevel: number;
   totalExp: number;
+  gateOverflowExp: number; // EXP banked while blocked by Lv.20 study gate
   puzzlesCompleted: number;
   totalEncounters: number;
   cooldowns: Record<string, number>; // technique key → puzzles remaining
@@ -120,6 +121,7 @@ export interface WildEncounter {
 const DEFAULT_PROFILE: WildProfile = {
   iqLevel: 1,
   totalExp: 0,
+  gateOverflowExp: 0,
   puzzlesCompleted: 0,
   totalEncounters: 0,
   cooldowns: {},

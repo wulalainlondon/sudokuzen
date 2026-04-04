@@ -21,6 +21,9 @@ test.describe('skills-cast', () => {
       const e2e = (window as any).__e2e;
       e2e.gs.isSpeedrunMode = false;
       e2e.initGame(1, true);
+      // Skill mode now only works in wild mode.
+      e2e.gs.currentLevel.id = -1001;
+      e2e.gs.currentLevel.source = 'wild';
     });
     await page.locator('.game-container').waitFor({ state: 'visible' });
   });

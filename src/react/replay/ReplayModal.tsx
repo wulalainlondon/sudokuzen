@@ -162,7 +162,11 @@ export function ReplayModal(): ReactElement {
   // Clear replay board to prevent stale content when modal closes
   useEffect(() => {
     if (!visible) return;
+    const rafId = requestAnimationFrame(() => {
+      import('../../features/replay').then((m) => m.replayReset());
+    });
     return () => {
+      cancelAnimationFrame(rafId);
       const board = document.getElementById('replay-board');
       if (board) board.innerHTML = '';
     };

@@ -80,6 +80,19 @@ export function WildSessionCard(): ReactElement | null {
       <div className="wild-session-bar-wrap"><div className="wild-session-bar-fill" id="wild-session-fill" style={{ width: `${vm.sessionFillPct.toFixed(1)}%` }} /></div>
       <div className="wild-session-meta" id="wild-session-meta">{vm.sessionMetaText}</div>
       <div className="wild-session-tech" id="wild-session-tech">{vm.sessionTechText}</div>
+      {vm.showIntroButton && (
+        <button
+          className="wild-intro-btn"
+          onClick={async () => {
+            const { startMentorIntroNow } = await import('../../features/wild/mentorController');
+            await startMentorIntroNow();
+            renderWildLobby();
+            showFeedback(t('wild.introWatched'), 'success');
+          }}
+        >
+          {t('wild.watchIntro')}
+        </button>
+      )}
     </>,
     el,
   );

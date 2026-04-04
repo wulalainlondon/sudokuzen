@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { expForLevel, levelFromExp, calculateExp, applyExp } from '../src/features/wild/expSystem';
+import { expForLevel, levelFromExp, calculateExp, applyExp, releaseGateOverflow } from '../src/features/wild/expSystem';
 import type { WildProfile } from '../src/features/wild/wildState';
 
 describe('expForLevel', () => {
@@ -130,6 +130,7 @@ describe('applyExp', () => {
     return {
       iqLevel: 1,
       totalExp: 0,
+      gateOverflowExp: 0,
       puzzlesCompleted: 0,
       totalEncounters: 0,
       cooldowns: {},
@@ -166,6 +167,7 @@ describe('applyExp', () => {
     expect(result.newLevel).toBe(20);
     expect(result.gated).toBe(true);
     expect(profile.totalExp).toBe(lv20Exp); // EXP capped
+    expect(profile.gateOverflowExp).toBeGreaterThan(0); // overflow banked
   });
 
   it('allows level 21 when all basic skills are studied', () => {
@@ -181,5 +183,23 @@ describe('applyExp', () => {
     const result = applyExp(profile, needed);
     expect(result.newLevel).toBeGreaterThanOrEqual(21);
     expect(result.gated).toBe(false);
+  });
+
+  it('releases banked gate EXP when all basics are studied', () => {
+    const lv20Exp = expForLevel(20);
+    const profile = makeProfile({
+      iqLevel: 20,
+      totalExp: lv20Exp,
+      gateOverflowExp: 600,
+      studiedSkills: [
+        'naked_single', 'hidden_single', 'locked_candidates',
+        'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple',
+      ],
+    });
+    const released = releaseGateOverflow(profile);
+    expect(released).toBe(600);
+    expect(profile.gateOverflowExp).toBe(0);
+    expect(profile.totalExp).toBe(lv20Exp + 600);
+    expect(profile.iqLevel).toBeGreaterThanOrEqual(21);
   });
 });

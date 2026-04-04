@@ -8,7 +8,7 @@ import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface ZenOverlayProps {
   visible: boolean;
-  onClose?: () => void;
+  onClose?: (reason?: string) => void;
   children: ReactNode;
   /** DOM id for the overlay container (for CSS targeting) */
   id?: string;
@@ -71,7 +71,7 @@ export function ZenOverlay({
   const handleBackdrop = useCallback(
     (e: React.MouseEvent) => {
       if (backdropCloseDelayMs > 0 && Date.now() - openedAtRef.current < backdropCloseDelayMs) return;
-      if (!noBackdropClose && e.target === e.currentTarget) onClose?.();
+      if (!noBackdropClose && e.target === e.currentTarget) onClose?.('backdrop');
     },
     [onClose, noBackdropClose, backdropCloseDelayMs],
   );

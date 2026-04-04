@@ -7,19 +7,30 @@ type Props = {
   item: PracticeItemModel | null;
   practice: PracticeSessionState;
   onToggle: (cell: number, digit: number) => void;
+  onToggleFill: (cell: number, digit: number) => void;
 };
 
 function getNotes(notes: Record<string, number[]>, idx: number): number[] {
   return notes[String(idx)] ?? notes[String(Number(idx))] ?? [];
 }
 
-export function PracticeBoard({ item, practice, onToggle }: Props): ReactElement {
+function elimKey(cell: number, digit: number): string {
+  return `elim:${cell}:${digit}`;
+}
+
+function fillKey(cell: number, digit: number): string {
+  return `fill:${cell}:${digit}`;
+}
+
+export function PracticeBoard({ item, practice, onToggle, onToggleFill }: Props): ReactElement {
   const boardRef = useRef<HTMLDivElement | null>(null);
 
   if (!item) return <div className="practice-board" />;
 
   const selected = practice.selected;
-  const correct = new Set(item.answer.eliminates.map(([c, d]) => `${c}:${d}`));
+  const correctElim = new Set(item.answer.eliminates.map(([c, d]) => elimKey(c, d)));
+  const correctFill = new Set((item.answer.fills ?? []).map(([c, d]) => fillKey(c, d)));
+  const fillTargets = new Map((item.answer.fills ?? []).map(([c, d]) => [c, d]));
   const hintLevel = practice.hintLevel;
   const patternCells = item.answer.patternCells ?? [];
   const focusSet = new Set(hintLevel >= 1 ? patternCells : []);
@@ -34,13 +45,26 @@ export function PracticeBoard({ item, practice, onToggle }: Props): ReactElement
         const value = Number(item.board[i] ?? 0);
         const given = Number(item.given[i] ?? 0);
         const noteArr = getNotes(item.notes, i);
+        const fillDigit = fillTargets.get(i);
+        const fillSelection = fillDigit !== undefined ? fillKey(i, fillDigit) : null;
 
         let cellClass = 'practice-cell';
         if (given !== 0) cellClass += ' given-cell';
         if (focusSet.has(i)) cellClass += ' focus';
+        if (fillSelection && selected.has(fillSelection)) cellClass += ' fill-selected';
+        if (practice.revealed && fillSelection && correctFill.has(fillSelection)) cellClass += ' fill-correct';
+        if (practice.tone === 'error' && fillSelection && selected.has(fillSelection) && !correctFill.has(fillSelection)) cellClass += ' fill-wrong';
 
         return (
-          <div key={i} className={cellClass} data-idx={i}>
+          <div
+            key={i}
+            className={cellClass}
+            data-idx={i}
+            onClick={() => {
+              if (fillDigit === undefined || practice.revealed || given !== 0 || value !== 0) return;
+              onToggleFill(i, fillDigit);
+            }}
+          >
             {value !== 0 ? (
               value
             ) : (
@@ -48,12 +72,16 @@ export function PracticeBoard({ item, practice, onToggle }: Props): ReactElement
                 {Array.from({ length: 9 }, (_, offset) => {
                   const d = offset + 1;
                   const hasDigit = noteArr.includes(d);
-                  const key = `${i}:${d}`;
+                  const elimSelection = elimKey(i, d);
+                  const fillSelectionForDigit = fillKey(i, d);
                   let noteClass = 'tc-note';
 
-                  if (selected.has(key)) noteClass += ' strike';
-                  if (practice.tone === 'error' && selected.has(key) && !correct.has(key)) noteClass += ' wrong';
-                  if (practice.revealed && correct.has(key)) noteClass += ' correct-reveal';
+                  if (selected.has(elimSelection)) noteClass += ' strike';
+                  if (selected.has(fillSelectionForDigit)) noteClass += ' fill-pick';
+                  if (practice.tone === 'error' && selected.has(elimSelection) && !correctElim.has(elimSelection)) noteClass += ' wrong';
+                  if (practice.tone === 'error' && selected.has(fillSelectionForDigit) && !correctFill.has(fillSelectionForDigit)) noteClass += ' wrong';
+                  if (practice.revealed && correctElim.has(elimSelection)) noteClass += ' correct-reveal';
+                  if (practice.revealed && correctFill.has(fillSelectionForDigit)) noteClass += ' fill-correct-reveal';
 
                   return (
                     <span
@@ -61,7 +89,15 @@ export function PracticeBoard({ item, practice, onToggle }: Props): ReactElement
                       className={noteClass}
                       data-cell={i}
                       data-digit={d}
-                      onClick={() => hasDigit && !practice.revealed && onToggle(i, d)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!hasDigit || practice.revealed) return;
+                        if (fillDigit === d) {
+                          onToggleFill(i, d);
+                          return;
+                        }
+                        onToggle(i, d);
+                      }}
                     >
                       {hasDigit ? d : ''}
                     </span>
