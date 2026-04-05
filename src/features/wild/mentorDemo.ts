@@ -257,7 +257,8 @@ function getTechColor(techId: string): string {
 
 export async function runMentorDemo(): Promise<void> {
   // Setup
-  document.getElementById('level-screen')?.style.setProperty('display', 'none');
+  const levelScreenForDemo = document.getElementById('level-screen');
+  if (levelScreenForDemo) levelScreenForDemo.style.display = 'none';
   const container = document.querySelector('.game-container') as HTMLElement | null;
   if (container) container.style.display = 'flex';
 
@@ -607,7 +608,8 @@ export async function runMentorDemo(): Promise<void> {
   if (infoBar) infoBar.style.display = '';
   if (numpadWrapper) numpadWrapper.style.display = '';
   if (container) container.style.display = 'none';
-  document.getElementById('level-screen')?.style.setProperty('display', 'flex');
+  const levelScreenRestore = document.getElementById('level-screen');
+  if (levelScreenRestore) levelScreenRestore.style.display = 'flex';
   if (gs.gridEl) {
     gs.gridEl.classList.remove('demo-frozen');
     Array.from(gs.gridEl.children).forEach(c => {

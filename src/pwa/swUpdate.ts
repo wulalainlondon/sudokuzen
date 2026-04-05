@@ -1,3 +1,5 @@
+import { SK } from '../storage/keys';
+
 const RELOAD_GUARD_KEY = 'sudoku_reload_guard_ts';
 const RELOAD_GUARD_MS = 15000;
 const RELOAD_ONCE_KEY = 'sudoku_reload_once';
@@ -39,11 +41,10 @@ function isGameActivelyPlaying(): boolean {
 
 export function enforceAppVersion(appVersion: string): Promise<boolean> {
   if (!import.meta.env.PROD) return Promise.resolve(false);
-  const key = 'sudoku_app_version';
-  const stored = localStorage.getItem(key);
+  const stored = localStorage.getItem(SK.APP_VERSION);
   if (stored === appVersion) return Promise.resolve(false);
 
-  localStorage.setItem(key, appVersion);
+  localStorage.setItem(SK.APP_VERSION, appVersion);
   if ('serviceWorker' in navigator) {
     return navigator.serviceWorker
       .getRegistrations()

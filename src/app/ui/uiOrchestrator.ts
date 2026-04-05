@@ -1,16 +1,7 @@
 import { usePreLevelStore } from '../../react/prelevel/preLevelStore';
+import type { PreLevelOpenPayload } from '../../entities/prelevel';
 
-export interface PreLevelOpenPayload {
-  levelId: number;
-  displayName: string;
-  techName: string;
-  techTier: string;
-  bestRecord: string;
-  hasRecord: boolean;
-  hasReplay: boolean;
-  isPractice: boolean;
-  isSpeedrun: boolean;
-}
+export type { PreLevelOpenPayload };
 
 export type PreLevelCloseReason =
   | 'backdrop'
@@ -20,13 +11,13 @@ export type PreLevelCloseReason =
   | 'system'
   | string;
 
-let lastOpenLevelId: number | null = null;
+let _lastOpenLevelId: number | null = null;
 
 export function openPreLevel(payload: PreLevelOpenPayload): void {
   const state = usePreLevelStore.getState();
   // Guard duplicate open requests for the same level to avoid loading/reset flicker.
   if (state.visible && state.levelId === payload.levelId) return;
-  lastOpenLevelId = payload.levelId;
+  _lastOpenLevelId = payload.levelId;
   state.open(payload);
 }
 
@@ -43,6 +34,6 @@ export function isPreLevelOpen(): boolean {
 export function setPreLevelLeaderboard(html: string): void {
   const state = usePreLevelStore.getState();
   // Ignore stale async updates after modal close.
-  if (!state.visible || state.levelId !== lastOpenLevelId) return;
+  if (!state.visible || state.levelId !== _lastOpenLevelId) return;
   state.setLeaderboard(html);
 }

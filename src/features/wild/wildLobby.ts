@@ -4,11 +4,12 @@ import { loadWildProfile, saveWildProfile, loadWildSave } from './wildState';
 import { TECHNIQUE_TABLE, getAutoCastKeys, getTechniqueMeta } from './techniqueMeta';
 import { expForLevel, getUnstudiedGateSkills, releaseGateOverflow } from './expSystem';
 import { getMentorNote, hasCompletedMentorIntro } from './mentorController';
+import { escapeHtml } from '../../shared/html/escape';
 import { showFeedback } from '../../ui/feedback';
 import { getOnlineCount } from '../../firebase/client';
 import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
-import { saveScroll, restoreScroll } from '../levels';
+import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
 import { bridgeSetWildLobbyViewModel, bridgeSetWildLobbyVisible } from '../../react/wild/wildLobbyBridge';
 import type { EnterButtonState, RarityFilter as StoreRarityFilter, BestiaryFilter as StoreBestiaryFilter } from '../../react/wild/wildLobbyStore';
 import {
@@ -531,8 +532,8 @@ export function renderWildLobby(): void {
         const popup = document.createElement('div');
         popup.id = 'beast-note-popup';
         popup.className = 'beast-note-popup';
-        popup.innerHTML = `<div class="beast-note-title">${conquered ? tech.name + ' · ' + tech.subtitle : '？？？'}</div>
-          <div class="beast-note-body">${note}</div>
+        popup.innerHTML = `<div class="beast-note-title">${conquered ? escapeHtml(tech.name) + ' · ' + escapeHtml(tech.subtitle) : '？？？'}</div>
+          <div class="beast-note-body">${escapeHtml(note)}</div>
           <div class="beast-note-attr">${t('wildLobby.mentorAttr')}</div>`;
         popup.addEventListener('click', () => popup.remove());
         document.body.appendChild(popup);

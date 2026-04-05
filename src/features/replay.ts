@@ -21,7 +21,7 @@ import {
 const RB_BASE_INTERVAL = 700;
 
 // Score tracking during replay
-let replayTechniqueLog: { type: string; technique?: TechniqueName | null }[] = [];
+let _replayTechniqueLog: { type: string; technique?: TechniqueName | null }[] = [];
 
 export function isKeyReplayAction(a: ActionRecord): boolean {
   return ['fill', 'mistake', 'eliminate', 'quick_note'].includes(a.type);
@@ -101,7 +101,7 @@ export function closeReplayModal(): void {
 }
 
 export function replayOpen(): void {
-  replayTechniqueLog = [];
+  _replayTechniqueLog = [];
   gs.rbState = gs.currentLevel!.puzzle.map((v: number): ReplayCellState => ({ value: v, fixed: v !== 0, notes: [] }));
   gs.rbStepIdx = 0;
   gs.rbIsPlaying = false;
@@ -256,7 +256,7 @@ export function replayStepForward(): void {
   }
 
   // Log for scoring
-  replayTechniqueLog.push({ type: action.type, technique: detectedTechnique });
+  _replayTechniqueLog.push({ type: action.type, technique: detectedTechnique });
 
   gs.rbState = replayBuildStateAtStep(gs.rbStepIdx + 1);
   gs.rbStepIdx++;
@@ -360,7 +360,7 @@ function highlightReplayListItem(): void {
 
 function showReplayScore(): void {
   const errors = gs.actionHistory.filter((a) => a.type === 'mistake').length;
-  const score = computeReplayScore(replayTechniqueLog, gs.seconds, errors);
+  const score = computeReplayScore(_replayTechniqueLog, gs.seconds, errors);
 
   const gradeColors: Record<string, string> = {
     S: 'var(--star-color)',

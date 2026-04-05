@@ -4,6 +4,7 @@
 
 import { gs, type LegacyTeachData, type LegacyTeachStep } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
+import { escapeHtml } from '../shared/html/escape';
 import { getTeachData, getTeachShard, hasTeachModule } from '../data/dataRegistry';
 import { t } from '../i18n/t';
 import { renderLibraryCards, openLibraryOverlay } from './teachLibrary';
@@ -140,8 +141,8 @@ export function renderTeachModalContent(data: unknown, stars: number | string, s
 
   const explEl = document.getElementById('teach-explanation')!;
   const explanation = Array.isArray(teachData.explanation) ? teachData.explanation.map((p) => String(p)) : [];
-  explEl.innerHTML = [`<p class="teach-level-note">章節定位：${stage}層</p>`]
-    .concat(explanation.map((p) => `<p>${p}</p>`))
+  explEl.innerHTML = [`<p class="teach-level-note">章節定位：${escapeHtml(String(stage))}層</p>`]
+    .concat(explanation.map((p) => `<p>${escapeHtml(p)}</p>`))
     .join('');
 
   const steps = Array.isArray(teachData.example?.steps)

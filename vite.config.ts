@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 const deployTarget = process.env.DEPLOY_TARGET;
 const base = deployTarget === 'github-pages' ? '/sudokuzen/' : '/';
@@ -7,6 +8,9 @@ const base = deployTarget === 'github-pages' ? '/sudokuzen/' : '/';
 export default defineConfig({
   base,
   plugins: [react()],
+  resolve: {
+    alias: { '@': path.resolve(__dirname, './src') },
+  },
   test: {
     exclude: ['e2e/**', 'node_modules/**'],
   },

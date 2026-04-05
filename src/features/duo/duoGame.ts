@@ -35,7 +35,7 @@ import { escapeHtml } from '../../shared/html/escape';
 let _countdownLaunched = false;
 let _countdownRafCancelled = false;
 let _duoFinishSubmitted = false;
-let duoResultShown = false;
+let _duoResultShown = false;
 let _duoOpponentOfflineNotified = false;
 let _lastSubmittedProgress = -1;
 
@@ -522,8 +522,8 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
 // ── Result ───────────────────────────────────────────────────────────
 
 export function showDuoResult(d: DuoRoomData): void {
-  if (duoResultShown) return;
-  duoResultShown = true;
+  if (_duoResultShown) return;
+  _duoResultShown = true;
 
   const hTime = d.hostFinishTime;
   const gTime = d.guestFinishTime;
@@ -718,7 +718,7 @@ export async function closeDuoResult(): Promise<void> {
 
 export function resetDuoState(): void {
   _countdownRafCancelled = true;
-  duoResultShown = false;
+  _duoResultShown = false;
   _countdownLaunched = false;
   _duoFinishSubmitted = false;
   _duoOpponentOfflineNotified = false;

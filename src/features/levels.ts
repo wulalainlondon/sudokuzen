@@ -3,6 +3,7 @@
 import { gs, type LevelData, type ActionRecord } from '../game/state';
 import { getAllLevels, hasTeachModule } from '../data/dataRegistry';
 import { SK, readJson } from '../storage/keys';
+import { escapeHtml } from '../shared/html/escape';
 import { formatSeconds } from '../game/utils';
 import { getRecordsStorageKeyForLevelList, getSaveKeyForCurrentMode } from '../game/modePolicy';
 import { showFeedback } from '../ui/feedback';
@@ -10,10 +11,7 @@ import { loadPreLevelLeaderboard } from '../firebase/client';
 import { syncLevelCardSize } from '../game/board';
 import { TECH_MAP, shouldShowTeach, closeLibraryOverlay } from './teach-legacy';
 import { closeWildLobby, openWildLobby } from './wild/wildLobby';
-// Dynamic import to avoid circular: levels ↔ duo
-function closeDuoLobby() {
-  import('./duo/duoLobby').then((m) => m.closeDuoLobby()).catch(() => {});
-}
+import { closeDuoLobby } from './duo/duoLobby';
 import { closePracticeLobby, enterPracticeTechnique } from './practice/practiceLobby';
 import { t } from '../i18n/t';
 import { toClassicLevelRecord, toSpeedLevelRecord, getReplayHistory } from '../shared/records/levelRecords';
@@ -132,8 +130,8 @@ export function renderStageMap(): void {
     node.innerHTML = `
       <div class="stage-dot">${isLocked ? '🔒' : isCleared ? '✓' : ''}</div>
       <div class="stage-info">
-        <div class="stage-name">${tierName}</div>
-        <div class="stage-progress">${isLocked ? lockHint : cleared === 0 ? t('stage.notChallenged') : isCleared ? t('stage.unlocked') : t('stage.inProgress')}</div>
+        <div class="stage-name">${escapeHtml(tierName)}</div>
+        <div class="stage-progress">${isLocked ? escapeHtml(lockHint) : cleared === 0 ? t('stage.notChallenged') : isCleared ? t('stage.unlocked') : t('stage.inProgress')}</div>
       </div>
       <div class="stage-bar-wrap"><div class="stage-bar-fill" style="width:${pct}%"></div></div>
       <div class="stage-count">${cleared}/${total}</div>
@@ -143,19 +141,8 @@ export function renderStageMap(): void {
 }
 
 // ── View scroll position memory ──────────────────────────────────────
-const _scrollPositions: Record<string, number> = {};
-
-export function saveScroll(id: string): void {
-  const el = document.getElementById(id);
-  if (el) _scrollPositions[id] = el.scrollTop;
-}
-
-export function restoreScroll(id: string): void {
-  const pos = _scrollPositions[id];
-  if (pos == null) return;
-  const el = document.getElementById(id);
-  if (el) el.scrollTop = pos;
-}
+import { saveScroll, restoreScroll } from '../shared/ui/scrollMemory';
+export { saveScroll, restoreScroll };
 
 // ── Tier view ───────────────────────────────────────────────────────
 
@@ -273,14 +260,14 @@ export function renderLevelGrid(): void {
 
     if (isLocked) {
       item.innerHTML = `
-        <div class="level-num">${l.displayName}</div>
+        <div class="level-num">${escapeHtml(l.displayName)}</div>
         <div class="level-lock">${t('stage.locked')}</div>
         <div class="level-lock-hint">${t('stage.lockHint')}</div>
       `;
     } else {
       item.innerHTML = `
         ${isCurrent ? `<div class="level-current-badge">${t('stage.inProgress')}</div>` : ''}
-        <div class="level-num">${l.displayName}</div>
+        <div class="level-num">${escapeHtml(l.displayName)}</div>
         <div class="${starsClass}">${starsText}</div>
         <div class="${statsClass}">${timeStr}</div>
       `;
@@ -507,11 +494,11 @@ export function advanceToNextLevel(): void {
 
 // ── Random / Pool (Wild mode) ────────────────────────────────────────
 
-let worldLaunchInFlight = false;
+let _worldLaunchInFlight = false;
 
 export async function startPoolRandom(): Promise<void> {
-  if (worldLaunchInFlight) return;
-  worldLaunchInFlight = true;
+  if (_worldLaunchInFlight) return;
+  _worldLaunchInFlight = true;
   import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(true)).catch(() => {});
 
   const enterBtn = document.getElementById('wild-enter-btn') as HTMLButtonElement | null;
@@ -543,7 +530,7 @@ export async function startPoolRandom(): Promise<void> {
     console.error('[World] start failed:', e);
     showFeedback(t('wild.worldLoadError'), 'error');
   } finally {
-    worldLaunchInFlight = false;
+    _worldLaunchInFlight = false;
     import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(false)).catch(() => {});
     if (enterBtn) {
       enterBtn.classList.remove('is-loading');

@@ -2,7 +2,8 @@
 // 41 techniques × 25 levels = 1025 levels in public/data/practice.json
 
 import { gs, type ActionRecord } from '../../game/state';
-import { SK, readJson } from '../../storage/keys';
+import { SK, readJson, writeJson } from '../../storage/keys';
+import { escapeHtml } from '../../shared/html/escape';
 import { getPracticeLevels, hasTeachModule } from '../../data/dataRegistry';
 import { TECH_MAP } from '../teach-legacy';
 import { showFeedback } from '../../ui/feedback';
@@ -11,7 +12,7 @@ import { playZenMentor, playZenEncounter, playZenDiscover, playZenLevelUp, playZ
 import { t } from '../../i18n/t';
 import { usePracticeTreeStore } from '../../react/practice/practiceTreeStore';
 import { emitNavigation } from '../../app/navigation/navigationBus';
-import { saveScroll, restoreScroll } from '../levels';
+import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
 import type { SudokuWindow } from '../../facade/windowTypes';
 import { toClassicLevelRecord } from '../../shared/records/levelRecords';
 
@@ -98,7 +99,6 @@ const PHASE_TEACH_BOOK: Record<PracticePhaseKey, number> = {
   phase4: 18, // aic
   phase5: 24, // forcing_chain_net
 };
-const PRACTICE_PHASE_TEACH_SEEN_KEY = 'sudoku_practice_phase_teach_seen_v1';
 
 // Deduplicate tree (als_xz appears twice above — keep first)
 const _seen = new Set<string>();
@@ -178,20 +178,12 @@ function getPracticePhaseKey(techKey: string): PracticePhaseKey {
 
 function maybeShowPhaseTeachBrief(techKey: string): void {
   const phase = getPracticePhaseKey(techKey);
-  const raw = localStorage.getItem(PRACTICE_PHASE_TEACH_SEEN_KEY);
-  let seen: Record<string, boolean> = {};
-  if (raw) {
-    try {
-      seen = JSON.parse(raw) as Record<string, boolean>;
-    } catch {
-      seen = {};
-    }
-  }
+  const seen = readJson<Record<string, boolean>>(SK.PRACTICE_PHASE_TEACH_SEEN, {});
   if (seen[phase]) return;
 
   const stars = PHASE_TEACH_BOOK[phase];
   seen[phase] = true;
-  localStorage.setItem(PRACTICE_PHASE_TEACH_SEEN_KEY, JSON.stringify(seen));
+  writeJson(SK.PRACTICE_PHASE_TEACH_SEEN, seen);
   if (!hasTeachModule(stars)) return;
 
   window.setTimeout(() => {
@@ -335,7 +327,7 @@ function renderPracticeLevelGrid(techKey: string): void {
       : '☆☆☆';
 
     item.innerHTML = `
-      <div class="level-num">${l.displayName || t('practiceLobby.levelFallback', { idx: String(idx + 1) })}</div>
+      <div class="level-num">${escapeHtml(l.displayName || t('practiceLobby.levelFallback', { idx: String(idx + 1) }))}</div>
       <div class="${starsClass}">${starsText}</div>
       <div class="level-stats${hasRecord ? '' : ' is-empty'}">${timeStr}</div>
     `;
@@ -461,10 +453,6 @@ export function savePracticeRecord(levelId: number, seconds: number, errors: num
       techKey,
       ...(replayHistory ? { replayHistory } : {}),
     };
-    try {
-      localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(records));
-    } catch (e) {
-      console.warn('savePracticeRecord: localStorage quota exceeded', e);
-    }
+    writeJson(SK.PRACTICE_RECORDS, records);
   }
 }

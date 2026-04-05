@@ -1,7 +1,7 @@
 // Duo metrics — Firebase ops tracking for debugging & analytics
 // Extracted from duo.ts
 
-const DUO_METRICS_KEY = 'sudoku_duo_metrics_v1';
+import { SK, readJson, writeJson } from '../../storage/keys';
 
 export type DuoMetricKey =
   | 'lobbyFetches'
@@ -18,9 +18,8 @@ export type DuoMetrics = Record<DuoMetricKey, number> & { lastUpdatedAtMs: numbe
 
 function loadDuoMetrics(): DuoMetrics {
   try {
-    const raw = localStorage.getItem(DUO_METRICS_KEY);
-    if (!raw) throw new Error('empty');
-    const parsed = JSON.parse(raw) as Partial<DuoMetrics>;
+    const parsed = readJson<Partial<DuoMetrics>>(SK.DUO_METRICS, {});
+    if (!Object.keys(parsed).length) throw new Error('empty');
     return {
       lobbyFetches: Number(parsed.lobbyFetches || 0),
       lobbyFetchHits: Number(parsed.lobbyFetchHits || 0),
@@ -55,11 +54,7 @@ let _duoMetrics = loadDuoMetrics();
 
 function saveDuoMetrics(): void {
   _duoMetrics.lastUpdatedAtMs = Date.now();
-  try {
-    localStorage.setItem(DUO_METRICS_KEY, JSON.stringify(_duoMetrics));
-  } catch (e) {
-    console.warn('[saveDuoMetrics] localStorage quota exceeded', e);
-  }
+  writeJson(SK.DUO_METRICS, _duoMetrics);
 }
 
 export function bumpDuoMetric(key: DuoMetricKey, amount = 1): void {

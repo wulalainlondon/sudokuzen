@@ -42,10 +42,10 @@ const PROFILE_SYNC_KEYS: Set<string> = new Set([
   SK.THEME,
   SK.PLAYER_TITLE,
 ]);
-let progressSyncTimer: ReturnType<typeof setTimeout> | null = null;
+let _progressSyncTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingSaveSyncTimers = new Map<string, ReturnType<typeof setTimeout>>();
-let bridgeInstalled = false;
-let hydrateComplete = false;
+let _bridgeInstalled = false;
+let _hydrateComplete = false;
 
 function isIsoDay(value: unknown): value is string {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -412,7 +412,7 @@ export function saveAlias(): void {
   const { playerId } = getPlayerIdentity();
   void upsertAliasIndex(playerId, alias);
   // Always re-hydrate on alias change — the new alias may map to a different playerId with existing records
-  hydrateComplete = false;
+  _hydrateComplete = false;
   void hydratePlayerProfileFromCloud().then(() => {
     scheduleProgressSync();
   });
@@ -468,7 +468,7 @@ export async function syncAchievementsToCloud(achievements: AchievementMap): Pro
 export async function syncPlayerProgressToCloud(): Promise<void> {
   if (!gs.firebaseReady || !gs.db) return;
   // Block sync until hydrate finishes, to prevent overwriting cloud data with empty localStorage
-  if (!hydrateComplete) return;
+  if (!_hydrateComplete) return;
   const { playerId, alias } = getPlayerIdentity();
   const records = normalizeRecordMap(readJson<Record<string, unknown>>(SK.RECORDS, {}), 'classic');
   const speedRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.SPEED_RECORDS, {}), 'speed');
@@ -495,15 +495,15 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
 
 export function scheduleProgressSync(delayMs = PROGRESS_SYNC_DEBOUNCE_MS): void {
   if (!gs.firebaseReady || !gs.db) return;
-  if (progressSyncTimer) clearTimeout(progressSyncTimer);
-  progressSyncTimer = setTimeout(() => {
-    progressSyncTimer = null;
+  if (_progressSyncTimer) clearTimeout(_progressSyncTimer);
+  _progressSyncTimer = setTimeout(() => {
+    _progressSyncTimer = null;
     void syncPlayerProgressToCloud();
   }, delayMs);
 }
 
 export function installPlayerCloudSyncBridge(): void {
-  if (bridgeInstalled) return;
+  if (_bridgeInstalled) return;
   if (typeof window === 'undefined' || !window.localStorage) return;
   const proto = Object.getPrototypeOf(window.localStorage) as Storage;
   if (!proto || typeof proto.setItem !== 'function' || typeof proto.removeItem !== 'function') return;
@@ -534,7 +534,7 @@ export function installPlayerCloudSyncBridge(): void {
     if (isProfileSyncKey(key)) scheduleProgressSync();
   };
 
-  bridgeInstalled = true;
+  _bridgeInstalled = true;
 }
 
 export async function syncSaveToCloud(saveKey: string, payload: Record<string, unknown>): Promise<void> {
@@ -657,7 +657,7 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
   } catch (e) {
     console.warn('hydrate player profile failed:', e);
   } finally {
-    hydrateComplete = true;
+    _hydrateComplete = true;
   }
 }
 

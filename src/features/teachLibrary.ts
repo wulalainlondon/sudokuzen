@@ -6,6 +6,7 @@ import { getTeachData, getTeachManifest, hasTeachModule } from '../data/dataRegi
 import type { TeachModuleMeta } from '../data/dataRegistry';
 import { t } from '../i18n/t';
 import { LEARNING_ORDER, getGroups, getTeachStageLabel, showTeachModal } from './teach-legacy';
+import { escapeHtml } from '../shared/html/escape';
 import type { SudokuWindow } from '../facade/windowTypes';
 
 // ── Library functions ─────────────────────────────────────────────
@@ -153,9 +154,9 @@ function renderLibraryCardsFromItems(items: LibraryItem[]): void {
                     ${teach.hasPractice ? '<span class="library-badge practice">可練習</span>' : ''}
                 </div>
             </div>
-            <h3 class="library-card-title">${teach.name}</h3>
-            <p class="library-card-subtitle">${teach.subtitle}</p>
-            <div class="library-card-key">${teach.technique || '-'}</div>
+            <h3 class="library-card-title">${escapeHtml(teach.name)}</h3>
+            <p class="library-card-subtitle">${escapeHtml(teach.subtitle)}</p>
+            <div class="library-card-key">${escapeHtml(teach.technique || '-')}</div>
             <button class="library-open-btn" onclick="event.stopPropagation(); openTeachFromLibrary('${key}')">研讀秘笈</button>
         </article>
       `;

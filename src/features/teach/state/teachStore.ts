@@ -8,6 +8,7 @@ import type {
 } from '../../../entities/teach';
 import { fetchTeachModule } from '../lib/teachDataAdapter';
 import { t } from '../../../i18n/t';
+import { SK, readJson, writeJson } from '../../../storage/keys';
 
 type TeachStore = {
   flow: TeachFlowState;
@@ -86,16 +87,16 @@ function formatPracticeExplanation(answer: { description: string; aicChain: stri
 
 function markTeachRead(stars: number | null): void {
   if (stars === null || !Number.isFinite(stars)) return;
-  const read = JSON.parse(localStorage.getItem('sudoku_teach_read') || '{}');
+  const read = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
   read[String(stars)] = true;
-  localStorage.setItem('sudoku_teach_read', JSON.stringify(read));
+  writeJson(SK.TEACH_READ, read);
 }
 
 function markPracticeDone(stars: number | null): void {
   if (stars === null || !Number.isFinite(stars)) return;
-  const done = JSON.parse(localStorage.getItem('sudoku_practice_done') || '{}');
+  const done = readJson<Record<string, boolean>>(SK.PRACTICE_DONE, {});
   done[String(stars)] = true;
-  localStorage.setItem('sudoku_practice_done', JSON.stringify(done));
+  writeJson(SK.PRACTICE_DONE, done);
 }
 
 function maybeRestoreLibrary(source: TeachLaunchSource): void {

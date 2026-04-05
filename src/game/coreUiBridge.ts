@@ -1,3 +1,5 @@
+import { escapeHtml } from '../shared/html/escape';
+
 interface GameHeaderPayload {
   isWild: boolean;
   isPractice: boolean;
@@ -48,15 +50,18 @@ export function clearGhostMarkedCells(state: { gridEl: HTMLElement | null }): vo
 }
 
 export function hidePauseScreen(): void {
-  document.getElementById('pause-screen')?.style.setProperty('display', 'none');
+  const el = document.getElementById('pause-screen');
+  if (el) el.style.display = 'none';
 }
 
 export function hideLevelScreen(): void {
-  document.getElementById('level-screen')?.style.setProperty('display', 'none');
+  const el = document.getElementById('level-screen');
+  if (el) el.style.display = 'none';
 }
 
 export function showGameContainer(): void {
-  (document.querySelector('.game-container') as HTMLElement | null)?.style.setProperty('display', 'flex');
+  const el = document.querySelector('.game-container') as HTMLElement | null;
+  if (el) el.style.display = 'flex';
 }
 
 export function setUndoButtonVisible(visible: boolean): void {
@@ -71,7 +76,8 @@ export function setPauseScreenContent(levelName: string, timerText: string): voi
 }
 
 export function showPauseScreen(): void {
-  document.getElementById('pause-screen')?.style.setProperty('display', 'flex');
+  const el = document.getElementById('pause-screen');
+  if (el) el.style.display = 'flex';
 }
 
 export function setDocumentTheme(theme: 'light' | 'dark'): void {
@@ -136,12 +142,12 @@ export function setLivesSpeedrun(livesEl: HTMLElement | null): void {
 export function setLivesBlind(livesEl: HTMLElement | null, blindLabel: string): void {
   if (!livesEl) return;
   livesEl.innerHTML =
-    `<span style="color: var(--accent-strong); font-size: 0.72rem; letter-spacing: 0.08em;">${blindLabel}</span>`;
+    `<span style="color: var(--accent-strong); font-size: 0.72rem; letter-spacing: 0.08em;">${escapeHtml(blindLabel)}</span>`;
 }
 
 export function setLivesNoRemaining(livesEl: HTMLElement | null, noLivesLabel: string, surrenderLabel: string): void {
   if (!livesEl) return;
-  livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem;">${noLivesLabel}</span> <button class="duo-surrender-btn" onclick="surrenderDuo()">${surrenderLabel}</button>`;
+  livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem;">${escapeHtml(noLivesLabel)}</span> <button class="duo-surrender-btn" onclick="surrenderDuo()">${escapeHtml(surrenderLabel)}</button>`;
 }
 
 export function setLivesRemaining(livesEl: HTMLElement | null, remaining: number): void {

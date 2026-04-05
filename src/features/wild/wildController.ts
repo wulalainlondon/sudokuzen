@@ -127,7 +127,8 @@ export async function resumeWildEncounter(): Promise<void> {
   }));
 
   // Launch game — initGame with forceReset=false will pick up the save
-  document.getElementById('level-screen')?.style.setProperty('display', 'none');
+  const levelScreenEl = document.getElementById('level-screen');
+  if (levelScreenEl) levelScreenEl.style.display = 'none';
   const { initGame, updateLivesUI } = await import('../../game/core');
   initGame(wildLevel.id, false, false, null, wildLevel);
 
@@ -342,7 +343,8 @@ export async function startWildEncounter(): Promise<void> {
   // Phase 4: transition auto-dismisses at 2200ms via the component
 
   // Launch game via core — dynamic import to avoid circular deps
-  document.getElementById('level-screen')?.style.setProperty('display', 'none');
+  const levelScreenLaunch = document.getElementById('level-screen');
+  if (levelScreenLaunch) levelScreenLaunch.style.display = 'none';
   const { initGame } = await import('../../game/core');
   initGame(wildLevel.id, true, false, null, wildLevel);
 

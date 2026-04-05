@@ -52,7 +52,9 @@ export default tseslint.config(
       'no-restricted-imports': ['error', {
         patterns: [
           { group: ['../game/core', '../game/core.*'], message: 'Use dynamic import() to avoid circular dependency: levels ↔ core' },
-          { group: ['./duo', './duo.*'], message: 'Use dynamic import() to avoid circular dependency: levels ↔ duo' },
+          // levels ↔ duo circular dependency resolved (2026-04-05):
+          // duoLobby.ts now imports scrollMemory.ts instead of levels.ts,
+          // so static import of duo modules is safe again.
           { group: ['./replay', './replay.*'], message: 'Use dynamic import() to avoid circular dependency: levels ↔ replay' },
         ],
       }],

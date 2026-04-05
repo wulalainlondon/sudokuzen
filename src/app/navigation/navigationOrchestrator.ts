@@ -30,8 +30,8 @@ import { bridgeCloseWin } from '../../react/win/winBridge';
 import { bridgeCloseGameOver } from '../../react/gameover/gameOverBridge';
 import { bridgeCloseWildMentorNote, bridgeHasWildMentorNoteOpen } from '../../react/wild/wildLobbyBridge';
 
-let backHandlerInitialized = false;
-let onPopStateRef: (() => void) | null = null;
+let _backHandlerInitialized = false;
+let _onPopStateRef: (() => void) | null = null;
 
 function ensureNavHistory(): void {
   history.replaceState({ screen: 'stage' }, '');
@@ -39,14 +39,14 @@ function ensureNavHistory(): void {
 }
 
 export function initBackHandler(): void {
-  if (backHandlerInitialized) return;
+  if (_backHandlerInitialized) return;
 
   ensureNavHistory();
-  onPopStateRef = () => {
+  _onPopStateRef = () => {
     history.pushState({ screen: 'nav' }, '');
     back();
   };
-  window.addEventListener('popstate', onPopStateRef);
+  window.addEventListener('popstate', _onPopStateRef);
 
   onNavigation((intent) => {
     switch (intent.type) {
@@ -69,14 +69,14 @@ export function initBackHandler(): void {
     }
   });
 
-  backHandlerInitialized = true;
+  _backHandlerInitialized = true;
 }
 
 export function disposeBackHandler(): void {
-  if (!backHandlerInitialized || !onPopStateRef) return;
-  window.removeEventListener('popstate', onPopStateRef);
-  onPopStateRef = null;
-  backHandlerInitialized = false;
+  if (!_backHandlerInitialized || !_onPopStateRef) return;
+  window.removeEventListener('popstate', _onPopStateRef);
+  _onPopStateRef = null;
+  _backHandlerInitialized = false;
 }
 
 export function navigateToLevelScreen(returnToTier = false): void {

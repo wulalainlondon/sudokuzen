@@ -9,6 +9,7 @@ import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
 import type { FirestoreDoc, FirestoreSnap, FirestoreTransaction } from '../../firebase/types';
 import { bumpDuoMetric } from './duoMetrics';
+import { SK } from '../../storage/keys';
 import { loadDuoProfile } from './duoProfile';
 
 export function getFirebaseFieldValue() {
@@ -33,7 +34,6 @@ export interface DuoRoomSummary {
 // ── Constants ────────────────────────────────────────────────────────
 
 const DUO_ROOMS_COLLECTION = 'duo_rooms';
-const ACTIVE_ROOM_ID_KEY = 'sudoku_duo_active_room_id';
 const WAITING_ROOMS_CACHE_MS = 5000;
 const WAITING_ROOMS_MIN_FETCH_GAP_MS = 1200;
 const DUO_HEARTBEAT_MS = 15_000;
@@ -45,7 +45,7 @@ const MAX_SNAPSHOT_RETRIES = 5;
 
 // ── Module state ─────────────────────────────────────────────────────
 
-let _activeRoomId: string | null = localStorage.getItem(ACTIVE_ROOM_ID_KEY);
+let _activeRoomId: string | null = (() => { try { return localStorage.getItem(SK.DUO_ACTIVE_ROOM_ID); } catch { return null; } })();
 let _waitingRoomsCache: { rows: DuoRoomSummary[]; ts: number; limit: number } | null = null;
 let _waitingRoomsInFlight: Promise<DuoRoomSummary[]> | null = null;
 let _lastWaitingRoomsFetchMs = 0;
@@ -70,8 +70,8 @@ export function setResetHandler(fn: () => void): void {
 
 function setActiveRoomId(roomId: string | null): void {
   _activeRoomId = roomId;
-  if (roomId) localStorage.setItem(ACTIVE_ROOM_ID_KEY, roomId);
-  else localStorage.removeItem(ACTIVE_ROOM_ID_KEY);
+  if (roomId) localStorage.setItem(SK.DUO_ACTIVE_ROOM_ID, roomId);
+  else localStorage.removeItem(SK.DUO_ACTIVE_ROOM_ID);
 }
 
 export function getActiveDuoRoomId(): string | null {

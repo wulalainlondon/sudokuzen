@@ -13,9 +13,9 @@ export interface FirebaseCompat {
   firestore: FirestoreNamespace;
 }
 
-let firebaseCompat: FirebaseCompat | null = null;
-let firebaseInitPromise: Promise<FirebaseCompat | null> | null = null;
-let firebaseConfigLoadPromise: Promise<void> | null = null;
+let _firebaseCompat: FirebaseCompat | null = null;
+let _firebaseInitPromise: Promise<FirebaseCompat | null> | null = null;
+let _firebaseConfigLoadPromise: Promise<void> | null = null;
 
 function resolvePublicPath(file: string): string {
   try {
@@ -42,37 +42,37 @@ function appendScript(src: string, optional = false): Promise<void> {
 
 async function ensureFirebaseConfigLoaded(): Promise<void> {
   if ((window as SudokuWindow).SUDOKU_FIREBASE_CONFIG) return;
-  if (firebaseConfigLoadPromise) return firebaseConfigLoadPromise;
-  firebaseConfigLoadPromise = (async () => {
+  if (_firebaseConfigLoadPromise) return _firebaseConfigLoadPromise;
+  _firebaseConfigLoadPromise = (async () => {
     await appendScript(resolvePublicPath('firebase-config.js'));
     await appendScript(resolvePublicPath('firebase-config.local.js'), true);
   })();
-  return firebaseConfigLoadPromise;
+  return _firebaseConfigLoadPromise;
 }
 
 export async function ensureFirebaseRuntime(): Promise<FirebaseCompat | null> {
-  if (firebaseCompat) return firebaseCompat;
-  if (firebaseInitPromise) return firebaseInitPromise;
+  if (_firebaseCompat) return _firebaseCompat;
+  if (_firebaseInitPromise) return _firebaseInitPromise;
 
-  firebaseInitPromise = (async () => {
+  _firebaseInitPromise = (async () => {
     await ensureFirebaseConfigLoaded();
     const win = window as SudokuWindow;
     if (!win.SUDOKU_FIREBASE_CONFIG) return null;
     const appModule = await import('firebase/compat/app');
     await import('firebase/compat/firestore');
-    firebaseCompat = (appModule.default || appModule) as unknown as FirebaseCompat;
-    return firebaseCompat;
+    _firebaseCompat = (appModule.default || appModule) as unknown as FirebaseCompat;
+    return _firebaseCompat;
   })();
 
-  return firebaseInitPromise;
+  return _firebaseInitPromise;
 }
 
 export function firebaseServerTimestamp(): unknown {
-  if (firebaseCompat) return firebaseCompat.firestore.FieldValue.serverTimestamp();
+  if (_firebaseCompat) return _firebaseCompat.firestore.FieldValue.serverTimestamp();
   return Date.now();
 }
 
 export function firebaseTimestampFromMillis(ms: number): unknown {
-  if (firebaseCompat) return firebaseCompat.firestore.Timestamp.fromMillis(ms);
+  if (_firebaseCompat) return _firebaseCompat.firestore.Timestamp.fromMillis(ms);
   return new Date(ms);
 }

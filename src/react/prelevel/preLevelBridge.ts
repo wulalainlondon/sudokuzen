@@ -3,8 +3,8 @@ import {
   isPreLevelOpen,
   openPreLevel,
   setPreLevelLeaderboard,
-  type PreLevelOpenPayload,
 } from '../../app/ui/uiOrchestrator';
+import type { PreLevelOpenPayload } from '../../entities/prelevel';
 
 export function bridgeOpenPreLevel(payload: PreLevelOpenPayload): void {
   openPreLevel(payload);

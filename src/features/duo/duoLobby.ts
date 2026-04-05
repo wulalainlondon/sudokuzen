@@ -7,7 +7,7 @@ import { escapeHtml } from '../../shared/html/escape';
 import { DUO_TIERS, DUO_MODES, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import { loadDuoProfile, getUnlockedTiers, getUnlockedModes } from './duoProfile';
 import { DUO_STALE_HEARTBEAT_MS, type DuoRoomSummary } from './duoRoom';
-import { saveScroll, restoreScroll } from '../levels';
+import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
 
 type ConnState = 'connected' | 'reconnecting' | 'failed';
 const LOBBY_POLL_FAST_MS = 6_000;

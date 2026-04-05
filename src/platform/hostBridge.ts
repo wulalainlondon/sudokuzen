@@ -29,13 +29,13 @@ export interface SudokuHostBridge {
   onBeforeUnload?: () => void;
 }
 
-let activeBridge: SudokuHostBridge | null = null;
+let _activeBridge: SudokuHostBridge | null = null;
 
 export async function installHostBridge(api: HostBridgeApi): Promise<void> {
   (window as Window & { __SUDOKU_HOST_API?: HostBridgeApi }).__SUDOKU_HOST_API = api;
   const bridge = (window as Window & { __SUDOKU_HOST_BRIDGE?: SudokuHostBridge }).__SUDOKU_HOST_BRIDGE;
   if (!bridge) return;
-  activeBridge = bridge;
+  _activeBridge = bridge;
 
   try {
     await bridge.setup?.(api);
@@ -45,18 +45,18 @@ export async function installHostBridge(api: HostBridgeApi): Promise<void> {
 }
 
 export function notifyHostBootReady(appVersion: string): void {
-  if (!activeBridge) return;
+  if (!_activeBridge) return;
   try {
-    activeBridge.onBootReady?.({ appVersion, apiVersion: '1' });
+    _activeBridge.onBootReady?.({ appVersion, apiVersion: '1' });
   } catch (e) {
     console.error('[HostBridge] onBootReady failed:', e);
   }
 }
 
 export function notifyHostBeforeUnload(): void {
-  if (!activeBridge) return;
+  if (!_activeBridge) return;
   try {
-    activeBridge.onBeforeUnload?.();
+    _activeBridge.onBeforeUnload?.();
   } catch (e) {
     console.error('[HostBridge] onBeforeUnload failed:', e);
   }

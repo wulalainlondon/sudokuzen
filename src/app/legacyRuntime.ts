@@ -179,7 +179,7 @@ export function bootLegacyRuntime(appVersion: string): void {
       const field = gs.duoRole === 'host' ? 'status' : 'guestId';
       const val = gs.duoRole === 'host' ? 'idle' : null;
       try {
-        const roomId = localStorage.getItem('sudoku_duo_active_room_id');
+        const roomId = localStorage.getItem(SK.DUO_ACTIVE_ROOM_ID);
         if (roomId && gs.db) {
           gs.db
             .collection('duo_rooms')

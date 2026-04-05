@@ -33,8 +33,8 @@ async function callDuoFinish(sec: number, stars: number) {
 }
 
 // ── Blind reveal guard ──────────────────────────────────────────────
-let blindRevealing = false;
-export function isBlindRevealing(): boolean { return blindRevealing; }
+let _blindRevealing = false;
+export function isBlindRevealing(): boolean { return _blindRevealing; }
 
 export function solutionDigitAt(idx: number): number {
   const raw = gs.currentLevel?.solution?.[idx];
@@ -142,7 +142,7 @@ export async function checkBlindComplete(): Promise<void> {
   if (!isFull) return;
 
   // Disable input during reveal
-  blindRevealing = true;
+  _blindRevealing = true;
 
   // Scan phase: reveal cells one by one
   let correct = 0;
@@ -168,13 +168,13 @@ export async function checkBlindComplete(): Promise<void> {
     }
 
     // Update running count
-    showFeedback(t('feedback.blindRevealing', { correct: String(correct), errors: String(errors) }), errors > 0 ? 'error' : 'neutral');
+    showFeedback(t('feedback._blindRevealing', { correct: String(correct), errors: String(errors) }), errors > 0 ? 'error' : 'neutral');
 
     await new Promise((r) => setTimeout(r, 30));
   }
 
   // Re-enable input
-  blindRevealing = false;
+  _blindRevealing = false;
 
   // Result phase
   if (errors === 0) {

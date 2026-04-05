@@ -2,6 +2,7 @@
 
 import { gs } from './state';
 import type { CellData } from './state';
+import { SK } from '../storage/keys';
 import { playCellSelectSound } from './audio';
 import { showFeedback } from '../ui/feedback';
 import { t } from '../i18n/t';
@@ -174,7 +175,7 @@ export function selectCell(idx: number): void {
 
   // Show unit analysis panel when selecting a filled cell in Wild mode (opt-in)
   const isWild = !!(gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild');
-  const uaEnabled = localStorage.getItem('sudoku_unit_analysis') === '1';
+  const uaEnabled = localStorage.getItem(SK.UNIT_ANALYSIS) === '1';
   const isFilled = gs.cellsData[idx].value !== 0;
   const inSpecialMode = gs.skillMode?.enabled || (gs.continuousFillDigit !== null && gs.continuousFillDigit >= 1);
   if (isWild && uaEnabled && isFilled && !inSpecialMode) {
