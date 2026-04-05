@@ -1,4 +1,4 @@
-const CACHE_VERSION = '2026.04.06-V2';
+const CACHE_VERSION = '2026.04.06-V4';
 const CACHE_NAME = `sudoku-zen-${CACHE_VERSION}`;
 const ASSETS = [
   './',
@@ -39,12 +39,29 @@ self.addEventListener('fetch', (event) => {
   // Never cache the service worker itself
   if (url.pathname.endsWith('sw.js')) return;
 
-  // Core pages + JS/CSS + teach manifest: network-first (ensures updates arrive)
+  // Hashed Vite bundles: cache-first (hash change = new URL, no stale risk)
+  const isHashedAsset = /\/assets\/[^/]+-[a-f0-9]{8,}\.(js|css)$/.test(url.pathname);
+  if (isHashedAsset) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // Entry points + unhashed files: network-first (these control which bundle version loads)
   const isNetworkFirst = url.pathname.endsWith('/')
     || url.pathname.endsWith('index.html')
-    || url.pathname.endsWith('.js')
     || url.pathname.endsWith('.css')
-    || url.pathname.endsWith('teach/manifest.json');
+    || url.pathname.endsWith('teach/manifest.json')
+    || url.pathname.endsWith('firebase-config.js')
+    || url.pathname.endsWith('manifest.json');
 
   if (isNetworkFirst) {
     event.respondWith(
@@ -57,7 +74,7 @@ self.addEventListener('fetch', (event) => {
         .catch(() => caches.match(event.request))
     );
   } else {
-    // Static assets (images, fonts, etc.): cache-first
+    // Everything else (images, data shards, fonts): cache-first
     event.respondWith(
       caches.match(event.request).then((response) => {
         return response || fetch(event.request).then((networkResponse) => {
