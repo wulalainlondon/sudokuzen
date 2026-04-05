@@ -25,7 +25,7 @@ export type { DuoRoomSummary } from './duoRoom';
 // Game
 export {
   handleDuoSnapshot,
-  updateDuoPreLevelUI,
+  updateDuoRoomUI,
   toggleDuoReady,
   startDuoCountdown,
   launchDuoGame,
@@ -48,6 +48,15 @@ export {
   refreshDuoLobbyRoom,
   setDuoLobbyConnectionState,
 } from './duoLobby';
+
+// Room View
+export {
+  openDuoRoomView,
+  closeDuoRoomView,
+  isDuoRoomViewOpen,
+  leaveDuoRoomFromView,
+  copyDuoRoomId,
+} from './duoRoomView';
 
 // Metrics
 export { getDuoMetrics, resetDuoMetrics, bumpDuoMetric } from './duoMetrics';

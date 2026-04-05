@@ -3750,8 +3750,107 @@ header h1 {
 }
 
 #wild-lobby.hidden,
-#duo-lobby.hidden {
+#duo-lobby.hidden,
+#duo-room-view.hidden {
     display: none;
+}
+
+#duo-room-view {
+    padding: 0 16px 24px;
+    width: 100%;
+    max-width: 400px;
+    flex: 1;
+    overflow-y: auto;
+    animation: view-fade-in 0.25s var(--ease-zen);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.duo-room-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding-top: 8px;
+}
+
+.duo-room-id-card {
+    width: 100%;
+    text-align: center;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    background: var(--surface-1);
+    border: 1px solid var(--card-border);
+}
+
+.duo-room-id-label {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.duo-room-id-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.duo-room-id-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    letter-spacing: 1.5px;
+    color: var(--duo-accent);
+}
+
+.duo-room-id-copy {
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid color-mix(in srgb, var(--duo-accent) 40%, transparent);
+    background: color-mix(in srgb, var(--duo-accent) 8%, transparent);
+    color: var(--duo-accent);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform var(--duration-fast) ease, background 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.duo-room-id-copy:active { transform: scale(0.92); }
+
+.duo-room-tier-mode {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.duo-room-slots-card {
+    width: 100%;
+    padding: 20px 16px;
+    border-radius: var(--radius-md);
+    background: rgba(232, 67, 147, 0.04);
+    border: 1px solid rgba(232, 67, 147, 0.2);
+    text-align: center;
+}
+[data-theme="dark"] .duo-room-slots-card {
+    background: var(--accent-soft);
+    border-color: rgba(232, 67, 147, 0.3);
+}
+
+.duo-vs-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--duo-accent);
+    min-width: 32px;
+    letter-spacing: 1px;
 }
 
 .wild-lobby-header {

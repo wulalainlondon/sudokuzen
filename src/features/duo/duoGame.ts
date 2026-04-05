@@ -54,7 +54,7 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
     const isInGame = gameContainer && gameContainer.style.display !== 'none' && !gs.isDuoMode;
     if (!isInGame) {
-      updateDuoPreLevelUI(d);
+      updateDuoRoomUI(d);
     }
   }
 
@@ -136,20 +136,17 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
   }
 }
 
-// ── Pre-Level UI ─────────────────────────────────────────────────────
+// ── Room View UI ─────────────────────────────────────────────────────
 
-export function updateDuoPreLevelUI(d: DuoRoomData): void {
-  const zone = document.getElementById('duo-ready-zone');
+export function updateDuoRoomUI(d: DuoRoomData): void {
   const readyBtn = document.getElementById('duo-ready-btn');
   const countdownArea = document.getElementById('duo-countdown-area');
-  if (!zone) return;
-  zone.classList.remove('hidden');
 
   // Tier + mode display
   const tierLabel = DUO_TIER_MAP.get((d as any).tierId)?.label || '';
   const modeLabel = DUO_MODE_MAP.get((d as any).modeId)?.label || '';
-  const zoneTitle = document.querySelector('.duo-zone-title');
-  if (zoneTitle) zoneTitle.textContent = `💑 ${tierLabel} · ${modeLabel}`;
+  const tierModeEl = document.getElementById('duo-room-tier-mode');
+  if (tierModeEl) tierModeEl.textContent = `${tierLabel} · ${modeLabel}`;
 
   // Host slot
   const hostAliasEl = document.getElementById('duo-host-alias');
@@ -214,14 +211,10 @@ export function updateDuoPreLevelUI(d: DuoRoomData): void {
 
   // Ready button
   const myReady = gs.duoRole === 'host' ? d.hostReady : d.guestReady;
-  const startBtn = document.getElementById('pre-level-start-btn');
-  const ghostBtn = document.getElementById('pre-level-ghost-btn');
-  const backBtn = document.getElementById('pre-level-back-btn');
+  const backBtn = document.getElementById('duo-room-back-btn');
   if (d.status === 'countdown') {
     if (readyBtn) readyBtn.style.display = 'none';
     if (countdownArea) countdownArea.style.display = 'block';
-    if (startBtn) startBtn.style.display = 'none';
-    if (ghostBtn) ghostBtn.style.display = 'none';
     if (backBtn) backBtn.style.display = 'none';
   } else {
     if (readyBtn) {
@@ -230,7 +223,6 @@ export function updateDuoPreLevelUI(d: DuoRoomData): void {
       readyBtn.classList.toggle('is-ready', myReady);
     }
     if (countdownArea) countdownArea.style.display = 'none';
-    if (startBtn) startBtn.style.display = '';
     if (backBtn) backBtn.style.display = '';
   }
 }
@@ -355,8 +347,9 @@ export async function launchDuoGame(): Promise<void> {
     if (!mode.allowNotes) gs.wildNotesDisabled = true;
   }
 
-  // Hide lobby, start game
+  // Hide room view & lobby, start game
   emitNavigation({ type: 'hide-pre-level-modal' });
+  import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch(() => {});
   import('./duoLobby').then((m) => m.closeDuoLobby()).catch(() => {});
   const levelScreen = document.getElementById('level-screen');
   if (levelScreen) levelScreen.style.display = 'none';
@@ -662,8 +655,7 @@ export function resetDuoState(): void {
       }).catch(() => {});
     } catch { /* no active room */ }
   }
-  const readyZone = document.getElementById('duo-ready-zone');
-  if (readyZone) readyZone.classList.add('hidden');
+  import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch(() => {});
   const progressContainer = document.getElementById('duo-progress-container');
   if (progressContainer) progressContainer.style.display = 'none';
   const emojiBarEl = document.getElementById('duo-emoji-bar');

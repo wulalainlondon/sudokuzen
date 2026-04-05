@@ -348,6 +348,15 @@ export const zhTW = {
     unlockModeHint: '再打 {n} 場 {mode} 解鎖下一模式',
   },
 
+  duoRoom: {
+    title: '對戰房間',
+    roomIdLabel: '房間 ID',
+    copied: '已複製房間 ID',
+    copy: '複製',
+    leaveRoom: '離開房間',
+    waitingForOpponent: '等待對手加入...',
+  },
+
   // ── Replay ──────────────────────────────────────────────────────────
   replay: {
     title: '本局步驟回放',

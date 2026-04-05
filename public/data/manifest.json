@@ -1,6 +1,6 @@
 {
-  "version": "3bb8f7700acf",
-  "generatedAt": "2026-04-04T11:22:45.931Z",
+  "version": "fea17b15b394",
+  "generatedAt": "2026-04-05T00:11:09.003Z",
   "totalLevels": 9437,
   "shards": {
     "normal": {
@@ -72,66 +72,6 @@
       "file": "world-T11.json",
       "count": 300,
       "size": 144135
-    },
-    "duo-T01": {
-      "file": "duo-T01.json",
-      "count": 200,
-      "size": 136874
-    },
-    "duo-T02": {
-      "file": "duo-T02.json",
-      "count": 227,
-      "size": 155539
-    },
-    "duo-T03": {
-      "file": "duo-T03.json",
-      "count": 6,
-      "size": 4108
-    },
-    "duo-T04": {
-      "file": "duo-T04.json",
-      "count": 92,
-      "size": 63170
-    },
-    "duo-T05": {
-      "file": "duo-T05.json",
-      "count": 379,
-      "size": 258824
-    },
-    "duo-T06": {
-      "file": "duo-T06.json",
-      "count": 900,
-      "size": 446852
-    },
-    "duo-T07": {
-      "file": "duo-T07.json",
-      "count": 450,
-      "size": 221050
-    },
-    "duo-T08": {
-      "file": "duo-T08.json",
-      "count": 450,
-      "size": 225274
-    },
-    "duo-T09": {
-      "file": "duo-T09.json",
-      "count": 600,
-      "size": 294522
-    },
-    "duo-T10": {
-      "file": "duo-T10.json",
-      "count": 450,
-      "size": 227492
-    },
-    "duo-T11": {
-      "file": "duo-T11.json",
-      "count": 300,
-      "size": 149143
-    },
-    "duo-T12": {
-      "file": "duo-T12.json",
-      "count": 300,
-      "size": 150308
     }
   }
 }

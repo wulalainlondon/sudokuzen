@@ -45,18 +45,6 @@ function relativeTime(ms: number): string {
   return t('duo.timeHourAgo');
 }
 
-function ensureDuoReadyZoneHost(): void {
-  const host = document.getElementById('duo-ready-zone-host');
-  const zone = document.getElementById('duo-ready-zone');
-  if (!host || !zone) return;
-  if (!host.contains(zone)) host.appendChild(zone);
-}
-
-function restoreDuoReadyZoneToBody(): void {
-  const zone = document.getElementById('duo-ready-zone');
-  if (!zone) return;
-  if (zone.parentElement !== document.body) document.body.appendChild(zone);
-}
 
 // ── Tier/Mode selectors ──────────────────────────────────────────────
 
@@ -151,8 +139,13 @@ function renderRoomList(rooms: DuoRoomSummary[]): void {
       try {
         const { joinDuoRoom } = await import('./duoRoom');
         const ok = await joinDuoRoom(roomId);
-        if (!ok) showFeedback(t('duo.noJoinableRoom'), 'error');
-        await refreshDuoLobbyRoom({ force: true });
+        if (!ok) {
+          showFeedback(t('duo.noJoinableRoom'), 'error');
+          return;
+        }
+        closeDuoLobby();
+        const { openDuoRoomView } = await import('./duoRoomView');
+        openDuoRoomView();
       } finally {
         btn.disabled = false;
       }
@@ -220,16 +213,21 @@ export async function openDuoLobby(): Promise<void> {
     return;
   }
   saveScroll('stage-map');
-  const { resumeDuoRoomIfAny, cleanupStaleDuoRooms } = await import('./duoRoom');
+  const { resumeDuoRoomIfAny, cleanupStaleDuoRooms, getActiveDuoRoomId } = await import('./duoRoom');
   void cleanupStaleDuoRooms();
-  await resumeDuoRoomIfAny();
+  const resumed = await resumeDuoRoomIfAny();
+  // If we have an active room, go straight to room view
+  if (resumed && getActiveDuoRoomId()) {
+    const { openDuoRoomView } = await import('./duoRoomView');
+    openDuoRoomView();
+    return;
+  }
   hydrateLabels();
   renderTierSelector();
   renderModeSelector();
   renderModeRuleCard();
   renderStatsCard();
   setDuoViewActive(true);
-  ensureDuoReadyZoneHost();
   startLobbyPolling();
   await refreshRoomCard();
 }
@@ -237,7 +235,6 @@ export async function openDuoLobby(): Promise<void> {
 export function closeDuoLobby(): void {
   saveScroll('duo-lobby');
   setDuoViewActive(false);
-  restoreDuoReadyZoneToBody();
   stopLobbyPolling();
   restoreScroll('stage-map');
 }
@@ -255,8 +252,14 @@ export async function createDuoRoomFromLobby(): Promise<void> {
   try {
     const { createDuoRoom } = await import('./duoRoom');
     const roomId = await createDuoRoom(_selectedTier, _selectedMode);
-    if (!roomId) showFeedback(t('duo.connectionError'), 'error');
-    await refreshDuoLobbyRoom({ force: true });
+    if (!roomId) {
+      showFeedback(t('duo.connectionError'), 'error');
+      return;
+    }
+    // Switch to independent room view
+    closeDuoLobby();
+    const { openDuoRoomView } = await import('./duoRoomView');
+    openDuoRoomView();
   } finally {
     if (createBtn) { createBtn.textContent = savedText; (createBtn.closest('button') as HTMLButtonElement | null)?.removeAttribute('disabled'); }
   }
@@ -277,8 +280,14 @@ export async function joinDuoRoomFromLobby(): Promise<void> {
   try {
     const { joinDuoRoom } = await import('./duoRoom');
     const ok = await joinDuoRoom(roomId);
-    if (!ok) showFeedback(t('duo.noJoinableRoom'), 'error');
-    await refreshDuoLobbyRoom({ force: true });
+    if (!ok) {
+      showFeedback(t('duo.noJoinableRoom'), 'error');
+      return;
+    }
+    // Switch to independent room view
+    closeDuoLobby();
+    const { openDuoRoomView } = await import('./duoRoomView');
+    openDuoRoomView();
   } finally {
     if (joinBtn) joinBtn.disabled = false;
     if (joinBtnText) joinBtnText.textContent = savedText;
@@ -286,11 +295,13 @@ export async function joinDuoRoomFromLobby(): Promise<void> {
 }
 
 export function setDuoLobbyConnectionState(state: ConnState): void {
-  const el = document.getElementById('duo-conn-state');
-  if (!el) return;
-  if (state === 'connected') { el.style.display = 'none'; return; }
-  el.style.display = '';
-  el.textContent = state === 'reconnecting' ? t('duo.connectionLost') : t('duo.connectionFailed');
+  for (const id of ['duo-conn-state', 'duo-room-conn-state']) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (state === 'connected') { el.style.display = 'none'; continue; }
+    el.style.display = '';
+    el.textContent = state === 'reconnecting' ? t('duo.connectionLost') : t('duo.connectionFailed');
+  }
 }
 
 export async function refreshDuoLobbyRoom(opts: { force?: boolean } = {}): Promise<void> {

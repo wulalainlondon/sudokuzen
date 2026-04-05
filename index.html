@@ -166,15 +166,44 @@
                     </button>
                 </div>
                 <div class="wild-session-card duo-lobby-card">
-                    <div class="wild-session-head">
-                        <div class="wild-session-title" id="duo-ready-title">對戰準備</div>
-                    </div>
-                    <div id="duo-ready-zone-host"></div>
-                </div>
-                <div class="wild-session-card duo-lobby-card">
                     <div class="wild-session-title">戰績</div>
                     <div id="duo-stats-card" class="duo-stats-card"></div>
                 </div>
+            </div>
+        </div>
+        <div id="duo-room-view" class="hidden">
+            <div class="wild-lobby-header">
+                <button class="tier-back-btn" id="duo-room-back-btn" onclick="leaveDuoRoom()">← 離開房間</button>
+                <div class="wild-lobby-title" id="duo-room-title">對戰房間</div>
+                <div class="wild-online-indicator" id="duo-room-conn-state"></div>
+            </div>
+            <div class="duo-room-body">
+                <div class="duo-room-id-card">
+                    <div class="duo-room-id-label">房間 ID</div>
+                    <div class="duo-room-id-row">
+                        <span class="duo-room-id-value" id="duo-room-id-value">--</span>
+                        <button class="duo-room-id-copy" id="duo-room-id-copy" onclick="copyDuoRoomId()">複製</button>
+                    </div>
+                    <div class="duo-room-tier-mode" id="duo-room-tier-mode"></div>
+                </div>
+                <div class="duo-room-slots-card">
+                    <div class="duo-player-slots">
+                        <div class="duo-player-slot" id="duo-slot-host">
+                            <div class="duo-slot-alias" id="duo-host-alias">--</div>
+                            <div class="duo-slot-title" id="duo-host-title"></div>
+                            <div class="duo-slot-status" id="duo-host-status">等待中</div>
+                        </div>
+                        <div class="duo-vs-badge">VS</div>
+                        <div class="duo-player-slot empty" id="duo-slot-guest">
+                            <div class="duo-slot-alias" id="duo-guest-alias">等待加入...</div>
+                            <div class="duo-slot-title" id="duo-guest-title"></div>
+                            <div class="duo-slot-status" id="duo-guest-status"></div>
+                        </div>
+                    </div>
+                    <div id="duo-pre-streak"></div>
+                </div>
+                <div id="duo-countdown-area"></div>
+                <button class="duo-ready-btn" id="duo-ready-btn" onclick="toggleDuoReady()" style="display:none;">準備完成</button>
             </div>
         </div>
         <div id="tier-view" class="hidden">
@@ -192,25 +221,6 @@
     <!-- Library Overlay is now rendered by React (src/react/library/LibraryOverlay.tsx) -->
 
     <!-- Pre-level Modal is now rendered by React (src/react/prelevel/PreLevelModal.tsx) -->
-    <!-- Duo Ready Zone lives here as hidden DOM; React mounts it via ref when needed -->
-    <div class="duo-ready-zone hidden" id="duo-ready-zone">
-        <div class="duo-zone-title">💑 雙人對決</div>
-        <div class="duo-player-slots">
-            <div class="duo-player-slot" id="duo-slot-host">
-                <div class="duo-slot-alias" id="duo-host-alias">--</div>
-                <div class="duo-slot-title" id="duo-host-title"></div>
-                <div class="duo-slot-status" id="duo-host-status">等待中</div>
-            </div>
-            <div class="duo-player-slot empty" id="duo-slot-guest">
-                <div class="duo-slot-alias" id="duo-guest-alias">等待加入...</div>
-                <div class="duo-slot-title" id="duo-guest-title"></div>
-                <div class="duo-slot-status" id="duo-guest-status"></div>
-            </div>
-        </div>
-        <div id="duo-pre-streak"></div>
-        <div id="duo-countdown-area" class="hidden"></div>
-        <button class="duo-ready-btn" id="duo-ready-btn" onclick="toggleDuoReady()">準備完成</button>
-    </div>
 
     <div class="game-container">
         <!-- Game Over overlay is now rendered by React (src/react/gameover/GameOverOverlay.tsx) -->
@@ -377,7 +387,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.05-V2';
+        var INLINE_VER = '2026.04.05-V3';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

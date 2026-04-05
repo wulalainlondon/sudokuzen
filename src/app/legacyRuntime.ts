@@ -43,6 +43,7 @@ import {
   joinDuoRoomFromLobby,
   refreshDuoLobbyRoom,
 } from '../features/duo/duoLobby';
+import { leaveDuoRoomFromView, copyDuoRoomId } from '../features/duo/duoRoomView';
 import { openStatsModal, closeStatsModal } from '../features/stats';
 import {
   showLevelScreen,
@@ -264,6 +265,8 @@ export function bootLegacyRuntime(appVersion: string): void {
     closeStatsModal,
     closeDuoResult,
     surrenderDuo,
+    leaveDuoRoom: leaveDuoRoomFromView,
+    copyDuoRoomId,
     teachPrev,
     teachNext,
     hideTeachModal,

@@ -12,6 +12,7 @@ import { hideTeachModal, closePracticeModal, closeLibraryOverlay } from '../../f
 import { closeReplayModal } from '../../features/replay';
 import { closeDuoResult } from '../../features/duo/duoGame';
 import { closeDuoLobby, isDuoLobbyOpen, openDuoLobby } from '../../features/duo/duoLobby';
+import { isDuoRoomViewOpen, leaveDuoRoomFromView } from '../../features/duo/duoRoomView';
 import { closeStatsModal } from '../../features/stats';
 import { dismissMentor } from '../../features/wild/mentorController';
 import { closeWildLobby, isWorldLobbyOpen } from '../../features/wild/wildLobby';
@@ -185,6 +186,11 @@ export function back(): void {
 
   if (isWorldLobbyOpen()) {
     closeWildLobby();
+    return;
+  }
+
+  if (isDuoRoomViewOpen()) {
+    void leaveDuoRoomFromView();
     return;
   }
 
