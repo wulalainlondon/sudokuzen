@@ -18,7 +18,7 @@ describe('buildTreeNodeDisplayModel', () => {
     expect(model.primaryText).toBe('剩 25 關');
     expect(model.secondaryText).toBe('已通關 0/25');
     expect(model.unlockHintText).toBeUndefined();
-    expect(model.iconKind).toBe('mountain');
+    expect(model.iconKind).toBe('naked_single');
   });
 
   it('partial: shows remaining and cleared progress', () => {
@@ -26,7 +26,7 @@ describe('buildTreeNodeDisplayModel', () => {
     expect(model.statusChip).toBe('修行中');
     expect(model.primaryText).toBe('剩 1 關');
     expect(model.secondaryText).toBe('已通關 24/25');
-    expect(model.iconKind).toBe('water');
+    expect(model.iconKind).toBe('swordfish');
     expect(model.progressPct).toBeCloseTo(96);
   });
 
@@ -35,7 +35,7 @@ describe('buildTreeNodeDisplayModel', () => {
     expect(model.statusChip).toBe('已圓滿');
     expect(model.primaryText).toBe('已圓滿');
     expect(model.secondaryText).toBe('已通關 25/25');
-    expect(model.iconKind).toBe('seal');
+    expect(model.iconKind).toBe('template');
     expect(model.progressPct).toBe(100);
   });
 });
