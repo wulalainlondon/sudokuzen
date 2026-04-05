@@ -60,7 +60,7 @@
                 </button>
                 <button class="random-btn world-entry-btn" onclick="openWildLobby()">
                     <span class="world-entry-main">世界</span>
-                    <span class="world-entry-sub">隨機遭遇 · 十輪修行</span>
+                    <span class="world-entry-sub">隨機歷練 · 十輪修行</span>
                 </button>
             </div>
         </div>
@@ -85,9 +85,9 @@
                     </div>
                     <div class="wild-exp-text" id="wild-exp-text">0 / 50 EXP</div>
                     <div class="wild-profile-stats">
-                        <div class="wild-stat"><span class="wild-stat-num" id="wild-completed">0</span><span class="wild-stat-label">狩獵數</span></div>
+                        <div class="wild-stat"><span class="wild-stat-num" id="wild-completed">0</span><span class="wild-stat-label">降伏數</span></div>
                         <div class="wild-stat"><span class="wild-stat-num" id="wild-discovered">0</span><span class="wild-stat-label">圖鑑</span></div>
-                        <div class="wild-stat"><span class="wild-stat-num" id="wild-encounters">0</span><span class="wild-stat-label">遭遇數</span></div>
+                        <div class="wild-stat"><span class="wild-stat-num" id="wild-encounters">0</span><span class="wild-stat-label">歷練數</span></div>
                     </div>
                 </div>
                 <div class="wild-session-card">
@@ -96,8 +96,8 @@
                         <div class="wild-session-round" id="wild-session-round">新修行輪</div>
                     </div>
                     <div class="wild-session-bar-wrap"><div class="wild-session-bar-fill" id="wild-session-fill"></div></div>
-                    <div class="wild-session-meta" id="wild-session-meta">啟動後將進入 10 輪連續遭遇</div>
-                    <div class="wild-session-tech" id="wild-session-tech">本輪尚未遭遇任何技巧</div>
+                    <div class="wild-session-meta" id="wild-session-meta">啟動後將進入 10 輪連續歷練</div>
+                    <div class="wild-session-tech" id="wild-session-tech">本輪尚未歷練任何技巧</div>
                 </div>
                 <!-- Auto-Cast Toggle -->
                 <div class="wild-autocast-row">
@@ -111,17 +111,17 @@
                 </div>
                 <!-- Enter Button -->
                 <button class="wild-enter-btn" id="wild-enter-btn">
-                    <span class="wild-enter-chip" id="wild-enter-chip">穩定遭遇池</span>
+                    <span class="wild-enter-chip" id="wild-enter-chip">穩定歷練池</span>
                     <span class="wild-enter-text">進入世界</span>
-                    <span class="wild-enter-sub" id="wild-enter-sub">隨機遭遇 · 技巧修煉</span>
+                    <span class="wild-enter-sub" id="wild-enter-sub">隨機歷練 · 技巧修煉</span>
                 </button>
                 <!-- Bestiary Preview -->
                 <div class="wild-bestiary-section">
-                    <div class="wild-bestiary-title">妖獸圖鑑 <span id="wild-bestiary-count">0 / 40</span></div>
+                    <div class="wild-bestiary-title">心法圖鑑 <span id="wild-bestiary-count">0 / 40</span></div>
                     <div class="wild-bestiary-controls" id="wild-bestiary-controls">
                         <button class="wild-filter-btn active" data-filter="all">全部</button>
-                        <button class="wild-filter-btn" data-filter="discovered">已發現</button>
-                        <button class="wild-filter-btn" data-filter="conquered">已討伐</button>
+                        <button class="wild-filter-btn" data-filter="discovered">已識破</button>
+                        <button class="wild-filter-btn" data-filter="conquered">已降伏</button>
                     </div>
                     <div class="wild-rarity-controls" id="wild-rarity-controls">
                         <button class="wild-rarity-btn active" data-rarity="all">全稀有度</button>
@@ -237,7 +237,7 @@
             </label>
             <button class="resume-btn" id="pause-resume-btn" onclick="resumeGame()">繼續遊戲</button>
             <button class="back-btn back-btn-light" id="pause-leave-btn" onclick="showLevelScreen(true)">放棄關卡</button>
-            <button class="back-btn back-btn-light" id="pause-abandon-btn" style="display:none;">放棄遭遇</button>
+            <button class="back-btn back-btn-light" id="pause-abandon-btn" style="display:none;">退出對陣</button>
         </div>
 
         <!-- Win celebration is now rendered by React (src/react/win/WinCelebration.tsx) -->
@@ -386,7 +386,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.05-V7';
+        var INLINE_VER = '2026.04.05-V8';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

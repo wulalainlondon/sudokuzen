@@ -65,7 +65,7 @@ describe('wild pause routing', () => {
     expect((document.getElementById('pause-resume-btn') as HTMLButtonElement).textContent).toContain('繼續');
     expect((document.getElementById('pause-leave-btn') as HTMLButtonElement).textContent).toContain('暫離');
     expect((document.getElementById('pause-abandon-btn') as HTMLButtonElement).style.display).not.toBe('none');
-    expect((document.getElementById('pause-abandon-btn') as HTMLButtonElement).textContent).toContain('放棄遭遇');
+    expect((document.getElementById('pause-abandon-btn') as HTMLButtonElement).textContent).toContain('退出對陣');
   });
 
   it('keeps normal mode pause actions unchanged', () => {
