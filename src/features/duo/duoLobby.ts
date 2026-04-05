@@ -11,9 +11,12 @@ import { DUO_STALE_HEARTBEAT_MS, type DuoRoomSummary } from './duoRoom';
 import { saveScroll, restoreScroll } from '../levels';
 
 type ConnState = 'connected' | 'reconnecting' | 'failed';
-const LOBBY_POLL_MS = 10_000;
+const LOBBY_POLL_FAST_MS = 6_000;
+const LOBBY_POLL_SLOW_MS = 25_000;
+const LOBBY_POLL_FAST_WINDOW_MS = 15_000;
 const ROOM_FRESHNESS_MS = DUO_STALE_HEARTBEAT_MS * 2; // ~90s — hide rooms with no recent heartbeat
-let _duoLobbyPollTimer: ReturnType<typeof setInterval> | null = null;
+let _duoLobbyPollTimer: ReturnType<typeof setTimeout> | null = null;
+let _duoLobbyOpenedAtMs = 0;
 let _selectedTier = 'tierI';
 let _selectedMode = 'standard';
 
@@ -153,15 +156,26 @@ async function refreshRoomCard(): Promise<void> {
 
 function startLobbyPolling(): void {
   if (_duoLobbyPollTimer) return;
-  _duoLobbyPollTimer = setInterval(() => {
+  _duoLobbyOpenedAtMs = Date.now();
+  const poll = () => {
     if (!isDuoLobbyOpen() || document.visibilityState !== 'visible') return;
     void import('./duoRoom').then((m) => m.cleanupStaleDuoRooms()).catch(() => {});
     void refreshDuoLobbyRoom();
-  }, LOBBY_POLL_MS);
+  };
+  const scheduleNext = () => {
+    if (!isDuoLobbyOpen()) return;
+    const elapsed = Date.now() - _duoLobbyOpenedAtMs;
+    const nextMs = elapsed < LOBBY_POLL_FAST_WINDOW_MS ? LOBBY_POLL_FAST_MS : LOBBY_POLL_SLOW_MS;
+    _duoLobbyPollTimer = setTimeout(() => {
+      poll();
+      scheduleNext();
+    }, nextMs);
+  };
+  scheduleNext();
 }
 
 function stopLobbyPolling(): void {
-  if (_duoLobbyPollTimer) { clearInterval(_duoLobbyPollTimer); _duoLobbyPollTimer = null; }
+  if (_duoLobbyPollTimer) { clearTimeout(_duoLobbyPollTimer); _duoLobbyPollTimer = null; }
 }
 
 // ── Labels ───────────────────────────────────────────────────────────
@@ -190,7 +204,9 @@ function hydrateLabels(): void {
 // ── Public API ───────────────────────────────────────────────────────
 
 export async function openDuoLobby(): Promise<void> {
-  if (!gs.firebaseReady) {
+  const { whenFirebaseReady } = await import('../../firebase/client');
+  const ready = await whenFirebaseReady();
+  if (!ready) {
     showFeedback(t('duo.networkRequired'), 'error');
     return;
   }

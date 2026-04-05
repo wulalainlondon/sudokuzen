@@ -37,6 +37,7 @@ let _countdownRafCancelled = false;
 let _duoFinishSubmitted = false;
 let duoResultShown = false;
 let _duoOpponentOfflineNotified = false;
+let _lastSubmittedProgress = -1;
 
 // ── Register with duoRoom ────────────────────────────────────────────
 
@@ -367,6 +368,7 @@ export async function launchDuoGame(): Promise<void> {
   gs.isDuoMode = true;
   gs.continuousFillDigit = null;
   gs.duoProgressThrottle = 0;
+  _lastSubmittedProgress = -1;
 
   const roomData = gs.duoRoomData;
   const tierId: string = roomData.tierId || 'tierI';
@@ -438,6 +440,8 @@ export function updateDuoProgress(): void {
   if (now - gs.duoProgressThrottle < 1000) return;
   gs.duoProgressThrottle = now;
   const filled = gs.cellsData.filter((c) => !c.fixed && c.value !== 0).length;
+  if (filled === _lastSubmittedProgress) return;
+  _lastSubmittedProgress = filled;
   const field = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
   duoRoomRef().update({ [field]: filled, updatedAt: getFirebaseFieldValue().serverTimestamp() }).catch(() => {});
   bumpDuoMetric('roomWriteOps');
@@ -718,6 +722,7 @@ export function resetDuoState(): void {
   _countdownLaunched = false;
   _duoFinishSubmitted = false;
   _duoOpponentOfflineNotified = false;
+  _lastSubmittedProgress = -1;
   gs.duoPenaltySeconds = 0;
   gs.duoCooldownUntil = 0;
   gs.duoLastErrorCell = -1;
