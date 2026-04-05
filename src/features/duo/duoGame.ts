@@ -185,28 +185,36 @@ export function updateDuoRoomUI(d: DuoRoomData): void {
     if (guestStatus) { guestStatus.textContent = ''; guestStatus.classList.remove('is-ready'); }
   }
 
-  // Stats
+  // Stats — show only when guest has joined
   const preStreak = document.getElementById('duo-pre-streak');
-  if (preStreak && d.guestId) {
-    preStreak.textContent = '';
+  const roomStats = document.getElementById('duo-room-stats');
+  const roomStatsContent = document.getElementById('duo-room-stats-content');
+  if (d.guestId) {
     const profile = loadDuoProfile();
-    if (profile.currentStreak >= 2) {
-      const badge = document.createElement('div');
-      badge.className = 'duo-streak-badge';
-      badge.textContent = t('duoRuntime.streakBadge', { holder: '你', count: String(profile.currentStreak) });
-      preStreak.appendChild(badge);
+    if (preStreak) {
+      preStreak.textContent = '';
+      if (profile.currentStreak >= 2) {
+        const badge = document.createElement('div');
+        badge.className = 'duo-streak-badge';
+        badge.textContent = t('duoRuntime.streakBadge', { holder: '你', count: String(profile.currentStreak) });
+        preStreak.appendChild(badge);
+      }
     }
-    if (d.hostDuoWins != null && d.guestDuoWins != null) {
-      const winsDiv = document.createElement('div');
-      winsDiv.style.cssText = 'font-size:0.72rem;color:var(--text-light);margin-bottom:6px;';
-      winsDiv.textContent = t('duoRuntime.winsVs', {
-        a: d.hostAlias || '--', aWins: String(d.hostDuoWins),
-        b: d.guestAlias || '--', bWins: String(d.guestDuoWins),
-      });
-      preStreak.appendChild(winsDiv);
+    if (roomStats && roomStatsContent) {
+      roomStats.classList.remove('hidden');
+      let html = `
+        <div class="duo-stats-row"><span>${t('duo.statsWins')}</span><span>${profile.wins}</span></div>
+        <div class="duo-stats-row"><span>${t('duo.statsLosses')}</span><span>${profile.losses}</span></div>
+        <div class="duo-stats-row"><span>${t('duo.statsDraws')}</span><span>${profile.draws}</span></div>
+        <div class="duo-stats-row"><span>${t('duo.statsStreak')}</span><span>${profile.currentStreak} (${t('duo.statsBest')}: ${profile.bestStreak})</span></div>`;
+      if (d.hostDuoWins != null && d.guestDuoWins != null) {
+        html += `<div class="duo-stats-row duo-stats-vs"><span>${d.hostAlias} vs ${d.guestAlias || '--'}</span><span>${d.hostDuoWins} : ${d.guestDuoWins}</span></div>`;
+      }
+      roomStatsContent.innerHTML = html;
     }
-  } else if (preStreak) {
-    preStreak.textContent = '';
+  } else {
+    if (preStreak) preStreak.textContent = '';
+    if (roomStats) roomStats.classList.add('hidden');
   }
 
   // Ready button

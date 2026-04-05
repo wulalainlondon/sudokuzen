@@ -165,10 +165,6 @@
                         <span class="wild-enter-sub" id="duo-join-btn-sub">與對方同一入口，直接加入對戰</span>
                     </button>
                 </div>
-                <div class="wild-session-card duo-lobby-card">
-                    <div class="wild-session-title">戰績</div>
-                    <div id="duo-stats-card" class="duo-stats-card"></div>
-                </div>
             </div>
         </div>
         <div id="duo-room-view" class="hidden">
@@ -201,6 +197,9 @@
                         </div>
                     </div>
                     <div id="duo-pre-streak"></div>
+                </div>
+                <div id="duo-room-stats" class="duo-room-stats-card hidden">
+                    <div id="duo-room-stats-content" class="duo-stats-card"></div>
                 </div>
                 <div id="duo-countdown-area"></div>
                 <button class="duo-ready-btn" id="duo-ready-btn" onclick="toggleDuoReady()" style="display:none;">準備完成</button>
@@ -387,7 +386,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.05-V3';
+        var INLINE_VER = '2026.04.05-V4';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

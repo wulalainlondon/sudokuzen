@@ -33,6 +33,7 @@ export interface DuoRoomSummary {
   hostAlias: string;
   guestAlias: string | null;
   updatedAtMs: number;
+  hostHeartbeatAtMs: number;
 }
 
 // ── Constants ────────────────────────────────────────────────────────
@@ -104,6 +105,7 @@ function docToSummary(roomId: string, d: DuoRoomData): DuoRoomSummary {
     hostAlias: d.hostAlias || '--',
     guestAlias: d.guestAlias || null,
     updatedAtMs,
+    hostHeartbeatAtMs: (d as any).hostHeartbeatAtMs ?? 0,
   };
 }
 

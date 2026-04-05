@@ -3842,6 +3842,22 @@ header h1 {
     border-color: rgba(232, 67, 147, 0.3);
 }
 
+.duo-room-stats-card {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    background: var(--surface-1);
+    border: 1px solid var(--card-border);
+    animation: view-fade-in 0.25s var(--ease-zen);
+}
+.duo-room-stats-card.hidden { display: none; }
+.duo-stats-vs {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--card-border);
+    font-weight: 600;
+}
+
 .duo-vs-badge {
     display: flex;
     align-items: center;
@@ -5032,6 +5048,55 @@ header h1 {
 
 .duo-lobby-create,
 .duo-lobby-join {
+    width: 100%;
+}
+
+/* ── Room list items ── */
+.duo-room-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--card-border);
+    background: var(--surface-1);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.15s ease, transform var(--duration-fast) ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.duo-room-item:active { transform: scale(0.97); }
+.duo-room-item:hover {
+    border-color: var(--duo-accent);
+    background: color-mix(in srgb, var(--duo-accent) 6%, var(--surface-1));
+}
+.duo-room-host {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+.duo-room-meta {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+.duo-room-join-hint {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--duo-accent);
+    margin-top: 2px;
+}
+.duo-room-empty {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    text-align: center;
+    padding: 12px 0;
+}
+#duo-room-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     width: 100%;
 }
 

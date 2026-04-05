@@ -6,11 +6,12 @@ import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { DUO_TIERS, DUO_MODES, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import { loadDuoProfile, getUnlockedTiers, getUnlockedModes } from './duoProfile';
-import type { DuoRoomSummary } from './duoRoom';
+import { DUO_STALE_HEARTBEAT_MS, type DuoRoomSummary } from './duoRoom';
 import { saveScroll, restoreScroll } from '../levels';
 
 type ConnState = 'connected' | 'reconnecting' | 'failed';
 const LOBBY_POLL_MS = 10_000;
+const ROOM_FRESHNESS_MS = DUO_STALE_HEARTBEAT_MS * 2; // ~90s — hide rooms with no recent heartbeat
 let _duoLobbyPollTimer: ReturnType<typeof setInterval> | null = null;
 let _selectedTier = 'tierI';
 let _selectedMode = 'standard';
@@ -35,14 +36,6 @@ function setDuoViewActive(active: boolean): void {
   if (tierView) tierView.classList.toggle('hidden', true);
   if (wildLobby) wildLobby.classList.add('hidden');
   if (duoLobby) duoLobby.classList.toggle('hidden', !active);
-}
-
-function relativeTime(ms: number): string {
-  const sec = Math.floor((Date.now() - ms) / 1000);
-  if (sec < 60) return t('duo.timeJustNow');
-  const min = Math.floor(sec / 60);
-  if (min < 60) return t('duo.timeMinAgo', { min: String(min) });
-  return t('duo.timeHourAgo');
 }
 
 
@@ -98,35 +91,29 @@ function renderModeRuleCard(): void {
   el.innerHTML = `<div class="duo-rule-desc">${tier.description}</div><div class="duo-rule-detail">${mode.rules}</div>`;
 }
 
-function renderStatsCard(): void {
-  const el = document.getElementById('duo-stats-card');
-  if (!el) return;
-  const p = loadDuoProfile();
-  el.innerHTML = `
-    <div class="duo-stats-row"><span>${t('duo.statsWins')}</span><span>${p.wins}</span></div>
-    <div class="duo-stats-row"><span>${t('duo.statsLosses')}</span><span>${p.losses}</span></div>
-    <div class="duo-stats-row"><span>${t('duo.statsDraws')}</span><span>${p.draws}</span></div>
-    <div class="duo-stats-row"><span>${t('duo.statsStreak')}</span><span>${p.currentStreak} (${t('duo.statsBest')}: ${p.bestStreak})</span></div>
-  `;
-}
 
 // ── Room list ────────────────────────────────────────────────────────
 
 function renderRoomList(rooms: DuoRoomSummary[]): void {
   const list = document.getElementById('duo-room-list');
   if (!list) return;
-  if (!rooms.length) {
+  const now = Date.now();
+  const fresh = rooms.filter((r) => {
+    const hb = r.hostHeartbeatAtMs || r.updatedAtMs;
+    return hb > 0 && now - hb < ROOM_FRESHNESS_MS;
+  });
+  if (!fresh.length) {
     list.innerHTML = `<div class="duo-room-empty">${t('duo.noPublicRoom')}</div>`;
     return;
   }
-  list.innerHTML = rooms
+  list.innerHTML = fresh
     .map((r) => {
       const tierLabel = DUO_TIER_MAP.get(r.tierId)?.label || '';
       const modeLabel = DUO_MODE_MAP.get(r.modeId)?.label || '';
-      const time = r.updatedAtMs ? ` · ${relativeTime(r.updatedAtMs)}` : '';
       return `<button class="duo-room-item" data-room="${r.roomId}">
-        <span class="duo-room-line1">${r.hostAlias} · ${tierLabel} · ${modeLabel}</span>
-        <span class="duo-room-line2">${r.roomId}${time}</span>
+        <div class="duo-room-host">${r.hostAlias}</div>
+        <div class="duo-room-meta">${tierLabel} · ${modeLabel}</div>
+        <div class="duo-room-join-hint">${t('duo.joinRoom')}</div>
       </button>`;
     })
     .join('');
@@ -158,10 +145,7 @@ async function refreshRoomCard(): Promise<void> {
   const rooms = await listWaitingDuoRooms(20);
   const activeRoomId = getActiveDuoRoomId();
   const statusEl = document.getElementById('duo-room-status');
-  if (statusEl) {
-    const activeRoom = activeRoomId ? rooms.find((r) => r.roomId === activeRoomId) ?? null : null;
-    statusEl.textContent = activeRoom ? `${activeRoom.hostAlias} · ${DUO_TIER_MAP.get(activeRoom.tierId)?.label || ''}` : t('duo.noPublicRoom');
-  }
+  if (statusEl) statusEl.textContent = '';
   const roomIdEl = document.getElementById('duo-room-id-text');
   if (roomIdEl) roomIdEl.textContent = activeRoomId ? `${t('duo.roomId')}: ${activeRoomId}` : '';
   renderRoomList(rooms);
@@ -226,7 +210,6 @@ export async function openDuoLobby(): Promise<void> {
   renderTierSelector();
   renderModeSelector();
   renderModeRuleCard();
-  renderStatsCard();
   setDuoViewActive(true);
   startLobbyPolling();
   await refreshRoomCard();
@@ -267,10 +250,18 @@ export async function createDuoRoomFromLobby(): Promise<void> {
 
 export async function joinDuoRoomFromLobby(): Promise<void> {
   const joinBtn = document.getElementById('duo-join-btn') as HTMLButtonElement | null;
-  const roomId = joinBtn?.dataset.roomId || '';
+  // Auto-match: pick the first fresh waiting room
+  const { listWaitingDuoRooms } = await import('./duoRoom');
+  const rooms = await listWaitingDuoRooms(10, { force: true });
+  const now = Date.now();
+  const fresh = rooms.filter((r) => {
+    const hb = r.hostHeartbeatAtMs || r.updatedAtMs;
+    return hb > 0 && now - hb < ROOM_FRESHNESS_MS;
+  });
+  const roomId = fresh[0]?.roomId || '';
   if (!roomId) {
     showFeedback(t('duo.noJoinableRoom'), 'error');
-    await refreshDuoLobbyRoom();
+    await refreshRoomCard();
     return;
   }
   const joinBtnText = document.getElementById('duo-join-btn-text');
