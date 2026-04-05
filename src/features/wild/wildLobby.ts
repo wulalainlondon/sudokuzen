@@ -562,25 +562,19 @@ export function toggleWildAutoCast(): void {
 
 function setWorldViewActive(active: boolean): void {
   const levelScreen = document.getElementById('level-screen');
-  const levelTitle = document.getElementById('level-title');
-  const levelModeChip = document.getElementById('level-mode-chip');
+  const mainHeader = document.querySelector('.level-screen-header') as HTMLElement | null;
   const aliasConfig = document.querySelector('.alias-config') as HTMLElement | null;
   const stageView = document.getElementById('stage-view');
   const tierView = document.getElementById('tier-view');
   const lobby = document.getElementById('wild-lobby');
   const duoLobby = document.getElementById('duo-lobby');
-  const libraryBtn = document.getElementById('library-btn');
   if (levelScreen) levelScreen.classList.toggle('world-view-active', active);
-  if (levelTitle) levelTitle.textContent = active ? t('wild.lobbyTitle') : 'SUDOKU ZEN';
-  if (levelModeChip) levelModeChip.textContent = t('mode.world');
-  if (levelModeChip) levelModeChip.classList.toggle('hidden', !active);
+  if (mainHeader) mainHeader.style.display = active ? 'none' : '';
   if (aliasConfig) aliasConfig.style.display = active ? 'none' : '';
   if (stageView) stageView.style.display = active ? 'none' : 'flex';
   if (tierView) tierView.classList.toggle('hidden', true);
   if (lobby) lobby.classList.toggle('hidden', !active);
   if (duoLobby) duoLobby.classList.add('hidden');
-  // Hide library button in world view — teach is accessed via bestiary study
-  if (libraryBtn) libraryBtn.style.display = active ? 'none' : '';
 }
 
 export function openWildLobby(): void {

@@ -209,24 +209,17 @@ function maybeShowPhaseTeachBrief(techKey: string): void {
 let _practiceData: Awaited<ReturnType<typeof getPracticeLevels>> | null = null;
 
 function setPracticeViewActive(active: boolean): void {
-  const levelTitle = document.getElementById('level-title');
-  const levelModeChip = document.getElementById('level-mode-chip');
+  const mainHeader = document.querySelector('.level-screen-header') as HTMLElement | null;
   const aliasConfig = document.querySelector('.alias-config') as HTMLElement | null;
   const stageView = document.getElementById('stage-view');
   const tierView = document.getElementById('tier-view');
   const wildLobby = document.getElementById('wild-lobby');
-  const libraryBtn = document.getElementById('library-btn');
 
-  if (levelTitle) levelTitle.textContent = active ? t('practice.lobbyTitle') : 'SUDOKU ZEN';
-  if (levelModeChip) {
-    levelModeChip.textContent = t('mode.practice');
-    levelModeChip.classList.toggle('hidden', !active);
-  }
+  if (mainHeader) mainHeader.style.display = active ? 'none' : '';
   if (aliasConfig) aliasConfig.style.display = active ? 'none' : '';
   if (stageView) stageView.style.display = active ? 'none' : 'flex';
   if (tierView) tierView.classList.add('hidden');
   if (wildLobby) wildLobby.classList.add('hidden');
-  if (libraryBtn) libraryBtn.style.display = active ? 'none' : '';
 }
 
 // ── Open / Close / Render ─────────────────────────────────────────────

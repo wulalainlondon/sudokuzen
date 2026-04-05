@@ -21,16 +21,13 @@ function duoLobbyEl(): HTMLElement | null {
 }
 
 function setDuoViewActive(active: boolean): void {
-  const levelTitle = document.getElementById('level-title');
-  const levelModeChip = document.getElementById('level-mode-chip');
+  const mainHeader = document.querySelector('.level-screen-header') as HTMLElement | null;
   const aliasConfig = document.querySelector('.alias-config') as HTMLElement | null;
   const stageView = document.getElementById('stage-view');
   const tierView = document.getElementById('tier-view');
   const wildLobby = document.getElementById('wild-lobby');
   const duoLobby = duoLobbyEl();
-  if (levelTitle) levelTitle.textContent = active ? t('mode.duo') : 'SUDOKU ZEN';
-  if (levelModeChip) levelModeChip.textContent = t('mode.duo');
-  if (levelModeChip) levelModeChip.classList.toggle('hidden', !active);
+  if (mainHeader) mainHeader.style.display = active ? 'none' : '';
   if (aliasConfig) aliasConfig.style.display = active ? 'none' : '';
   if (stageView) stageView.style.display = active ? 'none' : 'flex';
   if (tierView) tierView.classList.toggle('hidden', true);
