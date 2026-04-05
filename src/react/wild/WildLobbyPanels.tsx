@@ -49,7 +49,7 @@ export function WildProfileCard(): ReactElement | null {
         <div className="wild-title-display" id="wild-title" style={{ display: vm.equippedTitle ? '' : 'none' }}>{vm.equippedTitle}</div>
       </div>
       <div className="wild-exp-bar-wrap">
-        <div className="wild-exp-fill" id="wild-exp-fill" style={{ width: `${vm.expFillPct.toFixed(1)}%` }} />
+        <div className={`wild-exp-fill${vm.expFillPct > 88 ? ' wild-exp-fill--full' : ''}`} id="wild-exp-fill" style={{ width: `${vm.expFillPct.toFixed(1)}%` }} />
       </div>
       <div className="wild-exp-text" id="wild-exp-text">{vm.expText}</div>
       <div className="wild-profile-stats">
@@ -78,6 +78,21 @@ export function WildSessionCard(): ReactElement | null {
         <div className="wild-session-round" id="wild-session-round">{vm.sessionRoundText}</div>
       </div>
       <div className="wild-session-bar-wrap"><div className="wild-session-bar-fill" id="wild-session-fill" style={{ width: `${vm.sessionFillPct.toFixed(1)}%` }} /></div>
+      {vm.sessionRound > 0 && (
+        <div className="wild-session-dots">
+          {Array.from({ length: 10 }, (_, i) => {
+            const dotNum = i + 1;
+            const isBoss = dotNum === 10;
+            const isCompleted = dotNum < vm.sessionRound;
+            const isCurrent = dotNum === vm.sessionRound;
+            let cls = 'wild-session-dot';
+            if (isBoss) cls += ' boss';
+            if (isCompleted) cls += ' completed';
+            else if (isCurrent) cls += ' current';
+            return <span key={dotNum} className={cls} />;
+          })}
+        </div>
+      )}
       <div className="wild-session-meta" id="wild-session-meta">{vm.sessionMetaText}</div>
       <div className="wild-session-tech" id="wild-session-tech">{vm.sessionTechText}</div>
       {vm.showIntroButton && (

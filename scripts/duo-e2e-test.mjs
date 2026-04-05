@@ -220,7 +220,9 @@ async function screenshot(page, name) {
 
   // Check duo progress UI
   const progressText = await pageA.evaluate(() => {
-    return document.getElementById('duo-progress-text')?.textContent || '';
+    const oppPct = document.getElementById('duo-progress-opp-pct')?.textContent || '';
+    const selfPct = document.getElementById('duo-progress-self-pct')?.textContent || '';
+    return `opp:${oppPct} self:${selfPct}`;
   });
   log('A', `Progress UI: ${progressText}`);
 

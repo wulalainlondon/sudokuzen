@@ -181,16 +181,19 @@
                         <button class="duo-room-id-copy" id="duo-room-id-copy" onclick="copyDuoRoomId()">複製</button>
                     </div>
                     <div class="duo-room-tier-mode" id="duo-room-tier-mode"></div>
+                    <div class="duo-room-id-hint" id="duo-room-id-hint">分享此 ID 邀請對手</div>
                 </div>
                 <div class="duo-room-slots-card">
                     <div class="duo-player-slots">
                         <div class="duo-player-slot" id="duo-slot-host">
+                            <div class="duo-slot-totem" id="duo-host-totem">?</div>
                             <div class="duo-slot-alias" id="duo-host-alias">--</div>
                             <div class="duo-slot-title" id="duo-host-title"></div>
                             <div class="duo-slot-status" id="duo-host-status">等待中</div>
                         </div>
-                        <div class="duo-vs-badge">VS</div>
+                        <div class="duo-vs-badge" id="duo-vs-badge">VS</div>
                         <div class="duo-player-slot empty" id="duo-slot-guest">
+                            <div class="duo-slot-totem" id="duo-guest-totem">?</div>
                             <div class="duo-slot-alias" id="duo-guest-alias">等待加入...</div>
                             <div class="duo-slot-title" id="duo-guest-title"></div>
                             <div class="duo-slot-status" id="duo-guest-status"></div>
@@ -266,8 +269,16 @@
                 <span id="ghost-progress-text">👻 0 | 🧑 0</span>
             </div>
             <div class="duo-progress-container" id="duo-progress-container">
-                <span id="duo-progress-text">💕 0/81</span>
-                <div class="duo-progress-bar-wrap"><div class="duo-progress-fill" id="duo-progress-fill"></div></div>
+                <div class="duo-progress-row">
+                    <span class="duo-progress-label" id="duo-progress-opp-label">對手</span>
+                    <div class="duo-progress-bar-wrap"><div class="duo-progress-fill opp" id="duo-progress-fill-opp"></div></div>
+                    <span class="duo-progress-pct" id="duo-progress-opp-pct">0%</span>
+                </div>
+                <div class="duo-progress-row">
+                    <span class="duo-progress-label" id="duo-progress-self-label">你</span>
+                    <div class="duo-progress-bar-wrap"><div class="duo-progress-fill self" id="duo-progress-fill-self"></div></div>
+                    <span class="duo-progress-pct" id="duo-progress-self-pct">0%</span>
+                </div>
             </div>
             <div class="grid-right">
                 <div class="grid-actions">
@@ -386,7 +397,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.05-V8';
+        var INLINE_VER = '2026.04.05-V9';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

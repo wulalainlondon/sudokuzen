@@ -56,11 +56,14 @@ export function DuoResultModal(): ReactElement {
   const confettiCount = iWon ? 30 : 25;
   const confettiColors = iWon ? CONFETTI_COLORS_WIN : CONFETTI_COLORS_DRAW;
 
+  const panelClass = `duo-result-panel${iWon ? ' victory' : isDraw ? '' : visible ? ' defeat' : ''}`;
+  const titleClass = iWon ? 'victory-title' : isDraw ? 'draw-title' : 'defeat-title';
+
   return (
     <ZenOverlay visible={visible} onClose={handleBack} id="duo-result-modal">
-      <div className="duo-result-panel">
+      <div className={panelClass}>
         {showConfetti && <ConfettiLayer count={confettiCount} colors={confettiColors} />}
-        <h2>{t('duo.resultTitle')}</h2>
+        <h2 className={titleClass}>{t('duo.resultTitle')}</h2>
         {/* Safety: contentHtml built by our own duo.ts code (trusted) */}
         <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
         <button className="resume-btn" onClick={handlePlayAgain}>{t('duo.playAgain')}</button>

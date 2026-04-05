@@ -254,6 +254,7 @@ export function renderWildLobby(): void {
     bestiaryFilter: _bestiaryFilter as StoreBestiaryFilter,
     rarityFilter: _rarityFilter as StoreRarityFilter,
     showIntroButton: !hasCompletedMentorIntro(),
+    sessionRound: profile.currentSession?.round ?? 0,
   });
 
   // Online presence indicator

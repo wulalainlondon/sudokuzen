@@ -31,6 +31,7 @@ export interface WildLobbyViewModel {
   bestiaryFilter: BestiaryFilter;
   rarityFilter: RarityFilter;
   showIntroButton: boolean;
+  sessionRound: number;
 }
 
 export interface WildMentorNote {

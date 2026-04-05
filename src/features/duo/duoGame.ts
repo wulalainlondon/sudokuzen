@@ -163,14 +163,19 @@ export function updateDuoRoomUI(d: DuoRoomData): void {
     hostStatus.textContent = d.hostReady ? t('duoRuntime.statusReady') : t('duoRuntime.statusWaiting');
     hostStatus.classList.toggle('is-ready', !!d.hostReady);
   }
+  // Host totem
+  const hostTotem = document.getElementById('duo-host-totem');
+  if (hostTotem && d.hostAlias) hostTotem.textContent = d.hostAlias.charAt(0).toUpperCase();
 
   // Guest slot
   const guestSlot = document.getElementById('duo-slot-guest');
   const guestAlias = document.getElementById('duo-guest-alias');
   const guestStatus = document.getElementById('duo-guest-status');
+  const guestTotem = document.getElementById('duo-guest-totem');
   if (d.guestId) {
     if (guestSlot) { guestSlot.classList.remove('empty'); guestSlot.classList.toggle('ready', !!d.guestReady); }
     if (guestAlias) guestAlias.textContent = d.guestAlias || '--';
+    if (guestTotem && d.guestAlias) guestTotem.textContent = d.guestAlias.charAt(0).toUpperCase();
     const guestTitleEl = document.getElementById('duo-guest-title');
     if (guestTitleEl) { guestTitleEl.textContent = d.guestTitle || ''; guestTitleEl.style.display = d.guestTitle ? '' : 'none'; }
     if (guestStatus) {
@@ -180,9 +185,18 @@ export function updateDuoRoomUI(d: DuoRoomData): void {
   } else {
     if (guestSlot) guestSlot.classList.add('empty');
     if (guestAlias) guestAlias.textContent = t('duoRuntime.waitingJoin');
+    if (guestTotem) guestTotem.textContent = '?';
     const guestTitleEl = document.getElementById('duo-guest-title');
     if (guestTitleEl) guestTitleEl.style.display = 'none';
     if (guestStatus) { guestStatus.textContent = ''; guestStatus.classList.remove('is-ready'); }
+  }
+
+  // VS badge — battle mode when both ready
+  const vsBadge = document.getElementById('duo-vs-badge');
+  if (vsBadge) {
+    const bothReady = !!d.hostReady && !!d.guestReady && !!d.guestId;
+    vsBadge.classList.toggle('battle', bothReady);
+    vsBadge.textContent = bothReady ? '⚔️' : 'VS';
   }
 
   // Stats — show only when guest has joined
@@ -202,11 +216,14 @@ export function updateDuoRoomUI(d: DuoRoomData): void {
     }
     if (roomStats && roomStatsContent) {
       roomStats.classList.remove('hidden');
-      let html = `
-        <div class="duo-stats-row"><span>${t('duo.statsWins')}</span><span>${profile.wins}</span></div>
-        <div class="duo-stats-row"><span>${t('duo.statsLosses')}</span><span>${profile.losses}</span></div>
-        <div class="duo-stats-row"><span>${t('duo.statsDraws')}</span><span>${profile.draws}</span></div>
-        <div class="duo-stats-row"><span>${t('duo.statsStreak')}</span><span>${profile.currentStreak} (${t('duo.statsBest')}: ${profile.bestStreak})</span></div>`;
+      const total = profile.wins + profile.losses + profile.draws;
+      const winRate = total > 0 ? Math.round((profile.wins / total) * 100) : 0;
+      const ringDeg = total > 0 ? Math.round((profile.wins / total) * 360) : 0;
+      let html = `<div class="duo-stats-header">
+        <div class="duo-winrate-ring" style="background: conic-gradient(var(--duo-accent) ${ringDeg}deg, color-mix(in srgb, var(--cell-border) 30%, transparent) ${ringDeg}deg)">${winRate}%</div>
+        <div><div class="duo-stats-summary"><span>${profile.wins}W</span> <span>${profile.losses}L</span> <span>${profile.draws}D</span></div>
+        <div class="duo-stats-row" style="margin-top:4px"><span>${t('duo.statsStreak')}</span><span>${profile.currentStreak} (${t('duo.statsBest')}: ${profile.bestStreak})</span></div></div>
+      </div>`;
       if (d.hostDuoWins != null && d.guestDuoWins != null) {
         html += `<div class="duo-stats-row duo-stats-vs"><span>${d.hostAlias} vs ${d.guestAlias || '--'}</span><span>${d.hostDuoWins} : ${d.guestDuoWins}</span></div>`;
       }
@@ -297,12 +314,22 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
   _countdownLaunched = true;
   _countdownRafCancelled = false;
 
+  // Create overlay for countdown
+  let overlay = document.getElementById('duo-countdown-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'duo-countdown-overlay';
+    overlay.className = 'duo-countdown-overlay';
+    document.body.appendChild(overlay);
+  }
+
   let lastShown: number | null = null;
   function updateCountdownUI() {
     if (_countdownRafCancelled) return;
     const remaining = Math.max(0, Math.ceil((targetMs - Date.now()) / 1000));
     if (remaining > 0) {
       if (remaining !== lastShown) {
+        if (overlay) overlay.innerHTML = `<div class="duo-countdown-display">${remaining}</div>`;
         area!.innerHTML = `<div class="duo-countdown-display">${remaining}</div>`;
         lastShown = remaining;
         playCountdownBeep();
@@ -319,10 +346,15 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
     gs.duoCountdownTimer = null;
     if (gs.duoRoundLaunched) return;
     gs.duoRoundLaunched = true;
-    area!.innerHTML = `<div class="duo-countdown-display">GO!</div>`;
+    if (overlay) overlay.innerHTML = `<div class="duo-countdown-display go">GO!</div><div class="duo-countdown-flash"></div>`;
+    area!.innerHTML = `<div class="duo-countdown-display go">GO!</div>`;
     playCountdownBeep(true);
     if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 100]);
-    setTimeout(() => launchDuoGame(), 600);
+    setTimeout(() => {
+      const ovl = document.getElementById('duo-countdown-overlay');
+      if (ovl) ovl.remove();
+      launchDuoGame();
+    }, 600);
   }, delay) as unknown as ReturnType<typeof setInterval>;
 }
 
@@ -410,12 +442,31 @@ export function updateDuoProgress(): void {
 }
 
 function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
-  const el = document.getElementById('duo-progress-text');
-  const fill = document.getElementById('duo-progress-fill');
-  if (!el || !fill) return;
+  const oppFill = document.getElementById('duo-progress-fill-opp');
+  const oppPct = document.getElementById('duo-progress-opp-pct');
+  const oppLabel = document.getElementById('duo-progress-opp-label');
+  if (!oppFill) return;
   const pct = gs.duoTotalToFill > 0 ? Math.min(100, Math.round((oppProgress / gs.duoTotalToFill) * 100)) : 0;
-  el.textContent = `\u{1F495} ${oppAlias}: ${oppProgress}/${gs.duoTotalToFill}`;
-  fill.style.width = `${pct}%`;
+  oppFill.style.width = `${pct}%`;
+  if (oppPct) oppPct.textContent = `${pct}%`;
+  if (oppLabel) oppLabel.textContent = oppAlias;
+
+  // Update self progress
+  const selfFill = document.getElementById('duo-progress-fill-self');
+  const selfPct = document.getElementById('duo-progress-self-pct');
+  if (selfFill) {
+    const filled = gs.cellsData.filter((c) => !c.fixed && c.value !== 0).length;
+    const myPct = gs.duoTotalToFill > 0 ? Math.min(100, Math.round((filled / gs.duoTotalToFill) * 100)) : 0;
+    selfFill.style.width = `${myPct}%`;
+    if (selfPct) selfPct.textContent = `${myPct}%`;
+
+    // Add trailing pulse if behind
+    if (myPct < pct && pct - myPct > 10) {
+      selfFill.classList.add('trailing');
+    } else {
+      selfFill.classList.remove('trailing');
+    }
+  }
 }
 
 // ── Opponent finished ────────────────────────────────────────────────
@@ -526,7 +577,8 @@ export function showDuoResult(d: DuoRoomData): void {
     contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultDraw')}</div>`;
   } else {
     const winnerAlias = hWin ? d.hostAlias : (d.guestAlias || '');
-    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultFaster', { winner: winnerAlias, diff: formatSeconds(diff) })}</div>`;
+    const diffClass = iWon ? 'faster' : 'slower';
+    contentHtml += `<div class="duo-result-diff ${diffClass}" id="duo-result-diff">${t('duoRuntime.resultFaster', { winner: winnerAlias, diff: formatSeconds(diff) })}</div>`;
   }
 
   // Stats
@@ -570,6 +622,16 @@ export function sendDuoEmoji(emoji: string): void {
   const tsField = gs.duoRole === 'host' ? 'hostEmojiTs' : 'guestEmojiTs';
   duoRoomRef().update({ [field]: emoji, [tsField]: Date.now() }).catch(() => {});
   spawnEmojiFloat(emoji, true);
+  // Sent ring feedback on the button
+  const btns = document.querySelectorAll('.duo-emoji-btn');
+  btns.forEach((btn) => {
+    if (btn.textContent?.trim() === emoji) {
+      btn.classList.remove('sent');
+      void (btn as HTMLElement).offsetWidth; // reflow
+      btn.classList.add('sent');
+      setTimeout(() => btn.classList.remove('sent'), 500);
+    }
+  });
 }
 
 function handleDuoEmoji(d: DuoRoomData): void {
@@ -583,6 +645,20 @@ function handleDuoEmoji(d: DuoRoomData): void {
   if (key === gs.duoLastEmojiSeen) return;
   gs.duoLastEmojiSeen = key;
   spawnEmojiFloat(emoji, false);
+
+  // Show bubble with opponent name
+  const oppAlias = gs.duoRole === 'host' ? (d.guestAlias || '') : d.hostAlias;
+  spawnEmojiBubble(emoji, oppAlias);
+}
+
+function spawnEmojiBubble(emoji: string, alias: string): void {
+  const existing = document.querySelector('.duo-emoji-bubble');
+  if (existing) existing.remove();
+  const el = document.createElement('div');
+  el.className = 'duo-emoji-bubble';
+  el.innerHTML = `<span class="duo-emoji-bubble-name">${alias}</span><span class="duo-emoji-bubble-emoji">${emoji}</span>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
 }
 
 function spawnEmojiFloat(emoji: string, isSelf: boolean): void {
@@ -671,6 +747,10 @@ export function resetDuoState(): void {
   const forfeitBtn = document.getElementById('duo-forfeit-btn');
   if (forfeitBtn) forfeitBtn.remove();
   gs.duoLastEmojiSeen = '';
+  const countdownOverlay = document.getElementById('duo-countdown-overlay');
+  if (countdownOverlay) countdownOverlay.remove();
+  const emojiBubble = document.querySelector('.duo-emoji-bubble');
+  if (emojiBubble) emojiBubble.remove();
   clearActiveRoomId();
   invalidateWaitingRoomsCache();
   import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch(() => {});
