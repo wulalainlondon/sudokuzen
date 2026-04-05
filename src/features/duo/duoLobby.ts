@@ -1,7 +1,6 @@
 // Duo lobby — tier/mode selection, room list, stats card
 // Complete rewrite: no more level-select coupling.
 
-import { gs } from '../../game/state';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { escapeHtml } from '../../shared/html/escape';
