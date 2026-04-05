@@ -47,7 +47,7 @@ export function openDuoRoomView(): void {
   const roomIdValue = document.getElementById('duo-room-id-value');
   if (roomIdValue) roomIdValue.textContent = roomId || '--';
 
-  const roomData = gs.duoRoomData as any;
+  const roomData = gs.duoRoomData;
   const tierMode = document.getElementById('duo-room-tier-mode');
   if (tierMode && roomData) {
     const tierLabel = DUO_TIER_MAP.get(roomData.tierId)?.label || '';

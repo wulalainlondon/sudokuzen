@@ -3,6 +3,7 @@
 import { gs, type ActionRecord } from './state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { getSaveKeyForCurrentMode, getRecordsStorageKeyForLevelList, getModePolicy } from './modePolicy';
+import { toClassicLevelRecord, toSpeedLevelRecord } from '../shared/records/levelRecords';
 
 export interface SavedGameState {
   levelId: number;
@@ -59,26 +60,28 @@ export function clearGameStatus(levelId: number): void {
 export function saveProgress(): number {
   const recordsKey = getRecordsStorageKeyForLevelList(false);
   if (getModePolicy().useSubmissionValidation) {
-    const records = readJson<Record<string, any>>(recordsKey, {});
+    const records = readJson<Record<string, unknown>>(recordsKey, {});
     const existing = records[gs.currentLevel!.id];
+    const existingRec = toSpeedLevelRecord(existing);
     const currentSubs = gs.submissionCount + 1;
     const shouldUpdate =
       !existing ||
-      currentSubs < (existing.submissions || Infinity) ||
-      (currentSubs === (existing.submissions || Infinity) && gs.seconds < (existing.time || Infinity));
+      currentSubs < (existingRec?.submissions ?? Infinity) ||
+      (currentSubs === (existingRec?.submissions ?? Infinity) && gs.seconds < (existingRec?.time ?? Infinity));
     if (shouldUpdate) {
       records[gs.currentLevel!.id] = { time: gs.seconds, submissions: currentSubs, replayHistory: gs.actionHistory };
       writeJson(recordsKey, records);
     }
     return currentSubs;
   } else {
-    const records = readJson<Record<string, any>>(recordsKey, {});
+    const records = readJson<Record<string, unknown>>(recordsKey, {});
     const existing = records[gs.currentLevel!.id];
+    const existingRec = toClassicLevelRecord(existing);
     const earnedStars = Math.max(1, 3 - gs.errors);
     const shouldUpdate =
       !existing ||
-      earnedStars > (existing.stars || 1) ||
-      (earnedStars === (existing.stars || 1) && gs.seconds < (existing.time || Infinity));
+      earnedStars > (existingRec?.stars ?? 1) ||
+      (earnedStars === (existingRec?.stars ?? 1) && gs.seconds < (existingRec?.time ?? Infinity));
     if (shouldUpdate) {
       records[gs.currentLevel!.id] = { time: gs.seconds, stars: earnedStars, replayHistory: gs.actionHistory };
       writeJson(recordsKey, records);

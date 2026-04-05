@@ -25,7 +25,7 @@ test('simulate world run to lv80 and write report', async ({ page }) => {
   });
 
   await page.goto('/');
-  await page.waitForFunction(() => typeof (window as any).showLevelScreen === 'function', { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as unknown).showLevelScreen === 'function', { timeout: 20_000 });
 
   await page.evaluate(() => {
     const appVer = localStorage.getItem('sudoku_app_version');
@@ -33,7 +33,7 @@ test('simulate world run to lv80 and write report', async ({ page }) => {
     if (appVer) localStorage.setItem('sudoku_app_version', appVer);
   });
   await page.reload();
-  await page.waitForFunction(() => typeof (window as any).showLevelScreen === 'function', { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as unknown).showLevelScreen === 'function', { timeout: 20_000 });
 
   const result = await page.evaluate(async () => {
     const wc = await import('/src/features/wild/wildController.ts');
@@ -50,7 +50,7 @@ test('simulate world run to lv80 and write report', async ({ page }) => {
 
     for (let i = 1; i <= maxEncounters; i++) {
       // Keep mentor overlay from blocking input if it appears asynchronously.
-      (window as any).dismissMentor?.();
+      (window as unknown).dismissMentor?.();
 
       if (i === 1) await wc.startWorldSession();
       else await wc.continueWild();

@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 10_000 });
 }
 
 async function clearGameData(page: Page) {
@@ -18,7 +18,7 @@ test.describe('skills-cast', () => {
     await waitForE2E(page);
     await clearGameData(page);
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.gs.isSpeedrunMode = false;
       e2e.initGame(1, true);
       // Skill mode now only works in wild mode.
@@ -30,7 +30,7 @@ test.describe('skills-cast', () => {
 
   test('long-press enters skill mode and cast eliminates locked-candidates targets', async ({ page }) => {
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const cells = e2e.gs.cellsData;
       // Reset all notes to keep this case deterministic.
       for (let i = 0; i < 81; i++) {
@@ -72,16 +72,16 @@ test.describe('skills-cast', () => {
     await expect(page.locator('#skill-panel')).toHaveClass(/hidden/, { timeout: 4_000 });
 
     const result = await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const notes5 = e2e.gs.cellsData[5].notes.slice();
       const notes7 = e2e.gs.cellsData[7].notes.slice();
-      const skillElims = e2e.gs.actionHistory.filter((a: any) => a.type === 'skill_eliminate');
+      const skillElims = e2e.gs.actionHistory.filter((a: unknown) => a.type === 'skill_eliminate');
       return {
         notes5,
         notes7,
         skillElimCount: skillElims.length,
-        containsTarget5: skillElims.some((a: any) => a.idx === 5 && a.val === 9),
-        containsTarget7: skillElims.some((a: any) => a.idx === 7 && a.val === 9),
+        containsTarget5: skillElims.some((a: unknown) => a.idx === 5 && a.val === 9),
+        containsTarget7: skillElims.some((a: unknown) => a.idx === 7 && a.val === 9),
       };
     });
 
@@ -94,7 +94,7 @@ test.describe('skills-cast', () => {
 
   test('invalid pattern keeps cast disabled and does not eliminate candidates', async ({ page }) => {
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const cells = e2e.gs.cellsData;
 
       for (let i = 0; i < 81; i++) {
@@ -129,17 +129,17 @@ test.describe('skills-cast', () => {
     await expect(page.locator('#skill-subtitle')).toContainText('未構成');
 
     const result = await page.evaluate(async () => {
-      const before5 = (window as any).__e2e.gs.cellsData[5].notes.slice();
-      const before7 = (window as any).__e2e.gs.cellsData[7].notes.slice();
-      const beforeActions = (window as any).__e2e.gs.actionHistory.filter((a: any) => a.type === 'skill_eliminate').length;
+      const before5 = (window as unknown).__e2e.gs.cellsData[5].notes.slice();
+      const before7 = (window as unknown).__e2e.gs.cellsData[7].notes.slice();
+      const beforeActions = (window as unknown).__e2e.gs.actionHistory.filter((a: unknown) => a.type === 'skill_eliminate').length;
 
-      if (typeof (window as any).castSkill === 'function') {
-        await (window as any).castSkill();
+      if (typeof (window as unknown).castSkill === 'function') {
+        await (window as unknown).castSkill();
       }
 
-      const after5 = (window as any).__e2e.gs.cellsData[5].notes.slice();
-      const after7 = (window as any).__e2e.gs.cellsData[7].notes.slice();
-      const afterActions = (window as any).__e2e.gs.actionHistory.filter((a: any) => a.type === 'skill_eliminate').length;
+      const after5 = (window as unknown).__e2e.gs.cellsData[5].notes.slice();
+      const after7 = (window as unknown).__e2e.gs.cellsData[7].notes.slice();
+      const afterActions = (window as unknown).__e2e.gs.actionHistory.filter((a: unknown) => a.type === 'skill_eliminate').length;
       return { before5, before7, after5, after7, beforeActions, afterActions };
     });
 
@@ -150,7 +150,7 @@ test.describe('skills-cast', () => {
 
   test('can enter skill mode even when selected cells have no candidates', async ({ page }) => {
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const cells = e2e.gs.cellsData;
 
       for (const idx of [0, 1]) {

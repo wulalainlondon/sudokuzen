@@ -3,6 +3,8 @@
 // This preserves the mutation pattern of the original monolith while enabling
 // the code to live in separate files.
 
+import type { FirestoreCollectionRef, FirestoreTransaction } from '../firebase/types';
+
 export interface CellData {
   value: number;
   fixed: boolean;
@@ -25,6 +27,55 @@ export interface ReplayCellState {
   notes: number[];
   _mistake?: boolean;
   _mistakeVal?: number | null;
+}
+
+export interface LegacyTeachStep {
+  text?: string;
+  visibleCells?: number[];
+  focusCells?: number[];
+  highlightDigits?: Record<string, number[]>;
+  eliminateCells?: Array<{ cell: number; digit: number }>;
+  warnDigit?: number | null;
+  warnCells?: number[];
+}
+
+export interface LegacyTeachData {
+  name?: string;
+  technique?: string;
+  subtitle?: string;
+  explanation?: string[];
+  example?: {
+    board?: number[];
+    notes?: Record<string, number[]>;
+    steps?: LegacyTeachStep[];
+  };
+  practice?: LegacyPracticeState['data'][];
+}
+
+export interface LegacyPracticeState {
+  data: {
+    board: number[];
+    given: number[];
+    notes: Record<string, number[]>;
+    answer: {
+      eliminates: Array<{ cell: number; digit: number }>;
+      patternCells?: number[];
+      description?: string;
+      aicChain?: string[];
+      proof?: string[];
+    };
+  };
+  puzzleIdx: number;
+  teachRef: LegacyTeachData;
+  marked: Set<string>;
+  revealed: boolean;
+  hintLevel: number;
+  stars: number | null;
+}
+
+export interface FirestoreDbLike {
+  collection(name: string): FirestoreCollectionRef;
+  runTransaction<T>(fn: (tx: FirestoreTransaction) => Promise<T>): Promise<T>;
 }
 
 export interface AchievementToastItem {
@@ -130,8 +181,7 @@ export const gs = {
   numButtons: [] as HTMLButtonElement[],
 
   // ── Firebase ──────────────────────────────────────────────────────
-  // TODO: replace any with proper type -- Firebase Firestore instance, typed in firebase/client.ts
-  db: null as any,
+  db: null as FirestoreDbLike | null,
   firebaseReady: false,
 
   // ── Ghost mode ────────────────────────────────────────────────────
@@ -164,16 +214,13 @@ export const gs = {
 
   // ── Teach (legacy) ────────────────────────────────────────────────
   teachCurrentStep: 0,
-  // TODO: replace any with proper type -- complex teach data, typed in features/teach/
-  teachSteps: [] as any[],
-  // TODO: replace any with proper type -- complex teach data, typed in features/teach/
-  teachData: null as any,
+  teachSteps: [] as LegacyTeachStep[],
+  teachData: null as LegacyTeachData | null,
   teachStarsKey: null as string | null,
   teachLaunchSource: 'tier',
 
   // ── Practice ──────────────────────────────────────────────────────
-  // TODO: replace any with proper type -- complex practice state, typed in features/teach/
-  practiceState: null as any,
+  practiceState: null as LegacyPracticeState | null,
   practiceActiveTech: null as string | null,
 
   // ── Skill Mode ───────────────────────────────────────────────────

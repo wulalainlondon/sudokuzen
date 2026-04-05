@@ -12,6 +12,8 @@ import { t } from '../../i18n/t';
 import { usePracticeTreeStore } from '../../react/practice/practiceTreeStore';
 import { emitNavigation } from '../../app/navigation/navigationBus';
 import { saveScroll, restoreScroll } from '../levels';
+import type { SudokuWindow } from '../../facade/windowTypes';
+import { toClassicLevelRecord } from '../../shared/records/levelRecords';
 
 // ── Unlock tree definition ────────────────────────────────────────────
 
@@ -123,16 +125,14 @@ export interface TechState {
 }
 
 export function computeUnlockState(): Map<string, TechState> {
-  const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+  const records = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
   const result = new Map<string, TechState>();
 
   // First pass: count cleared levels per technique
   const clearedCount = new Map<string, number>();
   for (const key of Object.keys(records)) {
-    const rec = records[key];
-    if (rec && rec.techKey) {
-      clearedCount.set(rec.techKey, (clearedCount.get(rec.techKey) || 0) + 1);
-    }
+    const rec = toClassicLevelRecord(records[key]);
+    if (rec?.techKey) clearedCount.set(rec.techKey, (clearedCount.get(rec.techKey) || 0) + 1);
   }
 
   // Second pass: determine unlock state
@@ -195,7 +195,7 @@ function maybeShowPhaseTeachBrief(techKey: string): void {
   if (!hasTeachModule(stars)) return;
 
   window.setTimeout(() => {
-    const show = (window as any).showTeachModal as ((s: number, source?: 'tier' | 'library') => void) | undefined;
+    const show = (window as SudokuWindow).showTeachModal;
     if (show) {
       show(stars, 'tier');
       return;
@@ -310,7 +310,7 @@ function renderPracticeLevelGrid(techKey: string): void {
   if (!list || !_practiceData) return;
   list.innerHTML = '';
 
-  const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+  const records = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
   const techLevels = _practiceData.filter(l => l.maxTechnique === techKey);
   const cleared = techLevels.filter(l => records[l.id]).length;
 
@@ -319,15 +319,16 @@ function renderPracticeLevelGrid(techKey: string): void {
 
   techLevels.forEach((l, idx) => {
     const record = records[l.id];
+    const parsed = toClassicLevelRecord(record);
     const item = document.createElement('div');
     item.className = `level-item${record ? ' completed' : ''}`;
 
     const hasRecord = !!record;
-    const bestTime = hasRecord ? record.time : null;
+    const bestTime = hasRecord ? (parsed?.time ?? null) : null;
     const timeStr = bestTime !== null
       ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}`
       : '--:--';
-    const bestStars = hasRecord ? (record.stars || 1) : 0;
+    const bestStars = hasRecord ? (parsed?.stars ?? 1) : 0;
     const starsClass = bestStars > 0 ? 'level-stars' : 'level-stars is-empty';
     const starsText = bestStars > 0
       ? '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span>'
@@ -444,13 +445,14 @@ export async function startNextPracticeLevel(): Promise<void> {
 // ── Save practice record ──────────────────────────────────────────────
 
 export function savePracticeRecord(levelId: number, seconds: number, errors: number, techKey: string, replayHistory?: ActionRecord[]): void {
-  const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+  const records = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
   const existing = records[levelId];
+  const existingRec = toClassicLevelRecord(existing);
   const earnedStars = Math.max(1, 3 - errors);
   const shouldUpdate =
     !existing ||
-    earnedStars > (existing.stars || 1) ||
-    (earnedStars === (existing.stars || 1) && seconds < (existing.time || Infinity));
+    earnedStars > (existingRec?.stars ?? 1) ||
+    (earnedStars === (existingRec?.stars ?? 1) && seconds < (existingRec?.time ?? Infinity));
 
   if (shouldUpdate) {
     records[levelId] = {

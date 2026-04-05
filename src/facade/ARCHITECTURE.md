@@ -26,7 +26,7 @@ import { showTeachModal } from './teach-legacy';
 showTeachModal(3, 'tier');
 
 // ✅ CORRECT — bridge can intercept
-(window as any).showTeachModal(3, 'tier');
+(window as Window & { showTeachModal?: (stars: number, source?: string) => void }).showTeachModal?.(3, 'tier');
 ```
 
 ## When adding a new bridge

@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  */
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 10_000 });
 }
 
 async function clearGameData(page: Page) {
@@ -23,24 +23,24 @@ test.describe('notes-and-eliminate', () => {
     await waitForE2E(page);
     await clearGameData(page);
     await page.evaluate(() => {
-      (window as any).__e2e.gs.isSpeedrunMode = false;
-      (window as any).__e2e.initGame(1, true);
+      (window as unknown).__e2e.gs.isSpeedrunMode = false;
+      (window as unknown).__e2e.initGame(1, true);
     });
     await page.locator('.game-container').waitFor({ state: 'visible' });
   });
 
   test('toggle notes mode adds candidates to cell', async ({ page }) => {
     const emptyIdx = await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       return e2e.gs.currentLevel.puzzle.findIndex((v: number) => v === 0);
     });
 
     // Enable notes mode
-    await page.evaluate(() => { (window as any).__e2e.gs.isNotesMode = true; });
+    await page.evaluate(() => { (window as unknown).__e2e.gs.isNotesMode = true; });
 
     // Add candidates 1, 3, 5
     await page.evaluate((idx) => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.selectCell(idx);
       e2e.handleInput(1);
       e2e.handleInput(3);
@@ -48,14 +48,14 @@ test.describe('notes-and-eliminate', () => {
     }, emptyIdx);
 
     const notes = await page.evaluate(
-      (idx) => (window as any).__e2e.gs.cellsData[idx].notes.slice().sort(),
+      (idx) => (window as unknown).__e2e.gs.cellsData[idx].notes.slice().sort(),
       emptyIdx,
     );
     expect(notes).toEqual([1, 3, 5]);
 
     // Cell value should still be 0
     const value = await page.evaluate(
-      (idx) => (window as any).__e2e.gs.cellsData[idx].value,
+      (idx) => (window as unknown).__e2e.gs.cellsData[idx].value,
       emptyIdx,
     );
     expect(value).toBe(0);
@@ -63,12 +63,12 @@ test.describe('notes-and-eliminate', () => {
 
   test('toggling same note digit removes it', async ({ page }) => {
     const emptyIdx = await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       return e2e.gs.currentLevel.puzzle.findIndex((v: number) => v === 0);
     });
 
     await page.evaluate((idx) => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.gs.isNotesMode = true;
       e2e.selectCell(idx);
       e2e.handleInput(4);
@@ -77,7 +77,7 @@ test.describe('notes-and-eliminate', () => {
     }, emptyIdx);
 
     const notes = await page.evaluate(
-      (idx) => (window as any).__e2e.gs.cellsData[idx].notes,
+      (idx) => (window as unknown).__e2e.gs.cellsData[idx].notes,
       emptyIdx,
     );
     expect(notes).toEqual([7]);
@@ -86,7 +86,7 @@ test.describe('notes-and-eliminate', () => {
   test('filling a cell auto-eliminates that digit from peer notes', async ({ page }) => {
     // Setup: add notes to several cells in same row/col/box, then fill one
     const result = await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
 
       // Find an empty cell and a peer in the same row that's also empty
@@ -151,7 +151,7 @@ test.describe('notes-and-eliminate', () => {
   test('auto-eliminate records eliminate actions in history', async ({ page }) => {
     // Fill a cell that will trigger eliminate on peers with notes
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
 
       // Find empty cell and add notes to peers
@@ -176,7 +176,7 @@ test.describe('notes-and-eliminate', () => {
     });
 
     const eliminateActions = await page.evaluate(() =>
-      (window as any).__e2e.gs.actionHistory.filter((a: any) => a.type === 'eliminate'),
+      (window as unknown).__e2e.gs.actionHistory.filter((a: unknown) => a.type === 'eliminate'),
     );
     expect(eliminateActions.length).toBeGreaterThan(0);
 
@@ -189,7 +189,7 @@ test.describe('notes-and-eliminate', () => {
 
   test('notes are cleared when cell is filled', async ({ page }) => {
     const result = await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
       const emptyIdx = puzzle.findIndex((v: number) => v === 0);
 

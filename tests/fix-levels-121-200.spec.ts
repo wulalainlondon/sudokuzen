@@ -134,7 +134,7 @@ describe('fix maxTechnique for levels 121-200', () => {
 
     // Verify no IDs or puzzles were changed
     const reread = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    const target = reread.filter((l: any) => l.id >= 121 && l.id <= 200);
+    const target = reread.filter((l: { id: number }) => l.id >= 121 && l.id <= 200);
     expect(target.length).toBe(80);
 
     // All should have valid technique names

@@ -40,7 +40,7 @@ async function main() {
   await page.goto(BASE_URL);
 
   // Wait for app init
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 15_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 15_000 });
   console.log('App loaded.');
 
   // Clear game data for fresh start
@@ -50,10 +50,10 @@ async function main() {
     if (appVer) localStorage.setItem('sudoku_app_version', appVer);
   });
   await page.reload();
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 15_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 15_000 });
 
   // Go to level screen
-  await page.evaluate(() => (window as any).showLevelScreen());
+  await page.evaluate(() => (window as unknown).showLevelScreen());
   await page.locator('#level-screen').waitFor({ state: 'visible', timeout: 10_000 });
   console.log('Level screen visible.');
 
@@ -105,7 +105,7 @@ async function main() {
 
     // Get encounter info
     const info = await page.evaluate(() => {
-      const gs = (window as any).gs;
+      const gs = (window as unknown).gs;
       return {
         technique: gs?.currentLevel?.maxTechnique || 'unknown',
         displayName: gs?.currentLevel?.displayName || '',
@@ -136,7 +136,7 @@ async function main() {
       await page.screenshot({ path: 'test-results/world-pt-xwing.png' });
 
       const puzzleData = await page.evaluate(() => {
-        const gs = (window as any).gs;
+        const gs = (window as unknown).gs;
         return { puzzle: gs?.currentLevel?.puzzle, solution: gs?.currentLevel?.solution };
       });
       console.log(`  Puzzle data saved.`);
@@ -159,7 +159,7 @@ async function main() {
 
     // SOLVE: Fill all cells via evaluate, leaving last empty cell for UI trigger
     const lastEmpty = await page.evaluate(() => {
-      const gs = (window as any).gs;
+      const gs = (window as unknown).gs;
       const solution = gs.currentLevel.solution;
       const puzzle = gs.currentLevel.puzzle;
 
@@ -223,7 +223,7 @@ async function main() {
 
       // Check for game over
       const gameOver = await page.evaluate(() => {
-        const store = (window as any).__e2e?.gameOverStore;
+        const store = (window as unknown).__e2e?.gameOverStore;
         return store?.getState?.()?.visible || false;
       });
       if (gameOver) {
@@ -231,7 +231,7 @@ async function main() {
         console.log(`  -> Game Over! Recovering...`);
         // Dismiss and re-enter
         await page.evaluate(() => {
-          (window as any).showLevelScreen?.();
+          (window as unknown).showLevelScreen?.();
         });
         await page.waitForTimeout(500);
         await page.locator('.world-entry-btn').click();
@@ -246,7 +246,7 @@ async function main() {
 
       // Try to force continue
       await page.evaluate(() => {
-        (window as any).continueWild?.();
+        (window as unknown).continueWild?.();
       });
       await page.waitForTimeout(3500);
 
@@ -279,7 +279,7 @@ async function main() {
       await continueBtn.click();
     } catch {
       // Fallback: direct call
-      await page.evaluate(() => (window as any).continueWild?.());
+      await page.evaluate(() => (window as unknown).continueWild?.());
     }
 
     // Wait for transition + new encounter

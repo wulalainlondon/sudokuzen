@@ -8,6 +8,7 @@ import {
   clearGameStatus,
   saveProgress,
 } from '../src/game/core';
+import { toClassicLevelRecord, toSpeedLevelRecord } from '../src/shared/records/levelRecords';
 
 // Minimal level data for testing
 function makeLevelData(id = 1) {
@@ -124,16 +125,16 @@ describe('saveProgress', () => {
     gs.errors = 0;
     const stars = saveProgress();
     expect(stars).toBe(3);
-    const records = readJson<Record<string, any>>(SK.RECORDS, {});
-    expect(records[10].stars).toBe(3);
+    const records = readJson<Record<string, unknown>>(SK.RECORDS, {});
+    expect(toClassicLevelRecord(records[10])?.stars).toBe(3);
   });
 
   it('1 error = 2 stars', () => {
     gs.errors = 1;
     const stars = saveProgress();
     expect(stars).toBe(2);
-    const records = readJson<Record<string, any>>(SK.RECORDS, {});
-    expect(records[10].stars).toBe(2);
+    const records = readJson<Record<string, unknown>>(SK.RECORDS, {});
+    expect(toClassicLevelRecord(records[10])?.stars).toBe(2);
   });
 
   it('2 errors = 1 star', () => {
@@ -147,9 +148,9 @@ describe('saveProgress', () => {
     gs.submissionCount = 0;
     const subs = saveProgress();
     expect(subs).toBe(1); // submissionCount + 1
-    const speedRecords = readJson<Record<string, any>>(SK.SPEED_RECORDS, {});
+    const speedRecords = readJson<Record<string, unknown>>(SK.SPEED_RECORDS, {});
     expect(speedRecords[10]).toBeDefined();
-    expect(speedRecords[10].time).toBe(200);
+    expect(toSpeedLevelRecord(speedRecords[10])?.time).toBe(200);
   });
 
   it('only updates if new record is better (higher stars)', () => {
@@ -161,8 +162,8 @@ describe('saveProgress', () => {
     gs.errors = 0;
     gs.seconds = 300;
     saveProgress();
-    const records = readJson<Record<string, any>>(SK.RECORDS, {});
-    expect(records[10].stars).toBe(3);
+    const records = readJson<Record<string, unknown>>(SK.RECORDS, {});
+    expect(toClassicLevelRecord(records[10])?.stars).toBe(3);
   });
 
   it('only updates if same stars + faster time', () => {
@@ -174,13 +175,13 @@ describe('saveProgress', () => {
     // Second save: same stars, slower time — should NOT update
     gs.seconds = 400;
     saveProgress();
-    let records = readJson<Record<string, any>>(SK.RECORDS, {});
-    expect(records[10].time).toBe(300);
+    let records = readJson<Record<string, unknown>>(SK.RECORDS, {});
+    expect(toClassicLevelRecord(records[10])?.time).toBe(300);
 
     // Third save: same stars, faster time — should update
     gs.seconds = 150;
     saveProgress();
-    records = readJson<Record<string, any>>(SK.RECORDS, {});
-    expect(records[10].time).toBe(150);
+    records = readJson<Record<string, unknown>>(SK.RECORDS, {});
+    expect(toClassicLevelRecord(records[10])?.time).toBe(150);
   });
 });

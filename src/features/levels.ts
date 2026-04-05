@@ -16,8 +16,10 @@ function closeDuoLobby() {
 }
 import { closePracticeLobby, enterPracticeTechnique } from './practice/practiceLobby';
 import { t } from '../i18n/t';
+import { toClassicLevelRecord, toSpeedLevelRecord, getReplayHistory } from '../shared/records/levelRecords';
 import { requestRefresh } from '../app/ui/refreshBus';
 import { openPreLevel, closePreLevel } from '../app/ui/uiOrchestrator';
+import type { SudokuWindow } from '../facade/windowTypes';
 
 // Re-export tier system symbols so existing imports from './levels' keep working
 export {
@@ -41,7 +43,7 @@ import {
 
 // Route through window so the React bridge can intercept
 function showTeachModal(stars: number, source = 'tier') {
-  const wShow = (window as any).showTeachModal;
+  const wShow = (window as SudokuWindow).showTeachModal;
   if (wShow) wShow(stars, source);
 }
 
@@ -102,7 +104,7 @@ export function renderStageMap(): void {
   const levels = getAllLevels();
   const tierMap = buildVisibleTierMap(levels);
   const recordsKey = getRecordsStorageKeyForLevelList(false);
-  const records = readJson<Record<string, any>>(recordsKey, {});
+  const records = readJson<Record<string, unknown>>(recordsKey, {});
   const tiers = getDifficultyTiers();
   const unlockState = getRealmUnlockState();
   map.innerHTML = '';
@@ -170,7 +172,7 @@ export function enterTier(tierName: string): void {
   document.getElementById('tier-view')!.classList.remove('hidden');
 
   const recordsKey = getRecordsStorageKeyForLevelList(false);
-  const records = readJson<Record<string, any>>(recordsKey, {});
+  const records = readJson<Record<string, unknown>>(recordsKey, {});
   const levels = getAllLevels();
   const tierMap = buildVisibleTierMap(levels);
   const tierLevels = tierMap.get(tierName) || [];
@@ -212,7 +214,7 @@ export function renderLevelGrid(): void {
   }
 
   const recordsKey = getRecordsStorageKeyForLevelList(false);
-  const records = readJson<Record<string, any>>(recordsKey, {});
+  const records = readJson<Record<string, unknown>>(recordsKey, {});
   const list = document.getElementById('level-list');
   if (!list) return;
   const unlockState = getRealmUnlockState();
@@ -221,19 +223,22 @@ export function renderLevelGrid(): void {
   const filtered = getFilteredLevels();
   filtered.forEach((l) => {
     const record = records[l.id];
+    const classicRecord = toClassicLevelRecord(record);
+    const speedRecord = toSpeedLevelRecord(record);
     const isLocked = !canAccessLevel(l, unlockState);
     let bestTime: number | null = null;
     let bestStars = 0;
     let submissions = 0;
 
     if (record) {
-      if (typeof record === 'number') {
-        bestTime = record;
-        bestStars = 1;
-      } else {
-        bestTime = record.time;
-        bestStars = record.stars || 1;
-        if (gs.isSpeedrunMode) submissions = record.submissions || 1;
+      if (gs.isSpeedrunMode) {
+        if (speedRecord) {
+          bestTime = speedRecord.time;
+          submissions = speedRecord.submissions;
+        }
+      } else if (classicRecord) {
+        bestTime = classicRecord.time;
+        bestStars = classicRecord.stars;
       }
     }
 
@@ -309,8 +314,10 @@ export function showPreLevelModal(
   const techTier = level.techTier || '';
   const isPractice = level.mode === 'practice';
   const recKey = getRecordsStorageKeyForLevelList(isPractice);
-  const records = readJson<Record<string, any>>(recKey, {});
+  const records = readJson<Record<string, unknown>>(recKey, {});
   const record = records[levelId];
+  const classicRecord = toClassicLevelRecord(record);
+  const speedRecord = toSpeedLevelRecord(record);
 
   let bestRecord = t('prelevel.noRecord');
   let hasRecord = false;
@@ -319,13 +326,15 @@ export function showPreLevelModal(
   if (record) {
     hasRecord = true;
     if (gs.isSpeedrunMode) {
-      bestRecord = t('prelevel.bestRecordSpeed', { time: formatSeconds(record.time), submissions: String(record.submissions) });
+      if (speedRecord) {
+        bestRecord = t('prelevel.bestRecordSpeed', { time: formatSeconds(speedRecord.time), submissions: String(speedRecord.submissions) });
+      }
     } else {
-      const stars = typeof record === 'number' ? 1 : record.stars || 1;
-      const time = typeof record === 'number' ? record : record.time;
+      const stars = classicRecord?.stars ?? 1;
+      const time = classicRecord?.time ?? 0;
       bestRecord = t('prelevel.bestRecord', { time: formatSeconds(time), stars: '★'.repeat(stars) });
     }
-    hasReplay = !!(record.replayHistory && record.replayHistory.length > 0);
+    hasReplay = getReplayHistory(record).length > 0;
   }
 
   openPreLevel({

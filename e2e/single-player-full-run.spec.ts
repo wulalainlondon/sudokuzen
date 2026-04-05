@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  */
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 10_000 });
 }
 
 /** Clear game data but preserve app version to prevent reload. */
@@ -26,12 +26,12 @@ test.describe('single-player-full-run', () => {
   });
 
   test('complete level 1 from start to win celebration', async ({ page }) => {
-    await page.evaluate(() => (window as any).__e2e.initGame(1, true));
+    await page.evaluate(() => (window as unknown).__e2e.initGame(1, true));
     await page.locator('.game-container').waitFor({ state: 'visible' });
 
     // Solve all cells
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
       for (let i = 0; i < 81; i++) {
         if (puzzle[i] === 0) {
@@ -43,9 +43,9 @@ test.describe('single-player-full-run', () => {
 
     // Verify all cells match solution
     const isComplete = await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       return e2e.gs.cellsData.every(
-        (c: any, i: number) => c.value === e2e.gs.currentLevel.solution[i],
+        (c: unknown, i: number) => c.value === e2e.gs.currentLevel.solution[i],
       );
     });
     expect(isComplete).toBe(true);
@@ -58,7 +58,7 @@ test.describe('single-player-full-run', () => {
     // Records saved
     const record = await page.evaluate(() => {
       const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
-      const levelId = (window as any).__e2e.gs.currentLevel?.id;
+      const levelId = (window as unknown).__e2e.gs.currentLevel?.id;
       return records[levelId] ?? records[String(levelId)] ?? null;
     });
     expect(record).not.toBeNull();
@@ -67,11 +67,11 @@ test.describe('single-player-full-run', () => {
   });
 
   test('legacy string solution format still settles correctly', async ({ page }) => {
-    await page.evaluate(() => (window as any).__e2e.initGame(1, true));
+    await page.evaluate(() => (window as unknown).__e2e.initGame(1, true));
     await page.locator('.game-container').waitFor({ state: 'visible' });
 
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.gs.currentLevel.solution = e2e.gs.currentLevel.solution.map((n: number) => String(n));
       const { puzzle, solution } = e2e.gs.currentLevel;
       for (let i = 0; i < 81; i++) {
@@ -86,11 +86,11 @@ test.describe('single-player-full-run', () => {
   });
 
   test('3 wrong inputs trigger game over', async ({ page }) => {
-    await page.evaluate(() => (window as any).__e2e.initGame(1, true));
+    await page.evaluate(() => (window as unknown).__e2e.initGame(1, true));
     await page.locator('.game-container').waitFor({ state: 'visible' });
 
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
       const emptyIdx = puzzle.findIndex((v: number) => v === 0);
       const boardCount = Array.from({ length: 10 }, () => 0);
@@ -109,17 +109,17 @@ test.describe('single-player-full-run', () => {
     await page.waitForTimeout(600);
     await expect(page.locator('#overlay')).toBeVisible({ timeout: 3000 });
 
-    const errors = await page.evaluate(() => (window as any).__e2e.gs.errors);
+    const errors = await page.evaluate(() => (window as unknown).__e2e.gs.errors);
     expect(errors).toBe(3);
   });
 
   test('action history records fills, mistakes, and notes', async ({ page }) => {
-    await page.evaluate(() => (window as any).__e2e.initGame(1, true));
+    await page.evaluate(() => (window as unknown).__e2e.initGame(1, true));
     await page.locator('.game-container').waitFor({ state: 'visible' });
 
     // Note + mistake
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
       const emptyIdx = puzzle.findIndex((v: number) => v === 0);
       const correct = solution[emptyIdx];
@@ -137,7 +137,7 @@ test.describe('single-player-full-run', () => {
 
     // Correct fill
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
       const emptyIdx = puzzle.findIndex((v: number) => v === 0);
       e2e.selectCell(emptyIdx);
@@ -145,7 +145,7 @@ test.describe('single-player-full-run', () => {
     });
 
     const types = await page.evaluate(() =>
-      (window as any).__e2e.gs.actionHistory.map((a: any) => a.type),
+      (window as unknown).__e2e.gs.actionHistory.map((a: unknown) => a.type),
     );
     expect(types).toContain('note');
     expect(types).toContain('mistake');
@@ -153,12 +153,12 @@ test.describe('single-player-full-run', () => {
   });
 
   test('save and restore mid-game progress', async ({ page }) => {
-    await page.evaluate(() => (window as any).__e2e.initGame(1, true));
+    await page.evaluate(() => (window as unknown).__e2e.initGame(1, true));
     await page.locator('.game-container').waitFor({ state: 'visible' });
 
     // Ensure speedrun off, fill first empty cell, save
     const info = await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.gs.isSpeedrunMode = false;
       const { puzzle, solution } = e2e.gs.currentLevel;
       const emptyIdx = puzzle.findIndex((v: number) => v === 0);
@@ -189,7 +189,7 @@ test.describe('single-player-full-run', () => {
 
     // Simulate restart: re-init from save (no reload needed)
     const restoreResult = await page.evaluate((idx) => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.gs.isSpeedrunMode = false;
       e2e.initGame(1, false);
       return {
@@ -204,7 +204,7 @@ test.describe('single-player-full-run', () => {
 
   test('restoring an already-solved save settles immediately', async ({ page }) => {
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.initGame(1, true);
       const { puzzle, solution } = e2e.gs.currentLevel;
       for (let i = 0; i < 81; i++) {

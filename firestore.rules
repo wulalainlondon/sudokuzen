@@ -1,15 +1,19 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function validAlias(name) {
+      return name is string
+        && name.size() >= 1
+        && name.size() <= 24
+        && name.matches('^[^<>&"\\\']+$');
+    }
 
     match /level_first_clears/{levelId}/players/{playerId} {
       allow read: if true;
       allow create: if request.resource.data.playerId == playerId
                     && request.resource.data.firstTimeSec is int
                     && request.resource.data.firstStars is int
-                    && request.resource.data.alias is string
-                    && request.resource.data.alias.size() >= 1
-                    && request.resource.data.alias.size() <= 24;
+                    && validAlias(request.resource.data.alias);
       allow update, delete: if false;
     }
 
@@ -28,11 +32,9 @@ service cloud.firestore {
       allow create, update: if request.resource.data.levelId is int
                             && request.resource.data.status in ['idle', 'waiting', 'countdown', 'playing', 'finished']
                             && request.resource.data.hostId is string
-                            && request.resource.data.hostAlias is string
-                            && request.resource.data.hostAlias.size() >= 1
-                            && request.resource.data.hostAlias.size() <= 24
+                            && validAlias(request.resource.data.hostAlias)
                             && (request.resource.data.guestId == null || request.resource.data.guestId is string)
-                            && (request.resource.data.guestAlias == null || request.resource.data.guestAlias is string)
+                            && (request.resource.data.guestAlias == null || validAlias(request.resource.data.guestAlias))
                             && (request.resource.data.hostReady is bool)
                             && (request.resource.data.guestReady is bool)
                             && (request.resource.data.hostProgress is int)
@@ -64,9 +66,7 @@ service cloud.firestore {
       allow get: if true;
       allow list: if false;
       allow create, update: if request.resource.data.playerId == playerId
-                            && request.resource.data.alias is string
-                            && request.resource.data.alias.size() >= 1
-                            && request.resource.data.alias.size() <= 24
+                            && validAlias(request.resource.data.alias)
                             && request.resource.data.achievements is map
                             && request.resource.data.achievements.size() <= 200;
       allow delete: if false;

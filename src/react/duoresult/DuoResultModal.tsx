@@ -5,6 +5,7 @@ import { useCallback, useMemo, type ReactElement } from 'react';
 import { useDuoResultStore } from './duoResultStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { t } from '../../i18n/t';
+import { sanitizeHtml } from '../../shared/html/sanitize';
 
 const CONFETTI_COLORS_WIN = ['#FFD700', '#FF6B6B', '#74b9ff', '#55efc4', '#a29bfe'];
 const CONFETTI_COLORS_DRAW = ['#fd79a8', '#a29bfe', '#74b9ff', '#dfe6e9', '#fab1a0'];
@@ -40,6 +41,7 @@ function ConfettiLayer({ count, colors }: { count: number; colors: string[] }): 
 
 export function DuoResultModal(): ReactElement {
   const { visible, contentHtml, iWon, isDraw } = useDuoResultStore();
+  const safeContentHtml = useMemo(() => sanitizeHtml(contentHtml), [contentHtml]);
 
   const handlePlayAgain = useCallback(() => {
     // Close result modal and navigate back to duo lobby for rematch
@@ -65,7 +67,7 @@ export function DuoResultModal(): ReactElement {
         {showConfetti && <ConfettiLayer count={confettiCount} colors={confettiColors} />}
         <h2 className={titleClass}>{t('duo.resultTitle')}</h2>
         {/* Safety: contentHtml built by our own duo.ts code (trusted) */}
-        <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+        <div dangerouslySetInnerHTML={{ __html: safeContentHtml }} />
         <button className="resume-btn" onClick={handlePlayAgain}>{t('duo.playAgain')}</button>
         <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleBack}>{t('duo.backToLobby')}</button>
       </div>

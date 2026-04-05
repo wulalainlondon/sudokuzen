@@ -27,7 +27,7 @@ interface StageNodeViewModel {
 function buildStageMapModel(): StageNodeViewModel[] {
   const levels = getAllLevels();
   const recordsKey = gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
-  const records = readJson<Record<string, any>>(recordsKey, {});
+  const records = readJson<Record<string, unknown>>(recordsKey, {});
   const tiers = getDifficultyTiers();
   const unlockState = getRealmUnlockState();
 

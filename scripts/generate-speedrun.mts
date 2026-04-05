@@ -459,10 +459,10 @@ function classifyWithPriority(
 
 // ── Main ──
 const existing = JSON.parse(fs.readFileSync('levels-data.json', 'utf8'));
-const allKeys = new Set<string>(existing.map((l: any) => l.puzzle.join('')));
-let maxId = Math.max(...existing.map((l: any) => l.id));
+const allKeys = new Set<string>(existing.map((l: unknown) => l.puzzle.join('')));
+let maxId = Math.max(...existing.map((l: unknown) => l.id));
 
-const newLevels: any[] = [];
+const newLevels: unknown[] = [];
 const startTime = Date.now();
 
 console.log('Generating 1000 speedrun levels (40 techniques × 25)...\n');

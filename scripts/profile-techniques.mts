@@ -32,7 +32,7 @@ for (const p of puzzles) {
   let maxTech = 'naked_single', maxW = 0, ok = true;
 
   for (let step = 0; step < 300; step++) {
-    if (cells.every((c: any) => c.value !== 0)) break;
+    if (cells.every((c: unknown) => c.value !== 0)) break;
     const board = SolverBoard.fromGameState(cells);
     let found = false;
     for (const det of DETECTOR_REGISTRY) {

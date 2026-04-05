@@ -4,6 +4,7 @@
 import { gs } from '../../game/state';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
+import { escapeHtml } from '../../shared/html/escape';
 import { DUO_TIERS, DUO_MODES, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import { loadDuoProfile, getUnlockedTiers, getUnlockedModes } from './duoProfile';
 import { DUO_STALE_HEARTBEAT_MS, type DuoRoomSummary } from './duoRoom';
@@ -108,8 +109,8 @@ function renderRoomList(rooms: DuoRoomSummary[]): void {
       const tierLabel = DUO_TIER_MAP.get(r.tierId)?.label || '';
       const modeLabel = DUO_MODE_MAP.get(r.modeId)?.label || '';
       return `<button class="duo-room-item" data-room="${r.roomId}">
-        <div class="duo-room-host">${r.hostAlias}</div>
-        <div class="duo-room-meta">${tierLabel} · ${modeLabel}</div>
+        <div class="duo-room-host">${escapeHtml(r.hostAlias)}</div>
+        <div class="duo-room-meta">${escapeHtml(tierLabel)} · ${escapeHtml(modeLabel)}</div>
         <div class="duo-room-join-hint">${t('duo.joinRoom')}</div>
       </button>`;
     })

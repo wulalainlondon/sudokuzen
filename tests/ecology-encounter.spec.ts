@@ -27,7 +27,7 @@ function mockFetchPuzzles() {
   globalThis.fetch = vi.fn().mockResolvedValue({
     ok: true,
     json: () => Promise.resolve(fakeData),
-  }) as any;
+  }) as unknown as typeof fetch;
 }
 
 function makeProfile(overrides: Partial<WildProfile> = {}): WildProfile {

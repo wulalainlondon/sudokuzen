@@ -8,18 +8,21 @@ import type {
 import { getTeachData, getTeachShard } from '../../../data/dataRegistry';
 import { t } from '../../../i18n/t';
 
-function normalizeIntArray(raw: any): number[] {
+function normalizeIntArray(raw: unknown): number[] {
   return Array.isArray(raw) ? raw.map(Number).filter((x) => Number.isFinite(x)) : [];
 }
 
-function normalizeEliminateCells(raw: any): TeachEliminateTarget[] {
+function normalizeEliminateCells(raw: unknown): TeachEliminateTarget[] {
   if (!Array.isArray(raw)) return [];
   return raw
-    .map((item) => ({ cell: Number(item?.cell), digit: Number(item?.digit) }))
+    .map((item) => {
+      const obj = (item && typeof item === 'object' ? item : {}) as Record<string, unknown>;
+      return { cell: Number(obj.cell), digit: Number(obj.digit) };
+    })
     .filter((item) => Number.isFinite(item.cell) && Number.isFinite(item.digit));
 }
 
-function normalizeHighlightDigits(raw: any): Record<string, number[]> {
+function normalizeHighlightDigits(raw: unknown): Record<string, number[]> {
   if (!raw || typeof raw !== 'object') return {};
   const out: Record<string, number[]> = {};
   for (const [k, v] of Object.entries(raw)) {
@@ -28,54 +31,74 @@ function normalizeHighlightDigits(raw: any): Record<string, number[]> {
   return out;
 }
 
-function normalizeStep(step: any): TeachStepModel {
-  const visibleCells = normalizeIntArray(step?.visibleCells);
+function normalizeStep(step: unknown): TeachStepModel {
+  const raw = (step && typeof step === 'object' ? step : {}) as Record<string, unknown>;
+  const visibleCells = normalizeIntArray(raw.visibleCells);
+  const showChain = typeof raw.showChain === 'boolean' ? raw.showChain : undefined;
+  const chainMode = raw.chainMode === 'sequential' || raw.chainMode === 'cross' ? raw.chainMode : undefined;
   return {
-    text: String(step?.text ?? ''),
-    focusCells: normalizeIntArray(step?.focusCells),
-    chainCells: normalizeIntArray(step?.chainCells),
+    text: String(raw.text ?? ''),
+    focusCells: normalizeIntArray(raw.focusCells),
+    chainCells: normalizeIntArray(raw.chainCells),
     visibleCells: visibleCells.length ? visibleCells : undefined,
-    highlightDigits: normalizeHighlightDigits(step?.highlightDigits),
-    eliminateCells: normalizeEliminateCells(step?.eliminateCells),
-    removedCandidates: step?.removedCandidates ? normalizeEliminateCells(step.removedCandidates) : undefined,
-    showChain: step?.showChain ?? undefined,
-    chainMode: step?.chainMode ?? undefined,
-    warnCells: normalizeIntArray(step?.warnCells),
-    warnDigit: Number.isFinite(Number(step?.warnDigit)) ? Number(step.warnDigit) : null,
+    highlightDigits: normalizeHighlightDigits(raw.highlightDigits),
+    eliminateCells: normalizeEliminateCells(raw.eliminateCells),
+    removedCandidates: raw.removedCandidates ? normalizeEliminateCells(raw.removedCandidates) : undefined,
+    showChain,
+    chainMode,
+    warnCells: normalizeIntArray(raw.warnCells),
+    warnDigit: Number.isFinite(Number(raw.warnDigit)) ? Number(raw.warnDigit) : null,
   };
 }
 
-function normalizeExample(example: any): TeachExampleModel | null {
+function normalizeExample(example: unknown): TeachExampleModel | null {
   if (!example) return null;
-  const notes = example.notes && typeof example.notes === 'object' ? example.notes : {};
+  const raw = (example && typeof example === 'object' ? example : {}) as Record<string, unknown>;
+  const notes = raw.notes && typeof raw.notes === 'object' ? raw.notes : {};
   const normalizedNotes: Record<string, number[]> = {};
   for (const [k, v] of Object.entries(notes)) {
     normalizedNotes[String(k)] = normalizeIntArray(v);
   }
 
   return {
-    board: normalizeIntArray(example.board),
-    given: normalizeIntArray(example.given),
+    board: normalizeIntArray(raw.board),
+    given: normalizeIntArray(raw.given),
     notes: normalizedNotes,
-    steps: Array.isArray(example.steps) ? example.steps.map(normalizeStep) : [],
+    steps: Array.isArray(raw.steps) ? raw.steps.map(normalizeStep) : [],
   };
 }
 
-function normalizePracticeItem(item: any): PracticeItemModel {
-  const answer = item?.answer ?? {};
+function normalizePracticeItem(item: unknown): PracticeItemModel {
+  const raw = (item && typeof item === 'object' ? item : {}) as Record<string, unknown>;
+  const answer = raw.answer && typeof raw.answer === 'object' ? raw.answer as Record<string, unknown> : {};
+  const notes = raw.notes && typeof raw.notes === 'object' && !Array.isArray(raw.notes)
+    ? (raw.notes as Record<string, unknown>)
+    : {};
+  const normalizedNotes: Record<string, number[]> = {};
+  for (const [k, v] of Object.entries(notes)) {
+    normalizedNotes[k] = normalizeIntArray(v);
+  }
   return {
-    board: normalizeIntArray(item?.board),
-    given: normalizeIntArray(item?.given),
-    notes: item?.notes && typeof item.notes === 'object' ? item.notes : {},
+    board: normalizeIntArray(raw.board),
+    given: normalizeIntArray(raw.given),
+    notes: normalizedNotes,
     answer: {
       eliminates: Array.isArray(answer.eliminates)
         ? answer.eliminates
-            .map((x: any) => [Number(x?.cell ?? x?.[0]), Number(x?.digit ?? x?.[1])] as [number, number])
+            .map((x) => {
+              if (Array.isArray(x)) return [Number(x[0]), Number(x[1])] as [number, number];
+              const pair = (x && typeof x === 'object' ? x : {}) as Record<string, unknown>;
+              return [Number(pair.cell), Number(pair.digit)] as [number, number];
+            })
             .filter((pair: [number, number]) => Number.isFinite(pair[0]) && Number.isFinite(pair[1]))
         : [],
       fills: Array.isArray(answer.fills)
         ? answer.fills
-            .map((x: any) => [Number(x?.cell ?? x?.[0]), Number(x?.digit ?? x?.[1])] as [number, number])
+            .map((x) => {
+              if (Array.isArray(x)) return [Number(x[0]), Number(x[1])] as [number, number];
+              const pair = (x && typeof x === 'object' ? x : {}) as Record<string, unknown>;
+              return [Number(pair.cell), Number(pair.digit)] as [number, number];
+            })
             .filter((pair: [number, number]) => Number.isFinite(pair[0]) && Number.isFinite(pair[1]))
         : [],
       patternCells: normalizeIntArray(answer.patternCells),
@@ -83,20 +106,23 @@ function normalizePracticeItem(item: any): PracticeItemModel {
       proof: Array.isArray(answer.proof) ? answer.proof.map(String) : [],
       aicChain: Array.isArray(answer.aicChain) ? answer.aicChain.map(String) : [],
     },
-    solution: normalizeIntArray(item?.solution),
+    solution: normalizeIntArray(raw.solution),
   };
 }
 
-function normalizeModule(key: string, raw: any): TeachModuleModel {
+function normalizeModule(key: string, raw: unknown): TeachModuleModel {
+  const data = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
   return {
     stars: Number(key),
-    technique: String(raw.technique ?? ''),
-    name: String(raw.name ?? t('miscRuntime.defaultBookName', { key })),
-    subtitle: String(raw.subtitle ?? ''),
-    explanation: Array.isArray(raw.explanation) ? raw.explanation.map(String) : [],
-    example: normalizeExample(raw.example),
-    demoStory: raw.demoStory ?? undefined,
-    practice: Array.isArray(raw.practice) ? raw.practice.map(normalizePracticeItem) : [],
+    technique: String(data.technique ?? ''),
+    name: String(data.name ?? t('miscRuntime.defaultBookName', { key })),
+    subtitle: String(data.subtitle ?? ''),
+    explanation: Array.isArray(data.explanation) ? data.explanation.map(String) : [],
+    example: normalizeExample(data.example),
+    demoStory: data.demoStory && typeof data.demoStory === 'object' && !Array.isArray(data.demoStory)
+      ? (data.demoStory as TeachModuleModel['demoStory'])
+      : undefined,
+    practice: Array.isArray(data.practice) ? data.practice.map(normalizePracticeItem) : [],
   };
 }
 

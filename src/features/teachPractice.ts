@@ -6,6 +6,14 @@ import { SK, readJson, writeJson } from '../storage/keys';
 import { closeLibraryOverlay } from './teachLibrary';
 import { hideTeachModal, closePracticeModal } from './teach-legacy';
 
+type PracticeAnswer = {
+  eliminates: Array<{ cell: number; digit: number }>;
+  patternCells?: number[];
+  description?: string;
+  aicChain?: string[];
+  proof?: string[];
+};
+
 // ── Practice functions ────────────────────────────────────────────
 
 export function startPractice(): void {
@@ -19,12 +27,17 @@ export function startPractice(): void {
 
   // Save refs before hideTeachModal clears them
   const td = gs.teachData;
+  const practiceList = td.practice ?? [];
+  if (practiceList.length === 0) {
+    hideTeachModal(false);
+    return;
+  }
   const stars = gs.teachStarsKey ? parseFloat(gs.teachStarsKey) : null;
   hideTeachModal(false);
 
   // Pick a random puzzle
-  const idx = Math.floor(Math.random() * td.practice.length);
-  const pData = td.practice[idx];
+  const idx = Math.floor(Math.random() * practiceList.length);
+  const pData = practiceList[idx];
 
   gs.practiceState = {
     stars,
@@ -68,7 +81,7 @@ export function renderPracticeBoard(): void {
     cell.dataset.idx = String(i);
 
     if (board[i] !== 0) {
-      cell.textContent = board[i];
+      cell.textContent = String(board[i]);
       if (given[i] !== 0) cell.classList.add('given-cell');
     } else if (notes[i] || notes[String(i)]) {
       const noteArr = notes[i] || notes[String(i)];
@@ -117,8 +130,8 @@ export function updatePracticeCounter(): void {
 
 export function confirmPractice(): void {
   if (!gs.practiceState || gs.practiceState.revealed) return;
-  const answer = gs.practiceState.data.answer;
-  const correctSet = new Set(answer.eliminates.map((e: any) => e.cell + ':' + e.digit));
+  const answer = gs.practiceState.data.answer as PracticeAnswer;
+  const correctSet = new Set(answer.eliminates.map((e) => e.cell + ':' + e.digit));
   const markedSet: Set<string> = gs.practiceState.marked;
 
   // Check correctness
@@ -200,7 +213,7 @@ export function showPracticeHint(): void {
   }
 }
 
-export function formatPracticeExplanation(answer: any): string {
+export function formatPracticeExplanation(answer: PracticeAnswer): string {
   const lines: string[] = [];
   if (answer && answer.description) lines.push(answer.description);
   if (answer && Array.isArray(answer.aicChain) && answer.aicChain.length > 0) {

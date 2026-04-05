@@ -12,11 +12,11 @@ import { test, expect, type Page, type BrowserContext } from '@playwright/test';
 const TEST_LEVEL_ID = 1;
 const E2E_TIMEOUT_MS = 20_000;
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e, { timeout: E2E_TIMEOUT_MS });
+  await page.waitForFunction(() => !!(window as unknown).__e2e, { timeout: E2E_TIMEOUT_MS });
 }
 
 async function waitForFirebase(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs?.firebaseReady, { timeout: E2E_TIMEOUT_MS });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs?.firebaseReady, { timeout: E2E_TIMEOUT_MS });
 }
 
 async function setAlias(page: Page, alias: string) {
@@ -31,7 +31,7 @@ async function setAlias(page: Page, alias: string) {
 async function cleanupDuoRoom(page: Page) {
   await Promise.race([
     page.evaluate(async (levelId) => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       if (!e2e?.gs?.firebaseReady) return;
       try {
         const activeRoomId = localStorage.getItem('sudoku_duo_active_room_id');
@@ -78,9 +78,9 @@ async function toggleDuoReady(page: Page) {
 }
 
 /** Get duo room data from Firestore. */
-async function getDuoRoomData(page: Page): Promise<any> {
+async function getDuoRoomData(page: Page): Promise<unknown> {
   return page.evaluate(async () => {
-    const e2e = (window as any).__e2e;
+    const e2e = (window as unknown).__e2e;
     if (!e2e?.gs?.firebaseReady) return null;
     const roomId = localStorage.getItem('sudoku_duo_active_room_id');
     if (!roomId) return null;
@@ -94,7 +94,7 @@ async function getDuoRoomData(page: Page): Promise<any> {
 async function waitForRoomStatus(page: Page, status: string, timeoutMs = 10000): Promise<void> {
   await page.waitForFunction(
     async (targetStatus) => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       if (!e2e?.gs?.firebaseReady) return false;
       const roomId = localStorage.getItem('sudoku_duo_active_room_id');
       if (!roomId) return false;
@@ -134,13 +134,13 @@ async function ensureRoleAndStatus(
 
 /** Get the duo role for this page's session. */
 async function getDuoRole(page: Page): Promise<string | null> {
-  return page.evaluate(() => (window as any).__e2e?.gs?.duoRole ?? null);
+  return page.evaluate(() => (window as unknown).__e2e?.gs?.duoRole ?? null);
 }
 
 /** Fill all empty cells with correct answers. */
 async function solveAllCells(page: Page) {
   await page.evaluate(() => {
-    const e2e = (window as any).__e2e;
+    const e2e = (window as unknown).__e2e;
     const puzzle = e2e.gs.currentLevel.puzzle;
     const solution = e2e.gs.currentLevel.solution;
     for (let i = 0; i < 81; i++) {
@@ -270,7 +270,7 @@ test.describe('duo-sync', () => {
 
     // Host fills a few cells
     await hostPage.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const puzzle = e2e.gs.currentLevel.puzzle;
       const solution = e2e.gs.currentLevel.solution;
       let filled = 0;
@@ -286,7 +286,7 @@ test.describe('duo-sync', () => {
     // Force progress update (bypass throttle)
     await hostPage.evaluate(async () => {
       const duo = await import('/src/features/duo.ts');
-      (window as any).__e2e.gs.duoProgressThrottle = 0;
+      (window as unknown).__e2e.gs.duoProgressThrottle = 0;
       duo.updateDuoProgress();
     });
 

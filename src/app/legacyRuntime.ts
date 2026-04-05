@@ -6,7 +6,7 @@
 
 import { gs, initDom } from '../game/state';
 import { SK } from '../storage/keys';
-import { getAllLevels, warmTeachManifest, warmManifest, preloadMode } from '../data/dataRegistry';
+import { warmTeachManifest, warmManifest, preloadMode } from '../data/dataRegistry';
 import { bindLegacyFacade } from '../facade/windowFacade';
 
 import { initFirebase, initPresence, loadAliasToInput, saveAlias } from '../firebase/client';
@@ -86,10 +86,7 @@ export function bootLegacyRuntime(appVersion: string): void {
   // 1. Populate DOM refs
   initDom();
 
-  // 2. Ensure merged levels array is ready
-  getAllLevels();
-
-  // 2b. Pre-fetch manifests (async, non-blocking)
+  // 2. Pre-fetch manifests (async, non-blocking)
   warmTeachManifest();
   warmManifest();
 
@@ -183,7 +180,7 @@ export function bootLegacyRuntime(appVersion: string): void {
       const val = gs.duoRole === 'host' ? 'idle' : null;
       try {
         const roomId = localStorage.getItem('sudoku_duo_active_room_id');
-        if (roomId) {
+        if (roomId && gs.db) {
           gs.db
             .collection('duo_rooms')
             .doc(roomId)

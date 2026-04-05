@@ -122,7 +122,7 @@ export type PracticeSessionState = {
 
 declare global {
   interface Window {
-    TEACH_DATA?: Record<string, any>;
+    TEACH_DATA?: Record<string, unknown>;
     __reactTeachBridge?: {
       openTeach: (stars: string | number, source?: TeachLaunchSource) => Promise<boolean>;
       closeTeach: () => void;

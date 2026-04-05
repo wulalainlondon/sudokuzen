@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  */
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 10_000 });
 }
 
 async function clearGameData(page: Page) {
@@ -26,12 +26,12 @@ test.describe('speedrun-mode', () => {
 
   test('toggle speedrun mode on and off', async ({ page }) => {
     // Initially off
-    const initialMode = await page.evaluate(() => (window as any).__e2e.gs.isSpeedrunMode);
+    const initialMode = await page.evaluate(() => (window as unknown).__e2e.gs.isSpeedrunMode);
     expect(initialMode).toBe(false);
 
     // Toggle on
-    await page.evaluate(() => (window as any).toggleSpeedrunMode());
-    const afterOn = await page.evaluate(() => (window as any).__e2e.gs.isSpeedrunMode);
+    await page.evaluate(() => (window as unknown).toggleSpeedrunMode());
+    const afterOn = await page.evaluate(() => (window as unknown).__e2e.gs.isSpeedrunMode);
     expect(afterOn).toBe(true);
 
     // Verify mode persisted to localStorage
@@ -39,14 +39,14 @@ test.describe('speedrun-mode', () => {
     expect(stored).toBe('true');
 
     // Toggle off
-    await page.evaluate(() => (window as any).toggleSpeedrunMode());
-    const afterOff = await page.evaluate(() => (window as any).__e2e.gs.isSpeedrunMode);
+    await page.evaluate(() => (window as unknown).toggleSpeedrunMode());
+    const afterOff = await page.evaluate(() => (window as unknown).__e2e.gs.isSpeedrunMode);
     expect(afterOff).toBe(false);
   });
 
   test('speedrun: correct fill does not validate immediately', async ({ page }) => {
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.gs.isSpeedrunMode = true;
       e2e.initGame(1, true);
     });
@@ -54,7 +54,7 @@ test.describe('speedrun-mode', () => {
 
     // Fill one cell — should not trigger win check (board not full)
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
       const emptyIdx = puzzle.findIndex((v: number) => v === 0);
       e2e.selectCell(emptyIdx);
@@ -66,13 +66,13 @@ test.describe('speedrun-mode', () => {
     expect(winVisible).toBe(false);
 
     // No error even if we filled a wrong digit later
-    const errors = await page.evaluate(() => (window as any).__e2e.gs.errors);
+    const errors = await page.evaluate(() => (window as unknown).__e2e.gs.errors);
     expect(errors).toBe(0);
   });
 
   test('speedrun: all correct → immediate win', async ({ page }) => {
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.gs.isSpeedrunMode = true;
       e2e.initGame(1, true);
       const { puzzle, solution } = e2e.gs.currentLevel;
@@ -86,7 +86,7 @@ test.describe('speedrun-mode', () => {
     // Submission count should be 0 (first try correct)
     const record = await page.evaluate(() => {
       const records = JSON.parse(localStorage.getItem('sudoku_speed_records') || '{}');
-      const levelId = (window as any).__e2e.gs.currentLevel?.id;
+      const levelId = (window as unknown).__e2e.gs.currentLevel?.id;
       return records[levelId] ?? records[String(levelId)] ?? null;
     });
     expect(record).not.toBeNull();
@@ -95,7 +95,7 @@ test.describe('speedrun-mode', () => {
 
   test('speedrun: wrong cell resets last fill on submission', async ({ page }) => {
     await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       e2e.gs.isSpeedrunMode = true;
       e2e.initGame(1, true);
     });
@@ -105,7 +105,7 @@ test.describe('speedrun-mode', () => {
     // This keeps global digit counts valid (passes completed-digit guard),
     // but creates a wrong board state for speedrun submission.
     const result = await page.evaluate(() => {
-      const e2e = (window as any).__e2e;
+      const e2e = (window as unknown).__e2e;
       const { puzzle, solution } = e2e.gs.currentLevel;
       const empties: number[] = [];
       for (let i = 0; i < 81; i++) { if (puzzle[i] === 0) empties.push(i); }
@@ -141,7 +141,7 @@ test.describe('speedrun-mode', () => {
 
     // Last cell should be reset to 0
     const lastValue = await page.evaluate(
-      (idx) => (window as any).__e2e.gs.cellsData[idx].value,
+      (idx) => (window as unknown).__e2e.gs.cellsData[idx].value,
       result.lastIdx,
     );
     expect(lastValue).toBe(0);

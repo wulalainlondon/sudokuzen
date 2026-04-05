@@ -29,25 +29,62 @@ function normalizeBoolString(raw: string | null): string | null {
   return null;
 }
 
-function normalizeSavePayload(raw: any, levelIdFromKey: number): any | null {
-  if (!raw || typeof raw !== 'object') return null;
-  if (!Array.isArray(raw.cellsData)) return null;
+type RawCell = {
+  value?: unknown;
+  fixed?: unknown;
+  notes?: unknown;
+};
 
-  const cellsData = raw.cellsData.slice(0, 81).map((cell: any) => {
-    const value = clampDigit(cell?.value);
+type RawSavePayload = {
+  levelId?: unknown;
+  cellsData?: unknown;
+  seconds?: unknown;
+  errors?: unknown;
+  submissionCount?: unknown;
+  actionHistory?: unknown;
+  isGhostMode?: unknown;
+  ghostHistory?: unknown;
+};
+
+type NormalizedCell = {
+  value: number;
+  fixed: boolean;
+  notes: number[];
+  isError: false;
+};
+
+type NormalizedSavePayload = {
+  levelId: number;
+  cellsData: NormalizedCell[];
+  seconds: number;
+  errors: number;
+  submissionCount: number;
+  actionHistory: unknown[];
+  isGhostMode: boolean;
+  ghostHistory: unknown[] | null;
+};
+
+function normalizeSavePayload(raw: unknown, levelIdFromKey: number): NormalizedSavePayload | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const payload = raw as RawSavePayload;
+  if (!Array.isArray(payload.cellsData)) return null;
+
+  const cellsData = payload.cellsData.slice(0, 81).map((cellLike) => {
+    const cell = (cellLike && typeof cellLike === 'object' ? cellLike : {}) as RawCell;
+    const value = clampDigit(cell.value);
     return {
       value,
-      fixed: Boolean(cell?.fixed),
-      notes: value === 0 ? normalizeNotes(cell?.notes) : [],
-      isError: false,
+      fixed: Boolean(cell.fixed),
+      notes: value === 0 ? normalizeNotes(cell.notes) : [],
+      isError: false as const,
     };
   });
   if (cellsData.length !== 81) return null;
 
-  const sec = Number(raw.seconds);
-  const err = Number(raw.errors);
-  const sub = Number(raw.submissionCount);
-  const levelId = Number(raw.levelId);
+  const sec = Number(payload.seconds);
+  const err = Number(payload.errors);
+  const sub = Number(payload.submissionCount);
+  const levelId = Number(payload.levelId);
 
   return {
     levelId: Number.isFinite(levelId) ? Math.max(1, Math.floor(levelId)) : levelIdFromKey,
@@ -55,9 +92,9 @@ function normalizeSavePayload(raw: any, levelIdFromKey: number): any | null {
     seconds: Number.isFinite(sec) ? Math.max(0, Math.floor(sec)) : 0,
     errors: Number.isFinite(err) ? Math.max(0, Math.floor(err)) : 0,
     submissionCount: Number.isFinite(sub) ? Math.max(0, Math.floor(sub)) : 0,
-    actionHistory: Array.isArray(raw.actionHistory) ? raw.actionHistory : [],
-    isGhostMode: raw.isGhostMode === true,
-    ghostHistory: raw.isGhostMode === true && Array.isArray(raw.ghostHistory) ? raw.ghostHistory : null,
+    actionHistory: Array.isArray(payload.actionHistory) ? payload.actionHistory : [],
+    isGhostMode: payload.isGhostMode === true,
+    ghostHistory: payload.isGhostMode === true && Array.isArray(payload.ghostHistory) ? payload.ghostHistory : null,
   };
 }
 

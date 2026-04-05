@@ -13,6 +13,7 @@ import { initGame, handleInput, erase, saveGameStatus } from '../game/core';
 import { selectCell } from '../game/board';
 import * as replay from '../features/replay';
 import { hydratePlayerProfileFromCloud, installPlayerCloudSyncBridge, whenFirebaseReady } from '../firebase/client';
+import type { SudokuWindow } from '../facade/windowTypes';
 import {
   openDuoLobby,
   closeDuoLobby,
@@ -61,10 +62,11 @@ export function bootstrapApp(): void {
     });
     mountReactStrangler();
     installLegacyTeachBridge();
-  } catch (e: any) {
+  } catch (e: unknown) {
     // Show error on screen for debugging on devices without console access
-    const msg = e?.message || String(e);
-    const stack = e?.stack || '';
+    const err = e instanceof Error ? e : new Error(String(e));
+    const msg = err.message || String(e);
+    const stack = err.stack || '';
     document.body.insertAdjacentHTML('afterbegin',
       `<pre style="position:fixed;top:0;left:0;right:0;z-index:9999;background:red;color:white;padding:12px;font-size:11px;max-height:40vh;overflow:auto;">BOOT ERROR: ${msg}\n${stack}</pre>`);
     console.error('bootstrapApp fatal:', e);
@@ -72,6 +74,6 @@ export function bootstrapApp(): void {
 
   // Expose test hooks in dev mode for E2E (Playwright)
   if (import.meta.env.DEV) {
-    (window as any).__e2e = { gs, initGame, handleInput, erase, saveGameStatus, selectCell, replay };
+    (window as SudokuWindow).__e2e = { gs, initGame, handleInput, erase, saveGameStatus, selectCell, replay };
   }
 }

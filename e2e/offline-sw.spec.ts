@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  */
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 10_000 });
 }
 
 test.describe('offline-sw', () => {

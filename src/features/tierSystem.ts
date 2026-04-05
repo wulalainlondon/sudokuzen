@@ -117,7 +117,7 @@ export function getRealmUnlockState(): {
   const levels = getAllLevels();
   const buckets = getTierBuckets(levels);
   const tiers = getDifficultyTiers();
-  const records = readJson<Record<string, any>>(SK.RECORDS, {});
+  const records = readJson<Record<string, unknown>>(SK.RECORDS, {});
   const stats = tiers.map((name) => {
     const tierLevels = buckets.byTier.get(name) || [];
     const cleared = tierLevels.filter((l) => records[l.id]).length;

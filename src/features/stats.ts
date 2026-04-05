@@ -3,6 +3,7 @@
 import { gs } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { getAllLevels } from '../data/dataRegistry';
+import { toClassicLevelRecord } from '../shared/records/levelRecords';
 import { mergeCloudAchievements, syncAchievementsToCloud } from '../firebase/client';
 import { t } from '../i18n/t';
 
@@ -125,8 +126,8 @@ export function processAchievementToasts(): void {
 // ── Stats computation ─────────────────────────────────────────────────
 
 export function computeStats() {
-  const records = readJson<Record<string, any>>(SK.RECORDS, {});
-  const speedRecords = readJson<Record<string, any>>(SK.SPEED_RECORDS, {});
+  const records = readJson<Record<string, unknown>>(SK.RECORDS, {});
+  const speedRecords = readJson<Record<string, unknown>>(SK.SPEED_RECORDS, {});
   const levels = getAllLevels();
   const mainLevels = levels.filter((l) => !l.hidden);
 
@@ -138,8 +139,10 @@ export function computeStats() {
   let fastestLevel: (typeof levels)[number] | null = null;
 
   for (const [id, rec] of Object.entries(records)) {
-    const time = typeof rec === 'number' ? rec : rec.time;
-    const stars = typeof rec === 'number' ? 1 : rec.stars || 1;
+    const parsed = toClassicLevelRecord(rec);
+    if (!parsed) continue;
+    const time = parsed.time;
+    const stars = parsed.stars;
     totalCleared++;
     totalTime += time;
     totalStars += stars;
@@ -168,17 +171,19 @@ export function computeStats() {
   });
 
   // Practice mode stats
-  const practiceRecords = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+  const practiceRecords = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
   const practiceCleared = Object.keys(practiceRecords).length;
   const practiceTechs = new Set<string>();
   for (const rec of Object.values(practiceRecords)) {
-    if (rec && rec.techKey) practiceTechs.add(rec.techKey);
+    const parsed = toClassicLevelRecord(rec);
+    if (parsed?.techKey) practiceTechs.add(parsed.techKey);
   }
   // Count fully completed techniques (25/25)
   const techClearCount = new Map<string, number>();
   for (const rec of Object.values(practiceRecords)) {
-    if (rec && rec.techKey) {
-      techClearCount.set(rec.techKey, (techClearCount.get(rec.techKey) || 0) + 1);
+    const parsed = toClassicLevelRecord(rec);
+    if (parsed?.techKey) {
+      techClearCount.set(parsed.techKey, (techClearCount.get(parsed.techKey) || 0) + 1);
     }
   }
   const practiceFullTechs = [...techClearCount.entries()].filter(([, count]) => count >= 25).length;
@@ -226,7 +231,9 @@ export function checkAllAchievements(): void {
 
   // ── Speed ──
   for (const rec of Object.values(records)) {
-    const t = typeof rec === 'number' ? rec : rec.time;
+    const parsed = toClassicLevelRecord(rec);
+    if (!parsed) continue;
+    const t = parsed.time;
     if (t <= 120) unlockAchievement('speed_2min');
     if (t <= 60) unlockAchievement('speed_1min');
   }

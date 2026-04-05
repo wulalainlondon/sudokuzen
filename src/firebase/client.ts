@@ -9,22 +9,10 @@ import { t } from '../i18n/t';
 import { getEquippedTitleDisplay } from '../features/titles';
 import type { FirestoreDoc, FirestoreTransaction } from './types';
 import type { SudokuWindow } from '../facade/windowTypes';
+import { ensureFirebaseRuntime, firebaseServerTimestamp } from './runtime';
+import { escapeHtml } from '../shared/html/escape';
 
-interface FirestoreNamespace {
-  (): unknown;
-  FieldValue: { serverTimestamp(): unknown };
-  Timestamp: { fromMillis(ms: number): unknown };
-}
-
-interface FirebaseCompat {
-  apps: unknown[];
-  initializeApp(config: Record<string, string>): void;
-  firestore: FirestoreNamespace;
-}
-
-let _firebaseCompat: FirebaseCompat | null = null;
 let _firebaseInitPromise: Promise<boolean> | null = null;
-let _firebaseConfigLoadPromise: Promise<void> | null = null;
 
 type AchievementMap = Record<string, { date: string }>;
 
@@ -58,57 +46,6 @@ let progressSyncTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingSaveSyncTimers = new Map<string, ReturnType<typeof setTimeout>>();
 let bridgeInstalled = false;
 let hydrateComplete = false;
-
-function resolvePublicPath(file: string): string {
-  try {
-    const base = new URL(import.meta.env.BASE_URL, window.location.origin).href;
-    return new URL(file, base).href;
-  } catch {
-    return file;
-  }
-}
-
-function appendScript(src: string, optional = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = src;
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => {
-      if (optional) resolve();
-      else reject(new Error(`script load failed: ${src}`));
-    };
-    document.head.appendChild(script);
-  });
-}
-
-async function ensureFirebaseConfigLoaded(): Promise<void> {
-  if ((window as SudokuWindow).SUDOKU_FIREBASE_CONFIG) return;
-  if (_firebaseConfigLoadPromise) return _firebaseConfigLoadPromise;
-  _firebaseConfigLoadPromise = (async () => {
-    await appendScript(resolvePublicPath('firebase-config.js'));
-    await appendScript(resolvePublicPath('firebase-config.local.js'), true);
-  })();
-  return _firebaseConfigLoadPromise;
-}
-
-async function ensureFirebaseCompat(): Promise<FirebaseCompat> {
-  if (_firebaseCompat) return _firebaseCompat;
-  const appModule = await import('firebase/compat/app');
-  await import('firebase/compat/firestore');
-  _firebaseCompat = (appModule.default || appModule) as FirebaseCompat;
-  return _firebaseCompat;
-}
-
-export function firebaseServerTimestamp(): unknown {
-  if (_firebaseCompat) return _firebaseCompat.firestore.FieldValue.serverTimestamp();
-  return Date.now();
-}
-
-export function firebaseTimestampFromMillis(ms: number): unknown {
-  if (_firebaseCompat) return _firebaseCompat.firestore.Timestamp.fromMillis(ms);
-  return new Date(ms);
-}
 
 function isIsoDay(value: unknown): value is string {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -148,6 +85,17 @@ function sameAchievementMaps(a: AchievementMap, b: AchievementMap): boolean {
     if (!b[key] || b[key].date !== a[key].date) return false;
   }
   return true;
+}
+
+function normalizeLeaderboardRow(raw: unknown): LeaderboardRow | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const obj = raw as Record<string, unknown>;
+  const alias = normalizeAlias(obj.alias);
+  if (!alias) return null;
+  const firstTimeSec = Math.max(0, toInt(obj.firstTimeSec));
+  const firstStars = Math.min(3, Math.max(0, toInt(obj.firstStars)));
+  const title = typeof obj.title === 'string' ? normalizeAlias(obj.title) : undefined;
+  return { alias, title, firstTimeSec, firstStars };
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -276,7 +224,7 @@ async function upsertAliasIndex(playerId: string, alias: string): Promise<void> 
   const aliasKey = aliasKeyOf(alias);
   if (!aliasKey) return;
   try {
-    await gs.db.collection(ALIAS_INDEX_COLLECTION).doc(aliasKey).set(
+    await gs.db!.collection(ALIAS_INDEX_COLLECTION).doc(aliasKey).set(
       {
         aliasKey,
         aliasDisplay: alias,
@@ -295,7 +243,7 @@ async function findPlayerIdByAlias(alias: string): Promise<string | null> {
   const aliasKey = aliasKeyOf(alias);
   if (!aliasKey) return null;
   try {
-    const doc = await gs.db.collection(ALIAS_INDEX_COLLECTION).doc(aliasKey).get();
+    const doc = await gs.db!.collection(ALIAS_INDEX_COLLECTION).doc(aliasKey).get();
     if (!doc.exists) return null;
     const data = doc.data() || {};
     const playerId = typeof data.playerId === 'string' ? data.playerId : null;
@@ -324,7 +272,7 @@ let _onlineCountCache: { count: number; ts: number } | null = null;
 async function _setPresenceDoc(): Promise<void> {
   if (!gs.firebaseReady || !gs.db || !_presenceDocId) return;
   try {
-    await gs.db.collection(PRESENCE_COLLECTION).doc(_presenceDocId).set({
+    await gs.db!.collection(PRESENCE_COLLECTION).doc(_presenceDocId).set({
       playerId: _presenceDocId,
       timestamp: firebaseServerTimestamp(),
     });
@@ -336,7 +284,7 @@ async function _setPresenceDoc(): Promise<void> {
 async function _removePresenceDoc(): Promise<void> {
   if (!gs.firebaseReady || !gs.db || !_presenceDocId) return;
   try {
-    await gs.db.collection(PRESENCE_COLLECTION).doc(_presenceDocId).delete();
+    await gs.db!.collection(PRESENCE_COLLECTION).doc(_presenceDocId).delete();
   } catch (e) {
     console.warn('presence remove failed:', e);
   }
@@ -406,10 +354,10 @@ export async function initFirebase(): Promise<boolean> {
 
   _firebaseInitPromise = (async () => {
     try {
-      await ensureFirebaseConfigLoaded();
       const win = window as unknown as SudokuWindow;
       if (!win.SUDOKU_FIREBASE_CONFIG) return false;
-      const firebase = await ensureFirebaseCompat();
+      const firebase = await ensureFirebaseRuntime();
+      if (!firebase) return false;
       if (!firebase.apps.length) firebase.initializeApp(win.SUDOKU_FIREBASE_CONFIG);
       gs.db = firebase.firestore();
       gs.firebaseReady = true;
@@ -473,7 +421,7 @@ export function saveAlias(): void {
 export async function mergeCloudAchievements(localAchievements: AchievementMap): Promise<AchievementMap | null> {
   if (!gs.firebaseReady || !gs.db) return null;
   const { playerId, alias } = getPlayerIdentity();
-  const docRef = gs.db.collection('player_profiles').doc(playerId);
+  const docRef = gs.db!.collection('player_profiles').doc(playerId);
 
   try {
     const doc = await docRef.get();
@@ -501,7 +449,7 @@ export async function syncAchievementsToCloud(achievements: AchievementMap): Pro
   if (!gs.firebaseReady || !gs.db) return;
   const { playerId, alias } = getPlayerIdentity();
   const sanitized = sanitizeAchievementMap(achievements);
-  const docRef = gs.db.collection('player_profiles').doc(playerId);
+  const docRef = gs.db!.collection('player_profiles').doc(playerId);
   try {
     await docRef.set(
       {
@@ -527,7 +475,7 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
   const achievements = sanitizeAchievementMap(readJson<AchievementMap>(SK.ACHIEVEMENTS, {}));
   const settings = readLocalSettings();
   try {
-    await gs.db.collection('player_profiles').doc(playerId).set(
+    await gs.db!.collection('player_profiles').doc(playerId).set(
       {
         playerId,
         alias,
@@ -594,7 +542,7 @@ export async function syncSaveToCloud(saveKey: string, payload: Record<string, u
   if (!SAVE_KEY_PATTERN.test(saveKey) || !isPlainObject(payload)) return;
   const { playerId, alias } = getPlayerIdentity();
   try {
-    await gs.db.collection('player_profiles').doc(playerId).collection(PROFILE_SAVE_SUBCOLLECTION).doc(saveKey).set(
+    await gs.db!.collection('player_profiles').doc(playerId).collection(PROFILE_SAVE_SUBCOLLECTION).doc(saveKey).set(
       {
         key: saveKey,
         playerId,
@@ -646,13 +594,13 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
   const identity = getPlayerIdentity();
   let playerId = identity.playerId;
   const alias = identity.alias;
-  let docRef = gs.db.collection('player_profiles').doc(playerId);
+  let docRef = gs.db!.collection('player_profiles').doc(playerId);
   try {
     let doc = await docRef.get();
     if (!doc.exists) {
       const mappedPlayerId = await findPlayerIdByAlias(alias);
       if (mappedPlayerId && mappedPlayerId !== playerId) {
-        const mappedRef = gs.db.collection('player_profiles').doc(mappedPlayerId);
+        const mappedRef = gs.db!.collection('player_profiles').doc(mappedPlayerId);
         const mappedDoc = await mappedRef.get();
         if (mappedDoc.exists) {
           playerId = mappedPlayerId;
@@ -727,27 +675,30 @@ export function renderLeaderboard(el: HTMLElement | null, rows: LeaderboardRow[]
   }
   el.innerHTML = rows
     .map((r, i) => {
-      const titleStr = r.title ? r.title : '';
-      return `${i + 1}. ${r.alias}${titleStr}  ${formatSeconds(r.firstTimeSec)}  ${'★'.repeat(r.firstStars)}`;
+      const titleStr = r.title ? escapeHtml(r.title) : '';
+      return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${formatSeconds(r.firstTimeSec)}  ${'★'.repeat(r.firstStars)}`;
     })
     .join('<br>');
 }
 
 export async function loadLevelLeaderboard(levelId: number): Promise<void> {
-  if (!gs.firebaseReady) {
+  if (!gs.firebaseReady || !gs.db) {
     renderLeaderboard(gs.leaderboardListEl, []);
     renderLeaderboard(document.getElementById('win-leaderboard-list'), []);
     return;
   }
+  const db = gs.db;
   try {
-    const snap = await gs.db
+    const snap = await db
       .collection('level_first_clears')
       .doc(String(levelId))
       .collection('players')
       .orderBy('firstTimeSec', 'asc')
       .limit(3)
       .get();
-    const rows = snap.docs.map((d: FirestoreDoc) => d.data() as unknown as LeaderboardRow);
+    const rows = snap.docs
+      .map((d: FirestoreDoc) => normalizeLeaderboardRow(d.data()))
+      .filter((row): row is LeaderboardRow => !!row);
     renderLeaderboard(gs.leaderboardListEl, rows);
     renderLeaderboard(document.getElementById('win-leaderboard-list'), rows);
     // Also update React win store leaderboard
@@ -761,28 +712,31 @@ export async function loadLevelLeaderboard(levelId: number): Promise<void> {
 }
 
 export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
-  if (!gs.firebaseReady) {
+  if (!gs.firebaseReady || !gs.db) {
     const _plEl = document.getElementById('pre-level-leaderboard');
     if (_plEl) _plEl.textContent = t('firebase.disabled');
     return;
   }
+  const db = gs.db;
   try {
-    const snap = await gs.db
+    const snap = await db
       .collection('level_first_clears')
       .doc(String(levelId))
       .collection('players')
       .orderBy('firstTimeSec', 'asc')
       .limit(3)
       .get();
-    const rows = snap.docs.map((d: FirestoreDoc) => d.data() as unknown as LeaderboardRow);
+    const rows = snap.docs
+      .map((d: FirestoreDoc) => normalizeLeaderboardRow(d.data()))
+      .filter((row): row is LeaderboardRow => !!row);
     const html = !rows.length
       ? t('firebase.noRecords')
       : rows
           .map((r: LeaderboardRow, i: number) => {
             const timeStr = formatSeconds(r.firstTimeSec);
-            const titleStr = r.title ? r.title : '';
-            if (gs.isSpeedrunMode) return `${i + 1}. ${r.alias}${titleStr}  ${timeStr} ${t('miscRuntime.speedrunClassic')}`;
-            return `${i + 1}. ${r.alias}${titleStr}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
+            const titleStr = r.title ? escapeHtml(r.title) : '';
+            if (gs.isSpeedrunMode) return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${timeStr} ${t('miscRuntime.speedrunClassic')}`;
+            return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
           })
           .join('<br>');
     const _plEl = document.getElementById('pre-level-leaderboard');
@@ -817,9 +771,9 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
         puzzleHash: Array.isArray(level.puzzle) ? `p81:${level.puzzle.join('')}` : null,
       }
     : null;
-  const docRef = gs.db.collection('level_first_clears').doc(String(levelId)).collection('players').doc(playerId);
+  const docRef = gs.db!.collection('level_first_clears').doc(String(levelId)).collection('players').doc(playerId);
   try {
-    await gs.db.runTransaction(async (tx: FirestoreTransaction) => {
+    await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
       const doc = await tx.get(docRef);
       if (doc.exists) return;
       const title = getEquippedTitleDisplay();

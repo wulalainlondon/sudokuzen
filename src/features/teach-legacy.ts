@@ -2,7 +2,7 @@
 // Extracted from legacyRuntime.ts for modularity.
 // Library UI split to teachLibrary.ts, practice mode split to teachPractice.ts.
 
-import { gs } from '../game/state';
+import { gs, type LegacyTeachData, type LegacyTeachStep } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { getTeachData, getTeachShard, hasTeachModule } from '../data/dataRegistry';
 import { t } from '../i18n/t';
@@ -95,21 +95,59 @@ export function showTeachModal(stars: number | string, source = 'tier'): void {
   }
 }
 
-export function renderTeachModalContent(data: any, stars: number | string, source: string): void {
-  gs.teachData = data;
+type TeachLegacyStep = {
+  text?: unknown;
+  visibleCells?: unknown;
+  focusCells?: unknown;
+  highlightDigits?: unknown;
+  eliminateCells?: unknown;
+  warnDigit?: unknown;
+  warnCells?: unknown;
+};
+
+type TeachLegacyData = {
+  name?: string;
+  subtitle?: string;
+  technique?: string;
+  explanation?: string[];
+  example?: {
+    board?: number[];
+    notes?: Record<string, number[]>;
+    steps?: LegacyTeachStep[];
+  };
+  practice?: unknown[];
+};
+
+export function renderTeachModalContent(data: unknown, stars: number | string, source: string): void {
+  const raw = (data && typeof data === 'object' ? data : {}) as Record<string, unknown>;
+  const teachData: TeachLegacyData = {
+    name: typeof raw.name === 'string' ? raw.name : '',
+    subtitle: typeof raw.subtitle === 'string' ? raw.subtitle : '',
+    technique: typeof raw.technique === 'string' ? raw.technique : '',
+    explanation: Array.isArray(raw.explanation) ? raw.explanation.map((p) => String(p)) : [],
+    example: raw.example && typeof raw.example === 'object'
+      ? (raw.example as TeachLegacyData['example'])
+      : undefined,
+    practice: Array.isArray(raw.practice) ? (raw.practice as unknown as TeachLegacyData['practice']) : [],
+  };
+  gs.teachData = teachData as unknown as LegacyTeachData;
   gs.teachStarsKey = String(stars);
   gs.teachLaunchSource = source;
   const stage = getTeachStageLabel(stars);
 
-  document.getElementById('teach-title')!.textContent = data.name;
-  document.getElementById('teach-subtitle')!.textContent = `【${stage}】${data.subtitle}`;
+  document.getElementById('teach-title')!.textContent = String(teachData.name ?? '');
+  document.getElementById('teach-subtitle')!.textContent = `【${stage}】${String(teachData.subtitle ?? '')}`;
 
   const explEl = document.getElementById('teach-explanation')!;
+  const explanation = Array.isArray(teachData.explanation) ? teachData.explanation.map((p) => String(p)) : [];
   explEl.innerHTML = [`<p class="teach-level-note">章節定位：${stage}層</p>`]
-    .concat(data.explanation.map((p: string) => `<p>${p}</p>`))
+    .concat(explanation.map((p) => `<p>${p}</p>`))
     .join('');
 
-  gs.teachSteps = data.example.steps;
+  const steps = Array.isArray(teachData.example?.steps)
+    ? teachData.example.steps as LegacyTeachStep[]
+    : [];
+  gs.teachSteps = steps;
   gs.teachCurrentStep = 0;
   renderTeachBoard();
   updateTeachStep();
@@ -117,7 +155,7 @@ export function renderTeachModalContent(data: any, stars: number | string, sourc
   // Show/hide practice button based on data availability
   const practiceBtn = document.getElementById('teach-practice-btn');
   if (practiceBtn) {
-    practiceBtn.style.display = data.practice && data.practice.length > 0 ? '' : 'none';
+    practiceBtn.style.display = Array.isArray(teachData.practice) && teachData.practice.length > 0 ? '' : 'none';
   }
 
   document.getElementById('teach-modal')!.classList.add('show');
@@ -157,8 +195,8 @@ export function teachPrev(): void {
 }
 
 export function updateTeachStep(): void {
-  const step = gs.teachSteps[gs.teachCurrentStep];
-  document.getElementById('teach-step-text')!.textContent = step.text;
+  const step = (gs.teachSteps[gs.teachCurrentStep] ?? {}) as TeachLegacyStep;
+  document.getElementById('teach-step-text')!.textContent = String(step.text ?? '');
   document.getElementById('teach-step-indicator')!.textContent = `${gs.teachCurrentStep + 1}/${gs.teachSteps.length}`;
   (document.getElementById('teach-prev-btn') as HTMLButtonElement).disabled = gs.teachCurrentStep === 0;
   (document.getElementById('teach-next-btn') as HTMLButtonElement).disabled =
@@ -172,8 +210,8 @@ export function renderTeachBoard(): void {
   if (!gs.teachData) return;
 
   const ex = gs.teachData.example;
-  const board = ex.board;
-  const notes = ex.notes || {};
+  const board = ex?.board ?? [];
+  const notes = ex?.notes ?? {};
 
   for (let i = 0; i < 81; i++) {
     const cell = document.createElement('div');
@@ -181,7 +219,7 @@ export function renderTeachBoard(): void {
     cell.dataset.idx = String(i);
 
     if (board[i] !== 0) {
-      cell.textContent = board[i];
+      cell.textContent = String(board[i]);
     } else if (notes[i]) {
       // Show candidate notes
       const notesGrid = document.createElement('div');
@@ -201,7 +239,8 @@ export function renderTeachBoard(): void {
   }
 }
 
-export function applyTeachHighlights(step: any): void {
+export function applyTeachHighlights(stepInput: unknown): void {
+  const step = (stepInput && typeof stepInput === 'object' ? stepInput : {}) as TeachLegacyStep;
   const boardEl = document.getElementById('teach-board')!;
   const cells = boardEl.querySelectorAll('.teach-cell');
 
@@ -213,7 +252,7 @@ export function applyTeachHighlights(step: any): void {
     });
   });
 
-  const visibleCells: number[] = Array.isArray(step.visibleCells) ? step.visibleCells : [];
+  const visibleCells: number[] = Array.isArray(step.visibleCells) ? step.visibleCells.map(Number).filter(Number.isFinite) : [];
   if (visibleCells.length > 0) {
     const visibleSet = new Set(visibleCells);
     cells.forEach((c, idx) => {
@@ -222,23 +261,34 @@ export function applyTeachHighlights(step: any): void {
   }
 
   // Apply focus cells
-  (step.focusCells || []).forEach((idx: number) => {
-    if (cells[idx]) cells[idx].classList.add('focus');
+  const focusCells = Array.isArray(step.focusCells) ? step.focusCells : [];
+  focusCells.forEach((idx) => {
+    const cellIdx = Number(idx);
+    if (!Number.isFinite(cellIdx)) return;
+    if (cells[cellIdx]) cells[cellIdx].classList.add('focus');
   });
 
   // Apply highlight digits (gold notes)
-  const hd = step.highlightDigits || {};
+  const hd = step.highlightDigits && typeof step.highlightDigits === 'object'
+    ? step.highlightDigits as Record<string, unknown>
+    : {};
   for (const [cellIdx, digits] of Object.entries(hd)) {
     const cell = cells[parseInt(cellIdx)];
     if (!cell) continue;
-    (digits as number[]).forEach((d) => {
+    const digitList = Array.isArray(digits) ? digits.map(Number).filter(Number.isFinite) : [];
+    digitList.forEach((d) => {
       const note = cell.querySelector(`.tc-note[data-digit="${d}"]`);
       if (note) note.classList.add('highlight');
     });
   }
 
   // Apply eliminate cells (red bg + strikethrough)
-  (step.eliminateCells || []).forEach(({ cell: idx, digit }: { cell: number; digit: number }) => {
+  const eliminateCells = Array.isArray(step.eliminateCells) ? step.eliminateCells : [];
+  eliminateCells.forEach((eliminate) => {
+    const entry = (eliminate && typeof eliminate === 'object' ? eliminate : {}) as { cell?: unknown; digit?: unknown };
+    const idx = Number(entry.cell);
+    const digit = Number(entry.digit);
+    if (!Number.isFinite(idx) || !Number.isFinite(digit)) return;
     if (cells[idx]) {
       cells[idx].classList.add('eliminate');
       const note = cells[idx].querySelector(`.tc-note[data-digit="${digit}"]`);
@@ -249,7 +299,10 @@ export function applyTeachHighlights(step: any): void {
   // Apply warning note slots: small red box on specific candidate position
   const warnDigit = Number(step.warnDigit);
   if (Number.isInteger(warnDigit) && warnDigit >= 1 && warnDigit <= 9) {
-    (step.warnCells || []).forEach((idx: number) => {
+    const warnCells = Array.isArray(step.warnCells) ? step.warnCells : [];
+    warnCells.forEach((rawIdx) => {
+      const idx = Number(rawIdx);
+      if (!Number.isFinite(idx)) return;
       const cell = cells[idx];
       if (!cell) return;
       const note = cell.querySelector(`.tc-note[data-digit="${warnDigit}"]`);

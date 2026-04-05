@@ -13,6 +13,7 @@ import {
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { subscribeRefresh } from '../../app/ui/refreshBus';
+import { toClassicLevelRecord, toSpeedLevelRecord } from '../../shared/records/levelRecords';
 
 interface LevelCardModel {
   id: number;
@@ -32,25 +33,28 @@ function hasActiveSave(levelId: number): boolean {
 
 function buildLevelCards(): LevelCardModel[] {
   const recordsKey = gs.isSpeedrunMode ? SK.SPEED_RECORDS : SK.RECORDS;
-  const records = readJson<Record<string, any>>(recordsKey, {});
+  const records = readJson<Record<string, unknown>>(recordsKey, {});
   const unlockState = getRealmUnlockState();
   const filtered = getFilteredLevels().filter((l) => !l.hidden);
 
   return filtered.map((l) => {
     const record = records[l.id];
+    const classicRecord = toClassicLevelRecord(record);
+    const speedRecord = toSpeedLevelRecord(record);
     const isLocked = !canAccessLevel(l, unlockState);
     let bestTime: number | null = null;
     let bestStars = 0;
     let submissions = 0;
 
     if (record) {
-      if (typeof record === 'number') {
-        bestTime = record;
-        bestStars = 1;
-      } else {
-        bestTime = record.time;
-        bestStars = record.stars || 1;
-        if (gs.isSpeedrunMode) submissions = record.submissions || 1;
+      if (gs.isSpeedrunMode) {
+        if (speedRecord) {
+          bestTime = speedRecord.time;
+          submissions = speedRecord.submissions;
+        }
+      } else if (classicRecord) {
+        bestTime = classicRecord.time;
+        bestStars = classicRecord.stars;
       }
     }
 

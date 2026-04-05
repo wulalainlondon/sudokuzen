@@ -1,9 +1,12 @@
-import { useCallback, type ReactElement } from 'react';
+import { useCallback, useMemo, type ReactElement } from 'react';
 import { usePreLevelStore } from './preLevelStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
 import { t } from '../../i18n/t';
 import { closePreLevel } from '../../app/ui/uiOrchestrator';
+import { sanitizeHtml } from '../../shared/html/sanitize';
+import { getReplayHistory } from '../../shared/records/levelRecords';
+import type { ActionRecord } from '../../game/state';
 
 export function PreLevelModal(): ReactElement {
   const {
@@ -11,6 +14,7 @@ export function PreLevelModal(): ReactElement {
     hasReplay, leaderboardHtml,
   } = usePreLevelStore();
   const close = useCallback((reason: string = 'system') => closePreLevel(reason), []);
+  const safeLeaderboardHtml = useMemo(() => sanitizeHtml(leaderboardHtml), [leaderboardHtml]);
 
   const handleStart = useCallback(() => {
     import('../../features/levels').then((m) => m.startLevelFromModal(true, false, null)).catch(() => {});
@@ -24,11 +28,12 @@ export function PreLevelModal(): ReactElement {
     const isPrac = usePreLevelStore.getState().isPractice;
     const isSp = usePreLevelStore.getState().isSpeedrun;
     const recKey = isPrac ? SK.PRACTICE_RECORDS : isSp ? SK.SPEED_RECORDS : SK.RECORDS;
-    const records = readJson<Record<string, any>>(recKey, {});
+    const records = readJson<Record<string, unknown>>(recKey, {});
     const record = records[levelId];
-    if (record?.replayHistory) {
+    const replayHistory = getReplayHistory(record) as ActionRecord[];
+    if (replayHistory.length > 0) {
       const { openHistoricalReplay } = await import('../../features/replay');
-      openHistoricalReplay(levelId, record.replayHistory);
+      openHistoricalReplay(levelId, replayHistory);
     }
   }, []);
 
@@ -39,10 +44,11 @@ export function PreLevelModal(): ReactElement {
     const isPrac = usePreLevelStore.getState().isPractice;
     const isSp = usePreLevelStore.getState().isSpeedrun;
     const recKey = isPrac ? SK.PRACTICE_RECORDS : isSp ? SK.SPEED_RECORDS : SK.RECORDS;
-    const records = readJson<Record<string, any>>(recKey, {});
+    const records = readJson<Record<string, unknown>>(recKey, {});
     const record = records[levelId];
-    if (record?.replayHistory) {
-      import('../../features/levels').then((m) => m.startLevelFromModal(true, true, record.replayHistory)).catch(() => {});
+    const replayHistory = getReplayHistory(record) as ActionRecord[];
+    if (replayHistory.length > 0) {
+      import('../../features/levels').then((m) => m.startLevelFromModal(true, true, replayHistory)).catch(() => {});
     }
   }, []);
 
@@ -62,7 +68,7 @@ export function PreLevelModal(): ReactElement {
             <div
               className="leaderboard-list"
               id="pre-level-leaderboard"
-              dangerouslySetInnerHTML={{ __html: leaderboardHtml }}
+              dangerouslySetInnerHTML={{ __html: safeLeaderboardHtml }}
             />
           </div>
 

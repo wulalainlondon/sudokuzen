@@ -3,13 +3,15 @@
 // Sounds evoke wood, ceramic, paper, wind chimes — never raw electronic tones.
 
 import { gs } from './state';
+import type { SudokuWindow } from '../facade/windowTypes';
 
 // ── Shared audio graph ──────────────────────────────────────────────
 
 function getCtx(): AudioContext | null {
   try {
     if (!gs._audioCtx) {
-      const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
+      const win = window as SudokuWindow;
+      const AC = win.AudioContext || win.webkitAudioContext;
       if (!AC) return null;
       gs._audioCtx = new AC();
     }

@@ -6,6 +6,7 @@ import { getTeachData, getTeachManifest, hasTeachModule } from '../data/dataRegi
 import type { TeachModuleMeta } from '../data/dataRegistry';
 import { t } from '../i18n/t';
 import { LEARNING_ORDER, getGroups, getTeachStageLabel, showTeachModal } from './teach-legacy';
+import type { SudokuWindow } from '../facade/windowTypes';
 
 // ── Library functions ─────────────────────────────────────────────
 
@@ -23,14 +24,21 @@ export function getLibraryItemsFromTeachData(): LibraryItem[] {
 
   if (td && Object.keys(td).length > 0) {
     // Full blob path (backwards compat)
+    type LegacyTeachLike = {
+      technique?: unknown;
+      name?: unknown;
+      subtitle?: unknown;
+      practice?: unknown;
+    };
     for (const [k, v] of Object.entries(td)) {
+      const teachLike = (v && typeof v === 'object' ? v : {}) as LegacyTeachLike;
       entries.push([
         k,
         {
-          technique: (v as any).technique ?? '',
-          name: (v as any).name ?? '',
-          subtitle: (v as any).subtitle ?? '',
-          hasPractice: Array.isArray((v as any).practice) && (v as any).practice.length > 0,
+          technique: typeof teachLike.technique === 'string' ? teachLike.technique : '',
+          name: typeof teachLike.name === 'string' ? teachLike.name : '',
+          subtitle: typeof teachLike.subtitle === 'string' ? teachLike.subtitle : '',
+          hasPractice: Array.isArray(teachLike.practice) && teachLike.practice.length > 0,
           size: 0,
         },
       ]);
@@ -177,7 +185,7 @@ export function closeLibraryOverlay(): void {
 
 export function openTeachFromLibrary(stars: string | number): void {
   // Route through window.showTeachModal so the React bridge can intercept
-  const wShow = (window as any).showTeachModal;
+  const wShow = (window as SudokuWindow).showTeachModal;
   if (wShow) wShow(parseFloat(String(stars)), 'library');
   else showTeachModal(parseFloat(String(stars)), 'library');
 }

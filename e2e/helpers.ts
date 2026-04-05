@@ -33,7 +33,7 @@ export async function startLevel(page: Page) {
 /** Start level 1 directly by navigating and using evaluate for a clean start. */
 export async function startLevelById(page: Page, levelId: number) {
   await page.evaluate((id) => {
-    const { initGame } = (window as any).__testHooks || {};
+    const { initGame } = (window as unknown).__testHooks || {};
     if (initGame) initGame(id, true);
   }, levelId);
   await page.locator('.game-container').waitFor({ state: 'visible' });
@@ -51,27 +51,27 @@ export async function pressDigit(page: Page, digit: number) {
 
 /** Get the solution array from the current level via page context. */
 export async function getSolution(page: Page): Promise<number[]> {
-  return page.evaluate(() => (window as any).gs?.currentLevel?.solution ?? []);
+  return page.evaluate(() => (window as unknown).gs?.currentLevel?.solution ?? []);
 }
 
 /** Get the puzzle array from the current level. */
 export async function getPuzzle(page: Page): Promise<number[]> {
-  return page.evaluate(() => (window as any).gs?.currentLevel?.puzzle ?? []);
+  return page.evaluate(() => (window as unknown).gs?.currentLevel?.puzzle ?? []);
 }
 
 /** Get current cellsData values. */
 export async function getCellValues(page: Page): Promise<number[]> {
-  return page.evaluate(() => ((window as any).gs?.cellsData ?? []).map((c: any) => c.value));
+  return page.evaluate(() => ((window as unknown).gs?.cellsData ?? []).map((c: unknown) => c.value));
 }
 
 /** Get the action history length. */
 export async function getActionCount(page: Page): Promise<number> {
-  return page.evaluate(() => ((window as any).gs?.actionHistory ?? []).length);
+  return page.evaluate(() => ((window as unknown).gs?.actionHistory ?? []).length);
 }
 
 /** Get the error count. */
 export async function getErrors(page: Page): Promise<number> {
-  return page.evaluate(() => (window as any).gs?.errors ?? 0);
+  return page.evaluate(() => (window as unknown).gs?.errors ?? 0);
 }
 
 /** Solve the puzzle by filling all empty cells with correct values. */
@@ -96,7 +96,7 @@ export async function isWinVisible(page: Page): Promise<boolean> {
 }
 
 /** Get records from localStorage. */
-export async function getRecords(page: Page): Promise<Record<string, any>> {
+export async function getRecords(page: Page): Promise<Record<string, unknown>> {
   return page.evaluate(() => {
     const raw = localStorage.getItem('sudoku_records');
     return raw ? JSON.parse(raw) : {};

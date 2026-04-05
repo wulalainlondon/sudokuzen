@@ -2,10 +2,11 @@
 // Hybrid approach: React owns the modal chrome (open/close, controls, filters, list),
 // while legacy replay.ts owns the board rendering via a ref.
 
-import { useCallback, useEffect, useRef, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useRef, type ReactElement } from 'react';
 import { useReplayStore, type ReplayFilter } from './replayStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { t } from '../../i18n/t';
+import { sanitizeHtml } from '../../shared/html/sanitize';
 
 // ── Replay Board Container ─────────────────────────────────────────────
 // The 9x9 board is performance-sensitive DOM manipulation.
@@ -115,6 +116,7 @@ function FilterTabs({ active }: { active: ReplayFilter }): ReactElement {
 
 function StepList({ html }: { html: string }): ReactElement {
   const listRef = useRef<HTMLDivElement>(null);
+  const safeHtml = useMemo(() => sanitizeHtml(html), [html]);
 
   // Attach click-to-jump handlers after HTML injection
   useEffect(() => {
@@ -126,13 +128,13 @@ function StepList({ html }: { html: string }): ReactElement {
       if (!target) return;
       const step = parseInt(target.dataset.step || '0');
       if (step > 0) {
-        import('../../features/replay').then((m) => (m as any).replayJumpToStep(step)).catch(() => {});
+        import('../../features/replay').then((m) => m.replayJumpToStep(step)).catch(() => {});
       }
     };
 
     el.addEventListener('click', handleClick);
     return () => el.removeEventListener('click', handleClick);
-  }, [html]);
+  }, [safeHtml]);
 
   return (
     // Safety: step list HTML built by our own replay.ts code (trusted)
@@ -140,7 +142,7 @@ function StepList({ html }: { html: string }): ReactElement {
       className="replay-list"
       id="replay-list"
       ref={listRef}
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: safeHtml }}
     />
   );
 }
@@ -158,6 +160,10 @@ export function ReplayModal(): ReactElement {
   const progressPct = useReplayStore((s) => s.progressPct);
   const prevDisabled = useReplayStore((s) => s.prevDisabled);
   const nextDisabled = useReplayStore((s) => s.nextDisabled);
+  const safeStepInfoHtml = useMemo(
+    () => sanitizeHtml(stepInfoHtml || t('replay.stepInfo', { current: 0, total: 0 })),
+    [stepInfoHtml],
+  );
 
   // Clear replay board to prevent stale content when modal closes
   useEffect(() => {
@@ -208,7 +214,7 @@ export function ReplayModal(): ReactElement {
           <div
             className="replay-step-info"
             id="replay-step-info"
-            dangerouslySetInnerHTML={{ __html: stepInfoHtml || t('replay.stepInfo', { current: 0, total: 0 }) }}
+            dangerouslySetInnerHTML={{ __html: safeStepInfoHtml }}
           />
         </div>
 

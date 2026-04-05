@@ -24,7 +24,7 @@ interface EncounterLog {
 const MAX_ENCOUNTERS = 80; // safety cap
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 15_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 15_000 });
 }
 
 async function clearGameData(page: Page) {
@@ -56,7 +56,7 @@ async function startWorldFromLobby(page: Page): Promise<void> {
 /** Fill the entire puzzle using solution data via evaluate (instant). */
 async function instantSolve(page: Page): Promise<{ emptyCells: number; solveOk: boolean }> {
   return page.evaluate(() => {
-    const gs = (window as any).gs;
+    const gs = (window as unknown).gs;
     if (!gs || !gs.currentLevel) return { emptyCells: 0, solveOk: false };
 
     const solution = gs.currentLevel.solution;
@@ -98,7 +98,7 @@ async function triggerWinCheck(page: Page) {
   // Find a cell that was empty in the puzzle but now filled, and re-fill it via handleInput
   // to trigger the normal checkWin flow
   await page.evaluate(() => {
-    const gs = (window as any).gs;
+    const gs = (window as unknown).gs;
     if (!gs || !gs.currentLevel) return;
 
     const solution = gs.currentLevel.solution;
@@ -112,7 +112,7 @@ async function triggerWinCheck(page: Page) {
   // Better approach: use the DOM click path for the last empty cell
   // Find last non-fixed cell index and its solution digit
   const lastCell = await page.evaluate(() => {
-    const gs = (window as any).gs;
+    const gs = (window as unknown).gs;
     const puzzle = gs.currentLevel.puzzle;
     const solution = gs.currentLevel.solution;
     // Find last non-fixed cell
@@ -128,7 +128,7 @@ async function triggerWinCheck(page: Page) {
 
   // Undo that cell, then fill via UI to trigger checkWin
   await page.evaluate((idx) => {
-    const gs = (window as any).gs;
+    const gs = (window as unknown).gs;
     gs.cellsData[idx].value = 0;
     gs.cellsData[idx].notes = [];
   }, lastCell.idx);
@@ -142,7 +142,7 @@ async function triggerWinCheck(page: Page) {
 /** Get current encounter info from wildController. */
 async function getEncounterInfo(page: Page) {
   return page.evaluate(() => {
-    const win = window as any;
+    const win = window as unknown;
     const profile = win.__e2e?.wildController?.getWildProfile?.()
       || JSON.parse(localStorage.getItem('sudoku_wild_profile') || '{}');
     const gs = win.gs;
@@ -180,7 +180,7 @@ async function continueToNext(page: Page) {
   } catch {
     // Fallback: call continueWild directly
     await page.evaluate(() => {
-      const win = window as any;
+      const win = window as unknown;
       win.continueWild?.();
     });
   }
@@ -241,7 +241,7 @@ test.describe('World Playthrough', () => {
     await waitForE2E(page);
 
     // Go to level screen
-    await page.evaluate(() => (window as any).showLevelScreen());
+    await page.evaluate(() => (window as unknown).showLevelScreen());
     await page.locator('#level-screen').waitFor({ state: 'visible', timeout: 10_000 });
 
     // Open Wild lobby
@@ -318,7 +318,7 @@ test.describe('World Playthrough', () => {
 
         // Log the puzzle data for reference
         const puzzleData = await page.evaluate(() => {
-          const gs = (window as any).gs;
+          const gs = (window as unknown).gs;
           return {
             puzzle: gs?.currentLevel?.puzzle,
             solution: gs?.currentLevel?.solution,
@@ -404,7 +404,7 @@ test.describe('World Playthrough', () => {
           });
           // Try to recover
           await page.evaluate(() => {
-            const win = window as any;
+            const win = window as unknown;
             win.showLevelScreen?.();
           });
           await page.waitForTimeout(500);

@@ -45,9 +45,6 @@ let _manifest: DataManifest | null = null;
 let _manifestPromise: Promise<DataManifest | null> | null = null;
 const _shardCache = new Map<string, LevelData[]>();
 
-// Legacy globals (backward compat — will be removed)
-declare const levels: LevelData[] | undefined;
-declare const midPool: LevelData[] | undefined;
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -170,33 +167,14 @@ export async function getAllLevelsAsync(): Promise<LevelData[]> {
   return [...normal, ...practice, ...world];
 }
 
-// ── Legacy sync compat (for gradual migration) ────────────────────
-
-let _legacyMerged: LevelData[] | null = null;
+// ── Sync snapshot (cache-backed) ───────────────────────────────────
 
 /**
- * Synchronous getAllLevels() — legacy compat.
- * Returns levels from script-tag globals (normal mode only).
- * ⚠️ Deprecated: migrate to getNormalLevels() / getAllLevelsAsync().
+ * Synchronous normal-level snapshot from shard cache.
+ * Returns [] until `preloadMode('normal')` / `getNormalLevels()` resolves.
  */
 export function getAllLevels(): LevelData[] {
-  // Always prefer shard cache when available.
-  // This avoids locking into an empty legacy fallback snapshot.
-  if (_shardCache.has('normal')) {
-    const normal = _shardCache.get('normal')!;
-    _legacyMerged = normal;
-    return normal;
-  }
-  if (_legacyMerged) return _legacyMerged;
-  // Fall back to script-tag globals
-  const main = typeof levels !== 'undefined' ? levels : [];
-  const mid = typeof midPool !== 'undefined'
-    ? midPool.map(l => ({ ...l, hidden: true }) as LevelData)
-    : [];
-  const existingIds = new Set(main.map(l => l.id));
-  mid.forEach(l => { if (!existingIds.has(l.id)) main.push(l); });
-  _legacyMerged = main;
-  return _legacyMerged;
+  return _shardCache.get('normal') || [];
 }
 
 /**
@@ -213,7 +191,7 @@ export async function preloadMode(mode: GameMode): Promise<void> {
 
 declare const TEACH_DATA: Record<string, unknown>;
 
-export function getTeachData(): Record<string, any> {
+export function getTeachData(): Record<string, unknown> {
   return typeof TEACH_DATA !== 'undefined' ? TEACH_DATA : {};
 }
 
@@ -233,7 +211,7 @@ export interface TeachManifest {
 
 let _teachManifest: TeachManifest | null = null;
 let _teachManifestPromise: Promise<TeachManifest | null> | null = null;
-const _teachShardCache = new Map<string, any>();
+const _teachShardCache = new Map<string, unknown>();
 
 function resolveTeachPath(file: string): string {
   try {
@@ -254,7 +232,7 @@ export async function getTeachManifest(): Promise<TeachManifest | null> {
   return _teachManifestPromise;
 }
 
-export async function getTeachShard(stars: string | number): Promise<any | null> {
+export async function getTeachShard(stars: string | number): Promise<unknown | null> {
   const key = String(stars);
   if (_teachShardCache.has(key)) return _teachShardCache.get(key);
   const manifest = await getTeachManifest();

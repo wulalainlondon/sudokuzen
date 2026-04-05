@@ -5,6 +5,7 @@ export interface FirestoreDoc {
   exists: boolean;
   data(): Record<string, unknown> | undefined;
   id: string;
+  ref: FirestoreDocRef;
 }
 
 export interface FirestoreSnap {
@@ -12,6 +13,7 @@ export interface FirestoreSnap {
   data(): Record<string, unknown> | undefined;
   docs: FirestoreDoc[];
   size: number;
+  forEach(callback: (doc: FirestoreDoc) => void): void;
 }
 
 export interface FirestoreTransaction {
@@ -26,6 +28,10 @@ export interface FirestoreDocRef {
   update(data: Record<string, unknown>): Promise<void>;
   delete(): Promise<void>;
   collection(name: string): FirestoreCollectionRef;
+  onSnapshot(
+    onNext: (snap: FirestoreDoc) => void,
+    onError?: (err: unknown) => void,
+  ): () => void;
 }
 
 export interface FirestoreCollectionRef {
@@ -33,6 +39,7 @@ export interface FirestoreCollectionRef {
   orderBy(field: string, direction?: 'asc' | 'desc'): FirestoreQuery;
   where(field: string, op: string, value: unknown): FirestoreQuery;
   limit(n: number): FirestoreQuery;
+  get(): Promise<FirestoreSnap>;
 }
 
 export interface FirestoreQuery {

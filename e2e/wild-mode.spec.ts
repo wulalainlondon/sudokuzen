@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  */
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 10_000 });
 }
 
 async function clearGameData(page: Page) {
@@ -23,7 +23,7 @@ test.describe('wild-mode', () => {
     await waitForE2E(page);
     await clearGameData(page);
     // Ensure level screen is showing
-    await page.evaluate(() => (window as any).showLevelScreen());
+    await page.evaluate(() => (window as unknown).showLevelScreen());
     await page.locator('#level-screen').waitFor({ state: 'visible' });
   });
 

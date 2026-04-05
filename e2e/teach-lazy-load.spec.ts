@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  */
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 10_000 });
 }
 
 async function clearGameData(page: Page) {
@@ -49,7 +49,7 @@ test.describe('teach-lazy-load', () => {
   test('openTeach via bridge fetches shard and opens overlay', async ({ page }) => {
     // Call showTeachModal which goes through bridge → store → fetchTeachModule
     await page.evaluate(() => {
-      (window as any).showTeachModal(1, 'tier');
+      (window as unknown).showTeachModal(1, 'tier');
     });
 
     // Wait for the teach store to settle (loading → demo/stepping, or loading → idle if data unavailable)
@@ -78,7 +78,7 @@ test.describe('teach-lazy-load', () => {
 
   test('library overlay renders from manifest metadata', async ({ page }) => {
     // Open library overlay
-    await page.evaluate(() => (window as any).openLibraryOverlay());
+    await page.evaluate(() => (window as unknown).openLibraryOverlay());
 
     // Wait for library to render cards
     await page.waitForFunction(

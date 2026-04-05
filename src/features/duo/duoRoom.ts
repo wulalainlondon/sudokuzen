@@ -2,15 +2,12 @@
 // All room creation, joining, subscribing, cleanup, and heartbeat logic lives here.
 
 import { gs, type DuoRoomData } from '../../game/state';
-import {
-  firebaseServerTimestamp,
-  firebaseTimestampFromMillis,
-  getPlayerIdentity,
-} from '../../firebase/client';
+import { getPlayerIdentity } from '../../firebase/client';
+import { firebaseServerTimestamp, firebaseTimestampFromMillis } from '../../firebase/runtime';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
-import type { FirestoreDoc, FirestoreTransaction } from '../../firebase/types';
+import type { FirestoreDoc, FirestoreSnap, FirestoreTransaction } from '../../firebase/types';
 import { bumpDuoMetric } from './duoMetrics';
 import { loadDuoProfile } from './duoProfile';
 
@@ -88,28 +85,29 @@ function makeRoomId(): string {
 export function duoRoomRef(roomId?: string) {
   const id = roomId || _activeRoomId;
   if (!id) throw new Error('duoRoomRef: no room id');
-  return gs.db.collection(DUO_ROOMS_COLLECTION).doc(id);
+  return gs.db!.collection(DUO_ROOMS_COLLECTION).doc(id);
 }
 
 function docToSummary(roomId: string, d: DuoRoomData): DuoRoomSummary {
   const updatedAtMs = d.updatedAt?.toDate?.()?.getTime?.() ?? 0;
   return {
     roomId,
-    tierId: (d as any).tierId || '',
-    modeId: (d as any).modeId || '',
+    tierId: d.tierId || '',
+    modeId: d.modeId || '',
     status: d.status,
     hostId: d.hostId,
     hostAlias: d.hostAlias || '--',
     guestAlias: d.guestAlias || null,
     updatedAtMs,
-    hostHeartbeatAtMs: (d as any).hostHeartbeatAtMs ?? 0,
+    hostHeartbeatAtMs: d.hostHeartbeatAtMs ?? 0,
   };
 }
 
 // ── List rooms ───────────────────────────────────────────────────────
 
 export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } = {}): Promise<DuoRoomSummary[]> {
-  if (!gs.firebaseReady) return [];
+  if (!gs.firebaseReady || !gs.db) return [];
+  const db = gs.db;
   const force = !!opts.force;
   const now = Date.now();
   if (!force && _waitingRoomsCache && now - _waitingRoomsCache.ts <= WAITING_ROOMS_CACHE_MS && limit <= _waitingRoomsCache.limit) {
@@ -124,9 +122,9 @@ export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } 
     bumpDuoMetric('lobbyFetchThrottled');
     return _waitingRoomsCache.rows.slice(0, limit);
   }
-  const normalize = (snap: any): DuoRoomSummary[] => {
+  const normalize = (snap: FirestoreSnap): DuoRoomSummary[] => {
     const rows: DuoRoomSummary[] = [];
-    snap.forEach((doc: any) => {
+    snap.forEach((doc: FirestoreDoc) => {
       const d = (doc.data() ?? null) as DuoRoomData | null;
       if (!d || !d.hostId) return;
       rows.push(docToSummary(doc.id, d));
@@ -138,7 +136,7 @@ export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } 
     _lastWaitingRoomsFetchMs = Date.now();
     try {
       bumpDuoMetric('roomReadOps');
-      const orderedSnap = await gs.db
+      const orderedSnap = await db
         .collection(DUO_ROOMS_COLLECTION)
         .where('status', '==', 'waiting')
         .orderBy('updatedAt', 'desc')
@@ -150,7 +148,7 @@ export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } 
     } catch {
       try {
         bumpDuoMetric('roomReadOps');
-        const fallbackSnap = await gs.db.collection(DUO_ROOMS_COLLECTION).where('status', '==', 'waiting').limit(limit * 2).get();
+        const fallbackSnap = await db.collection(DUO_ROOMS_COLLECTION).where('status', '==', 'waiting').limit(limit * 2).get();
         const rows = normalize(fallbackSnap);
         _waitingRoomsCache = { rows, ts: Date.now(), limit };
         return rows;
@@ -205,20 +203,21 @@ export function stopDuoRoomHeartbeat(): void {
 // ── Cleanup stale rooms ──────────────────────────────────────────────
 
 export async function cleanupStaleDuoRooms(force = false): Promise<void> {
-  if (!gs.firebaseReady) return;
+  if (!gs.firebaseReady || !gs.db) return;
+  const db = gs.db;
   const now = Date.now();
   if (!force && now - _lastDuoCleanupMs < DUO_CLEANUP_INTERVAL_MS) return;
   _lastDuoCleanupMs = now;
   try {
     bumpDuoMetric('roomReadOps');
-    const orderedSnap = await gs.db
+    const orderedSnap = await db
       .collection(DUO_ROOMS_COLLECTION)
       .where('status', '==', 'waiting')
       .orderBy('updatedAt', 'asc')
       .limit(30)
       .get();
     const writes: Promise<unknown>[] = [];
-    orderedSnap.forEach((doc: any) => {
+    orderedSnap.forEach((doc: FirestoreDoc) => {
       const d = (doc.data() ?? null) as DuoRoomData | null;
       const updatedAtMs = d?.updatedAt?.toDate?.()?.getTime?.() ?? 0;
       if (!d || !updatedAtMs || now - updatedAtMs < DUO_ROOM_WAITING_TTL_MS) return;
@@ -235,14 +234,14 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
     if (writes.length) await Promise.allSettled(writes);
 
     bumpDuoMetric('roomReadOps');
-    const finishedSnap = await gs.db
+    const finishedSnap = await db
       .collection(DUO_ROOMS_COLLECTION)
       .where('status', '==', 'finished')
       .orderBy('updatedAt', 'asc')
       .limit(30)
       .get();
     const deleteOps: Promise<unknown>[] = [];
-    finishedSnap.forEach((doc: any) => {
+    finishedSnap.forEach((doc: FirestoreDoc) => {
       const d = (doc.data() ?? null) as DuoRoomData | null;
       const updatedAtMs = d?.updatedAt?.toDate?.()?.getTime?.() ?? 0;
       if (!updatedAtMs || now - updatedAtMs < DUO_ROOM_FINISHED_RETENTION_MS) return;
@@ -315,7 +314,7 @@ export async function joinDuoRoom(roomId: string): Promise<boolean> {
   if (!gs.firebaseReady || !roomId) return false;
   const { playerId, alias } = getPlayerIdentity();
   try {
-    await gs.db.runTransaction(async (tx: FirestoreTransaction) => {
+    await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
       const doc = await tx.get(duoRoomRef(roomId));
       if (!doc.exists) throw new Error('room_not_found');
       const d = doc.data() as unknown as DuoRoomData;
@@ -404,7 +403,7 @@ export async function resumeDuoRoomIfAny(): Promise<boolean> {
       setActiveRoomId(null);
       return false;
     }
-    const d = doc.data() as DuoRoomData;
+    const d = doc.data() as unknown as DuoRoomData;
     if (!d) {
       setActiveRoomId(null);
       return false;

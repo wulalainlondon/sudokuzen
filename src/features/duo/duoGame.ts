@@ -27,6 +27,8 @@ import {
   type DuoProfile,
 } from './duoProfile';
 import type { SudokuWindow } from '../../facade/windowTypes';
+import type { FirestoreTransaction } from '../../firebase/types';
+import { escapeHtml } from '../../shared/html/escape';
 
 // ── Module-level guards ──────────────────────────────────────────────
 
@@ -143,8 +145,8 @@ export function updateDuoRoomUI(d: DuoRoomData): void {
   const countdownArea = document.getElementById('duo-countdown-area');
 
   // Tier + mode display
-  const tierLabel = DUO_TIER_MAP.get((d as any).tierId)?.label || '';
-  const modeLabel = DUO_MODE_MAP.get((d as any).modeId)?.label || '';
+  const tierLabel = DUO_TIER_MAP.get(d.tierId)?.label || '';
+  const modeLabel = DUO_MODE_MAP.get(d.modeId)?.label || '';
   const tierModeEl = document.getElementById('duo-room-tier-mode');
   if (tierModeEl) tierModeEl.textContent = `${tierLabel} · ${modeLabel}`;
 
@@ -225,7 +227,7 @@ export function updateDuoRoomUI(d: DuoRoomData): void {
         <div class="duo-stats-row" style="margin-top:4px"><span>${t('duo.statsStreak')}</span><span>${profile.currentStreak} (${t('duo.statsBest')}: ${profile.bestStreak})</span></div></div>
       </div>`;
       if (d.hostDuoWins != null && d.guestDuoWins != null) {
-        html += `<div class="duo-stats-row duo-stats-vs"><span>${d.hostAlias} vs ${d.guestAlias || '--'}</span><span>${d.hostDuoWins} : ${d.guestDuoWins}</span></div>`;
+        html += `<div class="duo-stats-row duo-stats-vs"><span>${escapeHtml(d.hostAlias)} vs ${escapeHtml(d.guestAlias || '--')}</span><span>${d.hostDuoWins} : ${d.guestDuoWins}</span></div>`;
       }
       roomStatsContent.innerHTML = html;
     }
@@ -259,7 +261,7 @@ export async function toggleDuoReady(): Promise<void> {
   const field = gs.duoRole === 'host' ? 'hostReady' : 'guestReady';
   const newReady = !gs.duoMyReady;
   try {
-    await gs.db.runTransaction(async (tx: any) => {
+    await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
       const doc = await tx.get(duoRoomRef());
       if (!doc.exists) return;
       const d = doc.data() as unknown as DuoRoomData;
@@ -366,7 +368,7 @@ export async function launchDuoGame(): Promise<void> {
   gs.continuousFillDigit = null;
   gs.duoProgressThrottle = 0;
 
-  const roomData = gs.duoRoomData as any;
+  const roomData = gs.duoRoomData;
   const tierId: string = roomData.tierId || 'tierI';
   const puzzleSeed: number = roomData.puzzleSeed || 0;
   const modeId: string = roomData.modeId || 'standard';
@@ -531,8 +533,8 @@ export function showDuoResult(d: DuoRoomData): void {
   // Record match using new DuoProfile
   const profileBefore = loadDuoProfile();
   const beforeSnapshot: DuoProfile = JSON.parse(JSON.stringify(profileBefore));
-  const tierId = (d as any).tierId || 'tierI';
-  const modeId = (d as any).modeId || 'standard';
+  const tierId = d.tierId || 'tierI';
+  const modeId = d.modeId || 'standard';
   const myTime = gs.duoRole === 'host' ? hTime : gTime;
   const oppTime = gs.duoRole === 'host' ? gTime : hTime;
   const iWon = myTime < oppTime;
@@ -656,7 +658,14 @@ function spawnEmojiBubble(emoji: string, alias: string): void {
   if (existing) existing.remove();
   const el = document.createElement('div');
   el.className = 'duo-emoji-bubble';
-  el.innerHTML = `<span class="duo-emoji-bubble-name">${alias}</span><span class="duo-emoji-bubble-emoji">${emoji}</span>`;
+  const nameSpan = document.createElement('span');
+  nameSpan.className = 'duo-emoji-bubble-name';
+  nameSpan.textContent = alias;
+  const emojiSpan = document.createElement('span');
+  emojiSpan.className = 'duo-emoji-bubble-emoji';
+  emojiSpan.textContent = emoji;
+  el.appendChild(nameSpan);
+  el.appendChild(emojiSpan);
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 2200);
 }

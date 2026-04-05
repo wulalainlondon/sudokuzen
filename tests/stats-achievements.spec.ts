@@ -9,11 +9,13 @@ import {
   unlockAchievement,
 } from '../src/features/stats';
 
+type GlobalWithLevels = typeof globalThis & { levels?: unknown[] };
+
 describe('computeStats', () => {
   beforeEach(() => {
     localStorage.clear();
     // Provide minimal window.levels for getAllLevels() fallback
-    (globalThis as any).levels = [];
+    (globalThis as GlobalWithLevels).levels = [];
   });
 
   it('with empty records returns totalCleared=0', () => {
@@ -24,7 +26,7 @@ describe('computeStats', () => {
   });
 
   it('with 5 normal records returns correct totalCleared=5', () => {
-    const records: Record<string, any> = {};
+    const records: Record<string, unknown> = {};
     for (let i = 1; i <= 5; i++) {
       records[i] = { time: 100, stars: 2 };
     }
@@ -34,7 +36,7 @@ describe('computeStats', () => {
   });
 
   it('with practice records returns correct practiceCleared count', () => {
-    const practiceRecords: Record<string, any> = {};
+    const practiceRecords: Record<string, unknown> = {};
     for (let i = 1; i <= 8; i++) {
       practiceRecords[i] = { techKey: 'naked_single', time: 60, stars: 3 };
     }
@@ -44,13 +46,13 @@ describe('computeStats', () => {
   });
 
   it('combined count (totalCleared + practiceCleared) for clear_50 check', () => {
-    const records: Record<string, any> = {};
+    const records: Record<string, unknown> = {};
     for (let i = 1; i <= 30; i++) {
       records[i] = { time: 120, stars: 2 };
     }
     localStorage.setItem(SK.RECORDS, JSON.stringify(records));
 
-    const practiceRecords: Record<string, any> = {};
+    const practiceRecords: Record<string, unknown> = {};
     for (let i = 1; i <= 25; i++) {
       practiceRecords[i] = { techKey: 'naked_pair', time: 60, stars: 3 };
     }
@@ -61,7 +63,7 @@ describe('computeStats', () => {
   });
 
   it('practiceFullTechs counts techniques with 25+ clears', () => {
-    const practiceRecords: Record<string, any> = {};
+    const practiceRecords: Record<string, unknown> = {};
     // 25 levels for naked_single
     for (let i = 1; i <= 25; i++) {
       practiceRecords[i] = { techKey: 'naked_single', time: 60, stars: 3 };
@@ -84,7 +86,7 @@ describe('computeStats', () => {
 describe('checkAllAchievements', () => {
   beforeEach(() => {
     localStorage.clear();
-    (globalThis as any).levels = [];
+    (globalThis as GlobalWithLevels).levels = [];
   });
 
   it('unlocks first_clear when combinedCleared >= 1', () => {
@@ -99,7 +101,7 @@ describe('checkAllAchievements', () => {
   });
 
   it('unlocks clear_50 when combinedCleared >= 50', () => {
-    const records: Record<string, any> = {};
+    const records: Record<string, unknown> = {};
     for (let i = 1; i <= 50; i++) {
       records[i] = { time: 100, stars: 2 };
     }

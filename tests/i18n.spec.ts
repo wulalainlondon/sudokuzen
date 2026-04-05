@@ -43,12 +43,12 @@ describe('i18n t()', () => {
     expect(topKeys.length).toBeGreaterThan(0);
 
     // Recursively find a leaf string key under a namespace
-    function findLeafKey(obj: any, prefix: string): string | null {
+    function findLeafKey(obj: Record<string, unknown>, prefix: string): string | null {
       for (const k of Object.keys(obj)) {
         const fullKey = `${prefix}.${k}`;
         if (typeof obj[k] === 'string') return fullKey;
-        if (typeof obj[k] === 'object') {
-          const found = findLeafKey(obj[k], fullKey);
+        if (obj[k] && typeof obj[k] === 'object') {
+          const found = findLeafKey(obj[k] as Record<string, unknown>, fullKey);
           if (found) return found;
         }
       }
@@ -56,7 +56,7 @@ describe('i18n t()', () => {
     }
 
     for (const key of topKeys) {
-      const val = (zhTW as any)[key];
+      const val = zhTW[key as keyof typeof zhTW];
       if (typeof val === 'string') {
         expect(t(key)).toBe(val);
       } else if (typeof val === 'object') {

@@ -104,12 +104,12 @@ const BATCH_SIZE = 500;
 
 // ── Main ──
 const data = JSON.parse(fs.readFileSync('levels-data.json', 'utf8'));
-const allKeys = new Set<string>(data.map((l: any) => l.puzzle.join('')));
-let maxId = Math.max(...data.map((l: any) => l.id));
+const allKeys = new Set<string>(data.map((l: unknown) => l.puzzle.join('')));
+let maxId = Math.max(...data.map((l: unknown) => l.id));
 
-const world = data.filter((l: any) => l.mode === 'world');
+const world = data.filter((l: unknown) => l.mode === 'world');
 const byTech: Record<string, number> = {};
-world.forEach((l: any) => { byTech[l.maxTechnique] = (byTech[l.maxTechnique] || 0) + 1; });
+world.forEach((l: unknown) => { byTech[l.maxTechnique] = (byTech[l.maxTechnique] || 0) + 1; });
 
 // Find techniques that need more puzzles
 const toGenerate: Array<{ tech: string; needed: number }> = [];
@@ -228,7 +228,7 @@ while (!allDone() && batch < 10000) {
 
 // Add all collected puzzles to data
 for (const { tech } of toGenerate) {
-  const existing = data.find((l: any) => l.mode === 'world' && l.maxTechnique === tech);
+  const existing = data.find((l: unknown) => l.mode === 'world' && l.maxTechnique === tech);
   const diffName = existing?.difficultyName || tech;
   const stars = existing?.stars || 10;
 
@@ -260,9 +260,9 @@ console.log(`\n\n=== Done in ${elapsed}s ===`);
 console.log(`Generated: ${totalGenerated} puzzles`);
 
 const final = JSON.parse(fs.readFileSync('levels-data.json', 'utf8'));
-const finalWorld = final.filter((l: any) => l.mode === 'world');
+const finalWorld = final.filter((l: unknown) => l.mode === 'world');
 const finalByTech: Record<string, number> = {};
-finalWorld.forEach((l: any) => { finalByTech[l.maxTechnique] = (finalByTech[l.maxTechnique] || 0) + 1; });
+finalWorld.forEach((l: unknown) => { finalByTech[l.maxTechnique] = (finalByTech[l.maxTechnique] || 0) + 1; });
 
 console.log(`\nWorld total: ${finalWorld.length}`);
 console.log('\nPer technique:');
@@ -271,6 +271,6 @@ for (const [t, c] of Object.entries(finalByTech).sort((a, b) => a[0].localeCompa
 }
 
 const byMode: Record<string, number> = {};
-final.forEach((l: any) => { byMode[l.mode] = (byMode[l.mode] || 0) + 1; });
+final.forEach((l: unknown) => { byMode[l.mode] = (byMode[l.mode] || 0) + 1; });
 console.log('\nBy mode:', JSON.stringify(byMode));
 console.log('Grand total:', final.length);

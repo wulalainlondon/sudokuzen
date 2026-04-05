@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
  */
 
 // Import the pure functions directly
-import { loadDuoProfile, saveDuoProfile, recordDuoMatch, getUnlockedTiers, getUnlockedModes, checkNewUnlocks, type DuoProfile } from '../src/features/duo/duoProfile';
+import { loadDuoProfile, recordDuoMatch, getUnlockedTiers, getUnlockedModes, checkNewUnlocks, type DuoProfile } from '../src/features/duo/duoProfile';
 
 function emptyProfile(): DuoProfile {
   return { playCount: {}, wins: 0, losses: 0, draws: 0, currentStreak: 0, bestStreak: 0, rivals: {} };
@@ -65,7 +65,7 @@ describe('duo profile & match recording', () => {
   });
 
   it('persists to localStorage', () => {
-    let p = emptyProfile();
+    const p = emptyProfile();
     recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
     const loaded = loadDuoProfile();
     expect(loaded.wins).toBe(1);

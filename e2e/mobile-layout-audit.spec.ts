@@ -27,7 +27,7 @@ const SCREENS = [
 ] as const;
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 15_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 15_000 });
 }
 
 async function clearGameData(page: Page) {
@@ -51,7 +51,7 @@ for (const device of DEVICES) {
       await page.goto('/');
       await waitForE2E(page);
       await clearGameData(page);
-      await page.evaluate(() => (window as any).showLevelScreen());
+      await page.evaluate(() => (window as unknown).showLevelScreen());
       await page.locator('#level-screen').waitFor({ state: 'visible' });
     });
 
@@ -71,7 +71,7 @@ for (const device of DEVICES) {
 
     test('practice lobby — tree renders, no overflow', async ({ page }) => {
       // Open practice lobby
-      await page.evaluate(() => (window as any).openPracticeLobby());
+      await page.evaluate(() => (window as unknown).openPracticeLobby());
       // Wait for React practice tree to render
       await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 10_000 });
       await page.locator('.tree-node').first().waitFor({ state: 'visible', timeout: 5_000 });
@@ -84,7 +84,7 @@ for (const device of DEVICES) {
     });
 
     test('practice branches — fork SVG fits', async ({ page }) => {
-      await page.evaluate(() => (window as any).openPracticeLobby());
+      await page.evaluate(() => (window as unknown).openPracticeLobby());
       await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 10_000 });
       // Scroll to fork section
       const fork = page.locator('.tree-fork').first();
@@ -101,7 +101,7 @@ for (const device of DEVICES) {
     });
 
     test('practice level grid — 25 items fit', async ({ page }) => {
-      await page.evaluate(() => (window as any).openPracticeLobby());
+      await page.evaluate(() => (window as unknown).openPracticeLobby());
       await page.locator('.practice-tree-container').waitFor({ state: 'visible', timeout: 10_000 });
       // Click first unlocked technique (naked_single)
       const firstNode = page.locator('.tree-node').first();
@@ -116,7 +116,7 @@ for (const device of DEVICES) {
     });
 
     test('wild lobby — profile + bestiary fit', async ({ page }) => {
-      await page.evaluate(() => (window as any).openWildLobby());
+      await page.evaluate(() => (window as unknown).openWildLobby());
       await page.locator('#wild-lobby').waitFor({ state: 'visible', timeout: 10_000 });
       await page.screenshot({ path: `test-results/layout-${device.name}-wild-lobby.png`, fullPage: false });
       const overflow = await page.evaluate(() => {

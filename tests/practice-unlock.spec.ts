@@ -8,8 +8,8 @@ import {
 } from '../src/features/practice/practiceLobby';
 
 // Helper: build practice records where each entry has { techKey, time, stars }
-function buildRecords(entries: Array<{ techKey: string; count: number }>): Record<string, any> {
-  const records: Record<string, any> = {};
+function buildRecords(entries: Array<{ techKey: string; count: number }>): Record<string, unknown> {
+  const records: Record<string, unknown> = {};
   let id = 9000;
   for (const { techKey, count } of entries) {
     for (let i = 0; i < count; i++) {

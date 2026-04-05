@@ -66,5 +66,14 @@ export const ALIAS_MAX_LEN = 24;
 
 export function normalizeAlias(raw: unknown): string {
   if (typeof raw !== 'string') return '';
-  return raw.trim().slice(0, ALIAS_MAX_LEN);
+  const cleaned = raw
+    .trim()
+    .replace(/[<>&"'`]/g, '')
+    .split('')
+    .filter((ch) => {
+      const code = ch.charCodeAt(0);
+      return code >= 32 && code !== 127;
+    })
+    .join('');
+  return cleaned.slice(0, ALIAS_MAX_LEN);
 }

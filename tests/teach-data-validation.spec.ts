@@ -9,8 +9,9 @@ function runValidator(): { code: number; stdout: string; stderr: string } {
       timeout: 10000,
     });
     return { code: 0, stdout, stderr: '' };
-  } catch (e: any) {
-    return { code: e.status ?? 1, stdout: e.stdout ?? '', stderr: e.stderr ?? '' };
+  } catch (e: unknown) {
+    const err = e as { status?: number; stdout?: string; stderr?: string };
+    return { code: err.status ?? 1, stdout: err.stdout ?? '', stderr: err.stderr ?? '' };
   }
 }
 
@@ -31,14 +32,15 @@ describe('teach-data.json validation', () => {
 
   it('every module has required fields', () => {
     const data = JSON.parse(fs.readFileSync('teach-data.json', 'utf8'));
-    for (const [key, mod] of Object.entries(data) as [string, any][]) {
+    for (const [key, mod] of Object.entries(data) as [string, Record<string, unknown>][]) {
       expect(mod.technique, `[${key}] technique`).toBeTypeOf('string');
       expect(mod.name, `[${key}] name`).toBeTypeOf('string');
       expect(mod.subtitle, `[${key}] subtitle`).toBeTypeOf('string');
       expect(mod.explanation, `[${key}] explanation`).toBeInstanceOf(Array);
       expect(mod.example, `[${key}] example`).toBeDefined();
-      expect(mod.example.board, `[${key}] board`).toHaveLength(81);
-      expect(mod.example.steps.length, `[${key}] steps`).toBeGreaterThan(0);
+      const example = mod.example as { board?: unknown[]; steps?: unknown[] };
+      expect(example.board, `[${key}] board`).toHaveLength(81);
+      expect(example.steps?.length ?? 0, `[${key}] steps`).toBeGreaterThan(0);
     }
   });
 

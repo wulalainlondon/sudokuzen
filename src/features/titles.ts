@@ -61,7 +61,7 @@ export function getEquippedTitleDisplay(): string {
 
 /** Get all titles the player has unlocked (based on achievements) */
 export function getUnlockedTitles(): TitleDef[] {
-  const achievements = readJson<Record<string, any>>(SK.ACHIEVEMENTS, {});
+  const achievements = readJson<Record<string, unknown>>(SK.ACHIEVEMENTS, {});
   return TITLE_DEFS.filter(td => {
     if (td.id === 'none' || td.id === 'default') return true; // always available
     return !!achievements[td.achievementId];

@@ -24,6 +24,7 @@ import {
 import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
 import { checkAllAchievements, unlockAchievement } from '../features/stats';
 import { clearGameStatus, saveProgress } from './persistence';
+import { toClassicLevelRecord } from '../shared/records/levelRecords';
 
 // Lazy import to break circular: core ↔ duo
 async function callDuoFinish(sec: number, stars: number) {
@@ -258,11 +259,12 @@ function showPracticeWinCelebration(earnedStars: number): void {
   import('../features/practice/practiceLobby').then(async () => {
     const { TECH_MAP } = await import('../features/teach-legacy');
     const { SK, readJson } = await import('../storage/keys');
-    const records = readJson<Record<string, any>>(SK.PRACTICE_RECORDS, {});
+    const records = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
     // Count how many levels of this technique are cleared (including the one just won)
     let cleared = 0;
     for (const rec of Object.values(records)) {
-      if (rec && rec.techKey === techKey) cleared++;
+      const parsed = toClassicLevelRecord(rec);
+      if (parsed?.techKey === techKey) cleared++;
     }
     // The current win may not be saved yet, so add 1 if not already counted
     if (!records[gs.currentLevel!.id]) cleared++;

@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  */
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 10_000 });
 }
 
 test.describe('theme-persistence', () => {
@@ -18,7 +18,7 @@ test.describe('theme-persistence', () => {
   test('toggle theme changes data-theme attribute', async ({ page }) => {
     const initialTheme = await page.locator('html').getAttribute('data-theme');
 
-    await page.evaluate(() => (window as any).toggleTheme());
+    await page.evaluate(() => (window as unknown).toggleTheme());
 
     const newTheme = await page.locator('html').getAttribute('data-theme');
     expect(newTheme).not.toBe(initialTheme);
@@ -43,15 +43,15 @@ test.describe('theme-persistence', () => {
   test('toggle twice returns to original theme', async ({ page }) => {
     const original = await page.locator('html').getAttribute('data-theme');
 
-    await page.evaluate(() => (window as any).toggleTheme());
-    await page.evaluate(() => (window as any).toggleTheme());
+    await page.evaluate(() => (window as unknown).toggleTheme());
+    await page.evaluate(() => (window as unknown).toggleTheme());
 
     const afterDouble = await page.locator('html').getAttribute('data-theme');
     expect(afterDouble).toBe(original);
   });
 
   test('theme stored in localStorage', async ({ page }) => {
-    await page.evaluate(() => (window as any).toggleTheme());
+    await page.evaluate(() => (window as unknown).toggleTheme());
 
     const stored = await page.evaluate(() => localStorage.getItem('sudoku_theme'));
     const attr = await page.locator('html').getAttribute('data-theme');

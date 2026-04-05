@@ -43,7 +43,7 @@ const puzzleCache = new Map<string, GeneratedPuzzle[]>();
 
 async function loadTechniquePuzzles(key: string): Promise<GeneratedPuzzle[]> {
   if (puzzleCache.has(key)) return puzzleCache.get(key)!;
-  const base = (import.meta as any).env?.BASE_URL ?? '/';
+  const base = import.meta.env.BASE_URL ?? '/';
   const resp = await fetch(`${base}generated/${key}.json`);
   if (!resp.ok) throw new Error(`Failed to load puzzles for ${key}: ${resp.status}`);
   const data: GeneratedPuzzle[] = await resp.json();

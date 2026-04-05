@@ -9,6 +9,7 @@ import { ZenStarReveal } from '../motion/ZenStarReveal';
 import { ZenCountUp } from '../motion/ZenCountUp';
 import { t } from '../../i18n/t';
 import type { SudokuWindow } from '../../facade/windowTypes';
+import { sanitizeHtml } from '../../shared/html/sanitize';
 
 // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -158,13 +159,17 @@ function ActionButtons(): ReactElement {
 
 function Leaderboard(): ReactElement | null {
   const { showLeaderboard, leaderboardHtml } = useWinStore();
+  const safeLeaderboardHtml = useMemo(
+    () => sanitizeHtml(leaderboardHtml || t('prelevel.loading')),
+    [leaderboardHtml],
+  );
   if (!showLeaderboard) return null;
   return (
     <div className="leaderboard-card">
       <div className="leaderboard-title">{t('prelevel.leaderboardTitle')}</div>
       {/* Safety: leaderboard HTML from Firebase — player aliases sanitized by normalizeAlias() which strips HTML */}
       <div className="leaderboard-list" id="win-leaderboard-list"
-        dangerouslySetInnerHTML={{ __html: leaderboardHtml || t('prelevel.loading') }} />
+        dangerouslySetInnerHTML={{ __html: safeLeaderboardHtml }} />
     </div>
   );
 }

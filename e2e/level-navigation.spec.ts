@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
  */
 
 async function waitForE2E(page: Page) {
-  await page.waitForFunction(() => !!(window as any).__e2e?.gs, { timeout: 10_000 });
+  await page.waitForFunction(() => !!(window as unknown).__e2e?.gs, { timeout: 10_000 });
 }
 
 async function clearGameData(page: Page) {
@@ -23,7 +23,7 @@ test.describe('level-navigation', () => {
     await waitForE2E(page);
     await clearGameData(page);
     // Ensure level screen is showing
-    await page.evaluate(() => (window as any).showLevelScreen());
+    await page.evaluate(() => (window as unknown).showLevelScreen());
     await page.locator('#level-screen').waitFor({ state: 'visible' });
   });
 
@@ -112,7 +112,7 @@ test.describe('level-navigation', () => {
     // Get the actual first level ID and inject a completion record
     await page.evaluate(async () => {
       const { getAllLevels } = await import('/src/data/dataRegistry.ts');
-      const levels = getAllLevels().filter((l: any) => !l.hidden);
+      const levels = getAllLevels().filter((l: unknown) => !l.hidden);
       const firstLevel = levels[0];
 
       const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');
@@ -120,7 +120,7 @@ test.describe('level-navigation', () => {
       localStorage.setItem('sudoku_records', JSON.stringify(records));
 
       // Re-render stage map
-      (window as any).showLevelScreen();
+      (window as unknown).showLevelScreen();
     });
     await page.locator('#level-screen').waitFor({ state: 'visible' });
     await page.waitForTimeout(300);

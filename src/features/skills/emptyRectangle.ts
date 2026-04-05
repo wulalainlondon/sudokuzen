@@ -88,7 +88,7 @@ function tryEmptyRectangle(selectedCells: number[], cells: CellData[], digit: nu
           const conjRow = Math.floor(conjugateCell / 9);
 
           // The elimination target: cell at intersection of conjRow and erRow's ER column extension
-          // Actually: any cell that sees both the conjugate cell and the ER row extension
+          // Actually: each cell that sees both the conjugate cell and the ER row extension
           // Elimination: cells in erRow (outside the box) that also see the conjugate cell
           // More precisely: the cell at (conjRow, c) where c is any col with digit in erRow within box
           // Standard ER elimination: cells that are in the same row as conjugateCell AND same column as the ER row candidates
