@@ -355,9 +355,9 @@ export async function initFirebase(): Promise<boolean> {
   _firebaseInitPromise = (async () => {
     try {
       const win = window as unknown as SudokuWindow;
-      if (!win.SUDOKU_FIREBASE_CONFIG) return false;
       const firebase = await ensureFirebaseRuntime();
       if (!firebase) return false;
+      if (!win.SUDOKU_FIREBASE_CONFIG) return false;
       if (!firebase.apps.length) firebase.initializeApp(win.SUDOKU_FIREBASE_CONFIG);
       gs.db = firebase.firestore();
       gs.firebaseReady = true;

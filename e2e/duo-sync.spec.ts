@@ -9,7 +9,8 @@ import { test, expect, type Page, type BrowserContext } from '@playwright/test';
  * Uses duo_rooms/<active-room-id> — tests clean up after themselves.
  */
 
-const TEST_LEVEL_ID = 1;
+const TEST_TIER_ID = 'tierI';
+const TEST_MODE_ID = 'standard';
 const E2E_TIMEOUT_MS = 20_000;
 async function waitForE2E(page: Page) {
   await page.waitForFunction(() => !!(window as unknown).__e2e, { timeout: E2E_TIMEOUT_MS });
@@ -30,50 +31,68 @@ async function setAlias(page: Page, alias: string) {
 /** Clean up the shared duo room into a known idle schema. */
 async function cleanupDuoRoom(page: Page) {
   await Promise.race([
-    page.evaluate(async (levelId) => {
+    page.evaluate(async ({ tierId, modeId }) => {
       const e2e = (window as unknown).__e2e;
       if (!e2e?.gs?.firebaseReady) return;
       try {
         const activeRoomId = localStorage.getItem('sudoku_duo_active_room_id');
         if (activeRoomId) {
           await e2e.gs.db.collection('duo_rooms').doc(activeRoomId).set({
-            levelId,
+            tierId,
+            modeId,
+            puzzleSeed: 0,
+            levelId: 0,
             status: 'idle',
             hostId: 'cleanup',
             hostAlias: 'cleanup',
+            hostTitle: null,
             hostReady: false,
             hostProgress: 0,
             hostFinishTime: null,
             hostStars: null,
+            hostDuoWins: 0,
+            hostHeartbeatAtMs: 0,
+            hostOnline: false,
             guestId: null,
             guestAlias: null,
+            guestTitle: null,
             guestReady: false,
             guestProgress: 0,
             guestFinishTime: null,
             guestStars: null,
+            guestDuoWins: null,
+            guestHeartbeatAtMs: null,
+            guestOnline: false,
             startAt: null,
+            levelLocked: false,
             updatedAt: Date.now(),
           });
         }
       } catch { /* ignore */ }
-    }, TEST_LEVEL_ID),
+    }, { tierId: TEST_TIER_ID, modeId: TEST_MODE_ID }),
     page.waitForTimeout(5000),
   ]);
 }
 
-/** Enter the duo room for a given level. */
-async function enterDuoRoom(page: Page, levelId: number) {
-  await page.evaluate(async (id) => {
-    const duo = await import('/src/features/duo.ts');
-    await duo.enterDuoRoom(id);
-  }, levelId);
+/** Enter a duo room for the given tier+mode: join a waiting room if one exists, otherwise create as host. */
+async function enterDuoRoom(page: Page, tierId: string, modeId: string) {
+  await page.evaluate(async ({ tierId, modeId }) => {
+    const duo = await import('/src/features/duo/index.ts');
+    const rooms = await duo.listWaitingDuoRooms(10);
+    const matching = rooms.find((r: { tierId: string; modeId: string; roomId: string }) => r.tierId === tierId && r.modeId === modeId);
+    if (matching) {
+      const joined = await duo.joinDuoRoom(matching.roomId);
+      if (joined) return;
+    }
+    await duo.createDuoRoom(tierId, modeId);
+  }, { tierId, modeId });
 }
 
 /** Toggle duo ready state. */
 async function toggleDuoReady(page: Page) {
   await page.evaluate(async () => {
-    const duo = await import('/src/features/duo.ts');
-    await duo.toggleDuoReady();
+    const duo = await import('/src/features/duo/index.ts');
+    duo.toggleDuoReady();
   });
 }
 
@@ -111,13 +130,14 @@ async function waitForRoomStatus(page: Page, status: string, timeoutMs = 10000):
 
 async function ensureRoleAndStatus(
   page: Page,
-  levelId: number,
+  tierId: string,
+  modeId: string,
   expectedRole: 'host' | 'guest',
   expectedStatus: string,
   attempts = 5,
 ): Promise<void> {
   for (let i = 0; i < attempts; i++) {
-    await enterDuoRoom(page, levelId);
+    await enterDuoRoom(page, tierId, modeId);
     const role = await getDuoRole(page);
     if (role === expectedRole) {
       try {
@@ -203,7 +223,7 @@ test.describe('duo-sync', () => {
     await hostPage.waitForTimeout(1200);
 
     // Host creates room
-    await ensureRoleAndStatus(hostPage, TEST_LEVEL_ID, 'host', 'waiting');
+    await ensureRoleAndStatus(hostPage, TEST_TIER_ID, TEST_MODE_ID, 'host', 'waiting');
     const hostRole = await getDuoRole(hostPage);
     expect(hostRole).toBe('host');
 
@@ -214,7 +234,7 @@ test.describe('duo-sync', () => {
     expect(roomAfterHost.guestId).toBeNull();
 
     // Guest joins
-    await ensureRoleAndStatus(guestPage, TEST_LEVEL_ID, 'guest', 'waiting');
+    await ensureRoleAndStatus(guestPage, TEST_TIER_ID, TEST_MODE_ID, 'guest', 'waiting');
     const guestRole = await getDuoRole(guestPage);
     expect(guestRole).toBe('guest');
 
@@ -232,9 +252,9 @@ test.describe('duo-sync', () => {
     await hostPage.waitForTimeout(1200);
 
     // Host creates, guest joins
-    await ensureRoleAndStatus(hostPage, TEST_LEVEL_ID, 'host', 'waiting');
+    await ensureRoleAndStatus(hostPage, TEST_TIER_ID, TEST_MODE_ID, 'host', 'waiting');
     await guestPage.waitForTimeout(500);
-    await ensureRoleAndStatus(guestPage, TEST_LEVEL_ID, 'guest', 'waiting');
+    await ensureRoleAndStatus(guestPage, TEST_TIER_ID, TEST_MODE_ID, 'guest', 'waiting');
     await hostPage.waitForTimeout(1000);
 
     // Both toggle ready
@@ -258,9 +278,9 @@ test.describe('duo-sync', () => {
     await hostPage.waitForTimeout(1200);
 
     // Setup: host creates, guest joins, both ready
-    await ensureRoleAndStatus(hostPage, TEST_LEVEL_ID, 'host', 'waiting');
+    await ensureRoleAndStatus(hostPage, TEST_TIER_ID, TEST_MODE_ID, 'host', 'waiting');
     await guestPage.waitForTimeout(500);
-    await ensureRoleAndStatus(guestPage, TEST_LEVEL_ID, 'guest', 'waiting');
+    await ensureRoleAndStatus(guestPage, TEST_TIER_ID, TEST_MODE_ID, 'guest', 'waiting');
     await hostPage.waitForTimeout(1000);
     await toggleDuoReady(hostPage);
     await hostPage.waitForTimeout(300);
@@ -285,7 +305,7 @@ test.describe('duo-sync', () => {
 
     // Force progress update (bypass throttle)
     await hostPage.evaluate(async () => {
-      const duo = await import('/src/features/duo.ts');
+      const duo = await import('/src/features/duo/index.ts');
       (window as unknown).__e2e.gs.duoProgressThrottle = 0;
       duo.updateDuoProgress();
     });
@@ -305,9 +325,9 @@ test.describe('duo-sync', () => {
     await hostPage.waitForTimeout(1200);
 
     // Setup: create room, join, ready, start
-    await ensureRoleAndStatus(hostPage, TEST_LEVEL_ID, 'host', 'waiting');
+    await ensureRoleAndStatus(hostPage, TEST_TIER_ID, TEST_MODE_ID, 'host', 'waiting');
     await guestPage.waitForTimeout(500);
-    await ensureRoleAndStatus(guestPage, TEST_LEVEL_ID, 'guest', 'waiting');
+    await ensureRoleAndStatus(guestPage, TEST_TIER_ID, TEST_MODE_ID, 'guest', 'waiting');
     await hostPage.waitForTimeout(1000);
     await toggleDuoReady(hostPage);
     await hostPage.waitForTimeout(300);
