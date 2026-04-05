@@ -89,6 +89,7 @@ export function bootLegacyRuntime(appVersion: string): void {
   // 2. Pre-fetch manifests (async, non-blocking)
   warmTeachManifest();
   warmManifest();
+  preloadMode('normal'); // warm shard early so level screen appears sooner
 
   // 3. Restore persisted settings
   gs.isSpeedrunMode = localStorage.getItem(SK.SPEEDRUN) === 'true';
