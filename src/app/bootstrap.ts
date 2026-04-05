@@ -12,7 +12,7 @@ import { gs } from '../game/state';
 import { initGame, handleInput, erase, saveGameStatus } from '../game/core';
 import { selectCell } from '../game/board';
 import * as replay from '../features/replay';
-import { hydratePlayerProfileFromCloud, installPlayerCloudSyncBridge } from '../firebase/client';
+import { hydratePlayerProfileFromCloud, installPlayerCloudSyncBridge, whenFirebaseReady } from '../firebase/client';
 import {
   openDuoLobby,
   closeDuoLobby,
@@ -50,14 +50,15 @@ export function bootstrapApp(): void {
       getDuoMetrics,
       resetDuoMetrics,
     });
-    if (gs.firebaseReady) {
+    void whenFirebaseReady().then((ready) => {
+      if (!ready) return;
       // IMPORTANT: hydrate MUST complete before bridge activates.
       // Otherwise the bridge pushes empty localStorage to cloud,
       // overwriting the remote profile.
       hydratePlayerProfileFromCloud().finally(() => {
         installPlayerCloudSyncBridge();
       });
-    }
+    });
     mountReactStrangler();
     installLegacyTeachBridge();
   } catch (e: any) {

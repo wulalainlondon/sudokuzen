@@ -2,7 +2,11 @@
 // All room creation, joining, subscribing, cleanup, and heartbeat logic lives here.
 
 import { gs, type DuoRoomData } from '../../game/state';
-import { getPlayerIdentity } from '../../firebase/client';
+import {
+  firebaseServerTimestamp,
+  firebaseTimestampFromMillis,
+  getPlayerIdentity,
+} from '../../firebase/client';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
@@ -10,18 +14,11 @@ import type { FirestoreDoc, FirestoreTransaction } from '../../firebase/types';
 import { bumpDuoMetric } from './duoMetrics';
 import { loadDuoProfile } from './duoProfile';
 
-declare const firebase: {
-  firestore: {
-    FieldValue: { serverTimestamp(): unknown };
-    Timestamp: { fromMillis(ms: number): unknown };
-  };
-};
-
 export function getFirebaseFieldValue() {
-  return firebase.firestore.FieldValue;
+  return { serverTimestamp: firebaseServerTimestamp };
 }
 export function getFirebaseTimestamp() {
-  return firebase.firestore.Timestamp;
+  return { fromMillis: firebaseTimestampFromMillis };
 }
 
 export interface DuoRoomSummary {
@@ -232,7 +229,7 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
         guestId: null, guestAlias: null, guestTitle: null,
         guestReady: false, guestProgress: 0, guestFinishTime: null, guestStars: null, guestDuoWins: null,
         guestHeartbeatAtMs: null, guestOnline: false,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebaseServerTimestamp(),
       }));
     });
     if (writes.length) await Promise.allSettled(writes);
@@ -289,7 +286,7 @@ function buildHostRoom(tierId: string, modeId: string, puzzleSeed: number, playe
     guestHeartbeatAtMs: null,
     hostOnline: true,
     guestOnline: false,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt: firebaseServerTimestamp(),
   };
 }
 
@@ -342,7 +339,7 @@ export async function joinDuoRoom(roomId: string): Promise<boolean> {
         guestDuoWins: profile.wins,
         guestHeartbeatAtMs: Date.now(),
         guestOnline: true,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebaseServerTimestamp(),
       });
       gs.duoRole = 'guest';
       gs.duoMyReady = false;
@@ -446,7 +443,7 @@ export async function leaveDuoRoom(): Promise<void> {
         guestId: null, guestAlias: null, guestReady: false,
         guestProgress: 0, guestFinishTime: null, guestStars: null,
         guestOnline: false, guestHeartbeatAtMs: null,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebaseServerTimestamp(),
       });
     }
   } catch { /* ignore */ }

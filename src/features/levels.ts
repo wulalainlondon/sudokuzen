@@ -47,6 +47,17 @@ function showTeachModal(stars: number, source = 'tier') {
 
 // ── Helpers ─────────────────────────────────────────────────────────
 
+function buildVisibleTierMap(levels: LevelData[]): Map<string, LevelData[]> {
+  const map = new Map<string, LevelData[]>();
+  for (const level of levels) {
+    if (level.hidden) continue;
+    const list = map.get(level.difficultyName);
+    if (list) list.push(level);
+    else map.set(level.difficultyName, [level]);
+  }
+  return map;
+}
+
 /** Check if there is an active save for a level (without importing core). */
 function hasActiveSave(levelId: number): boolean {
   const saveKey = getSaveKeyForCurrentMode(levelId);
@@ -89,6 +100,7 @@ export function renderStageMap(): void {
   }
 
   const levels = getAllLevels();
+  const tierMap = buildVisibleTierMap(levels);
   const recordsKey = getRecordsStorageKeyForLevelList(false);
   const records = readJson<Record<string, any>>(recordsKey, {});
   const tiers = getDifficultyTiers();
@@ -96,7 +108,7 @@ export function renderStageMap(): void {
   map.innerHTML = '';
 
   tiers.forEach((tierName) => {
-    const tierLevels = levels.filter((l) => l.difficultyName === tierName && !l.hidden);
+    const tierLevels = tierMap.get(tierName) || [];
     const total = tierLevels.length;
     const cleared = tierLevels.filter((l) => records[l.id]).length;
     const pct = total > 0 ? (cleared / total) * 100 : 0;
@@ -160,7 +172,8 @@ export function enterTier(tierName: string): void {
   const recordsKey = getRecordsStorageKeyForLevelList(false);
   const records = readJson<Record<string, any>>(recordsKey, {});
   const levels = getAllLevels();
-  const tierLevels = levels.filter((l) => l.difficultyName === tierName && !l.hidden);
+  const tierMap = buildVisibleTierMap(levels);
+  const tierLevels = tierMap.get(tierName) || [];
   const cleared = tierLevels.filter((l) => records[l.id]).length;
 
   document.getElementById('tier-title')!.textContent = tierName;
@@ -205,7 +218,7 @@ export function renderLevelGrid(): void {
   const unlockState = getRealmUnlockState();
   list.innerHTML = '';
 
-  const filtered = getFilteredLevels().filter((l) => !l.hidden);
+  const filtered = getFilteredLevels();
   filtered.forEach((l) => {
     const record = records[l.id];
     const isLocked = !canAccessLevel(l, unlockState);
@@ -465,7 +478,8 @@ export function advanceToNextLevel(): void {
     return;
   }
   const levels = getAllLevels();
-  const tierLevels = levels.filter(l => l.difficultyName === gs.currentTab && !l.hidden);
+  const tierMap = buildVisibleTierMap(levels);
+  const tierLevels = gs.currentTab ? (tierMap.get(gs.currentTab) || []) : [];
   const currentIdx = tierLevels.findIndex(l => l.id === gs.currentLevel!.id);
   const nextIdx = currentIdx + 1;
 

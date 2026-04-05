@@ -139,10 +139,11 @@ export function bootLegacyRuntime(appVersion: string): void {
   window.__pwaRuntime.registerServiceWorkerUpdateFlow();
 
   // 9. Firebase
-  initFirebase();
-  if (gs.firebaseReady) {
-    initPresence();
-  }
+  void initFirebase().then((ready) => {
+    if (ready) {
+      void initPresence();
+    }
+  });
 
   // 10. Alias
   loadAliasToInput();

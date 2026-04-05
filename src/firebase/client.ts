@@ -22,7 +22,9 @@ interface FirebaseCompat {
   firestore: FirestoreNamespace;
 }
 
-declare const firebase: FirebaseCompat;
+let _firebaseCompat: FirebaseCompat | null = null;
+let _firebaseInitPromise: Promise<boolean> | null = null;
+let _firebaseConfigLoadPromise: Promise<void> | null = null;
 
 type AchievementMap = Record<string, { date: string }>;
 
@@ -56,6 +58,57 @@ let progressSyncTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingSaveSyncTimers = new Map<string, ReturnType<typeof setTimeout>>();
 let bridgeInstalled = false;
 let hydrateComplete = false;
+
+function resolvePublicPath(file: string): string {
+  try {
+    const base = new URL(import.meta.env.BASE_URL, window.location.origin).href;
+    return new URL(file, base).href;
+  } catch {
+    return file;
+  }
+}
+
+function appendScript(src: string, optional = false): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => {
+      if (optional) resolve();
+      else reject(new Error(`script load failed: ${src}`));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+async function ensureFirebaseConfigLoaded(): Promise<void> {
+  if ((window as SudokuWindow).SUDOKU_FIREBASE_CONFIG) return;
+  if (_firebaseConfigLoadPromise) return _firebaseConfigLoadPromise;
+  _firebaseConfigLoadPromise = (async () => {
+    await appendScript(resolvePublicPath('firebase-config.js'));
+    await appendScript(resolvePublicPath('firebase-config.local.js'), true);
+  })();
+  return _firebaseConfigLoadPromise;
+}
+
+async function ensureFirebaseCompat(): Promise<FirebaseCompat> {
+  if (_firebaseCompat) return _firebaseCompat;
+  const appModule = await import('firebase/compat/app');
+  await import('firebase/compat/firestore');
+  _firebaseCompat = (appModule.default || appModule) as FirebaseCompat;
+  return _firebaseCompat;
+}
+
+export function firebaseServerTimestamp(): unknown {
+  if (_firebaseCompat) return _firebaseCompat.firestore.FieldValue.serverTimestamp();
+  return Date.now();
+}
+
+export function firebaseTimestampFromMillis(ms: number): unknown {
+  if (_firebaseCompat) return _firebaseCompat.firestore.Timestamp.fromMillis(ms);
+  return new Date(ms);
+}
 
 function isIsoDay(value: unknown): value is string {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -228,7 +281,7 @@ async function upsertAliasIndex(playerId: string, alias: string): Promise<void> 
         aliasKey,
         aliasDisplay: alias,
         playerId,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebaseServerTimestamp(),
       },
       { merge: true },
     );
@@ -273,7 +326,7 @@ async function _setPresenceDoc(): Promise<void> {
   try {
     await gs.db.collection(PRESENCE_COLLECTION).doc(_presenceDocId).set({
       playerId: _presenceDocId,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      timestamp: firebaseServerTimestamp(),
     });
   } catch (e) {
     console.warn('presence set failed:', e);
@@ -289,8 +342,11 @@ async function _removePresenceDoc(): Promise<void> {
   }
 }
 
-export function initPresence(): void {
-  if (!gs.firebaseReady || !gs.db) return;
+export async function initPresence(): Promise<void> {
+  if (!gs.firebaseReady || !gs.db) {
+    const ok = await initFirebase();
+    if (!ok || !gs.db) return;
+  }
   const { playerId } = getPlayerIdentity();
   _presenceDocId = playerId;
 
@@ -344,16 +400,32 @@ export async function getOnlineCount(): Promise<number> {
 
 // ── Init ────────────────────────────────────────────────────────────
 
-export function initFirebase(): void {
-  try {
-    const win = window as unknown as SudokuWindow;
-    if (!win.firebase || !win.SUDOKU_FIREBASE_CONFIG) return;
-    if (!firebase.apps.length) firebase.initializeApp(win.SUDOKU_FIREBASE_CONFIG);
-    gs.db = firebase.firestore();
-    gs.firebaseReady = true;
-  } catch (e) {
-    console.warn('Firebase init failed:', e);
-  }
+export async function initFirebase(): Promise<boolean> {
+  if (gs.firebaseReady && gs.db) return true;
+  if (_firebaseInitPromise) return _firebaseInitPromise;
+
+  _firebaseInitPromise = (async () => {
+    try {
+      await ensureFirebaseConfigLoaded();
+      const win = window as unknown as SudokuWindow;
+      if (!win.SUDOKU_FIREBASE_CONFIG) return false;
+      const firebase = await ensureFirebaseCompat();
+      if (!firebase.apps.length) firebase.initializeApp(win.SUDOKU_FIREBASE_CONFIG);
+      gs.db = firebase.firestore();
+      gs.firebaseReady = true;
+      return true;
+    } catch (e) {
+      console.warn('Firebase init failed:', e);
+      return false;
+    }
+  })();
+
+  return _firebaseInitPromise;
+}
+
+export function whenFirebaseReady(): Promise<boolean> {
+  if (gs.firebaseReady && gs.db) return Promise.resolve(true);
+  return initFirebase();
 }
 
 // ── Player identity ─────────────────────────────────────────────────
@@ -413,7 +485,7 @@ export async function mergeCloudAchievements(localAchievements: AchievementMap):
           playerId,
           alias,
           achievements: merged,
-          achievementsUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          achievementsUpdatedAt: firebaseServerTimestamp(),
         },
         { merge: true },
       );
@@ -436,7 +508,7 @@ export async function syncAchievementsToCloud(achievements: AchievementMap): Pro
         playerId,
         alias,
         achievements: sanitized,
-        achievementsUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        achievementsUpdatedAt: firebaseServerTimestamp(),
       },
       { merge: true },
     );
@@ -463,7 +535,7 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
         speedRecords,
         achievements,
         settings,
-        progressUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        progressUpdatedAt: firebaseServerTimestamp(),
       },
       { merge: true },
     );
@@ -528,7 +600,7 @@ export async function syncSaveToCloud(saveKey: string, payload: Record<string, u
         playerId,
         alias,
         payload,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebaseServerTimestamp(),
       },
       { merge: true },
     );
@@ -759,7 +831,7 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
         firstStars: clearStars,
         levelVersion,
         levelSnapshot,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: firebaseServerTimestamp(),
       });
     });
   } catch (e) {

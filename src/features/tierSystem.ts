@@ -65,11 +65,37 @@ const REALM_TEACH_KEY: Record<string, number> = {
   神人: 25,
 };
 
+type TierBuckets = {
+  visibleLevels: LevelData[];
+  byTier: Map<string, LevelData[]>;
+};
+
+const _tierBucketsCache = new WeakMap<LevelData[], TierBuckets>();
+
+function getTierBuckets(levels: LevelData[]): TierBuckets {
+  const hit = _tierBucketsCache.get(levels);
+  if (hit) return hit;
+
+  const visibleLevels = levels.filter((l) => !l.hidden);
+  const byTier = new Map<string, LevelData[]>();
+  for (const level of visibleLevels) {
+    const tier = level.difficultyName || t('levelGrid.unnamedRealm');
+    const list = byTier.get(tier);
+    if (list) list.push(level);
+    else byTier.set(tier, [level]);
+  }
+  const built: TierBuckets = { visibleLevels, byTier };
+  _tierBucketsCache.set(levels, built);
+  return built;
+}
+
 // ── Tier helpers ────────────────────────────────────────────────────
 
 export function getDifficultyTiers(): string[] {
   const levels = getAllLevels();
-  const present = new Set(levels.filter((l) => !l.hidden).map((l) => l.difficultyName || t('levelGrid.unnamedRealm')));
+  const buckets = getTierBuckets(levels);
+  const present = new Set<string>();
+  for (const tierName of buckets.byTier.keys()) present.add(tierName);
   const ordered = REALM_ORDER.filter((name) => present.has(name));
   const extras = [...present].filter((name) => !REALM_ORDER.includes(name));
   return ordered.concat(extras);
@@ -78,7 +104,8 @@ export function getDifficultyTiers(): string[] {
 export function getTierRepresentativeStar(tierName: string): number | null {
   if (Object.prototype.hasOwnProperty.call(REALM_TEACH_KEY, tierName)) return REALM_TEACH_KEY[tierName];
   const levels = getAllLevels();
-  const lv = levels.find((l) => !l.hidden && l.difficultyName === tierName);
+  const buckets = getTierBuckets(levels);
+  const lv = buckets.byTier.get(tierName)?.[0];
   return lv ? lv.stars : null;
 }
 
@@ -88,10 +115,11 @@ export function getRealmUnlockState(): {
   unlockedTiers: Set<string>;
 } {
   const levels = getAllLevels();
+  const buckets = getTierBuckets(levels);
   const tiers = getDifficultyTiers();
   const records = readJson<Record<string, any>>(SK.RECORDS, {});
   const stats = tiers.map((name) => {
-    const tierLevels = levels.filter((l) => l.difficultyName === name && !l.hidden);
+    const tierLevels = buckets.byTier.get(name) || [];
     const cleared = tierLevels.filter((l) => records[l.id]).length;
     const total = tierLevels.length;
     const UNLOCK_THRESHOLD = 3;
@@ -126,5 +154,8 @@ export function canAccessLevel(level: LevelData | null | undefined, unlockState?
 }
 
 export function getFilteredLevels(): LevelData[] {
-  return getAllLevels().filter((l) => l.difficultyName === gs.currentTab);
+  if (!gs.currentTab) return [];
+  const levels = getAllLevels();
+  const buckets = getTierBuckets(levels);
+  return buckets.byTier.get(gs.currentTab) || [];
 }

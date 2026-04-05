@@ -36,8 +36,6 @@ export default defineConfig({
         manualChunks: {
           // Heavy vendor libs — cached independently, rarely change
           'vendor-react': ['react', 'react-dom'],
-          'vendor-motion': ['framer-motion'],
-          'vendor-gsap': ['gsap'],
         },
       },
     },
