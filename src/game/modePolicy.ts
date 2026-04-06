@@ -29,7 +29,6 @@ export function resolvePlayMode(level: LevelData | null | undefined = gs.current
 export function getModePolicy(level: LevelData | null | undefined = gs.currentLevel): ModePolicy {
   const mode = resolvePlayMode(level);
   const isWildTimed = mode === 'wild' && gs.wildChallengeMode === 'timed';
-  const isWildBlind = mode === 'wild' && gs.wildBlindMode;
   const isDuo = mode === 'duo';
   const isSpeedrun = mode === 'speedrun';
 
