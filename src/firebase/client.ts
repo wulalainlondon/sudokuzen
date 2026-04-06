@@ -262,12 +262,10 @@ function isProfileSyncKey(key: string): boolean {
 
 const PRESENCE_COLLECTION = 'presence';
 const PRESENCE_HEARTBEAT_MS = 60_000;
-const PRESENCE_TTL_MS = 3 * 60_000; // 3 minutes
-const ONLINE_COUNT_CACHE_MS = 30_000;
+const PRESENCE_TTL_MS = 5 * 60_000; // 5 minutes — wider margin over 60s heartbeat to avoid false offline
 
 let _presenceDocId: string | null = null;
 let _presenceHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
-let _onlineCountCache: { count: number; ts: number } | null = null;
 
 async function _setPresenceDoc(): Promise<void> {
   if (!gs.firebaseReady || !gs.db || !_presenceDocId) return;
@@ -278,15 +276,6 @@ async function _setPresenceDoc(): Promise<void> {
     });
   } catch (e) {
     console.warn('presence set failed:', e);
-  }
-}
-
-async function _removePresenceDoc(): Promise<void> {
-  if (!gs.firebaseReady || !gs.db || !_presenceDocId) return;
-  try {
-    await gs.db!.collection(PRESENCE_COLLECTION).doc(_presenceDocId).delete();
-  } catch (e) {
-    console.warn('presence remove failed:', e);
   }
 }
 
@@ -303,47 +292,47 @@ export async function initPresence(): Promise<void> {
 
   // Periodic heartbeat
   if (_presenceHeartbeatTimer) clearInterval(_presenceHeartbeatTimer);
-  _presenceHeartbeatTimer = setInterval(() => {
-    void _setPresenceDoc();
-  }, PRESENCE_HEARTBEAT_MS);
+  _presenceHeartbeatTimer = setInterval(() => void _setPresenceDoc(), PRESENCE_HEARTBEAT_MS);
 
-  // Cleanup on page unload
+  // On unload: stop heartbeat only; doc deletion is unreliable here — TTL handles cleanup
   window.addEventListener('beforeunload', () => {
     if (_presenceHeartbeatTimer) { clearInterval(_presenceHeartbeatTimer); _presenceHeartbeatTimer = null; }
-    void _removePresenceDoc();
   });
 
-  // Visibility change: remove on hidden, re-add on visible
+  // On hidden: pause heartbeat but keep doc so count stays stable while tab is backgrounded
+  // On visible: refresh doc and resume heartbeat
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
-      void _removePresenceDoc();
+      if (_presenceHeartbeatTimer) { clearInterval(_presenceHeartbeatTimer); _presenceHeartbeatTimer = null; }
     } else {
       void _setPresenceDoc();
+      if (!_presenceHeartbeatTimer) {
+        _presenceHeartbeatTimer = setInterval(() => void _setPresenceDoc(), PRESENCE_HEARTBEAT_MS);
+      }
     }
   });
 }
 
-export async function getOnlineCount(): Promise<number> {
-  if (!gs.firebaseReady || !gs.db) return 0;
-
-  // Return cached value if fresh enough
-  if (_onlineCountCache && Date.now() - _onlineCountCache.ts < ONLINE_COUNT_CACHE_MS) {
-    return _onlineCountCache.count;
-  }
-
-  try {
-    const cutoff = new Date(Date.now() - PRESENCE_TTL_MS);
-    const snap = await gs.db
-      .collection(PRESENCE_COLLECTION)
-      .where('timestamp', '>', cutoff)
-      .get();
-    const count = snap.size;
-    _onlineCountCache = { count, ts: Date.now() };
-    return count;
-  } catch (e) {
-    console.warn('getOnlineCount failed:', e);
-    return _onlineCountCache ? _onlineCountCache.count : 0;
-  }
+// Subscribe to live online count via Firestore onSnapshot.
+// Filters client-side by TTL so stale docs are excluded on each heartbeat event.
+// Returns an unsubscribe function.
+// NOTE: If player count grows large (hundreds+), consider switching back to 30s polling
+// (getOnlineCount with ONLINE_COUNT_CACHE_MS) to avoid N² read amplification.
+export function subscribeOnlineCount(callback: (count: number) => void): () => void {
+  if (!gs.firebaseReady || !gs.db) return () => {};
+  const unsub = gs.db
+    .collection(PRESENCE_COLLECTION)
+    .onSnapshot((snap) => {
+      const cutoff = Date.now() - PRESENCE_TTL_MS;
+      const count = snap.docs.filter((doc) => {
+        const ts = (doc.data()?.timestamp as { toMillis?: () => number } | undefined)?.toMillis?.() ?? 0;
+        return ts > cutoff;
+      }).length;
+      callback(count);
+    }, (e) => {
+      console.warn('subscribeOnlineCount failed:', e);
+    });
+  return unsub;
 }
 
 // ── Init ────────────────────────────────────────────────────────────

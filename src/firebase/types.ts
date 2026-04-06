@@ -40,6 +40,10 @@ export interface FirestoreCollectionRef {
   where(field: string, op: string, value: unknown): FirestoreQuery;
   limit(n: number): FirestoreQuery;
   get(): Promise<FirestoreSnap>;
+  onSnapshot(
+    onNext: (snap: FirestoreSnap) => void,
+    onError?: (err: unknown) => void,
+  ): () => void;
 }
 
 export interface FirestoreQuery {
@@ -47,4 +51,8 @@ export interface FirestoreQuery {
   orderBy(field: string, direction?: 'asc' | 'desc'): FirestoreQuery;
   where(field: string, op: string, value: unknown): FirestoreQuery;
   limit(n: number): FirestoreQuery;
+  onSnapshot(
+    onNext: (snap: FirestoreSnap) => void,
+    onError?: (err: unknown) => void,
+  ): () => void;
 }

@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { useCallback, useEffect, type ReactElement } from 'react';
 import { t } from '../../i18n/t';
-import { getOnlineCount } from '../../firebase/client';
+import { subscribeOnlineCount } from '../../firebase/client';
 import { useWildLobbyStore } from './wildLobbyStore';
 import type { SudokuWindow } from '../../facade/windowTypes';
 import { renderWildLobby, setWildBestiaryFilter, setWildRarityFilter, toggleWildAutoCast } from '../../features/wild/wildLobby';
@@ -30,14 +30,8 @@ export function WildProfileCard(): ReactElement | null {
 
   useEffect(() => {
     if (!visible) return;
-    let alive = true;
-    void getOnlineCount().then((count) => {
-      if (alive) setOnlineCount(count);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [visible, setOnlineCount, vm?.encounters, vm?.iqLevel]);
+    return subscribeOnlineCount((count) => setOnlineCount(count));
+  }, [visible, setOnlineCount]);
 
   if (!el || !vm || !visible) return null;
   return createPortal(

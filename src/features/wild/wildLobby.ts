@@ -6,7 +6,7 @@ import { expForLevel, getUnstudiedGateSkills, releaseGateOverflow } from './expS
 import { getMentorNote, hasCompletedMentorIntro } from './mentorController';
 import { escapeHtml } from '../../shared/html/escape';
 import { showFeedback } from '../../ui/feedback';
-import { getOnlineCount } from '../../firebase/client';
+import { subscribeOnlineCount } from '../../firebase/client';
 import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
 import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
@@ -26,6 +26,23 @@ export { type BestiaryFilter, type RarityFilter, getWildBestiaryFilters, setWild
 
 // Wire the render callback so filter changes trigger renderWildLobby.
 _setBestiaryRenderCallback(() => renderWildLobby());
+
+// Module-level presence subscription for the non-React lobby path.
+// Subscribed once on first call; updates DOM reactively when count changes.
+let _wildOnlineCountUnsub: (() => void) | null = null;
+function ensureOnlineCountSubscription(): void {
+  if (_wildOnlineCountUnsub) return;
+  _wildOnlineCountUnsub = subscribeOnlineCount((count) => {
+    const onlineEl = document.getElementById('wild-online-count');
+    if (!onlineEl) return;
+    if (count > 0) {
+      onlineEl.textContent = `\u{1F7E2} ${t('wild.online', { count: String(count) })}`;
+      onlineEl.style.display = '';
+    } else {
+      onlineEl.style.display = 'none';
+    }
+  });
+}
 
 function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {
   roundText: string;
@@ -258,18 +275,8 @@ export function renderWildLobby(): void {
     sessionRound: profile.currentSession?.round ?? 0,
   });
 
-  // Online presence indicator
-  const onlineEl = document.getElementById('wild-online-count');
-  if (onlineEl) {
-    void getOnlineCount().then((count) => {
-      if (count > 0) {
-        onlineEl.textContent = `\u{1F7E2} ${t('wild.online', { count: String(count) })}`;
-        onlineEl.style.display = '';
-      } else {
-        onlineEl.style.display = 'none';
-      }
-    });
-  }
+  // Online presence indicator — subscription drives DOM updates reactively
+  ensureOnlineCountSubscription();
 
   if (reactTakeover) {
     window.dispatchEvent(new Event('wild-bestiary-refresh'));
