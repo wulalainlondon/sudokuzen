@@ -269,6 +269,10 @@ export const gs = {
   strongLinkToolUsed: false,
   slFocusCell: null as number | null,
 
+  // ── Chain Trace Panel (V3 Phase 1) ────────────────────────────────
+  chainTracePanelOpen: false,
+  chainTraceNodes: [] as Array<{ cell: number; digit: number }>,
+
   // ── App ───────────────────────────────────────────────────────────
   appVersion: '',
 };

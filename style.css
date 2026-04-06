@@ -6861,3 +6861,150 @@ body.library-open {
 [data-theme="dark"] .note-num.sl-digit-highlight {
     color: #00e599 !important;
 }
+
+/* ── Chain Trace Panel ───────────────────────────────────────────────── */
+.chain-trace-handle svg {
+    width: 32px;
+    height: 14px;
+}
+
+.chain-trace-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    border: 1px solid color-mix(in srgb, #f59e0b 35%, var(--cell-border));
+    border-radius: 12px;
+    padding: 10px 14px 8px;
+    background: color-mix(in srgb, var(--btn-bg) 97%, var(--grid-bg));
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    animation: skill-panel-in 0.22s var(--ease-zen, ease-out);
+}
+
+.chain-trace-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-height: 0;
+}
+
+.chain-trace-instruction {
+    font-size: 0.72rem;
+    color: var(--text-secondary, #888);
+    font-weight: 500;
+    min-height: 1.2em;
+}
+
+.chain-trace-text {
+    font-size: 0.7rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    min-height: 1.4em;
+    padding: 2px 0;
+    scrollbar-width: none;
+}
+.chain-trace-text::-webkit-scrollbar { display: none; }
+
+.ct-node {
+    color: var(--text-primary, #333);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+.ct-strong {
+    color: var(--accent-strong);
+    margin: 0 2px;
+    font-size: 0.65rem;
+}
+.ct-weak {
+    color: #a78bfa;
+    margin: 0 2px;
+    font-size: 0.65rem;
+}
+
+.chain-trace-stats {
+    font-size: 0.68rem;
+    color: var(--text-secondary, #999);
+    min-height: 1em;
+}
+
+.chain-trace-actions {
+    display: flex;
+    gap: 5px;
+    margin-top: 2px;
+}
+
+.chain-action-btn {
+    flex: 1;
+    font-size: 0.68rem;
+    padding: 5px 4px;
+    border-radius: 7px;
+    border: 1px solid var(--cell-border);
+    background: var(--btn-bg);
+    color: var(--text-secondary, #888);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.chain-action-btn:hover:not(:disabled) {
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    border-color: var(--accent-strong);
+}
+.chain-action-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.chain-verify-btn {
+    background: color-mix(in srgb, #f59e0b 12%, var(--btn-bg));
+    border-color: color-mix(in srgb, #f59e0b 40%, var(--cell-border));
+    color: #b45309;
+    font-weight: 600;
+}
+.chain-verify-btn:not(:disabled):hover {
+    background: color-mix(in srgb, #f59e0b 22%, var(--btn-bg));
+    color: #92400e;
+    border-color: #f59e0b;
+}
+
+[data-theme="dark"] .chain-verify-btn {
+    color: #fbbf24;
+    border-color: color-mix(in srgb, #f59e0b 35%, var(--cell-border));
+}
+[data-theme="dark"] .chain-verify-btn:not(:disabled):hover {
+    color: #fde68a;
+}
+
+/* Chain node cells — amber ring */
+.cell.chain-node {
+    box-shadow: inset 0 0 0 2px rgba(245, 158, 11, 0.6);
+}
+
+/* Valid next — strong (teal, solid) */
+.cell.chain-valid-strong {
+    background: color-mix(in srgb, #00e599 12%, transparent) !important;
+    box-shadow: inset 0 0 0 2px rgba(0, 229, 153, 0.5);
+}
+
+/* Valid next — weak (lavender, dashed via outline trick) */
+.cell.chain-valid-weak {
+    background: color-mix(in srgb, #a78bfa 12%, transparent) !important;
+    outline: 2px dashed rgba(167, 139, 250, 0.55);
+    outline-offset: -2px;
+}
+
+/* Note-num highlights */
+.note-num.chain-node-digit {
+    color: #f59e0b !important;
+    font-weight: 700;
+}
+.note-num.chain-valid-digit {
+    color: var(--accent-strong) !important;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .note-num.chain-node-digit { color: #fbbf24 !important; }
+[data-theme="dark"] .cell.chain-valid-weak {
+    outline-color: rgba(167, 139, 250, 0.7);
+}

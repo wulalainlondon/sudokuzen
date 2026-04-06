@@ -25,6 +25,12 @@ export function setSlPanelEnabled(enabled: boolean): void {
 
 export function openSlPanel(): void {
   if (!isSlPanelEnabled() || gs.strongLinkPanelOpen) return;
+  // Mutual exclusion: close chain trace panel if open
+  if (gs.chainTracePanelOpen) {
+    gs.chainTracePanelOpen = false;
+    gs.chainTraceNodes = [];
+    document.getElementById('chain-trace-panel')?.classList.add('hidden');
+  }
   gs.strongLinkPanelOpen = true;
   gs.strongLinkToolUsed = true;
 

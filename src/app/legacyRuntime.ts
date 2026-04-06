@@ -70,6 +70,14 @@ import { continueWild, exitWild, startWorldSession } from '../features/wild/wild
 import { dismissMentor } from '../features/wild/mentorController';
 import { openPracticeLobby, closePracticeLobby } from '../features/practice/practiceLobby';
 import { initSlPanel, openSlPanel, closeSlPanel } from '../features/strongLinkPanel';
+import {
+  initChainTracePanel,
+  openChainTracePanel,
+  closeChainTracePanel,
+  undoChainTrace,
+  clearChainTrace,
+  verifyChainTrace,
+} from '../features/chainTracePanel';
 import { initBackHandler } from './navigation/navigationOrchestrator';
 import { installHostBridge, notifyHostBeforeUnload, notifyHostBootReady, type HostBridgeApi } from '../platform/hostBridge';
 
@@ -87,6 +95,7 @@ export function bootLegacyRuntime(appVersion: string): void {
   // 1. Populate DOM refs
   initDom();
   initSlPanel();
+  initChainTracePanel();
 
   // 2. Pre-fetch manifests (async, non-blocking)
   warmTeachManifest();
@@ -289,6 +298,11 @@ export function bootLegacyRuntime(appVersion: string): void {
     closePracticeLobby,
     openSlPanel,
     closeSlPanel,
+    openChainTracePanel,
+    closeChainTracePanel,
+    undoChainTrace,
+    clearChainTrace,
+    verifyChainTrace,
   });
 
   const hostApi: HostBridgeApi = {

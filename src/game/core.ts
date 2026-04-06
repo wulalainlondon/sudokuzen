@@ -149,8 +149,10 @@ export {
 setBoardCallbacks({
   onContinuousCellClick: (idx: number) => handleContinuousCellClick(idx),
   onContinuousDigitSet: (digit: number) => setContinuousDigit(digit),
-  onCandidateProbeTap: () => {
-    /* no-op — replaced by long-press cell selection */
+  onCandidateProbeTap: (cell: number, digit: number) => {
+    if (gs.chainTracePanelOpen) {
+      import('../features/chainTracePanel').then((m) => m.onChainDigitTap(cell, digit)).catch(() => {});
+    }
   },
   onCellLongPress: (idx: number, prevSelected: number) => enterSkillMode(idx, prevSelected),
   onSkillModeExit: () => exitSkillMode(),
@@ -577,6 +579,15 @@ export function pauseGame(): void {
     import('../features/strongLinkPanel').then(({ isSlPanelEnabled, setSlPanelEnabled }) => {
       slCheckbox.checked = isSlPanelEnabled();
       slCheckbox.onchange = () => setSlPanelEnabled(slCheckbox.checked);
+    }).catch(() => {});
+  }
+
+  // Chain trace panel toggle — available in all modes
+  const ctCheckbox = document.getElementById('chain-trace-checkbox') as HTMLInputElement | null;
+  if (ctCheckbox) {
+    import('../features/chainTracePanel').then(({ isChainTracePanelEnabled, setChainTracePanelEnabled }) => {
+      ctCheckbox.checked = isChainTracePanelEnabled();
+      ctCheckbox.onchange = () => setChainTracePanelEnabled(ctCheckbox.checked);
     }).catch(() => {});
   }
 
