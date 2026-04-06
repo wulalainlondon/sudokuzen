@@ -219,6 +219,7 @@ export function initGame(
     resetGameState();
   }
 
+  setUndoButtonVisible(getModePolicy().showUndo);
   updateLivesUI();
   hidePauseScreen();
   import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin()).catch(() => {});
@@ -255,9 +256,7 @@ function resetGameState(): void {
   }));
   resetSkillState();
 
-  // Show undo button only in speedrun/blind modes
-  const showUndo = getModePolicy().showUndo;
-  setUndoButtonVisible(showUndo);
+  // Undo visibility is set in initGame after level resolution
 }
 
 // ── Input handling ──────────────────────────────────────────────────
