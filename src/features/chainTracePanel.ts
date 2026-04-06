@@ -11,6 +11,7 @@ import { SK } from '../storage/keys';
 import { SolverBoard } from '../solver/board';
 import { buildLinkGraph, encodeNode, decodeNode } from '../solver/helpers/links';
 import type { LinkGraph } from '../solver/helpers/links';
+import { findAIC } from '../solver/helpers/chains';
 
 // ── Module state ──────────────────────────────────────────────────────
 
@@ -252,6 +253,43 @@ export function revealChainResult(): void {
   const elimLabels = elims.map((cell) => cellLabel(cell)).join('、');
   setInstruction(`消除目標：數字 ${digit} 可從以下格移除`);
   syncStats(`${elimLabels}（共 ${elims.length} 個）`);
+
+  // C: Dual-track comparison — run solver AIC after a short defer to avoid blocking UI
+  const playerLen = nodes.length;
+  const playerElimKey = new Set(elims.map((cell) => `${cell},${digit}`));
+  setTimeout(() => {
+    runSolverComparison(board, playerLen, playerElimKey);
+  }, 15);
+}
+
+function runSolverComparison(board: SolverBoard, playerLen: number, playerElimKeys: Set<string>): void {
+  const graph = getGraph();
+  const solverResult = findAIC(
+    graph,
+    (a, b) => board.seesCell(a, b),
+    (cells) => board.commonPeers(cells),
+    (cell, d) => board.hasCandidate(cell, d),
+    6, // max chain length for comparison (fast search)
+  );
+
+  if (!solverResult) {
+    syncComparison('解題引擎未找到 AIC（≤6節點） — 你可能找到了更長的有效鏈！');
+    return;
+  }
+
+  const solverLen = solverResult.chain.length;
+  const solverElimKeys = new Set(solverResult.eliminations.map((e) => `${e.cell},${e.digit}`));
+  const hasOverlap = [...playerElimKeys].some((k) => solverElimKeys.has(k));
+
+  if (hasOverlap) {
+    if (playerLen <= solverLen) {
+      syncComparison(`✓ 與解題引擎找到相同消除！你的鏈 ${playerLen} 節點 · 引擎鏈 ${solverLen} 節點`);
+    } else {
+      syncComparison(`找到相同消除 — 引擎有更短路徑（${solverLen} 節點 vs 你的 ${playerLen} 節點）`);
+    }
+  } else {
+    syncComparison('解題引擎找到不同的消除目標 — 你的推理同樣合法');
+  }
 }
 
 // ── Grid Highlighting ─────────────────────────────────────────────────
@@ -344,6 +382,11 @@ function syncStats(text: string): void {
   if (el) el.textContent = text;
 }
 
+function syncComparison(text: string): void {
+  const el = document.getElementById('chain-compare-text');
+  if (el) el.textContent = text;
+}
+
 function syncVerifyButton(): void {
   const btn = document.getElementById('chain-trace-verify-btn') as HTMLButtonElement | null;
   if (btn) btn.disabled = gs.chainTraceNodes.length < 3;
@@ -364,6 +407,7 @@ function resetPanelUI(): void {
   const statsEl = document.getElementById('chain-trace-stats');
   if (textEl) textEl.innerHTML = '';
   if (statsEl) statsEl.textContent = '';
+  syncComparison('');
   syncVerifyButton();
   hideRevealRow();
 }

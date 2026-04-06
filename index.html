@@ -360,6 +360,7 @@
                     <div class="chain-trace-instruction" id="chain-trace-instruction">點擊格中候選數字開始建鏈</div>
                     <div class="chain-trace-text" id="chain-trace-text"></div>
                     <div class="chain-trace-stats" id="chain-trace-stats"></div>
+                    <div class="chain-compare-text" id="chain-compare-text"></div>
                 </div>
                 <div class="chain-trace-actions">
                     <button class="chain-action-btn" onclick="undoChainTrace()">← 撤回</button>
@@ -448,7 +449,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.06-V14';
+        var INLINE_VER = '2026.04.06-V15';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);
