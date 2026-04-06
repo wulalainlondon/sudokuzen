@@ -264,6 +264,11 @@ export const gs = {
   _dryGain: null as GainNode | null,
   _noiseBuffer: null as AudioBuffer | null,
 
+  // ── Strong Link Panel ─────────────────────────────────────────────
+  strongLinkPanelOpen: false,
+  strongLinkToolUsed: false,
+  slFocusCell: null as number | null,
+
   // ── App ───────────────────────────────────────────────────────────
   appVersion: '',
 };

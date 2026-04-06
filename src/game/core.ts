@@ -154,6 +154,9 @@ setBoardCallbacks({
   },
   onCellLongPress: (idx: number, prevSelected: number) => enterSkillMode(idx, prevSelected),
   onSkillModeExit: () => exitSkillMode(),
+  onSlCellFocus: (idx: number) => {
+    import('../features/strongLinkPanel').then((m) => m.onSlCellFocus(idx)).catch(() => {});
+  },
 });
 
 // ── Game lifecycle ──────────────────────────────────────────────────
@@ -567,6 +570,15 @@ export function pauseGame(): void {
     };
   }
   if (uaLabel) uaLabel.textContent = t('wild.unitAnalysisToggle');
+
+  // Strong link panel toggle — available in all modes
+  const slCheckbox = document.getElementById('sl-checkbox') as HTMLInputElement | null;
+  if (slCheckbox) {
+    import('../features/strongLinkPanel').then(({ isSlPanelEnabled, setSlPanelEnabled }) => {
+      slCheckbox.checked = isSlPanelEnabled();
+      slCheckbox.onchange = () => setSlPanelEnabled(slCheckbox.checked);
+    }).catch(() => {});
+  }
 
   const resumeBtn = document.getElementById('pause-resume-btn') as HTMLButtonElement | null;
   const leaveBtn = document.getElementById('pause-leave-btn') as HTMLButtonElement | null;

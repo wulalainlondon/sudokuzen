@@ -23,6 +23,23 @@ export function findConjugatePairs(board: SolverBoard): ConjugatePair[] {
   return pairs;
 }
 
+export interface SLPartner {
+  digit: number;
+  partnerCell: number;
+  unitType: 'row' | 'col' | 'box';
+}
+
+/** All conjugate pair partners for a given cell (one entry per digit+unit combo) */
+export function getConjugatePartnersForCell(cellIdx: number, board: SolverBoard): SLPartner[] {
+  return findConjugatePairs(board)
+    .filter((p) => p.cellA === cellIdx || p.cellB === cellIdx)
+    .map((p) => ({
+      digit: p.digit,
+      partnerCell: p.cellA === cellIdx ? p.cellB : p.cellA,
+      unitType: (p.unitIdx < 9 ? 'row' : p.unitIdx < 18 ? 'col' : 'box') as 'row' | 'col' | 'box',
+    }));
+}
+
 // Node encoding for link graph: cell * 9 + (digit - 1)
 export function encodeNode(cell: number, digit: number): number {
   return cell * 9 + (digit - 1);

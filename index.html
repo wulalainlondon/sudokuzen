@@ -238,6 +238,10 @@
                 <input type="checkbox" id="unit-analysis-checkbox">
                 <span id="unit-analysis-label">候選提示</span>
             </label>
+            <label class="pause-toggle" id="pause-sl-toggle">
+                <input type="checkbox" id="sl-checkbox">
+                <span>強鏈探索</span>
+            </label>
             <button class="resume-btn" id="pause-resume-btn" onclick="resumeGame()">繼續遊戲</button>
             <button class="back-btn back-btn-light" id="pause-leave-btn" onclick="showLevelScreen(true)">放棄關卡</button>
             <button class="back-btn back-btn-light" id="pause-abandon-btn" style="display:none;">退出對陣</button>
@@ -316,6 +320,13 @@
         <!-- 3. 數獨主網格 -->
         <div class="sudoku-grid" id="grid"></div>
 
+        <!-- Strong Link swipe handle — shown when panel is enabled -->
+        <div class="sl-swipe-handle hidden" id="sl-swipe-handle" onclick="openSlPanel()">
+            <svg viewBox="0 0 32 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8L16 2L26 8"/>
+            </svg>
+        </div>
+
         <div class="numpad-skill-wrapper">
             <div class="numpad" id="numpad"></div>
             <div class="unit-analysis-panel hidden" id="unit-analysis-panel"></div>
@@ -327,6 +338,18 @@
                     <button class="skill-fill-btn" id="skill-fill-btn" onclick="fillAllCandidates()" aria-label="領域展開" title="領域展開：填入所有合法候選">領域展開</button>
                     <button class="skill-cancel-btn" onclick="exitSkillMode()">取消</button>
                 </div>
+            </div>
+            <!-- Strong Link Explorer panel -->
+            <div class="sl-panel hidden" id="sl-panel">
+                <div class="sl-panel-header">
+                    <span class="sl-panel-title">強鏈探索</span>
+                    <button class="sl-close-btn" onclick="closeSlPanel()">▼</button>
+                </div>
+                <div class="sl-panel-body">
+                    <div class="sl-instruction" id="sl-instruction">點擊格子查看強鏈伴侶</div>
+                    <div class="sl-feedback" id="sl-feedback"></div>
+                </div>
+                <div class="sl-decoder">強鏈：同一單位中某數字恰好出現兩次，互為消除伴侶</div>
             </div>
         </div>
         <div class="duo-emoji-bar" id="duo-emoji-bar">
@@ -393,7 +416,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.06-V11';
+        var INLINE_VER = '2026.04.06-V12';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

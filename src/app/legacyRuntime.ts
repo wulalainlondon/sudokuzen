@@ -69,6 +69,7 @@ import { openWildLobby, closeWildLobby, toggleWildAutoCast } from '../features/w
 import { continueWild, exitWild, startWorldSession } from '../features/wild/wildController';
 import { dismissMentor } from '../features/wild/mentorController';
 import { openPracticeLobby, closePracticeLobby } from '../features/practice/practiceLobby';
+import { initSlPanel, openSlPanel, closeSlPanel } from '../features/strongLinkPanel';
 import { initBackHandler } from './navigation/navigationOrchestrator';
 import { installHostBridge, notifyHostBeforeUnload, notifyHostBootReady, type HostBridgeApi } from '../platform/hostBridge';
 
@@ -85,6 +86,7 @@ export function bootLegacyRuntime(appVersion: string): void {
 
   // 1. Populate DOM refs
   initDom();
+  initSlPanel();
 
   // 2. Pre-fetch manifests (async, non-blocking)
   warmTeachManifest();
@@ -285,6 +287,8 @@ export function bootLegacyRuntime(appVersion: string): void {
     dismissMentor,
     openPracticeLobby,
     closePracticeLobby,
+    openSlPanel,
+    closeSlPanel,
   });
 
   const hostApi: HostBridgeApi = {

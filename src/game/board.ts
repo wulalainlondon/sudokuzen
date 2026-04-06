@@ -14,6 +14,7 @@ let _onContinuousDigitSet: ((digit: number) => void) | null = null;
 let _onCandidateProbeTap: ((cell: number, digit: number) => void) | null = null;
 let _onCellLongPress: ((idx: number, prevSelected: number) => void) | null = null;
 let _onSkillModeExit: (() => void) | null = null;
+let _onSlCellFocus: ((idx: number) => void) | null = null;
 
 export function setBoardCallbacks(callbacks: {
   onContinuousCellClick: (idx: number) => boolean;
@@ -21,12 +22,14 @@ export function setBoardCallbacks(callbacks: {
   onCandidateProbeTap: (cell: number, digit: number) => void;
   onCellLongPress: (idx: number, prevSelected: number) => void;
   onSkillModeExit: () => void;
+  onSlCellFocus?: (idx: number) => void;
 }): void {
   _onContinuousCellClick = callbacks.onContinuousCellClick;
   _onContinuousDigitSet = callbacks.onContinuousDigitSet;
   _onCandidateProbeTap = callbacks.onCandidateProbeTap;
   _onCellLongPress = callbacks.onCellLongPress;
   _onSkillModeExit = callbacks.onSkillModeExit;
+  _onSlCellFocus = callbacks.onSlCellFocus ?? null;
 }
 
 export function renderGrid(): void {
@@ -172,6 +175,9 @@ export function selectCell(idx: number): void {
       }
     }
   });
+
+  // Notify strong link panel when it's open
+  if (gs.strongLinkPanelOpen) _onSlCellFocus?.(idx);
 
   // Show unit analysis panel when selecting a filled cell in Wild mode (opt-in)
   const isWild = !!(gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild');
