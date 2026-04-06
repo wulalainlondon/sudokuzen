@@ -16,8 +16,6 @@ export function isSlPanelEnabled(): boolean {
 
 export function setSlPanelEnabled(enabled: boolean): void {
   localStorage.setItem(SK.STRONG_LINK_PANEL, enabled ? '1' : '0');
-  const handle = document.getElementById('sl-swipe-handle');
-  if (handle) handle.classList.toggle('hidden', !enabled);
   if (!enabled && gs.strongLinkPanelOpen) closeSlPanel();
 }
 
@@ -41,7 +39,6 @@ export function openSlPanel(): void {
   gs.strongLinkToolUsed = true;
 
   document.getElementById('numpad')?.classList.add('hidden');
-  document.getElementById('sl-swipe-handle')?.classList.add('hidden');
   const panel = document.getElementById('sl-panel');
   if (panel) panel.classList.remove('hidden');
 
@@ -59,10 +56,6 @@ export function closeSlPanel(): void {
 
   document.getElementById('numpad')?.classList.remove('hidden');
   document.getElementById('sl-panel')?.classList.add('hidden');
-  if (isSlPanelEnabled()) {
-    document.getElementById('sl-swipe-handle')?.classList.remove('hidden');
-  }
-
   clearSlHighlights();
 }
 
@@ -134,10 +127,6 @@ export function clearSlHighlights(): void {
 // ── Init (called once at boot) ────────────────────────────────────────
 
 export function initSlPanel(): void {
-  // Sync handle visibility from persisted setting
-  const handle = document.getElementById('sl-swipe-handle');
-  if (handle) handle.classList.toggle('hidden', !isSlPanelEnabled());
-
   // Swipe gesture on numpad-skill-wrapper
   const wrapper = document.querySelector('.numpad-skill-wrapper') as HTMLElement | null;
   if (!wrapper) return;

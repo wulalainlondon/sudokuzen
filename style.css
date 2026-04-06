@@ -6756,21 +6756,6 @@ body.library-open {
 }
 
 /* ── Strong Link Explorer ─────────────────────────────────────────── */
-.sl-swipe-handle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 20px;
-    cursor: pointer;
-    color: var(--accent-strong);
-    opacity: 0.55;
-    transition: opacity 0.18s;
-    margin-bottom: -2px;
-}
-.sl-swipe-handle:hover,
-.sl-swipe-handle:active { opacity: 0.9; }
-.sl-swipe-handle svg { width: 32px; height: 10px; }
-
 .sl-panel {
     position: absolute;
     inset: 0;
@@ -6863,11 +6848,6 @@ body.library-open {
 }
 
 /* ── Chain Trace Panel ───────────────────────────────────────────────── */
-.chain-trace-handle svg {
-    width: 32px;
-    height: 14px;
-}
-
 .chain-trace-panel {
     position: absolute;
     inset: 0;
@@ -7052,11 +7032,6 @@ body.library-open {
 }
 
 /* ── Chain Map Panel (V3 Phase 2A) ───────────────────────────────────── */
-.chain-map-handle svg {
-    width: 32px;
-    height: 14px;
-}
-
 .chain-map-panel {
     position: absolute;
     inset: 0;

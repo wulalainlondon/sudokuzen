@@ -35,7 +35,6 @@ export function isChainMapPanelEnabled(): boolean {
 
 export function setChainMapPanelEnabled(enabled: boolean): void {
   localStorage.setItem(SK.CHAIN_MAP_PANEL, enabled ? '1' : '0');
-  document.getElementById('chain-map-handle')?.classList.toggle('hidden', !enabled);
   if (!enabled && gs.chainMapPanelOpen) closeChainMapPanel();
 }
 
@@ -68,9 +67,6 @@ export function openChainMapPanel(): void {
   _mapGraph = null; // fresh graph on open
 
   document.getElementById('numpad')?.classList.add('hidden');
-  document.getElementById('chain-map-handle')?.classList.add('hidden');
-  document.getElementById('sl-swipe-handle')?.classList.add('hidden');
-  document.getElementById('chain-trace-handle')?.classList.add('hidden');
   document.getElementById('chain-map-panel')?.classList.remove('hidden');
 
   ensureSvgOverlay();
@@ -85,12 +81,6 @@ export function closeChainMapPanel(): void {
 
   document.getElementById('numpad')?.classList.remove('hidden');
   document.getElementById('chain-map-panel')?.classList.add('hidden');
-
-  // Restore handles
-  if (localStorage.getItem(SK.STRONG_LINK_PANEL) === '1') document.getElementById('sl-swipe-handle')?.classList.remove('hidden');
-  if (localStorage.getItem(SK.CHAIN_TRACE_PANEL) === '1') document.getElementById('chain-trace-handle')?.classList.remove('hidden');
-  if (isChainMapPanelEnabled()) document.getElementById('chain-map-handle')?.classList.remove('hidden');
-
   removeSvgOverlay();
 }
 
@@ -283,5 +273,5 @@ function clearGridClasses(cellClasses: string[], noteClasses: string[]): void {
 // ── Init ──────────────────────────────────────────────────────────────
 
 export function initChainMapPanel(): void {
-  document.getElementById('chain-map-handle')?.classList.toggle('hidden', !isChainMapPanelEnabled());
+  // no-op: handles removed, swipe gesture is the only entry point
 }

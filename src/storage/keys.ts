@@ -29,6 +29,7 @@ export const SK = {
   UNIT_ANALYSIS: 'sudoku_unit_analysis',
   STRONG_LINK_PANEL: 'sudoku_strong_link_panel',
   CHAIN_TRACE_PANEL: 'sudoku_chain_trace_panel',
+  CHAIN_MAP_PANEL: 'sudoku_chain_map_panel',
   DUO_METRICS: 'sudoku_duo_metrics_v1',
   DUO_ACTIVE_ROOM_ID: 'sudoku_duo_active_room_id',
   PRACTICE_PHASE_TEACH_SEEN: 'sudoku_practice_phase_teach_seen_v1',

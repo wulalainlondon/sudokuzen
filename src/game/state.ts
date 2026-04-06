@@ -273,6 +273,9 @@ export const gs = {
   chainTracePanelOpen: false,
   chainTraceNodes: [] as Array<{ cell: number; digit: number }>,
 
+  // ── Chain Map Panel (V3 Phase 2A) ─────────────────────────────────
+  chainMapPanelOpen: false,
+
   // ── App ───────────────────────────────────────────────────────────
   appVersion: '',
 };

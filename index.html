@@ -328,33 +328,6 @@
         <!-- 3. 數獨主網格 -->
         <div class="sudoku-grid" id="grid"></div>
 
-        <!-- Strong Link swipe handle — shown when panel is enabled -->
-        <div class="sl-swipe-handle hidden" id="sl-swipe-handle" onclick="openSlPanel()">
-            <svg viewBox="0 0 32 10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 8L16 2L26 8"/>
-            </svg>
-        </div>
-        <!-- Chain Trace handle (double chevron) — shown when chain trace is enabled -->
-        <div class="sl-swipe-handle chain-trace-handle hidden" id="chain-trace-handle" onclick="openChainTracePanel()">
-            <svg viewBox="0 0 32 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 10L16 4L26 10"/>
-                <path d="M6 13.5L16 7.5L26 13.5"/>
-            </svg>
-        </div>
-        <!-- Chain Map handle (network icon) — shown when chain map is enabled -->
-        <div class="sl-swipe-handle chain-map-handle hidden" id="chain-map-handle" onclick="openChainMapPanel()">
-            <svg viewBox="0 0 32 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="16" cy="7" r="2.5" fill="currentColor" stroke="none"/>
-                <circle cx="6" cy="12" r="2" fill="currentColor" stroke="none"/>
-                <circle cx="26" cy="12" r="2" fill="currentColor" stroke="none"/>
-                <circle cx="6" cy="2" r="2" fill="currentColor" stroke="none"/>
-                <circle cx="26" cy="2" r="2" fill="currentColor" stroke="none"/>
-                <line x1="16" y1="7" x2="6" y2="12"/>
-                <line x1="16" y1="7" x2="26" y2="12"/>
-                <line x1="16" y1="7" x2="6" y2="2"/>
-                <line x1="16" y1="7" x2="26" y2="2"/>
-            </svg>
-        </div>
 
         <div class="numpad-skill-wrapper">
             <div class="numpad" id="numpad"></div>
@@ -493,7 +466,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.06-V17';
+        var INLINE_VER = '2026.04.06-V18';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

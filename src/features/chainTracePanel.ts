@@ -38,7 +38,6 @@ export function isChainTracePanelEnabled(): boolean {
 
 export function setChainTracePanelEnabled(enabled: boolean): void {
   localStorage.setItem(SK.CHAIN_TRACE_PANEL, enabled ? '1' : '0');
-  document.getElementById('chain-trace-handle')?.classList.toggle('hidden', !enabled);
   if (!enabled && gs.chainTracePanelOpen) closeChainTracePanel();
 }
 
@@ -62,8 +61,6 @@ export function openChainTracePanel(): void {
   invalidateGraph();
 
   document.getElementById('numpad')?.classList.add('hidden');
-  document.getElementById('chain-trace-handle')?.classList.add('hidden');
-  document.getElementById('sl-swipe-handle')?.classList.add('hidden');
   document.getElementById('chain-trace-panel')?.classList.remove('hidden');
 
   resetPanelUI();
@@ -76,12 +73,6 @@ export function closeChainTracePanel(): void {
 
   document.getElementById('numpad')?.classList.remove('hidden');
   document.getElementById('chain-trace-panel')?.classList.add('hidden');
-
-  // Restore handles
-  const slEnabled = localStorage.getItem(SK.STRONG_LINK_PANEL) === '1';
-  if (slEnabled) document.getElementById('sl-swipe-handle')?.classList.remove('hidden');
-  if (isChainTracePanelEnabled()) document.getElementById('chain-trace-handle')?.classList.remove('hidden');
-
   clearChainHighlights();
 }
 
@@ -421,5 +412,5 @@ function resetPanelUI(): void {
 // ── Init ──────────────────────────────────────────────────────────────
 
 export function initChainTracePanel(): void {
-  document.getElementById('chain-trace-handle')?.classList.toggle('hidden', !isChainTracePanelEnabled());
+  // no-op: handles removed, swipe gesture is the only entry point
 }
