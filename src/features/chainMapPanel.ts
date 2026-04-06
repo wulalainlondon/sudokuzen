@@ -6,7 +6,7 @@
 import { gs } from '../game/state';
 import { SK } from '../storage/keys';
 import { SolverBoard } from '../solver/board';
-import { buildLinkGraph, findConjugatePairs, decodeNode } from '../solver/helpers/links';
+import { buildLinkGraph, decodeNode } from '../solver/helpers/links';
 import type { LinkGraph } from '../solver/helpers/links';
 
 // ── Module state ──────────────────────────────────────────────────────
