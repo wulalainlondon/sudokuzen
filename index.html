@@ -366,6 +366,9 @@
                     <button class="chain-action-btn" onclick="clearChainTrace()">清除</button>
                     <button class="chain-action-btn chain-verify-btn" id="chain-trace-verify-btn" onclick="verifyChainTrace()" disabled>驗證</button>
                 </div>
+                <div class="chain-reveal-row hidden" id="chain-reveal-row">
+                    <button class="chain-reveal-btn" onclick="revealChainResult()">查看消除結果</button>
+                </div>
                 <div class="sl-decoder">強→弱→強 交替推理，起終強鏈共見的候選可消除</div>
             </div>
             <!-- Strong Link Explorer panel -->
@@ -445,7 +448,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.06-V13';
+        var INLINE_VER = '2026.04.06-V14';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

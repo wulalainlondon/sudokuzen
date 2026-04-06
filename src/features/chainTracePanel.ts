@@ -12,9 +12,10 @@ import { SolverBoard } from '../solver/board';
 import { buildLinkGraph, encodeNode, decodeNode } from '../solver/helpers/links';
 import type { LinkGraph } from '../solver/helpers/links';
 
-// ── Module-level graph cache ───────────────────────────────────────────
+// ── Module state ──────────────────────────────────────────────────────
 
 let _graph: LinkGraph | null = null;
+let _chainVerified = false; // true after Mode 3A passes; gates reveal button
 
 function getGraph(): LinkGraph {
   if (!_graph && gs.cellsData.length > 0) {
@@ -127,6 +128,8 @@ export function undoChainTrace(): void {
   const nodes = gs.chainTraceNodes;
   if (nodes.length === 0) return;
   nodes.pop();
+  _chainVerified = false;
+  hideRevealRow();
   if (nodes.length === 0) {
     resetPanelUI();
   } else {
@@ -140,9 +143,11 @@ export function undoChainTrace(): void {
 
 export function clearChainTrace(): void {
   gs.chainTraceNodes = [];
+  _chainVerified = false;
   invalidateGraph();
   clearChainHighlights();
   resetPanelUI();
+  hideRevealRow();
 }
 
 // ── Mode 3A Validation ────────────────────────────────────────────────
@@ -181,6 +186,8 @@ export function verifyChainTrace(): void {
   const weakCount = Math.floor((nodes.length - 1) / 2);
   setInstruction(`✓ 合法鏈結！鏈長 ${nodes.length} · ${chainType}`);
   syncStats(`強鏈 ${strongCount} 條 · 弱鏈 ${weakCount} 條`);
+  _chainVerified = true;
+  showRevealRow();
 }
 
 function resolveChainType(nodes: Array<{ cell: number; digit: number }>): string {
@@ -191,6 +198,60 @@ function resolveChainType(nodes: Array<{ cell: number; digit: number }>): string
     (n, i) => i > 0 && i < nodes.length - 1 && nodes[i - 1].cell === n.cell && nodes[i + 1].cell === n.cell
   );
   return hasBridge ? 'AIC（含雙值橋）' : 'AIC';
+}
+
+// ── Mode 3B: Optional Elimination Reveal ─────────────────────────────
+
+export function revealChainResult(): void {
+  if (!_chainVerified) return;
+  const nodes = gs.chainTraceNodes;
+  if (nodes.length < 3) return;
+
+  const first = nodes[0];
+  const last = nodes[nodes.length - 1];
+  const board = SolverBoard.fromGameState(gs.cellsData);
+
+  // Re-draw chain nodes (clearChainHighlights was called by highlightValidNextNodes last)
+  clearChainHighlights();
+  if (gs.gridEl) {
+    nodes.forEach(({ cell, digit }) => {
+      const cellEl = gs.gridEl!.children[cell] as HTMLElement | undefined;
+      if (!cellEl) return;
+      cellEl.classList.add('chain-node');
+      cellEl.querySelector(`.note-num:nth-child(${digit})`)?.classList.add('chain-node-digit');
+    });
+  }
+
+  if (first.digit !== last.digit) {
+    // Multi-digit AIC: for now show an informational note
+    setInstruction('✓ 合法 AIC — 多數字消除預覽將在後續版本完整支援');
+    syncStats('提示：雙值格橋接的 AIC 消除涉及兩個不同數字');
+    return;
+  }
+
+  const digit = first.digit;
+  const elims = board.commonPeers([first.cell, last.cell]).filter(
+    (cell) => board.hasCandidate(cell, digit) && cell !== first.cell && cell !== last.cell,
+  );
+
+  if (elims.length === 0) {
+    setInstruction('此鏈在當前局面無消除目標');
+    syncStats('（候選可能已被其他技術消除，或起終兩格無共見空格）');
+    return;
+  }
+
+  if (gs.gridEl) {
+    elims.forEach((cell) => {
+      const cellEl = gs.gridEl!.children[cell] as HTMLElement | undefined;
+      if (!cellEl) return;
+      cellEl.classList.add('chain-elim');
+      cellEl.querySelector(`.note-num:nth-child(${digit})`)?.classList.add('chain-elim-digit');
+    });
+  }
+
+  const elimLabels = elims.map((cell) => cellLabel(cell)).join('、');
+  setInstruction(`消除目標：數字 ${digit} 可從以下格移除`);
+  syncStats(`${elimLabels}（共 ${elims.length} 個）`);
 }
 
 // ── Grid Highlighting ─────────────────────────────────────────────────
@@ -239,9 +300,9 @@ function highlightValidNextNodes(): void {
 export function clearChainHighlights(): void {
   if (!gs.gridEl) return;
   Array.from(gs.gridEl.children).forEach((c) => {
-    c.classList.remove('chain-node', 'chain-valid-strong', 'chain-valid-weak');
-    c.querySelectorAll('.chain-node-digit, .chain-valid-digit').forEach((n) =>
-      n.classList.remove('chain-node-digit', 'chain-valid-digit'),
+    c.classList.remove('chain-node', 'chain-valid-strong', 'chain-valid-weak', 'chain-elim');
+    c.querySelectorAll('.chain-node-digit, .chain-valid-digit, .chain-elim-digit').forEach((n) =>
+      n.classList.remove('chain-node-digit', 'chain-valid-digit', 'chain-elim-digit'),
     );
   });
 }
@@ -288,13 +349,23 @@ function syncVerifyButton(): void {
   if (btn) btn.disabled = gs.chainTraceNodes.length < 3;
 }
 
+function showRevealRow(): void {
+  document.getElementById('chain-reveal-row')?.classList.remove('hidden');
+}
+
+function hideRevealRow(): void {
+  document.getElementById('chain-reveal-row')?.classList.add('hidden');
+}
+
 function resetPanelUI(): void {
+  _chainVerified = false;
   setInstruction('點擊格中候選數字開始建鏈');
   const textEl = document.getElementById('chain-trace-text');
   const statsEl = document.getElementById('chain-trace-stats');
   if (textEl) textEl.innerHTML = '';
   if (statsEl) statsEl.textContent = '';
   syncVerifyButton();
+  hideRevealRow();
 }
 
 // ── Init ──────────────────────────────────────────────────────────────

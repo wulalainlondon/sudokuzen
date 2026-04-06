@@ -7008,3 +7008,37 @@ body.library-open {
 [data-theme="dark"] .cell.chain-valid-weak {
     outline-color: rgba(167, 139, 250, 0.7);
 }
+
+/* Mode 3B reveal row */
+.chain-reveal-row {
+    margin-top: 2px;
+}
+.chain-reveal-btn {
+    width: 100%;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 6px 8px;
+    border-radius: 7px;
+    border: 1px solid color-mix(in srgb, var(--error-color, #e53e3e) 40%, var(--cell-border));
+    background: color-mix(in srgb, var(--error-color, #e53e3e) 8%, var(--btn-bg));
+    color: var(--error-color, #c53030);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.chain-reveal-btn:hover {
+    background: color-mix(in srgb, var(--error-color, #e53e3e) 16%, var(--btn-bg));
+}
+[data-theme="dark"] .chain-reveal-btn {
+    color: #fc8181;
+    border-color: color-mix(in srgb, #fc8181 35%, var(--cell-border));
+}
+
+/* Elimination target cells */
+.cell.chain-elim {
+    box-shadow: inset 0 0 0 2px rgba(229, 62, 62, 0.65) !important;
+}
+.note-num.chain-elim-digit {
+    color: var(--error-color, #e53e3e) !important;
+    font-weight: 700;
+    text-decoration: line-through;
+}

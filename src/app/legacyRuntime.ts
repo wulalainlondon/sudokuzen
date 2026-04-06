@@ -77,6 +77,7 @@ import {
   undoChainTrace,
   clearChainTrace,
   verifyChainTrace,
+  revealChainResult,
 } from '../features/chainTracePanel';
 import { initBackHandler } from './navigation/navigationOrchestrator';
 import { installHostBridge, notifyHostBeforeUnload, notifyHostBootReady, type HostBridgeApi } from '../platform/hostBridge';
@@ -303,6 +304,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     undoChainTrace,
     clearChainTrace,
     verifyChainTrace,
+    revealChainResult,
   });
 
   const hostApi: HostBridgeApi = {
