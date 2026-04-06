@@ -51,6 +51,12 @@ export function openChainTracePanel(): void {
     gs.strongLinkPanelOpen = false;
     document.getElementById('sl-panel')?.classList.add('hidden');
   }
+  // Mutual exclusion: close chain map panel if open
+  if (gs.chainMapPanelOpen) {
+    gs.chainMapPanelOpen = false;
+    document.getElementById('chain-map-panel')?.classList.add('hidden');
+    document.getElementById('chain-link-svg')?.remove();
+  }
   gs.chainTracePanelOpen = true;
   gs.chainTraceNodes = [];
   invalidateGraph();

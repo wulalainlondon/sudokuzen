@@ -246,6 +246,10 @@
                 <input type="checkbox" id="chain-trace-checkbox">
                 <span>鏈結追蹤</span>
             </label>
+            <label class="pause-toggle" id="pause-chain-map-toggle">
+                <input type="checkbox" id="chain-map-checkbox">
+                <span>鏈結地圖</span>
+            </label>
             <button class="resume-btn" id="pause-resume-btn" onclick="resumeGame()">繼續遊戲</button>
             <button class="back-btn back-btn-light" id="pause-leave-btn" onclick="showLevelScreen(true)">放棄關卡</button>
             <button class="back-btn back-btn-light" id="pause-abandon-btn" style="display:none;">退出對陣</button>
@@ -337,6 +341,20 @@
                 <path d="M6 13.5L16 7.5L26 13.5"/>
             </svg>
         </div>
+        <!-- Chain Map handle (network icon) — shown when chain map is enabled -->
+        <div class="sl-swipe-handle chain-map-handle hidden" id="chain-map-handle" onclick="openChainMapPanel()">
+            <svg viewBox="0 0 32 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="16" cy="7" r="2.5" fill="currentColor" stroke="none"/>
+                <circle cx="6" cy="12" r="2" fill="currentColor" stroke="none"/>
+                <circle cx="26" cy="12" r="2" fill="currentColor" stroke="none"/>
+                <circle cx="6" cy="2" r="2" fill="currentColor" stroke="none"/>
+                <circle cx="26" cy="2" r="2" fill="currentColor" stroke="none"/>
+                <line x1="16" y1="7" x2="6" y2="12"/>
+                <line x1="16" y1="7" x2="26" y2="12"/>
+                <line x1="16" y1="7" x2="6" y2="2"/>
+                <line x1="16" y1="7" x2="26" y2="2"/>
+            </svg>
+        </div>
 
         <div class="numpad-skill-wrapper">
             <div class="numpad" id="numpad"></div>
@@ -371,6 +389,32 @@
                     <button class="chain-reveal-btn" onclick="revealChainResult()">查看消除結果</button>
                 </div>
                 <div class="sl-decoder">強→弱→強 交替推理，起終強鏈共見的候選可消除</div>
+            </div>
+            <!-- Chain Map Panel (V3 Phase 2A) -->
+            <div class="chain-map-panel hidden" id="chain-map-panel">
+                <div class="sl-panel-header">
+                    <span class="sl-panel-title">鏈結地圖</span>
+                    <button class="sl-close-btn" onclick="closeChainMapPanel()">▼</button>
+                </div>
+                <div class="chain-map-body">
+                    <div class="chain-map-chips" id="chain-map-chips">
+                        <button class="chain-map-chip" data-digit="1" onclick="toggleMapDigit(1)">1</button>
+                        <button class="chain-map-chip" data-digit="2" onclick="toggleMapDigit(2)">2</button>
+                        <button class="chain-map-chip" data-digit="3" onclick="toggleMapDigit(3)">3</button>
+                        <button class="chain-map-chip" data-digit="4" onclick="toggleMapDigit(4)">4</button>
+                        <button class="chain-map-chip" data-digit="5" onclick="toggleMapDigit(5)">5</button>
+                        <button class="chain-map-chip" data-digit="6" onclick="toggleMapDigit(6)">6</button>
+                        <button class="chain-map-chip" data-digit="7" onclick="toggleMapDigit(7)">7</button>
+                        <button class="chain-map-chip" data-digit="8" onclick="toggleMapDigit(8)">8</button>
+                        <button class="chain-map-chip" data-digit="9" onclick="toggleMapDigit(9)">9</button>
+                    </div>
+                    <div class="chain-map-type-row">
+                        <button class="chain-map-type-btn active" id="chain-map-strong-btn" onclick="toggleMapLinkType('strong')">強鏈</button>
+                        <button class="chain-map-type-btn" id="chain-map-weak-btn" onclick="toggleMapLinkType('weak')">弱鏈</button>
+                    </div>
+                    <div class="chain-map-stats" id="chain-map-stats">點擊數字查看鏈結（最多 3 個）</div>
+                </div>
+                <div class="sl-decoder">強鏈=實線 · 弱鏈=虛線 · 最多同時顯示 3 個數字</div>
             </div>
             <!-- Strong Link Explorer panel -->
             <div class="sl-panel hidden" id="sl-panel">
@@ -449,7 +493,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.06-V15';
+        var INLINE_VER = '2026.04.06-V16';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

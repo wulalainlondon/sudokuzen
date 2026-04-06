@@ -591,6 +591,15 @@ export function pauseGame(): void {
     }).catch(() => {});
   }
 
+  // Chain map panel toggle — available in all modes
+  const cmCheckbox = document.getElementById('chain-map-checkbox') as HTMLInputElement | null;
+  if (cmCheckbox) {
+    import('../features/chainMapPanel').then(({ isChainMapPanelEnabled, setChainMapPanelEnabled }) => {
+      cmCheckbox.checked = isChainMapPanelEnabled();
+      cmCheckbox.onchange = () => setChainMapPanelEnabled(cmCheckbox.checked);
+    }).catch(() => {});
+  }
+
   const resumeBtn = document.getElementById('pause-resume-btn') as HTMLButtonElement | null;
   const leaveBtn = document.getElementById('pause-leave-btn') as HTMLButtonElement | null;
   const abandonBtn = document.getElementById('pause-abandon-btn') as HTMLButtonElement | null;

@@ -79,6 +79,13 @@ import {
   verifyChainTrace,
   revealChainResult,
 } from '../features/chainTracePanel';
+import {
+  initChainMapPanel,
+  openChainMapPanel,
+  closeChainMapPanel,
+  toggleMapDigit,
+  toggleMapLinkType,
+} from '../features/chainMapPanel';
 import { initBackHandler } from './navigation/navigationOrchestrator';
 import { installHostBridge, notifyHostBeforeUnload, notifyHostBootReady, type HostBridgeApi } from '../platform/hostBridge';
 
@@ -97,6 +104,7 @@ export function bootLegacyRuntime(appVersion: string): void {
   initDom();
   initSlPanel();
   initChainTracePanel();
+  initChainMapPanel();
 
   // 2. Pre-fetch manifests (async, non-blocking)
   warmTeachManifest();
@@ -305,6 +313,10 @@ export function bootLegacyRuntime(appVersion: string): void {
     clearChainTrace,
     verifyChainTrace,
     revealChainResult,
+    openChainMapPanel,
+    closeChainMapPanel,
+    toggleMapDigit,
+    toggleMapLinkType,
   });
 
   const hostApi: HostBridgeApi = {
