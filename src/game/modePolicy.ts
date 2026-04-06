@@ -39,7 +39,7 @@ export function getModePolicy(level: LevelData | null | undefined = gs.currentLe
     useCountupTimer: !isWildTimed,
     useCountdownTimer: isWildTimed,
     blockByMaxErrors: !isDuo,
-    showUndo: !isDuo,
+    showUndo: mode === 'practice',
   };
 }
 
