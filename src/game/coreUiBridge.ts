@@ -61,7 +61,11 @@ export function hideLevelScreen(): void {
 
 export function showGameContainer(): void {
   const el = document.querySelector('.game-container') as HTMLElement | null;
-  if (el) el.style.display = 'flex';
+  if (!el) return;
+  el.style.display = 'flex';
+  el.classList.remove('screen-enter');
+  void el.offsetWidth; // force reflow so animation restarts
+  el.classList.add('screen-enter');
 }
 
 export function setUndoButtonVisible(visible: boolean): void {
@@ -150,10 +154,12 @@ export function setLivesNoRemaining(livesEl: HTMLElement | null, noLivesLabel: s
   livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem;">${escapeHtml(noLivesLabel)}</span> <button class="duo-surrender-btn" onclick="surrenderDuo()">${escapeHtml(surrenderLabel)}</button>`;
 }
 
-export function setLivesRemaining(livesEl: HTMLElement | null, remaining: number): void {
+export function setLivesRemaining(livesEl: HTMLElement | null, remaining: number, total = 3): void {
   if (!livesEl) return;
   let html = '';
-  for (let i = 0; i < remaining; i++) html += '<span>✖</span> ';
+  for (let i = 0; i < total; i++) {
+    html += i < remaining ? '<span>♥</span>' : '<span class="lost">♡</span>';
+  }
   livesEl.innerHTML = html;
 }
 

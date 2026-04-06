@@ -40,7 +40,7 @@ export function getModePolicy(level: LevelData | null | undefined = gs.currentLe
     useCountupTimer: !isWildTimed,
     useCountdownTimer: isWildTimed,
     blockByMaxErrors: !isDuo,
-    showUndo: isSpeedrun || isWildBlind,
+    showUndo: !isDuo,
   };
 }
 

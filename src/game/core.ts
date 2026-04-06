@@ -480,7 +480,7 @@ export function updateLivesUI(): void {
     return;
   }
   const remaining = gs.maxErrors - gs.errors;
-  setLivesRemaining(gs.livesEl, remaining);
+  setLivesRemaining(gs.livesEl, remaining, gs.maxErrors);
 }
 
 // ── Duo Cooldown Lock ───────────────────────────────────────────────

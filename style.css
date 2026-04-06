@@ -97,7 +97,7 @@
 
 :root[data-theme="dark"] {
     --bg-color: #181A1D;
-    --grid-bg: #22252A;
+    --grid-bg: #272B32;
     --cell-border: #3A424D;
     --block-border: #566070;
     --text-main: #D8DCE2;
@@ -287,6 +287,19 @@
 @keyframes view-fade-in {
     from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Screen swap animations — level screen ↔ game container */
+.screen-enter {
+    animation: view-fade-in 0.18s var(--ease-zen) forwards;
+}
+@keyframes screen-fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+.screen-exit {
+    animation: screen-fade-out 0.12s ease forwards;
+    pointer-events: none;
 }
 
 /* ── Unified scrollbar ─────────────────────────────────────────── */
@@ -559,8 +572,8 @@ header h1 {
 }
 
 .mini-btn {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: 999px;
     border: 1px solid var(--cell-border);
     background: var(--btn-bg);
@@ -630,20 +643,21 @@ header h1 {
     margin: 0;
 }
 
-/* 生命值 ✖ ✖ ✖ (右上) — 統一 pill 風格 */
+/* 生命值 ♥ ♥ ♥ (右上) — 統一 pill 風格 */
 .grid-info-bar .life-container {
-    font-size: 1rem;
-    letter-spacing: 3px;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
     line-height: 1;
     color: var(--error-color);
     border: 1px solid color-mix(in srgb, var(--error-color) 38%, var(--cell-border));
     border-radius: 999px;
-    padding: 4px 9px;
+    padding: 5px 10px;
     background: color-mix(in srgb, var(--grid-bg) 86%, var(--btn-bg));
 }
 
 .life-container span.lost {
-    color: var(--cell-border);
+    color: color-mix(in srgb, var(--cell-border) 80%, transparent);
+    opacity: 0.6;
 }
 
 /* World battle HUD — only keep rarity tint & skill panel override */
@@ -680,11 +694,13 @@ header h1 {
     align-items: center;
     font-size: min(5.0vw, 22px);
     font-weight: 300;
-    border: 0.5px solid var(--cell-border);
+    font-variant-numeric: tabular-nums lining-nums;
+    border: 1px solid color-mix(in srgb, var(--cell-border) 55%, transparent);
     cursor: pointer;
     position: relative;
     background: var(--grid-bg);
     transition: background-color 0.18s var(--ease-zen),
+                color 0.28s var(--ease-zen),
                 box-shadow 0.18s var(--ease-zen),
                 transform 0.12s var(--ease-zen);
     /* 確保文字不換行 */
@@ -707,7 +723,7 @@ header h1 {
 }
 
 .cell.related {
-    background-color: var(--accent-soft);
+    background-color: color-mix(in srgb, var(--accent-soft) 55%, transparent);
 }
 
 .cell.match {
@@ -2949,6 +2965,7 @@ header h1 {
     background: linear-gradient(180deg, color-mix(in srgb, var(--btn-bg) 98%, #ffffff 2%), color-mix(in srgb, var(--btn-bg) 92%, var(--bg-color)));
     font-size: min(6.2vw, 1.35rem);
     font-weight: 500;
+    font-variant-numeric: tabular-nums lining-nums;
     color: var(--text-main);
     cursor: pointer;
     border-radius: 16px;
@@ -3296,7 +3313,7 @@ header h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 0.55rem;
+    font-size: clamp(0.44rem, 1.6vw, 0.58rem);
     line-height: 1;
     color: var(--note-color);
     opacity: 0;
@@ -3565,56 +3582,56 @@ header h1 {
 /* ===== Wild Mode — Rarity Environment Tints ===== */
 
 .game-container.wild-common {
-    background: linear-gradient(180deg, color-mix(in srgb, #b2bec3 4%, var(--bg)) 0%, var(--bg) 40%);
+    background: linear-gradient(180deg, color-mix(in srgb, #b2bec3 6%, var(--bg)) 0%, var(--bg) 50%);
 }
 
 .game-container.wild-rare {
-    background: linear-gradient(180deg, color-mix(in srgb, #d4af37 8%, var(--bg)) 0%, var(--bg) 40%);
+    background: linear-gradient(180deg, color-mix(in srgb, #d4af37 16%, var(--bg)) 0%, var(--bg) 55%);
 }
 
 .game-container.wild-legendary {
-    background: linear-gradient(180deg, color-mix(in srgb, #9370db 10%, var(--bg)) 0%, var(--bg) 40%);
+    background: linear-gradient(180deg, color-mix(in srgb, #9370db 20%, var(--bg)) 0%, var(--bg) 55%);
 }
 
 .game-container.wild-mythic {
-    background: linear-gradient(180deg, color-mix(in srgb, #ff1493 8%, var(--bg)) 0%, var(--bg) 40%);
-    animation: wild-mythic-pulse 3s ease-in-out infinite;
+    background: linear-gradient(180deg, color-mix(in srgb, #ff1493 18%, var(--bg)) 0%, var(--bg) 55%);
+    animation: wild-mythic-pulse 2.5s ease-in-out infinite;
 }
 
 @keyframes wild-mythic-pulse {
     0%, 100% { filter: brightness(1); }
-    50%      { filter: brightness(1.03); }
+    50%      { filter: brightness(1.06); }
 }
 
 /* Rarity ambient glow during wild encounters */
 .game-container.world-play-active[data-rarity="rare"] .sudoku-grid {
-    box-shadow: inset 0 0 40px rgba(226, 185, 59, 0.06);
+    box-shadow: 0 0 0 2px rgba(226, 185, 59, 0.25), inset 0 0 40px rgba(226, 185, 59, 0.08);
     animation: rarity-breathe-rare 4s ease-in-out infinite;
 }
 
 .game-container.world-play-active[data-rarity="legendary"] .sudoku-grid {
-    box-shadow: inset 0 0 40px rgba(162, 155, 254, 0.08);
+    box-shadow: 0 0 0 2px rgba(162, 155, 254, 0.30), inset 0 0 40px rgba(162, 155, 254, 0.10);
     animation: rarity-breathe-legendary 4s ease-in-out infinite;
 }
 
 .game-container.world-play-active[data-rarity="mythic"] .sudoku-grid {
-    box-shadow: inset 0 0 40px rgba(214, 48, 49, 0.06);
-    animation: rarity-breathe-mythic 6s ease-in-out infinite;
+    box-shadow: 0 0 0 2px rgba(255, 20, 147, 0.35), inset 0 0 40px rgba(255, 20, 147, 0.10);
+    animation: rarity-breathe-mythic 3s ease-in-out infinite;
 }
 
 @keyframes rarity-breathe-rare {
-    0%, 100% { box-shadow: inset 0 0 40px rgba(226, 185, 59, 0.04); }
-    50% { box-shadow: inset 0 0 50px rgba(226, 185, 59, 0.08); }
+    0%, 100% { box-shadow: 0 0 0 2px rgba(226, 185, 59, 0.20), inset 0 0 40px rgba(226, 185, 59, 0.06); }
+    50%      { box-shadow: 0 0 0 2px rgba(226, 185, 59, 0.35), inset 0 0 60px rgba(226, 185, 59, 0.14); }
 }
 
 @keyframes rarity-breathe-legendary {
-    0%, 100% { box-shadow: inset 0 0 40px rgba(162, 155, 254, 0.05); }
-    50% { box-shadow: inset 0 0 50px rgba(162, 155, 254, 0.10); }
+    0%, 100% { box-shadow: 0 0 0 2px rgba(162, 155, 254, 0.25), inset 0 0 40px rgba(162, 155, 254, 0.08); }
+    50%      { box-shadow: 0 0 0 2px rgba(162, 155, 254, 0.42), inset 0 0 60px rgba(162, 155, 254, 0.16); }
 }
 
 @keyframes rarity-breathe-mythic {
-    0%, 100% { box-shadow: inset 0 0 40px rgba(214, 48, 49, 0.04); }
-    50% { box-shadow: inset 0 0 50px rgba(214, 48, 49, 0.08); }
+    0%, 100% { box-shadow: 0 0 0 2px rgba(255, 20, 147, 0.28), inset 0 0 40px rgba(255, 20, 147, 0.08); }
+    50%      { box-shadow: 0 0 0 2px rgba(255, 20, 147, 0.50), inset 0 0 60px rgba(255, 20, 147, 0.18); }
 }
 
 /* ===== Mentor Demo (弈塵 power demonstration) ===== */
@@ -5790,7 +5807,7 @@ header h1 {
     font-weight: 600;
     color: var(--text-main);
     position: relative;
-    border: 0.5px solid var(--cell-border);
+    border: 1px solid color-mix(in srgb, var(--cell-border) 55%, transparent);
     transition: background 0.3s;
 }
 .teach-cell.masked {
@@ -6193,7 +6210,7 @@ body.library-open {
     font-weight: 600;
     color: var(--text-main);
     position: relative;
-    border: 0.5px solid var(--cell-border);
+    border: 1px solid color-mix(in srgb, var(--cell-border) 55%, transparent);
     transition: background 0.3s;
 }
 .practice-cell.given-cell {

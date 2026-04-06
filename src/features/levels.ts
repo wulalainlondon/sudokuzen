@@ -80,9 +80,18 @@ export function updateResumeBanner(): void {
   banner.classList.remove('hidden');
   banner.textContent = t('nav.resumeGameWithLevel', { level: level!.displayName });
   banner.onclick = () => {
-    // Resume: hide level screen, show game board, restart timer
-    document.getElementById('level-screen')!.style.display = 'none';
-    (document.querySelector('.game-container') as HTMLElement).style.display = 'flex';
+    // Resume: fade level screen out, show game board, restart timer
+    const lsResume = document.getElementById('level-screen')!;
+    lsResume.classList.add('screen-exit');
+    setTimeout(() => {
+      lsResume.style.display = 'none';
+      lsResume.classList.remove('screen-exit');
+      const gc = document.querySelector('.game-container') as HTMLElement;
+      gc.style.display = 'flex';
+      gc.classList.remove('screen-enter');
+      void gc.offsetWidth;
+      gc.classList.add('screen-enter');
+    }, 130);
     import('../game/timer').then((m) => m.startTimer(false)).catch(() => {});
   };
 }
@@ -356,7 +365,14 @@ export async function startLevelFromModal(
   _pendingLevelData = null;
   closeLibraryOverlay();
   hidePreLevelModal();
-  document.getElementById('level-screen')!.style.display = 'none';
+
+  // Fade level screen out before switching to game
+  const ls = document.getElementById('level-screen')!;
+  ls.classList.add('screen-exit');
+  await new Promise<void>((r) => setTimeout(r, 130));
+  ls.style.display = 'none';
+  ls.classList.remove('screen-exit');
+
   const { initGame } = await import('../game/core');
   initGame(levelId, forceReset, playWithGhost, ghostData, overrideData || undefined);
 }
@@ -414,7 +430,11 @@ function _showLevelScreenInner(returnToTier: boolean): void {
   closeLibraryOverlay();
   updateSpeedrunToggleUI();
   updateResumeBanner();
-  document.getElementById('level-screen')!.style.display = 'flex';
+  const lsShow = document.getElementById('level-screen')!;
+  lsShow.style.display = 'flex';
+  lsShow.classList.remove('screen-enter');
+  void lsShow.offsetWidth;
+  lsShow.classList.add('screen-enter');
   (document.querySelector('.game-container') as HTMLElement).style.display = 'none';
   if (gs.timerInterval) clearInterval(gs.timerInterval);
   import('./replay').then((m) => m.closeReplayModal()).catch(() => {});
@@ -487,7 +507,11 @@ export function advanceToNextLevel(): void {
 
   // Close React win, show level screen, open pre-level modal for next level
   import('../react/win/winBridge').then(({ bridgeCloseWin }) => bridgeCloseWin()).catch(() => {});
-  document.getElementById('level-screen')!.style.display = 'flex';
+  const lsNext = document.getElementById('level-screen')!;
+  lsNext.style.display = 'flex';
+  lsNext.classList.remove('screen-enter');
+  void lsNext.offsetWidth;
+  lsNext.classList.add('screen-enter');
   (document.querySelector('.game-container') as HTMLElement).style.display = 'none';
   showPreLevelModal(tierLevels[nextIdx].id);
 }

@@ -338,7 +338,9 @@ export function celebrateCompletedUnits(idx: number, beforeState: { row: boolean
     const dB = Math.abs(Math.floor(b / 9) - Math.floor(idx / 9)) + Math.abs((b % 9) - (idx % 9));
     return dA - dB;
   });
-  applyUnitCompleteClass(gs.gridEl, sorted, 25);
+  // Exclude the trigger cell (idx) from unit-complete ripple so fill-pop animation
+  // can complete without conflict; the wave still starts from the nearest neighbours.
+  applyUnitCompleteClass(gs.gridEl, sorted.filter((i) => i !== idx), 25);
   setTimeout(() => {
     clearUnitCompleteClass(gs.gridEl, [...flashSet]);
   }, 900);
