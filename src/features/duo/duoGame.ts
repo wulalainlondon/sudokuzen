@@ -19,7 +19,7 @@ import {
   DUO_STALE_HEARTBEAT_MS,
   setLastStaleGuestPruneMs,
 } from './duoRoom';
-import { pickDuoPuzzle, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
+import { pickDuoPuzzle, loadDuoTierPuzzles, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import {
   loadDuoProfile,
   recordDuoMatch,
@@ -96,6 +96,10 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
   }
 
   if (d.status === 'countdown' && d.startAt) {
+    // Preload puzzle shard during countdown so data is ready when launchDuoGame() runs
+    if (d.tierId) {
+      loadDuoTierPuzzles(d.tierId).catch(() => {});
+    }
     const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
     const isInGame = gameContainer && gameContainer.style.display !== 'none' && !gs.isDuoMode;
     if (!isInGame) {
