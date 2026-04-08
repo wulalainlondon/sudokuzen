@@ -58,7 +58,7 @@ export async function loadDuoTierPuzzles(tierId: string): Promise<LevelData[]> {
 
   const results = await Promise.all(tier.shardKeys.map(k => loadDuoShard(k)));
   const pool = results.flat();
-  _tierPuzzleCache.set(tierId, pool);
+  if (pool.length) _tierPuzzleCache.set(tierId, pool);
   return pool;
 }
 

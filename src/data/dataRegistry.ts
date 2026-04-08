@@ -90,7 +90,7 @@ export async function getDataManifest(): Promise<DataManifest | null> {
       return r.json() as Promise<DataManifest>;
     })
     .then(m => { _manifest = m; return m; })
-    .catch(() => null);
+    .catch(() => { _manifestPromise = null; return null; });
   return _manifestPromise;
 }
 
