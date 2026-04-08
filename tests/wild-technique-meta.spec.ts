@@ -119,23 +119,25 @@ describe('getAutoCastKeys', () => {
     expect(keys.size).toBe(0);
   });
 
-  it('returns naked_single at level 5', () => {
+  it('returns empty set before level 21', () => {
     const keys = getAutoCastKeys(5);
-    expect(keys.has('naked_single')).toBe(true);
+    expect(keys.has('naked_single')).toBe(false);
     expect(keys.has('hidden_single')).toBe(false);
   });
 
-  it('returns naked_single + hidden_single at level 8', () => {
-    const keys = getAutoCastKeys(8);
+  it('returns naked_single + hidden_single at level 21', () => {
+    const keys = getAutoCastKeys(21);
     expect(keys.has('naked_single')).toBe(true);
     expect(keys.has('hidden_single')).toBe(true);
     expect(keys.has('locked_candidates')).toBe(false);
   });
 
-  it('returns all Phase 1 techniques at level 21', () => {
-    const keys = getAutoCastKeys(21);
-    for (const key of ['naked_single', 'hidden_single', 'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple']) {
-      expect(keys.has(key)).toBe(true);
+  it('returns only naked_single + hidden_single at high level (others are autoCastGate=0)', () => {
+    const keys = getAutoCastKeys(50);
+    expect(keys.has('naked_single')).toBe(true);
+    expect(keys.has('hidden_single')).toBe(true);
+    for (const key of ['locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple']) {
+      expect(keys.has(key)).toBe(false);
     }
   });
 

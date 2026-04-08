@@ -238,17 +238,24 @@
                 <input type="checkbox" id="unit-analysis-checkbox">
                 <span id="unit-analysis-label">候選提示</span>
             </label>
-            <label class="pause-toggle" id="pause-sl-toggle">
-                <input type="checkbox" id="sl-checkbox">
-                <span>強鏈探索</span>
-            </label>
-            <label class="pause-toggle" id="pause-chain-trace-toggle">
-                <input type="checkbox" id="chain-trace-checkbox">
-                <span>鏈結追蹤</span>
-            </label>
-            <label class="pause-toggle" id="pause-chain-map-toggle">
-                <input type="checkbox" id="chain-map-checkbox">
-                <span>鏈結地圖</span>
+            <div class="pause-section-group">
+                <div class="pause-section-label">鏈結輔助</div>
+                <label class="pause-toggle pause-toggle--sub" id="pause-sl-toggle">
+                    <input type="checkbox" id="sl-checkbox">
+                    <span>強鏈探索</span>
+                </label>
+                <label class="pause-toggle pause-toggle--sub" id="pause-chain-trace-toggle">
+                    <input type="checkbox" id="chain-trace-checkbox">
+                    <span>鏈結追蹤</span>
+                </label>
+                <label class="pause-toggle pause-toggle--sub" id="pause-chain-map-toggle">
+                    <input type="checkbox" id="chain-map-checkbox">
+                    <span>鏈結地圖</span>
+                </label>
+            </div>
+            <label class="pause-toggle hidden" id="pause-ctm-toggle">
+                <input type="checkbox" id="ctm-checkbox">
+                <span>候選追蹤模式</span>
             </label>
             <button class="resume-btn" id="pause-resume-btn" onclick="resumeGame()">繼續遊戲</button>
             <button class="back-btn back-btn-light" id="pause-leave-btn" onclick="showLevelScreen(true)">放棄關卡</button>
@@ -339,6 +346,17 @@
                     <button class="skill-cast-btn" id="skill-cast-btn" onclick="castSkill()" disabled>施放</button>
                     <button class="skill-fill-btn" id="skill-fill-btn" onclick="fillAllCandidates()" aria-label="領域展開" title="領域展開：填入所有合法候選">領域展開</button>
                     <button class="skill-cancel-btn" onclick="exitSkillMode()">取消</button>
+                </div>
+            </div>
+            <div class="tracking-panel hidden" id="tracking-panel">
+                <div class="tracking-panel-header">
+                    <span class="tracking-digit-label">追蹤候選數：<strong id="tracking-digit-value">—</strong></span>
+                    <span class="tracking-nodes-label">已選節點：<strong id="tracking-nodes-count">0</strong></span>
+                </div>
+                <div class="tracking-nodes-list" id="tracking-nodes-list"></div>
+                <div class="tracking-actions">
+                    <button class="tracking-cast-btn" id="tracking-cast-btn" onclick="castFromTracking()" disabled>施放</button>
+                    <button class="tracking-cancel-btn" onclick="exitCandidateTracking()">取消</button>
                 </div>
             </div>
             <!-- Chain Trace Panel (V3 Phase 1) -->
@@ -466,7 +484,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.06-V18';
+        var INLINE_VER = '2026.04.08-V4';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);
