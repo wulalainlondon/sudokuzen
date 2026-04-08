@@ -378,7 +378,7 @@ export async function launchDuoGame(): Promise<void> {
   // Pick puzzle from tier pool using shared seed
   const level = await pickDuoPuzzle(tierId, puzzleSeed);
   if (!level) {
-    showFeedback(t('duo.connectionError'), 'error');
+    showFeedback(t('duo.puzzleLoadFailed'), 'error');
     return;
   }
 
@@ -427,7 +427,7 @@ export async function launchDuoGame(): Promise<void> {
       await duoRoomRef().set(statusUpdate, { merge: true });
     } catch (e2) {
       console.error('launchDuoGame status update retry failed:', e2);
-      showFeedback(t('duoRuntime.connectionError'), 'error');
+      showFeedback(t('duoRuntime.roomSyncFailed'), 'error');
     }
   }
 }

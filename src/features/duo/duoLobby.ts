@@ -249,7 +249,7 @@ export async function createDuoRoomFromLobby(): Promise<void> {
     const { createDuoRoom } = await import('./duoRoom');
     const roomId = await createDuoRoom(_selectedTier, _selectedMode);
     if (!roomId) {
-      showFeedback(t('duo.connectionError'), 'error');
+      showFeedback(t('duo.roomCreateFailed'), 'error');
       return;
     }
     // Switch to independent room view
