@@ -397,9 +397,16 @@ export async function launchDuoGame(): Promise<void> {
     _countdownLaunched = false;
     gs.duoRoundLaunched = false;
     if (gs.duoRole === 'host') {
+      // Also reset hostReady so the waiting-handler doesn't immediately re-trigger countdown
       duoRoomRef().update({
         status: 'waiting',
         startAt: null,
+        hostReady: false,
+        updatedAt: getFirebaseFieldValue().serverTimestamp(),
+      }).catch(() => {});
+    } else {
+      duoRoomRef().update({
+        guestReady: false,
         updatedAt: getFirebaseFieldValue().serverTimestamp(),
       }).catch(() => {});
     }
