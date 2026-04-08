@@ -39,12 +39,13 @@ self.addEventListener('fetch', (event) => {
   // Never cache the service worker itself
   if (url.pathname.endsWith('sw.js')) return;
 
-  // Core pages + JS/CSS + teach manifest: network-first (ensures updates arrive)
+  // Core pages + JS/CSS + manifests: network-first (ensures updates arrive)
   const isNetworkFirst = url.pathname.endsWith('/')
     || url.pathname.endsWith('index.html')
     || url.pathname.endsWith('.js')
     || url.pathname.endsWith('.css')
-    || url.pathname.endsWith('teach/manifest.json');
+    || url.pathname.endsWith('teach/manifest.json')
+    || url.pathname.endsWith('data/manifest.json');
 
   if (isNetworkFirst) {
     event.respondWith(
