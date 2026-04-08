@@ -308,6 +308,20 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
   if (!area) return;
 
   const targetMs = startAtTs.toMillis ? startAtTs.toMillis() : (startAtTs.seconds ?? 0) * 1000;
+
+  // Stale countdown: startAt expired >30s ago — room is stuck; host resets it back to waiting
+  const STALE_THRESHOLD_MS = 30_000;
+  if (Date.now() - targetMs > STALE_THRESHOLD_MS) {
+    if (gs.duoRole === 'host') {
+      duoRoomRef().update({
+        status: 'waiting',
+        startAt: null,
+        updatedAt: getFirebaseFieldValue().serverTimestamp(),
+      }).catch(() => {});
+    }
+    return;
+  }
+
   if (gs.duoCountdownTimer && gs.duoCountdownStartMs === targetMs) return;
   if (gs.duoCountdownTimer && gs.duoCountdownStartMs !== targetMs) {
     clearTimeout(gs.duoCountdownTimer as ReturnType<typeof setTimeout>);
@@ -379,6 +393,16 @@ export async function launchDuoGame(): Promise<void> {
   const level = await pickDuoPuzzle(tierId, puzzleSeed);
   if (!level) {
     showFeedback(t('duo.puzzleLoadFailed'), 'error');
+    gs.isDuoMode = false;
+    _countdownLaunched = false;
+    gs.duoRoundLaunched = false;
+    if (gs.duoRole === 'host') {
+      duoRoomRef().update({
+        status: 'waiting',
+        startAt: null,
+        updatedAt: getFirebaseFieldValue().serverTimestamp(),
+      }).catch(() => {});
+    }
     return;
   }
 
