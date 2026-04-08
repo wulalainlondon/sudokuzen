@@ -219,6 +219,11 @@ export async function openDuoLobby(): Promise<void> {
     openDuoRoomView();
     return;
   }
+  // Ensure level-screen is visible (may have been hidden when a game was active)
+  const levelScreen = document.getElementById('level-screen');
+  if (levelScreen) levelScreen.style.display = 'flex';
+  const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
+  if (gameContainer) gameContainer.style.display = 'none';
   hydrateLabels();
   renderTierSelector();
   renderModeSelector();

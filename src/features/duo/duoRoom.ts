@@ -408,6 +408,11 @@ export async function resumeDuoRoomIfAny(): Promise<boolean> {
       setActiveRoomId(null);
       return false;
     }
+    // Don't resume rooms that are already finished or idle
+    if (d.status === 'finished' || d.status === 'idle') {
+      setActiveRoomId(null);
+      return false;
+    }
     if (d.hostId === playerId) {
       gs.duoRole = 'host';
       gs.duoMyReady = !!d.hostReady;
