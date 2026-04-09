@@ -257,6 +257,81 @@ test.describe('duo-live', () => {
     await Promise.allSettled([hostCtx.close(), guestCtx.close()]);
   });
 
+  // ── Test 2: Guest leaves room before game starts ──────────────────────
+
+  test('guest 加入後離開 → host 回到等待狀態', async ({ browser }) => {
+    const TS2 = (Date.now() + 1) % 100_000;
+    const H2 = `h2${TS2}`;
+    const G2 = `g2${TS2}`;
+
+    const hostCtx2 = await browser.newContext({ ignoreHTTPSErrors: true });
+    const guestCtx2 = await browser.newContext({ ignoreHTTPSErrors: true });
+    const hostPage2 = await hostCtx2.newPage();
+    const guestPage2 = await guestCtx2.newPage();
+
+    try {
+      // Boot both pages
+      await Promise.all([
+        hostPage2.goto(LIVE_URL, { waitUntil: 'domcontentloaded', timeout: 60_000 }),
+        guestPage2.goto(LIVE_URL, { waitUntil: 'domcontentloaded', timeout: 60_000 }),
+      ]);
+      await Promise.all([waitForBoot(hostPage2), waitForBoot(guestPage2)]);
+
+      await Promise.all([setAlias(hostPage2, H2), setAlias(guestPage2, G2)]);
+      await Promise.all([
+        hostPage2.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 }),
+        guestPage2.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 }),
+      ]);
+      await Promise.all([waitForBoot(hostPage2), waitForBoot(guestPage2)]);
+      console.log(`[duo-live] test2: both pages booted`);
+
+      // Host creates room
+      await openDuoLobby(hostPage2);
+      await createRoom(hostPage2);
+      console.log(`[duo-live] test2: host created room`);
+
+      // Guest opens lobby and joins
+      await openDuoLobby(guestPage2);
+      await refreshLobbyAndWaitForRoom(guestPage2, H2);
+      await joinRoomByHostAlias(guestPage2, H2);
+      console.log(`[duo-live] test2: guest joined room`);
+
+      // Confirm host's ready button became visible (guest is present in snapshot)
+      await waitForReadyButtonVisible(hostPage2);
+      console.log(`[duo-live] test2: host ready button appeared`);
+
+      // Guest leaves
+      await guestPage2.evaluate(() => (window as Record<string, unknown>).leaveDuoRoom?.());
+      console.log(`[duo-live] test2: guest called leaveDuoRoom`);
+
+      // Guest: should navigate back to lobby
+      await guestPage2.waitForFunction(
+        () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
+        { timeout: 20_000 },
+      );
+      console.log(`[duo-live] test2: guest returned to lobby ✓`);
+
+      // Host: ready button should be hidden again (no guest in room)
+      await hostPage2.waitForFunction(
+        () => {
+          const btn = document.getElementById('duo-ready-btn') as HTMLButtonElement | null;
+          return btn != null && btn.style.display === 'none';
+        },
+        { timeout: 20_000 },
+      );
+      // Host: guest slot should be empty
+      await hostPage2.waitForFunction(
+        () => document.getElementById('duo-slot-guest')?.classList.contains('empty') ?? false,
+        { timeout: 5_000 },
+      );
+      console.log(`[duo-live] test2: host sees empty guest slot + hidden ready btn ✓`);
+
+    } finally {
+      try { await cleanup(hostPage2); } catch { /* ignore */ }
+      await Promise.allSettled([hostCtx2.close(), guestCtx2.close()]);
+    }
+  });
+
   test('兩玩家完整對局並出現勝負結果', async () => {
     // ── 1. Load live site ───────────────────────────────────────────────
     console.log(`[duo-live] loading live site (alias host=${HOST_ALIAS} guest=${GUEST_ALIAS})`);
@@ -291,6 +366,20 @@ test.describe('duo-live', () => {
     console.log(`[duo-live] guest found room in list`);
     await joinRoomByHostAlias(guestPage, HOST_ALIAS);
     console.log(`[duo-live] guest joined room`);
+
+    // ── 4.5 Verify aliases are displayed correctly in room view ──────────
+    // Host page: guest alias should appear; Guest page: host alias should appear
+    await hostPage.waitForFunction(
+      (alias) => document.getElementById('duo-guest-alias')?.textContent === alias,
+      GUEST_ALIAS,
+      { timeout: 15_000 },
+    );
+    await guestPage.waitForFunction(
+      (alias) => document.getElementById('duo-host-alias')?.textContent === alias,
+      HOST_ALIAS,
+      { timeout: 15_000 },
+    );
+    console.log(`[duo-live] aliases verified in room view`);
 
     // ── 5. Both pages: wait for ready button to appear ──────────────────
     await Promise.all([
@@ -379,6 +468,14 @@ test.describe('duo-live', () => {
     await expect(guestPage.locator('#duo-result-modal .resume-btn')).toBeVisible();
     await expect(hostPage.locator('#duo-result-modal .back-btn')).toBeVisible();
     await expect(guestPage.locator('#duo-result-modal .back-btn')).toBeVisible();
+
+    // ── 13. Host clicks "back to lobby" from result modal ────────────────
+    await hostPage.locator('#duo-result-modal .back-btn').click();
+    await hostPage.waitForFunction(
+      () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
+      { timeout: 15_000 },
+    );
+    console.log(`[duo-live] host returned to lobby after result ✓`);
 
     console.log(`[duo-live] ✓ test passed`);
   });
