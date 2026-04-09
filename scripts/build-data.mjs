@@ -93,6 +93,18 @@ for (const [name, levels] of Object.entries(shards)) {
   console.log(`  ${filename}: ${levels.length} levels (${kb} KB)`);
 }
 
+// Register pre-built duo shards (duo-T*.json already in public/data, not in levels-data.json)
+const duoFiles = fs.readdirSync(DATA_DIR).filter(f => /^duo-T\d+\.json$/.test(f)).sort();
+for (const filename of duoFiles) {
+  const name = filename.replace('.json', '');
+  if (manifest.shards[name]) continue; // already registered
+  const content = fs.readFileSync(path.join(DATA_DIR, filename), 'utf8');
+  const count = JSON.parse(content).length;
+  manifest.shards[name] = { file: filename, count, size: content.length };
+  const kb = Math.round(content.length / 1024);
+  console.log(`  ${filename}: ${count} levels (${kb} KB) [pre-built]`);
+}
+
 // Write manifest
 const manifestJson = JSON.stringify(manifest, null, 2);
 fs.writeFileSync(path.join(DATA_DIR, 'manifest.json'), manifestJson, 'utf8');
