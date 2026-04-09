@@ -249,32 +249,6 @@ test.describe('duo-live', () => {
     hostPage = await hostCtx.newPage();
     guestPage = await guestCtx.newPage();
 
-    // The deployed manifest doesn't yet include duo shards (build-data.mjs only
-    // writes world/normal/practice shards). The duo-T01.json file DOES exist on
-    // the live server. Inject it into every manifest response so the game can
-    // load the puzzle pool.
-    for (const page of [hostPage, guestPage]) {
-      await page.route('**/data/manifest.json**', async (route) => {
-        const response = await route.fetch();
-        let manifest: Record<string, unknown>;
-        try {
-          manifest = await response.json();
-        } catch {
-          await route.fulfill({ response });
-          return;
-        }
-        const shards = (manifest.shards as Record<string, unknown>) ?? {};
-        if (!shards['duo-T01']) {
-          shards['duo-T01'] = { file: 'duo-T01.json', count: 200, size: 136874 };
-          manifest.shards = shards;
-        }
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(manifest),
-        });
-      });
-    }
   });
 
   test.afterAll(async () => {
