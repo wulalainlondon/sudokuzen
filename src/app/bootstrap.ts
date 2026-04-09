@@ -12,6 +12,8 @@ import { gs } from '../game/state';
 import { initGame, handleInput, erase, saveGameStatus } from '../game/core';
 import { selectCell } from '../game/board';
 import * as replay from '../features/replay';
+import { getCurrentEncounter, isWildActive, onWildComplete, getWildProfile } from '../features/wild/wildController';
+import { deferMentorIntro } from '../features/wild/mentorController';
 import { hydratePlayerProfileFromCloud, installPlayerCloudSyncBridge, whenFirebaseReady } from '../firebase/client';
 import type { SudokuWindow } from '../facade/windowTypes';
 import {
@@ -74,6 +76,6 @@ export function bootstrapApp(): void {
 
   // Expose test hooks in dev mode for E2E (Playwright)
   if (import.meta.env.DEV) {
-    (window as SudokuWindow).__e2e = { gs, initGame, handleInput, erase, saveGameStatus, selectCell, replay };
+    (window as SudokuWindow).__e2e = { gs, initGame, handleInput, erase, saveGameStatus, selectCell, replay, getCurrentEncounter, isWildActive, onWildComplete, getWildProfile, deferMentorIntro };
   }
 }

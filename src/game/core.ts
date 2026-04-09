@@ -70,7 +70,6 @@ import {
   enterSkillMode,
   exitSkillMode,
   castSkill,
-  tryQuickCast,
 } from '../features/skills/skillController';
 import { saveGameStatus, loadGameStatus, clearGameStatus } from './persistence';
 import {
@@ -142,7 +141,6 @@ export {
   castLockedSkill,
   exitSkillMode,
   castSkill,
-  tryQuickCast,
 };
 
 // ── Board callbacks (Risk 6 fix: replace dynamic import() in event handlers) ──
@@ -153,6 +151,9 @@ setBoardCallbacks({
     if (gs.chainTracePanelOpen) {
       import('../features/chainTracePanel').then((m) => m.onChainDigitTap(cell, digit)).catch(() => {});
     }
+  },
+  onCandidateCellTap: (idx: number) => {
+    import('../features/skills/candidateTrackingController').then((m) => m.tapCellInTracking(idx)).catch(() => {});
   },
   onCellLongPress: (idx: number, prevSelected: number) => enterSkillMode(idx, prevSelected),
   onSkillModeExit: () => exitSkillMode(),
@@ -260,6 +261,8 @@ function resetGameState(): void {
     isError: false,
   }));
   resetSkillState();
+  // Reset CTM state synchronously (panel may be visible if user was tracking)
+  import('../features/skills/candidateTrackingController').then((m) => m.exitCandidateTracking()).catch(() => {});
 
   // Undo visibility is set in initGame after level resolution
 }
@@ -598,6 +601,18 @@ export function pauseGame(): void {
       cmCheckbox.checked = isChainMapPanelEnabled();
       cmCheckbox.onchange = () => setChainMapPanelEnabled(cmCheckbox.checked);
     }).catch(() => {});
+  }
+
+  // Candidate Tracking Mode toggle — Wild mode only
+  const ctmToggle = document.getElementById('pause-ctm-toggle');
+  const ctmCheckbox = document.getElementById('ctm-checkbox') as HTMLInputElement | null;
+  if (ctmToggle) ctmToggle.classList.toggle('hidden', !isWild);
+  if (ctmCheckbox) {
+    ctmCheckbox.checked = gs.candidateTrackingEnabled;
+    ctmCheckbox.onchange = () => {
+      gs.candidateTrackingEnabled = ctmCheckbox.checked;
+      localStorage.setItem(SK.CTM_ENABLED, ctmCheckbox.checked ? '1' : '0');
+    };
   }
 
   const resumeBtn = document.getElementById('pause-resume-btn') as HTMLButtonElement | null;

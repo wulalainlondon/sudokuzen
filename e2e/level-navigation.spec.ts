@@ -111,8 +111,8 @@ test.describe('level-navigation', () => {
   test('stage map shows partial progress after completing a level', async ({ page }) => {
     // Get the actual first level ID and inject a completion record
     await page.evaluate(async () => {
-      const { getAllLevels } = await import('/src/data/dataRegistry.ts');
-      const levels = getAllLevels().filter((l: unknown) => !l.hidden);
+      const { getAllLevelsAsync } = await import('/src/data/dataRegistry.ts');
+      const levels = (await getAllLevelsAsync()).filter((l: unknown) => !l.hidden);
       const firstLevel = levels[0];
 
       const records = JSON.parse(localStorage.getItem('sudoku_records') || '{}');

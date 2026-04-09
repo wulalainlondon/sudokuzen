@@ -19,9 +19,10 @@ type EncounterEvent = {
 test('simulate world run to lv80 and write report', async ({ page }) => {
   test.setTimeout(12 * 60 * 1000);
 
-  page.on('dialog', async (d) => {
-    // Intro prompt: cancel to defer and go straight into gameplay.
-    await d.dismiss();
+  page.on('console', (msg) => {
+    if (msg.type() === 'error' || msg.text().includes('[Wild]')) {
+      console.log(`[browser] ${msg.type()}: ${msg.text()}`);
+    }
   });
 
   await page.goto('/');
@@ -36,9 +37,36 @@ test('simulate world run to lv80 and write report', async ({ page }) => {
   await page.waitForFunction(() => typeof (window as unknown).showLevelScreen === 'function', { timeout: 20_000 });
 
   const result = await page.evaluate(async () => {
-    const wc = await import('/src/features/wild/wildController.ts');
+    type WildProfile = {
+      iqLevel: number;
+      totalExp: number;
+      gateOverflowExp?: number;
+      studiedSkills?: string[];
+      bestiary: Record<string, { kills: number }>;
+      [k: string]: unknown;
+    };
+    type E2E = {
+      gs: { currentLevel?: { id: number } };
+      getCurrentEncounter: () => { technique: string; rarity: string; challengeMode: string; mentorTime: number } | null;
+      isWildActive: () => boolean;
+      onWildComplete: (seconds: number, errors: number) => { expGained: number; leveledUp: boolean; newLevel: number; firstKill: string | null; beatMentor: boolean };
+      getWildProfile: () => WildProfile;
+      deferMentorIntro: () => void;
+    };
+    const e2e = (window as unknown as { __e2e: E2E }).__e2e;
+    const w = window as unknown as {
+      startWorldSession: () => Promise<void>;
+      continueWild: () => Promise<void>;
+      dismissMentor: () => void;
+    };
+
+    // Dynamic imports for pure-localStorage helpers (module identity doesn't matter).
     const ws = await import('/src/features/wild/wildState.ts');
     const exp = await import('/src/features/wild/expSystem.ts');
+
+    // Use deferMentorIntro from __e2e (same module instance as the app) to skip
+    // the custom DOM confirm dialog that page.on('dialog') cannot intercept.
+    e2e.deferMentorIntro();
 
     const events: Array<EncounterEvent | { type: string; [k: string]: unknown }> = [];
     const levelUps: Array<{ idx: number; from: number; to: number; exp: number }> = [];
@@ -50,26 +78,35 @@ test('simulate world run to lv80 and write report', async ({ page }) => {
 
     for (let i = 1; i <= maxEncounters; i++) {
       // Keep mentor overlay from blocking input if it appears asynchronously.
-      (window as unknown).dismissMentor?.();
+      w.dismissMentor?.();
 
-      if (i === 1) await wc.startWorldSession();
-      else await wc.continueWild();
+      if (i === 1) await w.startWorldSession();
+      else await w.continueWild();
 
-      const enc = wc.getCurrentEncounter();
+      // Use __e2e functions to access state from the app's exact module instance.
+      const enc = e2e.getCurrentEncounter();
       if (!enc) {
-        events.push({ type: 'no_encounter', idx: i });
+        events.push({
+          type: 'no_encounter',
+          idx: i,
+          active: e2e.isWildActive(),
+          currentLevelId: e2e.gs?.currentLevel?.id ?? null,
+        });
         break;
       }
 
-      const pBefore = wc.getWildProfile();
+      // getWildProfile() returns the in-memory cached profile (not stale localStorage).
+      // saveWildProfile() is debounced 100ms, so reading localStorage would give stale data.
+      const pBefore = e2e.getWildProfile();
       const levelBefore = pBefore.iqLevel;
 
       const secBase = Math.max(35, 220 - Math.floor(levelBefore * 1.6));
       const seconds = secBase + Math.floor(Math.random() * 35);
       const errors = enc.challengeMode === 'ironman' ? 0 : Math.floor(Math.random() * 2);
 
-      const r = wc.onWildComplete(seconds, errors);
-      const pAfter = wc.getWildProfile();
+      // Use __e2e.onWildComplete — same module instance, has access to _encounter/_active.
+      const r = e2e.onWildComplete(seconds, errors);
+      const pAfter = e2e.getWildProfile();
 
       rarityCount[enc.rarity] = (rarityCount[enc.rarity] ?? 0) + 1;
       modeCount[enc.challengeMode] = (modeCount[enc.challengeMode] ?? 0) + 1;
@@ -106,10 +143,10 @@ test('simulate world run to lv80 and write report', async ({ page }) => {
         });
       }
 
-      if (wc.getWildProfile().iqLevel >= 80) break;
+      if (pAfter.iqLevel >= 80) break;
     }
 
-    const finalProfile = wc.getWildProfile();
+    const finalProfile = e2e.getWildProfile();
     const discovered = Object.keys(finalProfile.bestiary).length;
     const conquered = Object.values(finalProfile.bestiary).filter((x) => x.kills > 0).length;
 
@@ -138,4 +175,3 @@ test('simulate world run to lv80 and write report', async ({ page }) => {
 
   expect(result.reachedLv80).toBe(true);
 });
-
