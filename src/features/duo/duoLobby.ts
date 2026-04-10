@@ -213,6 +213,10 @@ export async function openDuoLobby(): Promise<void> {
     showFeedback(t('duo.networkRequired'), 'error');
     return;
   }
+  // Wait for anonymous auth so authUid is available before any room operations
+  const { initAnonymousAuth } = await import('../../firebase/runtime');
+  await initAnonymousAuth();
+  setDuoLobbyConnectionState('connected');
   saveScroll('stage-map');
   const { resumeDuoRoomIfAny, cleanupStaleDuoRooms, getActiveDuoRoomId } = await import('./duoRoom');
   void cleanupStaleDuoRooms();
