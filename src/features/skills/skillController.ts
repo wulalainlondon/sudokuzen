@@ -31,11 +31,7 @@ import { finnedXWingSkill } from './finnedXWing';
 import { bugPlusOneSkill } from './bugPlusOne';
 import type { SkillPreview } from './types';
 import { getChoreography } from './castChoreography';
-import {
-  showSkillPanel,
-  hideSkillPanel,
-  updatePanelUI as _updatePanelUI,
-} from './skillPanelUI';
+import { showSkillPanel, hideSkillPanel, updatePanelUI as _updatePanelUI } from './skillPanelUI';
 
 // ── Register skills (order = evaluation priority) ────────────────────
 // Quick-cast singles (evaluated first for speed)
@@ -194,6 +190,9 @@ function evaluate(): void {
 
 /** Called by board.ts when a cell is long-pressed. prevSelected is the cell that was selected before this tap. */
 export function enterSkillMode(cellIdx: number, prevSelected?: number): void {
+  // Don't interrupt CTM or an ongoing cast
+  if (gs.candidateTracking?.active) return;
+
   const skill = sm();
 
   if (skill.enabled) {
@@ -218,6 +217,7 @@ export function enterSkillMode(cellIdx: number, prevSelected?: number): void {
   if (!isWild) return;
 
   // Enter skill mode with 2 cells: the previously selected + long-pressed
+  // Haptic feedback is already fired by board.ts long-press timer — no duplicate vibrate here.
   const firstCell = prevSelected ?? gs.selectedIdx;
   skill.enabled = true;
   skill.selectedCells = [];
@@ -226,7 +226,6 @@ export function enterSkillMode(cellIdx: number, prevSelected?: number): void {
   }
   skill.selectedCells.push(cellIdx);
 
-  if (navigator.vibrate) navigator.vibrate(15);
   showSkillPanel();
   evaluate();
 }
@@ -325,7 +324,13 @@ async function quickCastFill(idx: number, digit: number): Promise<void> {
   cellData.value = digit;
   cellData.notes = [];
   cellData.isError = false;
-  recordAction('quickcast_fill', t('skills.quickCastFill', { cell: cellLabel(idx), digit: String(digit) }), idx, digit, null);
+  recordAction(
+    'quickcast_fill',
+    t('skills.quickCastFill', { cell: cellLabel(idx), digit: String(digit) }),
+    idx,
+    digit,
+    null,
+  );
 
   // Auto-eliminate from peers
   const { updateCellDisplay, getUnitIndices } = await import('../../game/board');

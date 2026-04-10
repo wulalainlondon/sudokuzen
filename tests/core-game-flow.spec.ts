@@ -2,12 +2,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { SK, readJson } from '../src/storage/keys';
 import { gs } from '../src/game/state';
-import {
-  saveGameStatus,
-  loadGameStatus,
-  clearGameStatus,
-  saveProgress,
-} from '../src/game/core';
+import { saveGameStatus, loadGameStatus, clearGameStatus, saveProgress } from '../src/game/core';
 import { toClassicLevelRecord, toSpeedLevelRecord } from '../src/shared/records/levelRecords';
 
 // Minimal level data for testing
@@ -18,7 +13,9 @@ function makeLevelData(id = 1) {
     difficultyName: 'Easy',
     displayName: 'Level 1',
     puzzle: Array(81).fill(0),
-    solution: Array(81).fill(0).map((_, i) => (i % 9) + 1),
+    solution: Array(81)
+      .fill(0)
+      .map((_, i) => (i % 9) + 1),
     mode: 'normal' as const,
   };
 }
@@ -183,5 +180,23 @@ describe('saveProgress', () => {
     saveProgress();
     records = readJson<Record<string, unknown>>(SK.RECORDS, {});
     expect(toClassicLevelRecord(records[10])?.time).toBe(150);
+  });
+
+  it('sanitizes replay history before persisting records', () => {
+    gs.actionHistory = [
+      { t: 12, type: 'fill', detail: 'valid', idx: 3, val: 7, notes: [1, 2] },
+      { t: 13, type: 'unknown', detail: 'bad type', idx: null, val: null, notes: null },
+      { t: 14, type: 'note', detail: 'valid note', idx: null, val: null, notes: [4, 5] },
+      { t: 15, type: 'fill', detail: '', idx: 4, val: 8, notes: null },
+    ] as unknown as typeof gs.actionHistory;
+
+    saveProgress();
+
+    const records = readJson<Record<string, unknown>>(SK.RECORDS, {});
+    const saved = toClassicLevelRecord(records[10]);
+    expect(saved?.replayHistory).toEqual([
+      { t: 12, type: 'fill', detail: 'valid', idx: 3, val: 7, notes: [1, 2] },
+      { t: 14, type: 'note', detail: 'valid note', idx: null, val: null, notes: [4, 5] },
+    ]);
   });
 });

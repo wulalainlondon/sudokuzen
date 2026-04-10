@@ -4,7 +4,7 @@ import { t } from '../i18n/t';
 export interface TitleDef {
   id: string;
   achievementId: string; // '' for default (no achievement required)
-  resonance?: string[];  // technique keys that get +10% EXP bonus
+  resonance?: string[]; // technique keys that get +10% EXP bonus
 }
 
 // 20 titles total (including 'none' for no title and 'default' for 修行者)
@@ -18,9 +18,24 @@ const TITLE_DEFS: TitleDef[] = [
   { id: 'rock_heart', achievementId: 'streak_5_clean' },
   { id: 's_appraiser', achievementId: 'grade_s' },
   { id: 'triple_crown', achievementId: 'streak_3_s' },
-  { id: 'fish_hunter', achievementId: 'tech_fish', resonance: ['x_wing', 'swordfish', 'jellyfish', 'finned_x_wing', 'finned_swordfish', 'finned_jellyfish'] },
+  {
+    id: 'fish_hunter',
+    achievementId: 'tech_fish',
+    resonance: ['x_wing', 'swordfish', 'jellyfish', 'finned_x_wing', 'finned_swordfish', 'finned_jellyfish'],
+  },
   { id: 'wind_rider', achievementId: 'tech_wing', resonance: ['xy_wing', 'xyz_wing', 'w_wing'] },
-  { id: 'chain_master', achievementId: 'tech_chain', resonance: ['aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop', 'xy_chain'] },
+  {
+    id: 'chain_master',
+    achievementId: 'tech_chain',
+    resonance: [
+      'aic',
+      'aic_mid_chain',
+      'aic_long_chain',
+      'grouped_aic_nice_loop',
+      'discontinuous_nice_loop',
+      'xy_chain',
+    ],
+  },
   { id: 'als_scholar', achievementId: 'tech_als', resonance: ['als_xz', 'als_xy', 'als_w_wing', 'als_chain'] },
   { id: 'eliminator', achievementId: 'elim_5000' },
   { id: 'gale', achievementId: 'speedrun_first' },
@@ -62,7 +77,7 @@ export function getEquippedTitleDisplay(): string {
 /** Get all titles the player has unlocked (based on achievements) */
 export function getUnlockedTitles(): TitleDef[] {
   const achievements = readJson<Record<string, unknown>>(SK.ACHIEVEMENTS, {});
-  return TITLE_DEFS.filter(td => {
+  return TITLE_DEFS.filter((td) => {
     if (td.id === 'none' || td.id === 'default') return true; // always available
     return !!achievements[td.achievementId];
   });
@@ -70,7 +85,7 @@ export function getUnlockedTitles(): TitleDef[] {
 
 /** Check if a title has resonance with a technique (for EXP bonus) */
 export function getTitleResonanceBonus(titleId: string, technique: string): number {
-  const def = TITLE_DEFS.find(td => td.id === titleId);
+  const def = TITLE_DEFS.find((td) => td.id === titleId);
   if (!def || !def.resonance) return 0;
   if (def.resonance.includes(technique)) return 0.1; // +10% EXP
   return 0;

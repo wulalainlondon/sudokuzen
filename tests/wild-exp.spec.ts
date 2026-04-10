@@ -140,6 +140,8 @@ describe('applyExp', () => {
       currentSession: null,
       fragments: {},
       studiedSkills: [],
+      tutorialCompleted: false,
+      tutorialRound: 0,
       ...overrides,
     };
   }
@@ -176,8 +178,13 @@ describe('applyExp', () => {
     const needed = lv21Exp - lv20Exp + 1;
     // All T0-T1 technique keys that have fragmentsRequired > 0
     const requiredSkills = [
-      'naked_single', 'hidden_single', 'locked_candidates',
-      'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple',
+      'naked_single',
+      'hidden_single',
+      'locked_candidates',
+      'naked_pair',
+      'hidden_pair',
+      'naked_triple',
+      'hidden_triple',
     ];
     const profile = makeProfile({ iqLevel: 20, totalExp: lv20Exp, studiedSkills: requiredSkills });
     const result = applyExp(profile, needed);
@@ -192,8 +199,13 @@ describe('applyExp', () => {
       totalExp: lv20Exp,
       gateOverflowExp: 600,
       studiedSkills: [
-        'naked_single', 'hidden_single', 'locked_candidates',
-        'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple',
+        'naked_single',
+        'hidden_single',
+        'locked_candidates',
+        'naked_pair',
+        'hidden_pair',
+        'naked_triple',
+        'hidden_triple',
       ],
     });
     const released = releaseGateOverflow(profile);

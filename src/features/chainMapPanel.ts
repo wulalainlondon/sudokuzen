@@ -108,8 +108,8 @@ function removeSvgOverlay(): void {
 /** Cell center in viewBox (0-100) percentage space — works for equal-size 9×9 grid */
 function cellPct(idx: number): { x: number; y: number } {
   return {
-    x: ((idx % 9) + 0.5) / 9 * 100,
-    y: (Math.floor(idx / 9) + 0.5) / 9 * 100,
+    x: (((idx % 9) + 0.5) / 9) * 100,
+    y: ((Math.floor(idx / 9) + 0.5) / 9) * 100,
   };
 }
 
@@ -228,7 +228,8 @@ function syncStats(): void {
     return;
   }
   const graph = getMapGraph();
-  let sc = 0, wc = 0;
+  let sc = 0,
+    wc = 0;
   const counted = new Set<string>();
   graph.strong.forEach((targets, nodeA) => {
     const { cell: cA, digit: dA } = decodeNode(nodeA);
@@ -237,7 +238,10 @@ function syncStats(): void {
       const { cell: cB, digit: dB } = decodeNode(nodeB);
       if (dB !== dA) return;
       const k = `${Math.min(cA, cB)}-${Math.max(cA, cB)}-${dA}`;
-      if (!counted.has(k)) { counted.add(k); sc++; }
+      if (!counted.has(k)) {
+        counted.add(k);
+        sc++;
+      }
     });
   });
   if (_showWeak) {
@@ -249,7 +253,10 @@ function syncStats(): void {
         const { cell: cB, digit: dB } = decodeNode(nodeB);
         if (dB !== dA) return;
         const k = `${Math.min(cA, cB)}-${Math.max(cA, cB)}-${dA}`;
-        if (!wCounted.has(k)) { wCounted.add(k); wc++; }
+        if (!wCounted.has(k)) {
+          wCounted.add(k);
+          wc++;
+        }
       });
     });
   }

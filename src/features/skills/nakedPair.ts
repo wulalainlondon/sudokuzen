@@ -3,7 +3,14 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { makeEmptyPreview, getSharedUnits, getUnitCells } from './types';
 import { t } from '../../i18n/t';
 
-const META = { id: 'naked_pair', get name() { return t('skills.nakedPairName'); }, subtitle: 'Naked Pair', sweepDirection: 'outward' as const };
+const META = {
+  id: 'naked_pair',
+  get name() {
+    return t('skills.nakedPairName');
+  },
+  subtitle: 'Naked Pair',
+  sweepDirection: 'outward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   if (selectedCells.length < 2) return makeEmptyPreview(META, '');

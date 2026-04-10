@@ -318,7 +318,11 @@ function StoryDemoBoard({ module, story }: { module: TeachModuleModel; story: De
       </div>
 
       {/* Elimination count after final act */}
-      {done && completedElims.length > 0 && <div className="demo-elim-count">{t('miscRuntime.elimCountLabel', { count: String(completedElims.length) })}</div>}
+      {done && completedElims.length > 0 && (
+        <div className="demo-elim-count">
+          {t('miscRuntime.elimCountLabel', { count: String(completedElims.length) })}
+        </div>
+      )}
 
       <div className="demo-live-caption" aria-live="polite">
         {caption}
@@ -421,7 +425,8 @@ function LegacyDemoBoard({ module }: Props): ReactElement {
       const p = Math.min(Math.max(elimIdx + 1, 0), elimCount);
       return t('miscRuntime.phaseElim', { p: String(p), total: String(elimCount) });
     }
-    if (phase === 'count' || phase === 'afterglow' || phase === 'done') return t('miscRuntime.phaseDone', { count: String(elimCount) });
+    if (phase === 'count' || phase === 'afterglow' || phase === 'done')
+      return t('miscRuntime.phaseDone', { count: String(elimCount) });
     return '';
   })();
 
@@ -472,7 +477,9 @@ function LegacyDemoBoard({ module }: Props): ReactElement {
       </div>
 
       {showName && <div className="demo-technique-name">{module.name}</div>}
-      {showCount && elimCount > 0 && <div className="demo-elim-count">{t('miscRuntime.elimCountLabel', { count: String(elimCount) })}</div>}
+      {showCount && elimCount > 0 && (
+        <div className="demo-elim-count">{t('miscRuntime.elimCountLabel', { count: String(elimCount) })}</div>
+      )}
       <div className="demo-live-caption" aria-live="polite">
         {liveCaption}
       </div>

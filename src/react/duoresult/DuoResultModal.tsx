@@ -45,9 +45,11 @@ export function DuoResultModal(): ReactElement {
 
   const handlePlayAgain = useCallback(() => {
     // Close result modal and navigate back to duo lobby for rematch
-    import('../../features/duo/duoGame').then((m) => {
-      m.closeDuoResult();
-    }).catch(() => {});
+    import('../../features/duo/duoGame')
+      .then((m) => {
+        m.closeDuoResult();
+      })
+      .catch(() => {});
   }, []);
 
   const handleBack = useCallback(() => {
@@ -68,8 +70,16 @@ export function DuoResultModal(): ReactElement {
         <h2 className={titleClass}>{t('duo.resultTitle')}</h2>
         {/* Safety: contentHtml built by our own duo.ts code (trusted) */}
         <div dangerouslySetInnerHTML={{ __html: safeContentHtml }} />
-        <button className="resume-btn" onClick={handlePlayAgain}>{t('duo.playAgain')}</button>
-        <button className="back-btn" style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }} onClick={handleBack}>{t('duo.backToLobby')}</button>
+        <button className="resume-btn" onClick={handlePlayAgain}>
+          {t('duo.playAgain')}
+        </button>
+        <button
+          className="back-btn"
+          style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }}
+          onClick={handleBack}
+        >
+          {t('duo.backToLobby')}
+        </button>
       </div>
     </ZenOverlay>
   );

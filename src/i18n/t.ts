@@ -7,9 +7,10 @@ import { zhTW } from './locale/zh-TW';
 type StringTable = typeof zhTW;
 type FlatKeys<T, Prefix extends string = ''> =
   T extends Record<string, unknown>
-    ? { [K in keyof T & string]: T[K] extends Record<string, unknown>
-        ? FlatKeys<T[K], `${Prefix}${K}.`>
-        : `${Prefix}${K}`
+    ? {
+        [K in keyof T & string]: T[K] extends Record<string, unknown>
+          ? FlatKeys<T[K], `${Prefix}${K}.`>
+          : `${Prefix}${K}`;
       }[keyof T & string]
     : never;
 

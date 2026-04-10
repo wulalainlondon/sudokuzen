@@ -2,10 +2,7 @@ import { createPortal } from 'react-dom';
 import { useEffect, useState, type ReactElement } from 'react';
 import { getMentorNote } from '../../features/wild/mentorController';
 import { TECHNIQUE_TABLE, type Rarity } from '../../features/wild/techniqueMeta';
-import {
-  getWildBestiaryFilters,
-  studyWildSkill,
-} from '../../features/wild/wildLobby';
+import { getWildBestiaryFilters, studyWildSkill } from '../../features/wild/wildLobby';
 import { loadWildProfile } from '../../features/wild/wildState';
 import { t } from '../../i18n/t';
 import { bridgeOpenWildMentorNote } from './wildLobbyBridge';
@@ -27,13 +24,62 @@ const MODE_LABELS: Record<(typeof ALL_MODES)[number], string> = {
 };
 
 const PHASES: Array<{ name: string; minGate: number; keys: string[] }> = [
-  { name: t('wildLobby.phaseFundamentals'), minGate: 1, keys: ['naked_single', 'hidden_single', 'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple'] },
+  {
+    name: t('wildLobby.phaseFundamentals'),
+    minGate: 1,
+    keys: [
+      'naked_single',
+      'hidden_single',
+      'locked_candidates',
+      'naked_pair',
+      'hidden_pair',
+      'naked_triple',
+      'hidden_triple',
+    ],
+  },
   { name: t('wildLobby.phaseMidIntuitive'), minGate: 21, keys: ['x_wing', 'unique_rectangle', 'bug_plus_one'] },
-  { name: t('wildLobby.phaseMidDeductive'), minGate: 31, keys: ['skyscraper', 'two_string_kite', 'empty_rectangle', 'finned_x_wing', 'xy_wing', 'xyz_wing', 'w_wing', 'remote_pairs'] },
-  { name: t('wildLobby.phaseAdvanced'), minGate: 41, keys: ['swordfish', 'x_cycle_simple_coloring', 'finned_swordfish', 'jellyfish', 'finned_jellyfish'] },
-  { name: t('wildLobby.phaseChains'), minGate: 61, keys: ['aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop', 'xy_chain'] },
-  { name: t('wildLobby.phaseALSForcing'), minGate: 71, keys: ['als_xz', 'als_xy', 'als_w_wing', 'als_chain', 'forcing_chain_net', 'cell_forcing_chain', 'region_forcing_chain'] },
-  { name: t('wildLobby.phaseUltimate'), minGate: 80, keys: ['sue_de_coq', 'template', 'death_blossom', 'exocet_death_blossom'] },
+  {
+    name: t('wildLobby.phaseMidDeductive'),
+    minGate: 31,
+    keys: [
+      'skyscraper',
+      'two_string_kite',
+      'empty_rectangle',
+      'finned_x_wing',
+      'xy_wing',
+      'xyz_wing',
+      'w_wing',
+      'remote_pairs',
+    ],
+  },
+  {
+    name: t('wildLobby.phaseAdvanced'),
+    minGate: 41,
+    keys: ['swordfish', 'x_cycle_simple_coloring', 'finned_swordfish', 'jellyfish', 'finned_jellyfish'],
+  },
+  {
+    name: t('wildLobby.phaseChains'),
+    minGate: 61,
+    keys: ['aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop', 'xy_chain'],
+  },
+  {
+    name: t('wildLobby.phaseALSForcing'),
+    minGate: 71,
+    keys: [
+      'als_xz',
+      'als_xy',
+      'als_w_wing',
+      'als_chain',
+      'forcing_chain_net',
+      'cell_forcing_chain',
+      'region_forcing_chain',
+    ],
+  },
+  {
+    name: t('wildLobby.phaseUltimate'),
+    minGate: 80,
+    keys: ['sue_de_coq', 'template', 'death_blossom', 'exocet_death_blossom'],
+  },
 ];
 
 export function WildBestiaryGrid(): ReactElement | null {
@@ -99,7 +145,11 @@ export function WildBestiaryGrid(): ReactElement | null {
     const phaseDiscovered = phase.keys.filter((k) => profile.bestiary[k]).length;
     rows.push(
       <div key={`phase-${phase.name}`} className="wild-bestiary-phase">
-        {t('wild.phaseHeader', { name: phase.name, discovered: String(phaseDiscovered), total: String(phase.keys.length) })}
+        {t('wild.phaseHeader', {
+          name: phase.name,
+          discovered: String(phaseDiscovered),
+          total: String(phase.keys.length),
+        })}
       </div>,
     );
 
@@ -155,7 +205,9 @@ export function WildBestiaryGrid(): ReactElement | null {
           }}
         >
           <div className="wild-beast-name">{entry ? tech.name : t('wild.unknown')}</div>
-          <div className="wild-beast-sub">{entry ? `${tech.subtitle} · ${RARITY_LABEL[tech.rarity]}` : t('wild.undiscovered')}</div>
+          <div className="wild-beast-sub">
+            {entry ? `${tech.subtitle} · ${RARITY_LABEL[tech.rarity]}` : t('wild.undiscovered')}
+          </div>
           {entry && (
             <div className="wild-beast-kills">
               {t('wild.kills', { kills: String(entry.kills), encounters: String(entry.encounters) })}
@@ -170,30 +222,31 @@ export function WildBestiaryGrid(): ReactElement | null {
               ))}
             </div>
           )}
-          {tech.fragmentsRequired > 0 && (() => {
-            const frags = profile.fragments?.[tech.key] || 0;
-            const isStudied = !!profile.studiedSkills?.includes(tech.key);
-            const isReady = frags >= tech.fragmentsRequired;
-            if (isStudied) return <div className="wild-beast-studied">{t('wild.studied')}</div>;
-            if (isReady) {
+          {tech.fragmentsRequired > 0 &&
+            (() => {
+              const frags = profile.fragments?.[tech.key] || 0;
+              const isStudied = !!profile.studiedSkills?.includes(tech.key);
+              const isReady = frags >= tech.fragmentsRequired;
+              if (isStudied) return <div className="wild-beast-studied">{t('wild.studied')}</div>;
+              if (isReady) {
+                return (
+                  <button
+                    className="wild-beast-study-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void studyWildSkill(tech.key);
+                    }}
+                  >
+                    {t('wild.study')}
+                  </button>
+                );
+              }
               return (
-                <button
-                  className="wild-beast-study-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void studyWildSkill(tech.key);
-                  }}
-                >
-                  {t('wild.study')}
-                </button>
+                <div className="wild-beast-frag">
+                  {t('wild.fragments', { current: String(frags), required: String(tech.fragmentsRequired) })}
+                </div>
               );
-            }
-            return (
-              <div className="wild-beast-frag">
-                {t('wild.fragments', { current: String(frags), required: String(tech.fragmentsRequired) })}
-              </div>
-            );
-          })()}
+            })()}
         </div>,
       );
     }
@@ -201,12 +254,16 @@ export function WildBestiaryGrid(): ReactElement | null {
 
   if (!renderedAnything) {
     rows.push(
-      <div key="empty" className="wild-bestiary-empty">{t('wildLobby.emptyByFilter')}</div>,
+      <div key="empty" className="wild-bestiary-empty">
+        {t('wildLobby.emptyByFilter')}
+      </div>,
     );
   }
   if (hasMore) {
     rows.push(
-      <div key="more" className="wild-bestiary-hint">{t('wildLobby.scrollForMore')}</div>,
+      <div key="more" className="wild-bestiary-hint">
+        {t('wildLobby.scrollForMore')}
+      </div>,
     );
   }
   rows.push(

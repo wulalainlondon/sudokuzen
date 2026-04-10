@@ -19,8 +19,12 @@ export interface MentorLine {
 function line(key: string, textKey: string, subKey?: string): MentorLine {
   return {
     key,
-    get text() { return t(textKey); },
-    get sub() { return subKey ? t(subKey) : undefined; },
+    get text() {
+      return t(textKey);
+    },
+    get sub() {
+      return subKey ? t(subKey) : undefined;
+    },
   };
 }
 
@@ -63,23 +67,58 @@ interface TechNote {
 
 // All technique keys that have mentor notes
 const TECH_KEYS = [
-  'naked_single', 'hidden_single',
-  'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple',
-  'unique_rectangle', 'skyscraper', 'two_string_kite', 'empty_rectangle',
-  'x_wing', 'finned_x_wing', 'xy_wing', 'xyz_wing', 'w_wing', 'remote_pairs', 'bug_plus_one',
-  'x_cycle_simple_coloring', 'swordfish', 'finned_swordfish', 'jellyfish', 'finned_jellyfish',
-  'aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop', 'xy_chain',
-  'als_xz', 'als_xy', 'als_w_wing', 'als_chain',
-  'forcing_chain_net', 'cell_forcing_chain', 'region_forcing_chain',
-  'sue_de_coq', 'template', 'death_blossom', 'exocet_death_blossom',
+  'naked_single',
+  'hidden_single',
+  'locked_candidates',
+  'naked_pair',
+  'hidden_pair',
+  'naked_triple',
+  'hidden_triple',
+  'unique_rectangle',
+  'skyscraper',
+  'two_string_kite',
+  'empty_rectangle',
+  'x_wing',
+  'finned_x_wing',
+  'xy_wing',
+  'xyz_wing',
+  'w_wing',
+  'remote_pairs',
+  'bug_plus_one',
+  'x_cycle_simple_coloring',
+  'swordfish',
+  'finned_swordfish',
+  'jellyfish',
+  'finned_jellyfish',
+  'aic',
+  'aic_mid_chain',
+  'aic_long_chain',
+  'grouped_aic_nice_loop',
+  'discontinuous_nice_loop',
+  'xy_chain',
+  'als_xz',
+  'als_xy',
+  'als_w_wing',
+  'als_chain',
+  'forcing_chain_net',
+  'cell_forcing_chain',
+  'region_forcing_chain',
+  'sue_de_coq',
+  'template',
+  'death_blossom',
+  'exocet_death_blossom',
 ] as const;
 
 function buildTechNotes(): Record<string, TechNote> {
   const notes: Record<string, TechNote> = {};
   for (const key of TECH_KEYS) {
     notes[key] = {
-      get veiled() { return t(`mentor.techniques.${key}.veiled`); },
-      get unveiled() { return t(`mentor.techniques.${key}.unveiled`); },
+      get veiled() {
+        return t(`mentor.techniques.${key}.veiled`);
+      },
+      get unveiled() {
+        return t(`mentor.techniques.${key}.unveiled`);
+      },
     };
   }
   return notes;
@@ -87,13 +126,66 @@ function buildTechNotes(): Record<string, TechNote> {
 
 export const MENTOR_TECH_NOTES: Record<string, TechNote> = buildTechNotes();
 
+// ── Per-technique encounter hints (3 levels, time-triggered) ────────
+// Shown during a first encounter to guide the player without spoiling.
+// level1: auto ~30s  level2: ~5min stuck  level3: ~10min (near give-up)
+
+export interface EncounterHint {
+  level1: string;
+  level2: string;
+  level3: string;
+}
+
+const HINT_KEYS = [
+  'locked_candidates',
+  'naked_pair',
+  'hidden_pair',
+  'naked_triple',
+  'hidden_triple',
+  'x_wing',
+  'unique_rectangle',
+  'bug_plus_one',
+  'skyscraper',
+  'two_string_kite',
+  'empty_rectangle',
+  'finned_x_wing',
+  'xy_wing',
+  'xyz_wing',
+  'w_wing',
+  'remote_pairs',
+  'swordfish',
+  'x_cycle_simple_coloring',
+  'finned_swordfish',
+  'jellyfish',
+  'finned_jellyfish',
+  'aic',
+  'aic_mid_chain',
+  'aic_long_chain',
+] as const;
+
+function buildEncounterHints(): Partial<Record<string, EncounterHint>> {
+  const hints: Partial<Record<string, EncounterHint>> = {};
+  for (const key of HINT_KEYS) {
+    hints[key] = {
+      get level1() {
+        return t(`mentor.encounterHints.${key}.l1`);
+      },
+      get level2() {
+        return t(`mentor.encounterHints.${key}.l2`);
+      },
+      get level3() {
+        return t(`mentor.encounterHints.${key}.l3`);
+      },
+    };
+  }
+  return hints;
+}
+
+export const MENTOR_ENCOUNTER_HINTS: Partial<Record<string, EncounterHint>> = buildEncounterHints();
+
 // ── Final message (after defeating exocet / collecting all) ─────────
 
-export const MENTOR_FINALE: MentorLine = line(
-  'finale',
-  'mentor.finale.text',
-  'mentor.finale.sub',
-);
+export const MENTOR_FINALE: MentorLine = line('finale', 'mentor.finale.text', 'mentor.finale.sub');
 
 // ── Helper: get milestone for a level-up ────────────────────────────
 

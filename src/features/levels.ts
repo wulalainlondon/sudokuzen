@@ -258,7 +258,9 @@ export function renderLevelGrid(): void {
     let starsClass: string, starsText: string;
     if (gs.isSpeedrunMode) {
       starsClass = hasRecord ? 'level-stars speedrun-stars' : 'level-stars is-empty';
-      starsText = hasRecord ? t('levelGrid.speedrunSubmissions', { submissions: String(submissions) }) : t('levelGrid.speedrunNotCleared');
+      starsText = hasRecord
+        ? t('levelGrid.speedrunSubmissions', { submissions: String(submissions) })
+        : t('levelGrid.speedrunNotCleared');
     } else {
       starsClass = bestStars > 0 ? 'level-stars' : 'level-stars is-empty';
       starsText =
@@ -290,11 +292,7 @@ export function renderLevelGrid(): void {
 
 let _pendingLevelData: LevelData | null = null;
 
-export function showPreLevelModal(
-  levelId: number,
-  ignoreTierLock = false,
-  externalLevel?: LevelData,
-): void {
+export function showPreLevelModal(levelId: number, ignoreTierLock = false, externalLevel?: LevelData): void {
   closeLibraryOverlay();
   gs.pendingLevelId = levelId;
   const levels = getAllLevels();
@@ -323,7 +321,10 @@ export function showPreLevelModal(
     hasRecord = true;
     if (gs.isSpeedrunMode) {
       if (speedRecord) {
-        bestRecord = t('prelevel.bestRecordSpeed', { time: formatSeconds(speedRecord.time), submissions: String(speedRecord.submissions) });
+        bestRecord = t('prelevel.bestRecordSpeed', {
+          time: formatSeconds(speedRecord.time),
+          submissions: String(speedRecord.submissions),
+        });
       }
     } else {
       const stars = classicRecord?.stars ?? 1;
@@ -444,7 +445,9 @@ function _showLevelScreenInner(returnToTier: boolean): void {
   import('../react/mentor/mentorBridge').then(({ bridgeDismissMentor }) => bridgeDismissMentor()).catch(() => {});
   // Only dismiss the duo result UI — do NOT call closeDuoResult() as it
   // calls showLevelScreen() back, creating an infinite loop.
-  import('../react/duoresult/duoResultBridge').then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult()).catch(() => {});
+  import('../react/duoresult/duoResultBridge')
+    .then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult())
+    .catch(() => {});
   hidePreLevelModal();
   closeWildLobby();
   closeDuoLobby();
@@ -453,11 +456,13 @@ function _showLevelScreenInner(returnToTier: boolean): void {
     import('./duo/duoGame').then((m) => m.resetDuoState()).catch(() => {});
   }
 
-  const target = forcedTarget ?? resolveLevelScreenReturnTarget(returnToTier, {
-    practiceReturnTech,
-    currentTab,
-    isWildContext: wasWildContext,
-  });
+  const target =
+    forcedTarget ??
+    resolveLevelScreenReturnTarget(returnToTier, {
+      practiceReturnTech,
+      currentTab,
+      isWildContext: wasWildContext,
+    });
   if (target === 'world') {
     openWildLobby();
   } else if (target === 'practice') {
@@ -495,8 +500,8 @@ export function advanceToNextLevel(): void {
   }
   const levels = getAllLevels();
   const tierMap = buildVisibleTierMap(levels);
-  const tierLevels = gs.currentTab ? (tierMap.get(gs.currentTab) || []) : [];
-  const currentIdx = tierLevels.findIndex(l => l.id === gs.currentLevel!.id);
+  const tierLevels = gs.currentTab ? tierMap.get(gs.currentTab) || [] : [];
+  const currentIdx = tierLevels.findIndex((l) => l.id === gs.currentLevel!.id);
   const nextIdx = currentIdx + 1;
 
   if (nextIdx >= tierLevels.length) {
@@ -523,7 +528,9 @@ let _worldLaunchInFlight = false;
 export async function startPoolRandom(): Promise<void> {
   if (_worldLaunchInFlight) return;
   _worldLaunchInFlight = true;
-  import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(true)).catch(() => {});
+  import('../react/wild/wildLobbyBridge')
+    .then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(true))
+    .catch(() => {});
 
   const enterBtn = document.getElementById('wild-enter-btn') as HTMLButtonElement | null;
   if (enterBtn) {
@@ -534,7 +541,8 @@ export async function startPoolRandom(): Promise<void> {
 
   try {
     showFeedback(t('misc.worldLoadingFeedback'), 'success');
-    const { startWorldSession, continueWild, getWildProfile, resumeWildEncounter } = await import('./wild/wildController');
+    const { startWorldSession, continueWild, getWildProfile, resumeWildEncounter } =
+      await import('./wild/wildController');
     const { loadWildSave } = await import('./wild/wildState');
 
     // Check for saved encounter first (pause/resume)
@@ -555,7 +563,9 @@ export async function startPoolRandom(): Promise<void> {
     showFeedback(t('wild.worldLoadError'), 'error');
   } finally {
     _worldLaunchInFlight = false;
-    import('../react/wild/wildLobbyBridge').then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(false)).catch(() => {});
+    import('../react/wild/wildLobbyBridge')
+      .then(({ bridgeSetWildLobbyLoading }) => bridgeSetWildLobbyLoading(false))
+      .catch(() => {});
     if (enterBtn) {
       enterBtn.classList.remove('is-loading');
       enterBtn.removeAttribute('aria-busy');

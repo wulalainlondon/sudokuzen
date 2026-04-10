@@ -198,8 +198,8 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
           // Skip if this cell+digit is already colored
           if (color.has(encode(cell, d))) continue;
 
-          const sees0 = c0cells.some(c => board.seesCell(cell, c));
-          const sees1 = c1cells.some(c => board.seesCell(cell, c));
+          const sees0 = c0cells.some((c) => board.seesCell(cell, c));
+          const sees1 = c1cells.some((c) => board.seesCell(cell, c));
           if (sees0 && sees1) {
             actions.push({ kind: 'eliminate', cell, digit: d });
           }
@@ -228,7 +228,8 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
         // For each color, check if both digits are "seen" by that color
         for (const colorIdx of [0, 1] as const) {
           const group = cluster[colorIdx];
-          let seesD0 = false, seesD1 = false;
+          let seesD0 = false,
+            seesD1 = false;
 
           for (const n of group) {
             const c = decodeCell(n);
@@ -276,7 +277,8 @@ export function detectMedusa3d(board: SolverBoard): DetectionResult | null {
 
           for (const unitIdx of units) {
             const unitCells = SolverBoard.ALL_UNITS[unitIdx];
-            let hasColor0 = false, hasColor1 = false;
+            let hasColor0 = false,
+              hasColor1 = false;
 
             for (const uc of unitCells) {
               const node = encode(uc, d);

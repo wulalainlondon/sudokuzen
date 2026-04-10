@@ -25,6 +25,7 @@ import {
   undoAction,
 } from '../game/core';
 import { exitSkillMode, castSkill } from '../features/skills/skillController';
+import { castFromTracking, exitCandidateTracking } from '../features/skills/candidateTrackingController';
 import {
   openReplayModal,
   closeReplayModal,
@@ -87,7 +88,12 @@ import {
   toggleMapLinkType,
 } from '../features/chainMapPanel';
 import { initBackHandler } from './navigation/navigationOrchestrator';
-import { installHostBridge, notifyHostBeforeUnload, notifyHostBootReady, type HostBridgeApi } from '../platform/hostBridge';
+import {
+  installHostBridge,
+  notifyHostBeforeUnload,
+  notifyHostBootReady,
+  type HostBridgeApi,
+} from '../platform/hostBridge';
 
 export function bootLegacyRuntime(appVersion: string): void {
   gs.appVersion = appVersion;
@@ -113,6 +119,8 @@ export function bootLegacyRuntime(appVersion: string): void {
 
   // 3. Restore persisted settings
   gs.isSpeedrunMode = localStorage.getItem(SK.SPEEDRUN) === 'true';
+  gs.candidateTrackingEnabled = localStorage.getItem(SK.CTM_ENABLED) === '1';
+  gs.constraintMapEnabled = localStorage.getItem(SK.CONSTRAINT_MAP_ENABLED) === '1';
 
   // 4. Build numpad
   const np = document.getElementById('numpad')!;
@@ -120,12 +128,55 @@ export function bootLegacyRuntime(appVersion: string): void {
     const b = document.createElement('button');
     b.className = 'num-btn';
     b.textContent = String(i);
+
+    let ctmTimer: ReturnType<typeof setTimeout> | null = null;
+    let ctmFired = false;
+
     b.addEventListener('pointerdown', (ev) => {
       if (ev && ev.button !== undefined && ev.button !== 0) return;
+      ctmFired = false;
+
+      if (gs.candidateTrackingEnabled && !gs.candidateTracking.active) {
+        // Long-press (300ms) → enter Candidate Tracking Mode; defer input to pointerup
+        ctmTimer = setTimeout(() => {
+          ctmFired = true;
+          ctmTimer = null;
+          import('../features/skills/candidateTrackingController')
+            .then((m) => m.enterCandidateTracking(i))
+            .catch(() => {});
+        }, 300);
+        return; // input will fire on pointerup if the long-press is cancelled
+      }
+
+      // Normal (no CTM) — fire immediately
       if (gs.continuousFillDigit !== null) {
         setContinuousDigit(i);
       } else {
         handleInput(i);
+      }
+    });
+    b.addEventListener('pointerup', () => {
+      if (ctmTimer) {
+        // Short press — timer not fired; fire input now
+        clearTimeout(ctmTimer);
+        ctmTimer = null;
+        if (!ctmFired) {
+          if (gs.continuousFillDigit !== null) setContinuousDigit(i);
+          else handleInput(i);
+        }
+      }
+      ctmFired = false;
+    });
+    b.addEventListener('pointerleave', () => {
+      if (ctmTimer) {
+        clearTimeout(ctmTimer);
+        ctmTimer = null;
+        // Pointer left before release — fire input so the tap isn't lost
+        if (!ctmFired) {
+          if (gs.continuousFillDigit !== null) setContinuousDigit(i);
+          else handleInput(i);
+        }
+        ctmFired = false;
       }
     });
     b.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -195,7 +246,10 @@ export function bootLegacyRuntime(appVersion: string): void {
     notifyHostBeforeUnload();
     if ((document.querySelector('.game-container') as HTMLElement)?.style.display === 'flex') saveGameStatus();
     // Clean up duo listener
-    if (gs.duoUnsubscribe) { gs.duoUnsubscribe(); gs.duoUnsubscribe = null; }
+    if (gs.duoUnsubscribe) {
+      gs.duoUnsubscribe();
+      gs.duoUnsubscribe = null;
+    }
     if (gs.isDuoMode && gs.firebaseReady && gs.duoRole) {
       const field = gs.duoRole === 'host' ? 'status' : 'guestId';
       const val = gs.duoRole === 'host' ? 'idle' : null;
@@ -212,7 +266,10 @@ export function bootLegacyRuntime(appVersion: string): void {
       }
     }
     // Clean up wild timer
-    if (gs.wildTimerInterval) { clearInterval(gs.wildTimerInterval); gs.wildTimerInterval = null; }
+    if (gs.wildTimerInterval) {
+      clearInterval(gs.wildTimerInterval);
+      gs.wildTimerInterval = null;
+    }
   });
   window.addEventListener('resize', () => {
     if (document.getElementById('level-screen')?.style.display === 'flex') {
@@ -242,9 +299,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     showLevelScreen();
   };
   window.setTimeout(bootLevelScreen, 1200);
-  preloadMode('normal')
-    .then(bootLevelScreen)
-    .catch(bootLevelScreen);
+  preloadMode('normal').then(bootLevelScreen).catch(bootLevelScreen);
 
   // 15b. Bind window facade for onclick="" handlers in HTML
   bindLegacyFacade({
@@ -270,6 +325,8 @@ export function bootLegacyRuntime(appVersion: string): void {
     toggleNoteMode,
     exitSkillMode,
     castSkill,
+    castFromTracking,
+    exitCandidateTracking,
     erase,
     undoAction,
     fillAllCandidates,

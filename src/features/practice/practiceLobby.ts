@@ -8,7 +8,13 @@ import { getPracticeLevels, hasTeachModule } from '../../data/dataRegistry';
 import { TECH_MAP } from '../teach-legacy';
 import { showFeedback } from '../../ui/feedback';
 import { syncLevelCardSize } from '../../game/board';
-import { playZenMentor, playZenEncounter, playZenDiscover, playZenLevelUp, playZenSessionComplete } from '../../game/zenAudio';
+import {
+  playZenMentor,
+  playZenEncounter,
+  playZenDiscover,
+  playZenLevelUp,
+  playZenSessionComplete,
+} from '../../game/zenAudio';
 import { t } from '../../i18n/t';
 import { usePracticeTreeStore } from '../../react/practice/practiceTreeStore';
 import { emitNavigation } from '../../app/navigation/navigationBus';
@@ -82,14 +88,46 @@ const UNLOCK_TREE: TreeNode[] = [
 
 type PracticePhaseKey = 'phase1' | 'phase2' | 'phase3' | 'phase4' | 'phase5';
 
-const PHASE1_SET = new Set(['naked_single', 'hidden_single', 'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple']);
+const PHASE1_SET = new Set([
+  'naked_single',
+  'hidden_single',
+  'locked_candidates',
+  'naked_pair',
+  'hidden_pair',
+  'naked_triple',
+  'hidden_triple',
+]);
 const PHASE2_SET = new Set([
-  'x_wing', 'finned_x_wing', 'swordfish', 'finned_swordfish', 'jellyfish', 'finned_jellyfish', 'skyscraper', 'two_string_kite', 'empty_rectangle',
-  'x_cycle_simple_coloring', 'xy_wing', 'xyz_wing', 'w_wing', 'remote_pairs',
-  'unique_rectangle', 'bug_plus_one', 'als_xz', 'als_xy', 'als_w_wing', 'als_chain',
+  'x_wing',
+  'finned_x_wing',
+  'swordfish',
+  'finned_swordfish',
+  'jellyfish',
+  'finned_jellyfish',
+  'skyscraper',
+  'two_string_kite',
+  'empty_rectangle',
+  'x_cycle_simple_coloring',
+  'xy_wing',
+  'xyz_wing',
+  'w_wing',
+  'remote_pairs',
+  'unique_rectangle',
+  'bug_plus_one',
+  'als_xz',
+  'als_xy',
+  'als_w_wing',
+  'als_chain',
 ]);
 const PHASE3_SET = new Set(['medusa_3d']);
-const PHASE4_SET = new Set(['xy_chain', 'aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop']);
+const PHASE4_SET = new Set([
+  'xy_chain',
+  'aic',
+  'aic_mid_chain',
+  'aic_long_chain',
+  'grouped_aic_nice_loop',
+  'discontinuous_nice_loop',
+]);
 
 // Representative teach books for first-entry phase briefing.
 const PHASE_TEACH_BOOK: Record<PracticePhaseKey, number> = {
@@ -230,7 +268,7 @@ export async function openPracticeLobby(): Promise<void> {
   playZenMentor();
   // Initialize completion tracking for change detection on return
   const state = computeUnlockState();
-  _prevCompletedCount = [...state.values()].filter(s => s.status === 'completed').length;
+  _prevCompletedCount = [...state.values()].filter((s) => s.status === 'completed').length;
 }
 
 export function closePracticeLobby(): void {
@@ -246,7 +284,7 @@ export function isPracticeLobbyOpen(): boolean {
 
 function renderPracticeLobby(): void {
   const state = computeUnlockState();
-  const completedCount = [...state.values()].filter(s => s.status === 'completed').length;
+  const completedCount = [...state.values()].filter((s) => s.status === 'completed').length;
 
   // Convert to React-friendly format with display names
   const nodeMap = new Map<string, { key: string; name: string; status: TechStatus; cleared: number; total: number }>();
@@ -303,8 +341,8 @@ function renderPracticeLevelGrid(techKey: string): void {
   list.innerHTML = '';
 
   const records = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
-  const techLevels = _practiceData.filter(l => l.maxTechnique === techKey);
-  const cleared = techLevels.filter(l => records[l.id]).length;
+  const techLevels = _practiceData.filter((l) => l.maxTechnique === techKey);
+  const cleared = techLevels.filter((l) => records[l.id]).length;
 
   const progressEl = document.getElementById('tier-progress-text');
   if (progressEl) progressEl.textContent = `${cleared}/${techLevels.length}`;
@@ -317,14 +355,14 @@ function renderPracticeLevelGrid(techKey: string): void {
 
     const hasRecord = !!record;
     const bestTime = hasRecord ? (parsed?.time ?? null) : null;
-    const timeStr = bestTime !== null
-      ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}`
-      : '--:--';
+    const timeStr =
+      bestTime !== null ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}` : '--:--';
     const bestStars = hasRecord ? (parsed?.stars ?? 1) : 0;
     const starsClass = bestStars > 0 ? 'level-stars' : 'level-stars is-empty';
-    const starsText = bestStars > 0
-      ? '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span>'
-      : '☆☆☆';
+    const starsText =
+      bestStars > 0
+        ? '★'.repeat(bestStars) + '<span class="empty-star">' + '☆'.repeat(3 - bestStars) + '</span>'
+        : '☆☆☆';
 
     item.innerHTML = `
       <div class="level-num">${escapeHtml(l.displayName || t('practiceLobby.levelFallback', { idx: String(idx + 1) }))}</div>
@@ -366,7 +404,7 @@ export function backToPracticeLobby(): void {
 
   // Detect technique completion or full mastery
   const state = computeUnlockState();
-  const completedCount = [...state.values()].filter(s => s.status === 'completed').length;
+  const completedCount = [...state.values()].filter((s) => s.status === 'completed').length;
 
   if (_prevCompletedCount >= 0 && completedCount > _prevCompletedCount) {
     // A technique was just completed
@@ -374,16 +412,15 @@ export function backToPracticeLobby(): void {
       // All 41 completed — 出關
       playZenSessionComplete();
       setTimeout(() => {
-        import('../../react/mentor/mentorBridge').then(({ bridgeShowMentor }) => {
-          bridgeShowMentor(
-            t('practiceLobby.allCompleteQuote'),
-            t('practiceLobby.allCompleteAttr'),
-          );
-        }).catch(() => {});
+        import('../../react/mentor/mentorBridge')
+          .then(({ bridgeShowMentor }) => {
+            bridgeShowMentor(t('practiceLobby.allCompleteQuote'), t('practiceLobby.allCompleteAttr'));
+          })
+          .catch(() => {});
       }, 3500);
     } else {
       // Single technique completed
-      const techName = prevTech ? (TECH_MAP[prevTech] || prevTech) : '';
+      const techName = prevTech ? TECH_MAP[prevTech] || prevTech : '';
       if (techName) showFeedback(t('practice.techComplete', { name: techName }), 'success');
       playZenLevelUp();
     }
@@ -391,9 +428,7 @@ export function backToPracticeLobby(): void {
 
   // Detect newly unlocked techniques
   if (_prevCompletedCount >= 0) {
-    const newlyUnlocked = [...state.entries()].filter(
-      ([, s]) => s.status === 'unlocked' && s.cleared === 0,
-    );
+    const newlyUnlocked = [...state.entries()].filter(([, s]) => s.status === 'unlocked' && s.cleared === 0);
     if (newlyUnlocked.length > 0 && completedCount > _prevCompletedCount) {
       setTimeout(() => playZenDiscover(), 600);
     }
@@ -412,8 +447,8 @@ export async function startNextPracticeLevel(): Promise<void> {
   }
 
   const techKey = gs.practiceActiveTech;
-  const techLevels = _practiceData.filter(l => l.maxTechnique === techKey);
-  const currentIdx = techLevels.findIndex(l => l.id === gs.currentLevel!.id);
+  const techLevels = _practiceData.filter((l) => l.maxTechnique === techKey);
+  const currentIdx = techLevels.findIndex((l) => l.id === gs.currentLevel!.id);
   const nextIdx = currentIdx + 1;
 
   if (nextIdx >= techLevels.length) {
@@ -431,12 +466,23 @@ export async function startNextPracticeLevel(): Promise<void> {
   const winEl = document.getElementById('win-celebration');
   if (winEl) winEl.style.display = 'none';
   document.getElementById('level-screen')!.style.display = 'flex';
-  emitNavigation({ type: 'show-pre-level-modal', levelId: nextLevel.id, ignoreTierLock: true, externalLevel: nextLevel });
+  emitNavigation({
+    type: 'show-pre-level-modal',
+    levelId: nextLevel.id,
+    ignoreTierLock: true,
+    externalLevel: nextLevel,
+  });
 }
 
 // ── Save practice record ──────────────────────────────────────────────
 
-export function savePracticeRecord(levelId: number, seconds: number, errors: number, techKey: string, replayHistory?: ActionRecord[]): void {
+export function savePracticeRecord(
+  levelId: number,
+  seconds: number,
+  errors: number,
+  techKey: string,
+  replayHistory?: ActionRecord[],
+): void {
   const records = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
   const existing = records[levelId];
   const existingRec = toClassicLevelRecord(existing);

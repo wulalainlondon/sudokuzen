@@ -3,7 +3,14 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther, getCommonPeers } from './types';
 
-const META = { id: 'remote_pairs', get name() { return t('skills.remotePairsName'); }, subtitle: 'Remote Pairs', sweepDirection: 'outward' as const };
+const META = {
+  id: 'remote_pairs',
+  get name() {
+    return t('skills.remotePairsName');
+  },
+  subtitle: 'Remote Pairs',
+  sweepDirection: 'outward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   if (selectedCells.length < 3) return makeEmptyPreview(META, '');

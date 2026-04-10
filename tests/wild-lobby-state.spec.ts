@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { computeEnterButtonState } from '../src/features/wild/wildLobby';
-import { bridgeOpenWildMentorNote, bridgeCloseWildMentorNote, bridgeHasWildMentorNoteOpen } from '../src/react/wild/wildLobbyBridge';
+import {
+  bridgeOpenWildMentorNote,
+  bridgeCloseWildMentorNote,
+  bridgeHasWildMentorNoteOpen,
+} from '../src/react/wild/wildLobbyBridge';
 import { useWildLobbyStore } from '../src/react/wild/wildLobbyStore';
 
 describe('wild lobby enter state machine', () => {
@@ -17,6 +21,8 @@ describe('wild lobby enter state machine', () => {
     currentSession: null,
     fragments: {},
     studiedSkills: [],
+    tutorialCompleted: true,
+    tutorialRound: 3,
   };
 
   it('returns resume_saved when saved encounter exists', () => {

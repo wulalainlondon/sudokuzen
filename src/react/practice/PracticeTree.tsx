@@ -9,15 +9,48 @@ import { TREE } from '../../features/practice/practiceLobby';
 
 // ── Tree structure definition (must match practiceLobby.ts) ──────────
 
-const PHASE1_KEYS = ['naked_single', 'hidden_single', 'locked_candidates', 'naked_pair', 'hidden_pair', 'naked_triple', 'hidden_triple'];
+const PHASE1_KEYS = [
+  'naked_single',
+  'hidden_single',
+  'locked_candidates',
+  'naked_pair',
+  'hidden_pair',
+  'naked_triple',
+  'hidden_triple',
+];
 
-const BRANCH_LEFT = ['x_wing', 'finned_x_wing', 'swordfish', 'finned_swordfish', 'jellyfish', 'finned_jellyfish', 'skyscraper', 'two_string_kite', 'empty_rectangle'];
+const BRANCH_LEFT = [
+  'x_wing',
+  'finned_x_wing',
+  'swordfish',
+  'finned_swordfish',
+  'jellyfish',
+  'finned_jellyfish',
+  'skyscraper',
+  'two_string_kite',
+  'empty_rectangle',
+];
 const BRANCH_MID = ['x_cycle_simple_coloring', 'xy_wing', 'xyz_wing', 'w_wing', 'remote_pairs'];
 const BRANCH_RIGHT = ['unique_rectangle', 'bug_plus_one', 'als_xz', 'als_xy', 'als_w_wing', 'als_chain'];
 
 const PHASE3_KEYS = ['medusa_3d'];
-const PHASE4_KEYS = ['xy_chain', 'aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop'];
-const PHASE5_KEYS = ['forcing_chain_net', 'cell_forcing_chain', 'region_forcing_chain', 'sue_de_coq', 'template', 'death_blossom', 'exocet_death_blossom'];
+const PHASE4_KEYS = [
+  'xy_chain',
+  'aic',
+  'aic_mid_chain',
+  'aic_long_chain',
+  'grouped_aic_nice_loop',
+  'discontinuous_nice_loop',
+];
+const PHASE5_KEYS = [
+  'forcing_chain_net',
+  'cell_forcing_chain',
+  'region_forcing_chain',
+  'sue_de_coq',
+  'template',
+  'death_blossom',
+  'exocet_death_blossom',
+];
 
 // ── Helpers ───────────────────────────────────────────────────────────
 
@@ -176,9 +209,7 @@ function buildEdgePath(from: string, to: string): string {
   // Side branches: orthogonal elbows (RPG skill-tree style), never crossing node faces.
   const startX = b.x > a.x ? a.x + NODE_SIZE / 2 : a.x - NODE_SIZE / 2;
   const endX = b.x > a.x ? b.x - NODE_SIZE / 2 : b.x + NODE_SIZE / 2;
-  const elbowY = goingDown
-    ? Math.min(y1 + 34, y2 - 18)
-    : Math.max(y1 - 34, y2 + 18);
+  const elbowY = goingDown ? Math.min(y1 + 34, y2 - 18) : Math.max(y1 - 34, y2 + 18);
   return `M ${startX} ${y1} L ${startX} ${elbowY} L ${endX} ${elbowY} L ${endX} ${y2}`;
 }
 
@@ -255,17 +286,22 @@ function buildVisibleNodeSet(orderedKeys: string[], nodes: Map<string, TechNodeS
 export function PracticeTree(): ReactElement | null {
   const { visible, nodes, completedCount } = usePracticeTreeStore();
 
-  const handleNodeClick = useCallback((key: string) => {
-    const node = nodes.get(key);
-    if (!node) return;
-    if (node.status === 'locked') {
-      import('../../ui/feedback').then(({ showFeedback }) => {
-        showFeedback(t('practice.techLocked'), 'error');
-      }).catch(() => {});
-      return;
-    }
-    import('../../features/practice/practiceLobby').then((m) => m.enterPracticeTechnique(key)).catch(() => {});
-  }, [nodes]);
+  const handleNodeClick = useCallback(
+    (key: string) => {
+      const node = nodes.get(key);
+      if (!node) return;
+      if (node.status === 'locked') {
+        import('../../ui/feedback')
+          .then(({ showFeedback }) => {
+            showFeedback(t('practice.techLocked'), 'error');
+          })
+          .catch(() => {});
+        return;
+      }
+      import('../../features/practice/practiceLobby').then((m) => m.enterPracticeTechnique(key)).catch(() => {});
+    },
+    [nodes],
+  );
 
   if (!visible) return null;
 
@@ -284,9 +320,7 @@ export function PracticeTree(): ReactElement | null {
     .map((key) => NODE_LAYOUT[key])
     .filter((pos): pos is { x: number; y: number; compact?: boolean } => Boolean(pos))
     .map((pos) => ({ ...pos, y: mapY(pos.y) }));
-  const tallestNodeBottom = visibleLayouts.length
-    ? Math.max(...visibleLayouts.map((pos) => pos.y + NODE_SIZE))
-    : 520;
+  const tallestNodeBottom = visibleLayouts.length ? Math.max(...visibleLayouts.map((pos) => pos.y + NODE_SIZE)) : 520;
   const dynamicMapHeight = Math.min(MAP_HEIGHT, Math.max(460, tallestNodeBottom + 140));
   const showPhase3 = PHASE3_KEYS.some((key) => visibleKeys.has(key));
   const showPhase4 = PHASE4_KEYS.some((key) => visibleKeys.has(key));
@@ -295,9 +329,12 @@ export function PracticeTree(): ReactElement | null {
   return (
     <div className="practice-tree-container" id="practice-tree">
       <div className="practice-tree-header">
-        <button className="tier-back-btn" onClick={() => {
-          import('../../features/practice/practiceLobby').then((m) => m.closePracticeLobby()).catch(() => {});
-        }}>
+        <button
+          className="tier-back-btn"
+          onClick={() => {
+            import('../../features/practice/practiceLobby').then((m) => m.closePracticeLobby()).catch(() => {});
+          }}
+        >
           {t('nav.back')}
         </button>
         <div className="practice-tree-title">{t('practice.lobbyTitle')}</div>
@@ -306,12 +343,30 @@ export function PracticeTree(): ReactElement | null {
 
       <div className="practice-tree-scroll">
         <div className="practice-tree-map" style={{ height: `${dynamicMapHeight}px`, width: `${MAP_WIDTH}px` }}>
-          <div className="tree-phase-label tree-phase-label--map" style={{ top: `${mapY(20)}px` }}>{t('practice.phase1')}</div>
-          {showPhase3 && <div className="tree-phase-label tree-phase-label--map" style={{ top: `${mapY(1538)}px` }}>{t('practice.phase3')}</div>}
-          {showPhase4 && <div className="tree-phase-label tree-phase-label--map" style={{ top: `${mapY(1638)}px` }}>{t('practice.phase4')}</div>}
-          {showPhase5 && <div className="tree-phase-label tree-phase-label--map" style={{ top: `${mapY(2100)}px` }}>{t('practice.phase5')}</div>}
+          <div className="tree-phase-label tree-phase-label--map" style={{ top: `${mapY(20)}px` }}>
+            {t('practice.phase1')}
+          </div>
+          {showPhase3 && (
+            <div className="tree-phase-label tree-phase-label--map" style={{ top: `${mapY(1538)}px` }}>
+              {t('practice.phase3')}
+            </div>
+          )}
+          {showPhase4 && (
+            <div className="tree-phase-label tree-phase-label--map" style={{ top: `${mapY(1638)}px` }}>
+              {t('practice.phase4')}
+            </div>
+          )}
+          {showPhase5 && (
+            <div className="tree-phase-label tree-phase-label--map" style={{ top: `${mapY(2100)}px` }}>
+              {t('practice.phase5')}
+            </div>
+          )}
 
-          <svg className="practice-tree-map-lines" viewBox={`0 0 ${MAP_WIDTH} ${dynamicMapHeight}`} preserveAspectRatio="none">
+          <svg
+            className="practice-tree-map-lines"
+            viewBox={`0 0 ${MAP_WIDTH} ${dynamicMapHeight}`}
+            preserveAspectRatio="none"
+          >
             {TREE_EDGES.filter(([from, to]) => visibleKeys.has(from) && visibleKeys.has(to)).map(([from, to]) => (
               <path
                 key={`${from}-${to}`}

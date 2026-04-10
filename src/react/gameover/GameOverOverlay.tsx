@@ -51,9 +51,10 @@ export function GameOverOverlay(): ReactElement {
 
   const isWild = mode === 'wild';
   const heading = isWild ? t('gameover.headingWild') : t('gameover.headingNormal');
-  const subtext = isWild && techName
-    ? t('gameover.subtextWild', { tech: techName })
-    : t('gameover.subtextNormal', { maxErrors: String(gs.maxErrors || 3) });
+  const subtext =
+    isWild && techName
+      ? t('gameover.subtextWild', { tech: techName })
+      : t('gameover.subtextNormal', { maxErrors: String(gs.maxErrors || 3) });
   const bg = isWild ? 'radial-gradient(circle at top, rgba(0,0,0,0.22), var(--bg-color) 60%)' : undefined;
 
   return (
@@ -66,13 +67,15 @@ export function GameOverOverlay(): ReactElement {
         {isWild && isIronman && (
           <div className="gameover-mentor-quote">
             <div className="gameover-mentor-attr">{t('gameover.ironmanQuoteAttr')}</div>
-            <div className="gameover-mentor-text">
-              {t('gameover.ironmanQuote')}
-            </div>
+            <div className="gameover-mentor-text">{t('gameover.ironmanQuote')}</div>
           </div>
         )}
-        <button className="retry-btn" onClick={handleRetry}>{t('nav.retry')}</button>
-        <button className="back-btn" onClick={handleBack}>{backText(mode, wildSession)}</button>
+        <button className="retry-btn" onClick={handleRetry}>
+          {t('nav.retry')}
+        </button>
+        <button className="back-btn" onClick={handleBack}>
+          {backText(mode, wildSession)}
+        </button>
       </ZenStagger>
     </ZenOverlay>
   );

@@ -72,7 +72,9 @@ export function playZenEnter(): void {
       gs._reverbGain.gain.setValueAtTime(0.5, t + 0.9);
       gs._reverbGain.gain.linearRampToValueAtTime(0.28, t + 1.3);
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 2. Brush on paper (ASMR texture) ─────────────────────────────────
@@ -107,7 +109,9 @@ export function playZenEncounter(): void {
 
     src.start(t);
     src.stop(t + 0.6);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 3. Sword unsheathe / wind cut ────────────────────────────────────
@@ -140,7 +144,9 @@ export function playZenCast(): void {
 
     src.start(t);
     src.stop(t + 0.4);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 4. Water drop with pitch parameter ───────────────────────────────
@@ -175,7 +181,9 @@ export function playZenStrike(pitch = 880): void {
       gs._reverbGain.gain.setValueAtTime(0.5, t + 0.18);
       gs._reverbGain.gain.linearRampToValueAtTime(0.28, t + 0.4);
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 5. Bronze bowl strike ────────────────────────────────────────────
@@ -240,7 +248,9 @@ export function playZenComplete(peakGain = 0.04): void {
       gs._reverbGain.gain.setValueAtTime(0.6, t + 2.1);
       gs._reverbGain.gain.linearRampToValueAtTime(0.28, t + 2.5);
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 6. Bronze bowl + wind chime cascade ──────────────────────────────
@@ -270,7 +280,9 @@ export function playZenLevelUp(): void {
       osc.start(start);
       osc.stop(start + 0.9);
     });
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 7. String snap ───────────────────────────────────────────────────
@@ -304,7 +316,9 @@ export function playZenFail(): void {
 
     osc.start(t);
     osc.stop(t + 0.65);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 8. Distant thunder ───────────────────────────────────────────────
@@ -347,7 +361,9 @@ export function playZenBoss(): void {
       gs._reverbGain.gain.setValueAtTime(0.6, t + 1.3);
       gs._reverbGain.gain.linearRampToValueAtTime(0.28, t + 1.8);
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 9. Temple bell x3 ───────────────────────────────────────────────
@@ -361,7 +377,9 @@ export function playZenSessionComplete(): void {
     peaks.forEach((peak, i) => {
       setTimeout(() => playZenComplete(peak), i * 1000);
     });
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 10. Page turn ────────────────────────────────────────────────────
@@ -394,7 +412,9 @@ export function playZenDiscover(): void {
 
     src.start(t);
     src.stop(t + 0.4);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ── 11. Ink drop in water ────────────────────────────────────────────
@@ -429,5 +449,7 @@ export function playZenMentor(): void {
       gs._reverbGain.gain.setValueAtTime(0.5, t + 0.5);
       gs._reverbGain.gain.linearRampToValueAtTime(0.28, t + 0.8);
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }

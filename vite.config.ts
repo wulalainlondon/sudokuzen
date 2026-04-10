@@ -12,7 +12,8 @@ export default defineConfig({
     alias: { '@': path.resolve(__dirname, './src') },
   },
   test: {
-    exclude: ['e2e/**', 'node_modules/**'],
+    include: ['tests/**/*.spec.ts'],
+    exclude: ['e2e/**', '.claude/**', 'node_modules/**'],
   },
   server: {
     host: true,

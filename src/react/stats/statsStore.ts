@@ -2,11 +2,11 @@ import { create } from 'zustand';
 
 export interface StatsState {
   visible: boolean;
-  tab: 'overview' | 'achievement';
+  tab: 'overview' | 'learning' | 'achievement';
 
   open: () => void;
   close: () => void;
-  setTab: (tab: 'overview' | 'achievement') => void;
+  setTab: (tab: 'overview' | 'learning' | 'achievement') => void;
 }
 
 export const useStatsStore = create<StatsState>((set) => ({

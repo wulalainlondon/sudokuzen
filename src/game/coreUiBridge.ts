@@ -1,4 +1,5 @@
 import { escapeHtml } from '../shared/html/escape';
+import { t } from '../i18n/t';
 
 interface GameHeaderPayload {
   isWild: boolean;
@@ -17,7 +18,8 @@ export function setGameHeaderByMode(payload: GameHeaderPayload): void {
   const quitBtn = document.getElementById('quit-btn');
   const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
 
-  if (gameTitle) gameTitle.textContent = payload.isWild ? payload.worldLabel : payload.isPractice ? payload.practiceLabel : 'SUDOKU';
+  if (gameTitle)
+    gameTitle.textContent = payload.isWild ? payload.worldLabel : payload.isPractice ? payload.practiceLabel : 'SUDOKU';
   // In Wild mode, show encounter name in the mode chip
   if (gameModeChip) {
     if (payload.isWild && payload.encounterName) {
@@ -145,8 +147,7 @@ export function setLivesSpeedrun(livesEl: HTMLElement | null): void {
 
 export function setLivesBlind(livesEl: HTMLElement | null, blindLabel: string): void {
   if (!livesEl) return;
-  livesEl.innerHTML =
-    `<span style="color: var(--accent-strong); font-size: 0.72rem; letter-spacing: 0.08em;">${escapeHtml(blindLabel)}</span>`;
+  livesEl.innerHTML = `<span style="color: var(--accent-strong); font-size: 0.72rem; letter-spacing: 0.08em;">${escapeHtml(blindLabel)}</span>`;
 }
 
 export function setLivesNoRemaining(livesEl: HTMLElement | null, noLivesLabel: string, surrenderLabel: string): void {
@@ -166,6 +167,23 @@ export function setLivesRemaining(livesEl: HTMLElement | null, remaining: number
 export function setDuoCooldownText(livesEl: HTMLElement | null, leftSeconds: number): void {
   if (!livesEl) return;
   livesEl.innerHTML = `<span style="color: var(--error-color); font-size: 0.8rem; font-weight: 600;">🔒 ${leftSeconds}s</span>`;
+}
+
+export function setLevelTechniqueHint(maxTechnique?: string, techTier?: string): void {
+  const el = document.getElementById('level-tech-hint');
+  if (!el) return;
+
+  let techLabel = t('prelevel.techUnknown');
+  if (maxTechnique) {
+    const translated = t(`techMap.${maxTechnique}`);
+    techLabel = translated === `techMap.${maxTechnique}` ? maxTechnique : translated;
+  }
+
+  const text = techTier
+    ? t('prelevel.techDisplayTier', { tech: techLabel, tier: techTier })
+    : t('prelevel.techDisplay', { tech: techLabel });
+  el.textContent = text;
+  el.setAttribute('title', text);
 }
 
 export function applyUnitCompleteClass(gridEl: HTMLElement | null, cellIndices: number[], stepMs: number): void {

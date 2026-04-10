@@ -5,6 +5,29 @@ import { create } from 'zustand';
 
 export type ReplayFilter = 'all' | 'mistake' | 'key';
 
+export type ReplayDiagnosisPace = 'idle' | 'fast' | 'steady' | 'slow';
+
+export type ReplayLearningFocusType = 'mistake' | 'key_step' | 'pace' | 'balanced';
+
+export interface ReplayLearningFocus {
+  focusType: ReplayLearningFocusType;
+  focusLabel: string;
+}
+
+export interface ReplayDiagnosis {
+  totalActions: number;
+  elapsedSeconds: number;
+  mistakeCount: number;
+  keyCount: number;
+  keyRatePct: number;
+  mistakeRatePct: number;
+  paceSecondsPerAction: number;
+  paceLabel: ReplayDiagnosisPace;
+  learningFocus: ReplayLearningFocus;
+  summary: string;
+  insights: string[];
+}
+
 export interface ReplayState {
   visible: boolean;
 
@@ -29,6 +52,9 @@ export interface ReplayState {
   // Progress bar percentage (0-100)
   progressPct: number;
 
+  // Diagnosis payload
+  diagnosis: ReplayDiagnosis | null;
+
   // Control button states
   prevDisabled: boolean;
   nextDisabled: boolean;
@@ -39,7 +65,22 @@ export interface ReplayState {
   setFilter: (filter: ReplayFilter) => void;
   setSummary: (text: string) => void;
   setListHtml: (html: string) => void;
-  setPlaybackState: (partial: Partial<Pick<ReplayState, 'stepIdx' | 'totalSteps' | 'isPlaying' | 'speed' | 'stepInfoHtml' | 'progressPct' | 'prevDisabled' | 'nextDisabled'>>) => void;
+  setDiagnosis: (diagnosis: ReplayDiagnosis | null) => void;
+  setPlaybackState: (
+    partial: Partial<
+      Pick<
+        ReplayState,
+        | 'stepIdx'
+        | 'totalSteps'
+        | 'isPlaying'
+        | 'speed'
+        | 'stepInfoHtml'
+        | 'progressPct'
+        | 'prevDisabled'
+        | 'nextDisabled'
+      >
+    >,
+  ) => void;
 }
 
 export const useReplayStore = create<ReplayState>((set) => ({
@@ -53,6 +94,7 @@ export const useReplayStore = create<ReplayState>((set) => ({
   speed: 1,
   stepInfoHtml: '',
   progressPct: 0,
+  diagnosis: null,
   prevDisabled: true,
   nextDisabled: false,
 
@@ -61,5 +103,6 @@ export const useReplayStore = create<ReplayState>((set) => ({
   setFilter: (filter) => set({ filter }),
   setSummary: (text) => set({ summaryText: text }),
   setListHtml: (html) => set({ listHtml: html }),
+  setDiagnosis: (diagnosis) => set({ diagnosis }),
   setPlaybackState: (partial) => set(partial),
 }));

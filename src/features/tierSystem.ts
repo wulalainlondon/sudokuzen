@@ -147,7 +147,10 @@ export function getTierUnlockMessage(tierName: string, unlockState?: ReturnType<
   return t('stage.unlockRequired', { prev: prev.name, cleared: String(prev.cleared), needed: String(needed) });
 }
 
-export function canAccessLevel(level: LevelData | null | undefined, unlockState?: ReturnType<typeof getRealmUnlockState>): boolean {
+export function canAccessLevel(
+  level: LevelData | null | undefined,
+  unlockState?: ReturnType<typeof getRealmUnlockState>,
+): boolean {
   if (!level || level.hidden) return false;
   const state = unlockState || getRealmUnlockState();
   return state.unlockedTiers.has(level.difficultyName);

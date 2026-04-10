@@ -115,7 +115,7 @@ export function checkNewUnlocks(before: DuoProfile, after: DuoProfile): NewUnloc
   const modesBefore = new Set(getUnlockedModes(before));
   const modesAfter = getUnlockedModes(after);
   return {
-    newTiers: tiersAfter.filter(t => !tiersBefore.has(t)),
-    newModes: modesAfter.filter(m => !modesBefore.has(m)),
+    newTiers: tiersAfter.filter((t) => !tiersBefore.has(t)),
+    newModes: modesAfter.filter((m) => !modesBefore.has(m)),
   };
 }

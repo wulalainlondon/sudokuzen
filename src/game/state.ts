@@ -104,6 +104,7 @@ export interface DuoRoomData {
   guestFinishTime: number | null;
   guestStars: number | null;
   startAt: { toMillis?: () => number; seconds?: number } | null;
+  countdownStartedAt: { toMillis?: () => number; seconds?: number } | null;
   updatedAt: { toDate?: () => Date } | null;
   hostEmoji?: string | null;
   hostEmojiTs?: number | null;
@@ -116,6 +117,17 @@ export interface DuoRoomData {
   guestHeartbeatAtMs?: number | null;
   hostOnline?: boolean;
   guestOnline?: boolean;
+}
+
+export interface CandidateTrackingNode {
+  cellIdx: number;
+  linkType: 'strong' | 'weak' | 'pending';
+}
+
+export interface CandidateTrackingState {
+  active: boolean;
+  digit: number;
+  nodes: CandidateTrackingNode[];
 }
 
 export interface SkillModeState {
@@ -233,6 +245,15 @@ export const gs = {
     litCandidates: [],
     preview: null,
   } as SkillModeState,
+
+  // ── Candidate Tracking Mode (CTM) ───────────────────────────────
+  candidateTrackingEnabled: false as boolean,
+  constraintMapEnabled: false as boolean,
+  candidateTracking: {
+    active: false,
+    digit: 0,
+    nodes: [],
+  } as CandidateTrackingState,
 
   // ── Wild challenge mode ──────────────────────────────────────────
   wildChallengeMode: null as import('../features/wild/wildState').ChallengeMode | null,

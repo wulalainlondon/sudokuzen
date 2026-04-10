@@ -3,7 +3,14 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview, getSharedUnits, getUnitCells } from './types';
 
-const META = { id: 'naked_triple', get name() { return t('skills.nakedTripleName'); }, subtitle: 'Naked Triple', sweepDirection: 'outward' as const };
+const META = {
+  id: 'naked_triple',
+  get name() {
+    return t('skills.nakedTripleName');
+  },
+  subtitle: 'Naked Triple',
+  sweepDirection: 'outward' as const,
+};
 
 /** Find all combinations of size k from an array. */
 function combinations<T>(arr: T[], k: number): T[][] {

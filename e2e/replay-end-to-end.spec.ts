@@ -160,7 +160,10 @@ test.describe('replay-end-to-end', () => {
       e2e.initGame(1, true);
       const { puzzle, solution } = e2e.gs.currentLevel;
       for (let i = 0; i < 81; i++) {
-        if (puzzle[i] === 0) { e2e.selectCell(i); e2e.handleInput(solution[i]); }
+        if (puzzle[i] === 0) {
+          e2e.selectCell(i);
+          e2e.handleInput(solution[i]);
+        }
       }
     });
     await page.waitForTimeout(500);
@@ -178,9 +181,7 @@ test.describe('replay-end-to-end', () => {
     for (let i = 0; i < 5; i++) {
       await page.evaluate(() => (window as unknown).__e2e.replay.replayStepForward());
     }
-    const stateAt5 = await page.evaluate(() =>
-      (window as unknown).__e2e.gs.rbState.map((c: unknown) => c.value),
-    );
+    const stateAt5 = await page.evaluate(() => (window as unknown).__e2e.gs.rbState.map((c: unknown) => c.value));
 
     await page.evaluate(() => (window as unknown).__e2e.replay.replayStepBack());
     await page.evaluate(() => (window as unknown).__e2e.replay.replayStepBack());
@@ -192,9 +193,7 @@ test.describe('replay-end-to-end', () => {
     await page.evaluate(() => (window as unknown).__e2e.replay.replayStepForward());
     await page.evaluate(() => (window as unknown).__e2e.replay.replayStepForward());
 
-    const stateAt5Again = await page.evaluate(() =>
-      (window as unknown).__e2e.gs.rbState.map((c: unknown) => c.value),
-    );
+    const stateAt5Again = await page.evaluate(() => (window as unknown).__e2e.gs.rbState.map((c: unknown) => c.value));
     expect(stateAt5Again).toEqual(stateAt5);
   });
 
@@ -205,7 +204,10 @@ test.describe('replay-end-to-end', () => {
       e2e.initGame(1, true);
       const { puzzle, solution } = e2e.gs.currentLevel;
       for (let i = 0; i < 81; i++) {
-        if (puzzle[i] === 0) { e2e.selectCell(i); e2e.handleInput(solution[i]); }
+        if (puzzle[i] === 0) {
+          e2e.selectCell(i);
+          e2e.handleInput(solution[i]);
+        }
       }
     });
     await page.waitForTimeout(500);
@@ -219,10 +221,6 @@ test.describe('replay-end-to-end', () => {
     });
     await expect(page.locator('#replay-modal')).toBeVisible({ timeout: 3000 });
 
-    const totalActions = await page.evaluate(() =>
-      (window as unknown).__e2e.gs.actionHistory.length,
-    );
-
     // Set speed to 4x for faster playback, then play
     await page.evaluate(() => {
       const e2e = (window as unknown).__e2e;
@@ -230,12 +228,17 @@ test.describe('replay-end-to-end', () => {
       e2e.replay.replayPlay();
     });
 
-    // Wait for playback to complete (175ms per step at 4x)
-    const waitMs = Math.ceil((totalActions * 175) + 2000);
-    await page.waitForTimeout(Math.min(waitMs, 30_000));
+    // Wait until playback finishes instead of guessing a fixed duration.
+    await page.waitForFunction(() => {
+      const gs = (window as unknown).__e2e.gs;
+      return gs.rbStepIdx >= gs.actionHistory.length && gs.rbIsPlaying === false;
+    }, { timeout: 30_000 });
 
     // Should have reached the end
-    const finalStep = await page.evaluate(() => (window as unknown).__e2e.gs.rbStepIdx);
+    const [finalStep, totalActions] = await page.evaluate(() => {
+      const gs = (window as unknown).__e2e.gs;
+      return [gs.rbStepIdx, gs.actionHistory.length];
+    });
     expect(finalStep).toBe(totalActions);
 
     // Should have auto-paused
@@ -249,7 +252,10 @@ test.describe('replay-end-to-end', () => {
       e2e.initGame(1, true);
       const { puzzle, solution } = e2e.gs.currentLevel;
       for (let i = 0; i < 81; i++) {
-        if (puzzle[i] === 0) { e2e.selectCell(i); e2e.handleInput(solution[i]); }
+        if (puzzle[i] === 0) {
+          e2e.selectCell(i);
+          e2e.handleInput(solution[i]);
+        }
       }
     });
     await page.waitForTimeout(500);
@@ -292,7 +298,10 @@ test.describe('replay-end-to-end', () => {
       e2e.initGame(1, true);
       const { puzzle, solution } = e2e.gs.currentLevel;
       for (let i = 0; i < 81; i++) {
-        if (puzzle[i] === 0) { e2e.selectCell(i); e2e.handleInput(solution[i]); }
+        if (puzzle[i] === 0) {
+          e2e.selectCell(i);
+          e2e.handleInput(solution[i]);
+        }
       }
     });
     await page.waitForTimeout(500);
@@ -385,14 +394,15 @@ test.describe('replay-end-to-end', () => {
       (window as unknown).__e2e.replay.setReplayFilter('mistake');
     });
 
-    // Replay list should only show mistake items
-    const listItems = page.locator('#replay-list .replay-item');
-    const count = await listItems.count();
-    expect(count).toBeGreaterThanOrEqual(1);
-
-    // All visible items should be mistakes
-    for (let i = 0; i < count; i++) {
-      await expect(listItems.nth(i)).toHaveClass(/replay-item-mistake/);
+    // Replay list should contain only mistake entries.
+    // If there are no mistakes, UI should render a single "no steps" placeholder.
+    const mistakeItems = page.locator('#replay-list .replay-item.replay-item-mistake');
+    const nonMistakeItems = page.locator('#replay-list .replay-item:not(.replay-item-mistake)');
+    const mistakeCount = await mistakeItems.count();
+    if (mistakeCount === 0) {
+      await expect(nonMistakeItems).toHaveCount(1);
+    } else {
+      await expect(nonMistakeItems).toHaveCount(0);
     }
   });
 });

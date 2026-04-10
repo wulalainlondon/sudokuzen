@@ -4,10 +4,18 @@ import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 import { evaluateFish } from './fishHelper';
 
-const META = { id: 'x_wing', get name() { return t('skills.xWingName'); }, subtitle: 'X-Wing', sweepDirection: 'outward' as const };
+const META = {
+  id: 'x_wing',
+  get name() {
+    return t('skills.xWingName');
+  },
+  subtitle: 'X-Wing',
+  sweepDirection: 'outward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 4) return makeEmptyPreview(META, selectedCells.length < 4 ? '' : t('skills.needSelectN', { n: '4' }));
+  if (selectedCells.length !== 4)
+    return makeEmptyPreview(META, selectedCells.length < 4 ? '' : t('skills.needSelectN', { n: '4' }));
   return evaluateFish(selectedCells, cells, 2, META);
 }
 

@@ -18,7 +18,7 @@ export interface WinState {
   // Common
   levelName: string;
   timeSeconds: number;
-  stars: number;          // 1-3 for normal/practice, 0 for wild
+  stars: number; // 1-3 for normal/practice, 0 for wild
 
   // Speedrun (normal only)
   isSpeedrun: boolean;
@@ -32,6 +32,7 @@ export interface WinState {
   firstKillSub: string | null;
   beatMentor: boolean;
   mentorNote: string | null;
+  cleanSolveBonus: number;
   wildSession: WildSessionInfo | null;
 
   // Leaderboard
@@ -68,6 +69,7 @@ const INITIAL: Omit<WinState, 'open' | 'close' | 'setLeaderboard' | 'setWildSess
   firstKillSub: null,
   beatMentor: false,
   mentorNote: null,
+  cleanSolveBonus: 0,
   wildSession: null,
   practiceTechName: null,
   practiceCleared: 0,

@@ -28,10 +28,7 @@ export interface FirestoreDocRef {
   update(data: Record<string, unknown>): Promise<void>;
   delete(): Promise<void>;
   collection(name: string): FirestoreCollectionRef;
-  onSnapshot(
-    onNext: (snap: FirestoreDoc) => void,
-    onError?: (err: unknown) => void,
-  ): () => void;
+  onSnapshot(onNext: (snap: FirestoreDoc) => void, onError?: (err: unknown) => void): () => void;
 }
 
 export interface FirestoreCollectionRef {
@@ -40,10 +37,7 @@ export interface FirestoreCollectionRef {
   where(field: string, op: string, value: unknown): FirestoreQuery;
   limit(n: number): FirestoreQuery;
   get(): Promise<FirestoreSnap>;
-  onSnapshot(
-    onNext: (snap: FirestoreSnap) => void,
-    onError?: (err: unknown) => void,
-  ): () => void;
+  onSnapshot(onNext: (snap: FirestoreSnap) => void, onError?: (err: unknown) => void): () => void;
 }
 
 export interface FirestoreQuery {
@@ -51,8 +45,5 @@ export interface FirestoreQuery {
   orderBy(field: string, direction?: 'asc' | 'desc'): FirestoreQuery;
   where(field: string, op: string, value: unknown): FirestoreQuery;
   limit(n: number): FirestoreQuery;
-  onSnapshot(
-    onNext: (snap: FirestoreSnap) => void,
-    onError?: (err: unknown) => void,
-  ): () => void;
+  onSnapshot(onNext: (snap: FirestoreSnap) => void, onError?: (err: unknown) => void): () => void;
 }

@@ -59,9 +59,8 @@ function buildLevelCards(): LevelCardModel[] {
     }
 
     const isCurrent = gs.currentLevel?.id === l.id && hasActiveSave(l.id);
-    const timeText = bestTime !== null
-      ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}`
-      : '--:--';
+    const timeText =
+      bestTime !== null ? `${Math.floor(bestTime / 60)}:${(bestTime % 60).toString().padStart(2, '0')}` : '--:--';
 
     return {
       id: l.id,
@@ -88,7 +87,10 @@ function starsView(stars: number): ReactElement {
 
 function buildCardsSignature(cards: LevelCardModel[]): string {
   return cards
-    .map((c) => `${c.id}:${Number(c.isLocked)}:${Number(c.isCurrent)}:${Number(c.isCompleted)}:${c.timeText}:${c.submissions}:${c.stars}`)
+    .map(
+      (c) =>
+        `${c.id}:${Number(c.isLocked)}:${Number(c.isCurrent)}:${Number(c.isCompleted)}:${c.timeText}:${c.submissions}:${c.stars}`,
+    )
     .join('|');
 }
 
@@ -176,19 +178,20 @@ export function NormalLevelList(): ReactElement | null {
         const hasRecord = card.isCompleted;
         const statsClass = hasRecord ? 'level-stats' : 'level-stats is-empty';
         const starsClass = gs.isSpeedrunMode
-          ? hasRecord ? 'level-stars speedrun-stars' : 'level-stars is-empty'
-          : card.stars > 0 ? 'level-stars' : 'level-stars is-empty';
+          ? hasRecord
+            ? 'level-stars speedrun-stars'
+            : 'level-stars is-empty'
+          : card.stars > 0
+            ? 'level-stars'
+            : 'level-stars is-empty';
         const starsContent = gs.isSpeedrunMode
-          ? hasRecord ? t('levelGrid.speedrunSubmissions', { submissions: String(card.submissions) }) : t('levelGrid.speedrunNotCleared')
+          ? hasRecord
+            ? t('levelGrid.speedrunSubmissions', { submissions: String(card.submissions) })
+            : t('levelGrid.speedrunNotCleared')
           : starsView(card.stars);
 
         return (
-          <div
-            key={card.id}
-            className={itemClass}
-            data-id={String(card.id)}
-            onClick={() => showPreLevelModal(card.id)}
-          >
+          <div key={card.id} className={itemClass} data-id={String(card.id)} onClick={() => showPreLevelModal(card.id)}>
             {card.isCurrent && <div className="level-current-badge">{t('stage.inProgress')}</div>}
             <div className="level-num">{card.displayName}</div>
             <div className={starsClass}>{starsContent}</div>

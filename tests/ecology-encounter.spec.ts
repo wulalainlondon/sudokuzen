@@ -12,8 +12,12 @@ import type { WildProfile } from '../src/features/wild/wildState';
 
 // Mock fetch for puzzle data loading
 function mockFetchPuzzles() {
-  const fakePuzzle = Array(81).fill(0).map((_, i) => (i % 9) + 1);
-  const fakeSolution = Array(81).fill(0).map((_, i) => (i % 9) + 1);
+  const fakePuzzle = Array(81)
+    .fill(0)
+    .map((_, i) => (i % 9) + 1);
+  const fakeSolution = Array(81)
+    .fill(0)
+    .map((_, i) => (i % 9) + 1);
   const fakeData = [
     {
       puzzle: fakePuzzle.map((v, i) => (i < 30 ? 0 : v)),

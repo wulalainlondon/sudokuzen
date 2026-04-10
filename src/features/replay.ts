@@ -12,16 +12,44 @@ import { closePreLevel } from '../app/ui/uiOrchestrator';
 import {
   bridgeOpenReplay,
   bridgeCloseReplay,
+  bridgeSetReplayDiagnosis,
   bridgeSetReplayFilter,
   bridgeSetReplaySummary,
   bridgeSetReplayListHtml,
   bridgeSetReplayPlayback,
 } from '../react/replay/replayBridge';
+import teachData from '../../teach-data.json';
 
 const RB_BASE_INTERVAL = 700;
 
 // Score tracking during replay
 let _replayTechniqueLog: { type: string; technique?: TechniqueName | null }[] = [];
+
+export interface ReplayDiagnosis {
+  totalActions: number;
+  elapsedSeconds: number;
+  mistakeCount: number;
+  keyCount: number;
+  keyRatePct: number;
+  mistakeRatePct: number;
+  paceSecondsPerAction: number;
+  paceLabel: 'idle' | 'fast' | 'steady' | 'slow';
+  learningFocus: {
+    focusType: 'mistake' | 'key_step' | 'pace' | 'balanced';
+    focusLabel: string;
+  };
+  recommendations: ReplayRecommendation[];
+  summary: string;
+  insights: string[];
+}
+
+export interface ReplayRecommendation {
+  techniqueKey: string;
+  techniqueLabel: string;
+  moduleId: string | null;
+  moduleName: string | null;
+  reason: string;
+}
 
 export function isKeyReplayAction(a: ActionRecord): boolean {
   return ['fill', 'mistake', 'eliminate', 'quick_note'].includes(a.type);
@@ -31,6 +59,184 @@ export function getFilteredReplayActions(): ActionRecord[] {
   if (gs.replayFilter === 'mistake') return gs.actionHistory.filter((a) => a.type === 'mistake');
   if (gs.replayFilter === 'key') return gs.actionHistory.filter(isKeyReplayAction);
   return gs.actionHistory;
+}
+
+function formatCountLabel(count: number, singular: string, plural: string): string {
+  return count === 1 ? singular : plural;
+}
+
+function formatPaceLabel(secondsPerAction: number, totalActions: number): ReplayDiagnosis['paceLabel'] {
+  if (totalActions <= 0) return 'idle';
+  if (secondsPerAction <= 3) return 'fast';
+  if (secondsPerAction <= 8) return 'steady';
+  return 'slow';
+}
+
+const RECOMMENDATION_POOLS: Record<ReplayDiagnosis['learningFocus']['focusType'], string[]> = {
+  mistake: ['naked_single', 'hidden_single', 'locked_candidates', 'naked_pair'],
+  key_step: ['hidden_pair', 'naked_triple', 'hidden_triple', 'x_wing'],
+  pace: ['naked_single', 'hidden_single', 'naked_pair', 'hidden_pair'],
+  balanced: ['hidden_single', 'locked_candidates', 'naked_pair'],
+};
+
+function getTechniqueLabel(techniqueKey: string): string {
+  const translated = t(`techMap.${techniqueKey}`);
+  return translated === `techMap.${techniqueKey}` ? techniqueKey : translated;
+}
+
+function buildTeachModuleIndex(): Map<string, { id: string; name: string }> {
+  const entries = Object.entries(teachData).sort((a, b) => Number(a[0]) - Number(b[0]));
+  const index = new Map<string, { id: string; name: string }>();
+  for (const [id, mod] of entries) {
+    if (!mod || typeof mod !== 'object' || Array.isArray(mod)) continue;
+    const technique =
+      typeof (mod as Record<string, unknown>).technique === 'string'
+        ? String((mod as Record<string, unknown>).technique)
+        : '';
+    if (!technique) continue;
+    const name =
+      typeof (mod as Record<string, unknown>).name === 'string'
+        ? String((mod as Record<string, unknown>).name)
+        : `Module ${id}`;
+    if (!index.has(technique)) index.set(technique, { id, name });
+  }
+  return index;
+}
+
+function buildRecommendationReason(
+  focusType: ReplayDiagnosis['learningFocus']['focusType'],
+  techniqueLabel: string,
+  moduleName: string | null,
+): string {
+  const name = moduleName || techniqueLabel;
+  if (focusType === 'mistake') return `${name} helps clean up avoidable errors.`;
+  if (focusType === 'key_step') return `${name} turns more moves into decisive steps.`;
+  if (focusType === 'pace') return `${name} can reduce hesitation and speed up solving.`;
+  return `${name} keeps accuracy and tempo balanced.`;
+}
+
+function buildReplayRecommendations(focusType: ReplayDiagnosis['learningFocus']['focusType']): ReplayRecommendation[] {
+  const moduleIndex = buildTeachModuleIndex();
+  const techniqueKeys = RECOMMENDATION_POOLS[focusType] || RECOMMENDATION_POOLS.balanced;
+  return techniqueKeys.slice(0, 4).map((techniqueKey) => {
+    const module = moduleIndex.get(techniqueKey) || null;
+    const techniqueLabel = getTechniqueLabel(techniqueKey);
+    return {
+      techniqueKey,
+      techniqueLabel,
+      moduleId: module?.id ?? null,
+      moduleName: module?.name ?? null,
+      reason: buildRecommendationReason(focusType, techniqueLabel, module?.name ?? null),
+    };
+  });
+}
+
+function buildLearningFocus(
+  mistakeCount: number,
+  mistakeRatePct: number,
+  keyRatePct: number,
+  paceLabel: ReplayDiagnosis['paceLabel'],
+): ReplayDiagnosis['learningFocus'] {
+  if (mistakeCount > 0 && mistakeRatePct >= 25) {
+    return {
+      focusType: 'mistake',
+      focusLabel: 'Review mistakes first',
+    };
+  }
+
+  if (keyRatePct <= 40) {
+    return {
+      focusType: 'key_step',
+      focusLabel: 'Increase key-step usage',
+    };
+  }
+
+  if (paceLabel === 'slow') {
+    return {
+      focusType: 'pace',
+      focusLabel: 'Improve solving pace',
+    };
+  }
+
+  return {
+    focusType: 'balanced',
+    focusLabel: 'Balanced replay profile',
+  };
+}
+
+export function buildReplayDiagnosis(actionHistory: ActionRecord[], elapsedSeconds: number): ReplayDiagnosis {
+  const actions = Array.isArray(actionHistory) ? actionHistory : [];
+  const totalActions = actions.length;
+  const elapsed = Math.max(0, Math.floor(Number(elapsedSeconds) || 0));
+  const mistakeCount = actions.filter((a) => a.type === 'mistake').length;
+  const keyCount = actions.filter(isKeyReplayAction).length;
+  const keyRatePct = totalActions > 0 ? Math.round((keyCount / totalActions) * 100) : 0;
+  const mistakeRatePct = totalActions > 0 ? Math.round((mistakeCount / totalActions) * 100) : 0;
+  const paceSecondsPerAction = totalActions > 0 ? elapsed / totalActions : 0;
+  const paceLabel = formatPaceLabel(paceSecondsPerAction, totalActions);
+  const learningFocus = buildLearningFocus(mistakeCount, mistakeRatePct, keyRatePct, paceLabel);
+  const recommendations = buildReplayRecommendations(learningFocus.focusType);
+  const summary =
+    totalActions > 0
+      ? `${totalActions} ${formatCountLabel(totalActions, 'action', 'actions')} · ${mistakeCount} ${formatCountLabel(mistakeCount, 'mistake', 'mistakes')} · ${keyCount} key ${formatCountLabel(keyCount, 'step', 'steps')}`
+      : 'No replay actions recorded.';
+
+  const insights: string[] = [];
+  if (totalActions <= 0) {
+    insights.push('Open a solved replay to generate a diagnosis.');
+    insights.push('Mistakes, key steps, and tempo will appear here.');
+    return {
+      totalActions,
+      elapsedSeconds: elapsed,
+      mistakeCount,
+      keyCount,
+      keyRatePct,
+      mistakeRatePct,
+      paceSecondsPerAction,
+      paceLabel,
+      learningFocus,
+      recommendations,
+      summary,
+      insights,
+    };
+  }
+
+  if (mistakeCount === 0) insights.push('No mistakes recorded in this replay.');
+  else if (mistakeRatePct >= 25)
+    insights.push(
+      `${mistakeCount} ${formatCountLabel(mistakeCount, 'mistake is', 'mistakes are')} concentrated and worth reviewing first.`,
+    );
+  else insights.push(`${mistakeCount} mistakes recorded.`);
+
+  if (keyRatePct >= 70) insights.push(`Key steps dominate (${keyRatePct}% of moves).`);
+  else if (keyRatePct <= 40) insights.push(`Many filler moves remain (${keyRatePct}% key steps).`);
+  else insights.push(`Balanced move mix (${keyRatePct}% key steps).`);
+
+  const paceText = `${paceSecondsPerAction.toFixed(1)}s/action`;
+  if (paceLabel === 'fast') insights.push(`Tempo is fast (${paceText}).`);
+  else if (paceLabel === 'steady') insights.push(`Tempo is steady (${paceText}).`);
+  else insights.push(`Tempo is slow (${paceText}).`);
+
+  return {
+    totalActions,
+    elapsedSeconds: elapsed,
+    mistakeCount,
+    keyCount,
+    keyRatePct,
+    mistakeRatePct,
+    paceSecondsPerAction,
+    paceLabel,
+    learningFocus,
+    recommendations,
+    summary,
+    insights,
+  };
+}
+
+export function syncReplayDiagnosis(): ReplayDiagnosis {
+  const diagnosis = buildReplayDiagnosis(gs.actionHistory, gs.seconds);
+  bridgeSetReplayDiagnosis(diagnosis);
+  return diagnosis;
 }
 
 export function syncReplayFilterButtons(): void {
@@ -44,8 +250,18 @@ export function setReplayFilter(filterKey: 'all' | 'mistake' | 'key'): void {
 }
 
 export function renderReplayList(): void {
+  if (!gs.currentLevel) {
+    bridgeSetReplaySummary('-');
+    bridgeSetReplayListHtml(`<div class="replay-item">${t('replayRuntime.noStepsForFilter')}</div>`);
+    return;
+  }
   const filtered = getFilteredReplayActions();
-  const filterLabel = gs.replayFilter === 'mistake' ? t('replayRuntime.filterLabelMistake') : gs.replayFilter === 'key' ? t('replayRuntime.filterLabelKey') : t('replayRuntime.filterLabelAll');
+  const filterLabel =
+    gs.replayFilter === 'mistake'
+      ? t('replayRuntime.filterLabelMistake')
+      : gs.replayFilter === 'key'
+        ? t('replayRuntime.filterLabelKey')
+        : t('replayRuntime.filterLabelAll');
   const summaryText = `${gs.currentLevel!.displayName} / 用時 ${formatSeconds(gs.seconds)} / ${filterLabel} ${filtered.length}/${gs.actionHistory.length}`;
   bridgeSetReplaySummary(summaryText);
 
@@ -76,14 +292,17 @@ export function openReplayModal(): void {
   gs.replayFilter = 'all';
   syncReplayFilterButtons();
   renderReplayList();
+  syncReplayDiagnosis();
   replayOpen();
   bridgeOpenReplay();
 }
 
-export function openHistoricalReplay(levelId: number, savedHistory: ActionRecord[]): void {
+export function openHistoricalReplay(levelId: number, savedHistory: ActionRecord[] | null | undefined): void {
   const levels = getAllLevels();
-  gs.currentLevel = levels.find((l) => l.id === levelId) || levels[0];
-  gs.actionHistory = savedHistory;
+  const level = levels.find((l) => l.id === levelId) || levels[0];
+  if (!level) return;
+  gs.currentLevel = level;
+  gs.actionHistory = Array.isArray(savedHistory) ? savedHistory : [];
   gs.cellsData = gs.currentLevel.puzzle.map((val: number) => ({
     value: val,
     fixed: val !== 0,
@@ -97,6 +316,7 @@ export function openHistoricalReplay(levelId: number, savedHistory: ActionRecord
 
 export function closeReplayModal(): void {
   replayPause();
+  bridgeSetReplayDiagnosis(null);
   bridgeCloseReplay();
 }
 
@@ -113,7 +333,9 @@ export function replayOpen(): void {
 }
 
 export function replayBuildStateAtStep(targetStep: number): ReplayCellState[] {
-  const state: ReplayCellState[] = gs.currentLevel!.puzzle.map((v: number): ReplayCellState => ({ value: v, fixed: v !== 0, notes: [] }));
+  const state: ReplayCellState[] = gs.currentLevel!.puzzle.map(
+    (v: number): ReplayCellState => ({ value: v, fixed: v !== 0, notes: [] }),
+  );
   for (let i = 0; i < targetStep && i < gs.actionHistory.length; i++) {
     replayApplyActionToState(state, gs.actionHistory[i]);
   }
@@ -211,7 +433,10 @@ function updateProgressBar(): void {
 }
 
 export function replayUpdateStepInfo(technique = ''): void {
-  const stepText = t('replayRuntime.stepLabel', { current: String(gs.rbStepIdx), total: String(gs.actionHistory.length) });
+  const stepText = t('replayRuntime.stepLabel', {
+    current: String(gs.rbStepIdx),
+    total: String(gs.actionHistory.length),
+  });
   let html: string;
   if (technique) {
     html = `${stepText}<span class="replay-technique">${technique}</span>`;
@@ -374,11 +599,18 @@ function showReplayScore(): void {
   // Build rows for staggered reveal
   const rows: { label: string; points: number; penalty: boolean }[] = [];
   for (const b of score.breakdown.slice(0, 6)) {
-    const label = b.technique === 'guess' ? t('replayRuntime.scoreGuess') : b.technique === 'mistake' ? t('replayRuntime.scoreMistake') : b.technique;
+    const label =
+      b.technique === 'guess'
+        ? t('replayRuntime.scoreGuess')
+        : b.technique === 'mistake'
+          ? t('replayRuntime.scoreMistake')
+          : b.technique;
     rows.push({ label: `${label} ×${b.count}`, points: b.points, penalty: b.points < 0 });
   }
-  if (score.speedBonus > 0) rows.push({ label: t('replayRuntime.scoreSpeedBonus'), points: score.speedBonus, penalty: false });
-  if (score.accuracyBonus > 0) rows.push({ label: t('replayRuntime.scoreAccuracyBonus'), points: score.accuracyBonus, penalty: false });
+  if (score.speedBonus > 0)
+    rows.push({ label: t('replayRuntime.scoreSpeedBonus'), points: score.speedBonus, penalty: false });
+  if (score.accuracyBonus > 0)
+    rows.push({ label: t('replayRuntime.scoreAccuracyBonus'), points: score.accuracyBonus, penalty: false });
 
   const rowsHtml = rows
     .map(
@@ -408,13 +640,15 @@ function showReplayScore(): void {
 
   // Play grade sound
   setTimeout(() => {
-    import('../game/audio').then((audio) => {
-      if (score.grade === 'S' || score.grade === 'A') {
-        audio.playWinSound();
-      } else {
-        audio.playUnitCompleteSound();
-      }
-    }).catch(() => {});
+    import('../game/audio')
+      .then((audio) => {
+        if (score.grade === 'S' || score.grade === 'A') {
+          audio.playWinSound();
+        } else {
+          audio.playUnitCompleteSound();
+        }
+      })
+      .catch(() => {});
     if (navigator.vibrate) {
       navigator.vibrate(score.grade === 'S' ? [20, 40, 20, 40, 20, 60, 40] : [15, 30, 15]);
     }
@@ -424,10 +658,12 @@ function showReplayScore(): void {
   rows.forEach((r, i) => {
     setTimeout(
       () => {
-        import('../game/audio').then((audio) => {
-          if (r.penalty) audio.playErrorFeedback();
-          else audio.playFillSound();
-        }).catch(() => {});
+        import('../game/audio')
+          .then((audio) => {
+            if (r.penalty) audio.playErrorFeedback();
+            else audio.playFillSound();
+          })
+          .catch(() => {});
       },
       300 + i * 120,
     );

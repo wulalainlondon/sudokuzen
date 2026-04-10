@@ -4,11 +4,13 @@ import type {
   PracticeSessionState,
   TeachFlowState,
   TeachLaunchSource,
+  TeachOpenOptions,
   TeachModuleModel,
 } from '../../../entities/teach';
 import { fetchTeachModule } from '../lib/teachDataAdapter';
 import { t } from '../../../i18n/t';
 import { SK, readJson, writeJson } from '../../../storage/keys';
+import { showFeedback } from '../../../ui/feedback';
 
 type TeachStore = {
   flow: TeachFlowState;
@@ -19,7 +21,7 @@ type TeachStore = {
   stepIndex: number;
   practiceIndex: number;
   practice: PracticeSessionState;
-  openTeach: (stars: string | number, source?: TeachLaunchSource) => Promise<boolean>;
+  openTeach: (stars: string | number, source?: TeachLaunchSource, options?: TeachOpenOptions) => Promise<boolean>;
   closeTeach: () => void;
   startStepping: () => void;
   nextStep: () => void;
@@ -45,9 +47,7 @@ function fillKey(cell: number, digit: number): string {
   return `${FILL_PREFIX}:${cell}:${digit}`;
 }
 
-function parseSelectionKey(
-  key: string,
-): { type: 'elim' | 'fill'; cell: number; digit: number } | null {
+function parseSelectionKey(key: string): { type: 'elim' | 'fill'; cell: number; digit: number } | null {
   const [type, cellRaw, digitRaw] = key.split(':');
   const cell = Number(cellRaw);
   const digit = Number(digitRaw);
@@ -106,6 +106,30 @@ function maybeRestoreLibrary(source: TeachLaunchSource): void {
   w.openLibraryOverlay?.();
 }
 
+function isInteractiveStep(step: NonNullable<TeachModuleModel['example']>['steps'][number]): boolean {
+  return (
+    step.eliminateCells.length > 0 ||
+    step.warnCells.length > 0 ||
+    Object.keys(step.highlightDigits).length > 0 ||
+    step.focusCells.length > 0
+  );
+}
+
+function resolvePreferredStepIndex(module: TeachModuleModel, preferredStep: TeachOpenOptions['preferredStep']): number {
+  const steps = module.example?.steps ?? [];
+  if (!steps.length) return 0;
+  const maxIndex = steps.length - 1;
+
+  if (typeof preferredStep === 'number' && Number.isFinite(preferredStep)) {
+    return Math.max(0, Math.min(maxIndex, Math.floor(preferredStep)));
+  }
+  if (preferredStep === 'firstInteractive') {
+    const idx = steps.findIndex(isInteractiveStep);
+    return idx >= 0 ? idx : 0;
+  }
+  return 0;
+}
+
 export const useTeachStore = create<TeachStore>((set, get) => ({
   flow: 'idle',
   open: false,
@@ -116,23 +140,28 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
   practiceIndex: 0,
   practice: createPracticeState(),
 
-  openTeach: async (stars, source = 'tier') => {
+  openTeach: async (stars, source = 'tier', options) => {
     set({ flow: 'loading', open: true, stars: Number(stars), launchSource: source });
     const module = await fetchTeachModule(stars);
     if (!module) {
+      showFeedback(t('teach.loadFailed'), 'error');
       set({ flow: 'idle', open: false, stars: null, module: null, launchSource: 'tier' });
       return false;
     }
 
-    // Start with demo if the technique has elimination steps
+    const preferredStep = options?.preferredStep ?? (source === 'replay' ? 'firstInteractive' : 'first');
+    const stepIndex = resolvePreferredStepIndex(module, preferredStep);
+    const skipDemo = options?.skipDemo ?? source === 'replay';
+
+    // Start with demo if the technique has elimination steps and caller did not request stepping directly.
     const hasElim = module.example?.steps.some((s) => s.eliminateCells.length > 0) ?? false;
     set({
-      flow: hasElim ? 'demo' : 'stepping',
+      flow: hasElim && !skipDemo ? 'demo' : 'stepping',
       open: true,
       stars: Number(stars),
       launchSource: source,
       module,
-      stepIndex: 0,
+      stepIndex,
       practiceIndex: 0,
       practice: createPracticeState(),
     });
@@ -144,8 +173,18 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
   },
 
   closeTeach: () => {
-    const { stars, launchSource } = get();
+    const { stars, launchSource, module } = get();
     markTeachRead(stars);
+    if (launchSource === 'replay') {
+      import('../../stats')
+        .then((m) =>
+          m.recordReplayRecommendationCompletion(Number.isFinite(stars) ? String(stars) : null, {
+            source: 'replay',
+            techniqueKey: module?.technique ?? null,
+          }),
+        )
+        .catch(() => {});
+    }
     maybeRestoreLibrary(launchSource);
 
     set({
@@ -278,7 +317,8 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
         regions.add(`C${col + 1}`);
         regions.add(`Box${box + 1}`);
       }
-      const hint = regions.size <= 3 ? t('teachPractice.missingHint', { regions: [...regions].slice(0, 2).join(', ') }) : '';
+      const hint =
+        regions.size <= 3 ? t('teachPractice.missingHint', { regions: [...regions].slice(0, 2).join(', ') }) : '';
       const detail = [];
       if (missingElimKeys.length > 0) {
         detail.push(t('teachPractice.missingCandidates', { count: String(missingElimKeys.length) }));
@@ -299,20 +339,34 @@ export const useTeachStore = create<TeachStore>((set, get) => ({
     }
 
     // Error: explain which selections were wrong and why
-    const wrongElimDescs = wrongElimKeys.slice(0, 2).map((k) => {
-      const parsed = parseSelectionKey(k);
-      if (!parsed) return '';
-      const c = parsed.cell;
-      const d = parsed.digit;
-      return t('teachPractice.wrongCellDesc', { row: String(Math.floor(c / 9) + 1), col: String((c % 9) + 1), digit: String(d) });
-    }).filter(Boolean);
-    const wrongFillDescs = wrongFillKeys.slice(0, 2).map((k) => {
-      const parsed = parseSelectionKey(k);
-      if (!parsed) return '';
-      const c = parsed.cell;
-      const d = parsed.digit;
-      return t('teachPractice.wrongFillDesc', { row: String(Math.floor(c / 9) + 1), col: String((c % 9) + 1), digit: String(d) });
-    }).filter(Boolean);
+    const wrongElimDescs = wrongElimKeys
+      .slice(0, 2)
+      .map((k) => {
+        const parsed = parseSelectionKey(k);
+        if (!parsed) return '';
+        const c = parsed.cell;
+        const d = parsed.digit;
+        return t('teachPractice.wrongCellDesc', {
+          row: String(Math.floor(c / 9) + 1),
+          col: String((c % 9) + 1),
+          digit: String(d),
+        });
+      })
+      .filter(Boolean);
+    const wrongFillDescs = wrongFillKeys
+      .slice(0, 2)
+      .map((k) => {
+        const parsed = parseSelectionKey(k);
+        if (!parsed) return '';
+        const c = parsed.cell;
+        const d = parsed.digit;
+        return t('teachPractice.wrongFillDesc', {
+          row: String(Math.floor(c / 9) + 1),
+          col: String((c % 9) + 1),
+          digit: String(d),
+        });
+      })
+      .filter(Boolean);
     const wrongMsgs: string[] = [];
     if (wrongElimDescs.length > 0) {
       wrongMsgs.push(t('teachPractice.wrongElim', { descs: wrongElimDescs.join(', ') }));

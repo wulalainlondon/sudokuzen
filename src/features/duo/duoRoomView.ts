@@ -72,17 +72,23 @@ export function copyDuoRoomId(): void {
   const roomId = getActiveDuoRoomId();
   if (!roomId) return;
   const copyBtn = document.getElementById('duo-room-id-copy');
-  navigator.clipboard.writeText(roomId).then(() => {
-    showFeedback(t('duoRoom.copied'), 'success');
-    if (copyBtn) {
-      const origText = copyBtn.textContent;
-      copyBtn.textContent = '✓';
-      copyBtn.classList.add('copied');
-      setTimeout(() => { copyBtn.textContent = origText; copyBtn.classList.remove('copied'); }, 1500);
-    }
-  }).catch(() => {
-    showFeedback(roomId, 'neutral');
-  });
+  navigator.clipboard
+    .writeText(roomId)
+    .then(() => {
+      showFeedback(t('duoRoom.copied'), 'success');
+      if (copyBtn) {
+        const origText = copyBtn.textContent;
+        copyBtn.textContent = '✓';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = origText;
+          copyBtn.classList.remove('copied');
+        }, 1500);
+      }
+    })
+    .catch(() => {
+      showFeedback(roomId, 'neutral');
+    });
 }
 
 // ── Leave room (back button) ────────────────────────────────────────

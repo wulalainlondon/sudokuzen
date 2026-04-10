@@ -34,10 +34,7 @@ export function resetGauntletState(): void {
 
 // ── Core gauntlet functions ──────────────────────────────────────────
 
-export async function initGauntlet(
-  profile: WildProfile,
-  currentEncounter: WildEncounter,
-): Promise<void> {
+export async function initGauntlet(profile: WildProfile, currentEncounter: WildEncounter): Promise<void> {
   _gauntletQueue = [currentEncounter];
   _gauntletIdx = 0;
   _gauntletTotalExp = 0;
@@ -116,11 +113,13 @@ export function failGauntlet(): void {
   if (_gauntletTotalExp > 0) {
     // Caller must pass profile and save; we just do EXP application here.
     // Import getWildProfile lazily to avoid circular deps.
-    import('./wildController').then(({ getWildProfile }) => {
-      const profile = getWildProfile();
-      applyExp(profile, _gauntletTotalExp);
-      saveWildProfile(profile);
-    }).catch(() => {});
+    import('./wildController')
+      .then(({ getWildProfile }) => {
+        const profile = getWildProfile();
+        applyExp(profile, _gauntletTotalExp);
+        saveWildProfile(profile);
+      })
+      .catch(() => {});
   }
   _gauntletQueue = [];
   _gauntletIdx = 0;
@@ -154,7 +153,11 @@ export async function launchGauntletNext(
     stars: 0,
     difficultyName: t('wildRuntime.difficultyWorld'),
     displayName: nextMeta
-      ? t('wildRuntime.gauntletLabel', { name: nextMeta.name, subtitle: nextMeta.subtitle, idx: String(_gauntletIdx + 1) })
+      ? t('wildRuntime.gauntletLabel', {
+          name: nextMeta.name,
+          subtitle: nextMeta.subtitle,
+          idx: String(_gauntletIdx + 1),
+        })
       : t('wildRuntime.gauntletLabelFallback', { idx: String(_gauntletIdx + 1) }),
     puzzle: encounter.puzzle,
     solution: encounter.solution,

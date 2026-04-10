@@ -3,7 +3,7 @@
 
 import { gs, type DuoRoomData } from '../../game/state';
 import { getPlayerIdentity } from '../../firebase/client';
-import { firebaseServerTimestamp, firebaseTimestampFromMillis } from '../../firebase/runtime';
+import { firebaseServerTimestamp, firebaseTimestampFromMillis, getAuthUid } from '../../firebase/runtime';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
@@ -45,7 +45,13 @@ const MAX_SNAPSHOT_RETRIES = 5;
 
 // ── Module state ─────────────────────────────────────────────────────
 
-let _activeRoomId: string | null = (() => { try { return localStorage.getItem(SK.DUO_ACTIVE_ROOM_ID); } catch { return null; } })();
+let _activeRoomId: string | null = (() => {
+  try {
+    return localStorage.getItem(SK.DUO_ACTIVE_ROOM_ID);
+  } catch {
+    return null;
+  }
+})();
 let _waitingRoomsCache: { rows: DuoRoomSummary[]; ts: number; limit: number } | null = null;
 let _waitingRoomsInFlight: Promise<DuoRoomSummary[]> | null = null;
 let _lastWaitingRoomsFetchMs = 0;
@@ -110,7 +116,12 @@ export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } 
   const db = gs.db;
   const force = !!opts.force;
   const now = Date.now();
-  if (!force && _waitingRoomsCache && now - _waitingRoomsCache.ts <= WAITING_ROOMS_CACHE_MS && limit <= _waitingRoomsCache.limit) {
+  if (
+    !force &&
+    _waitingRoomsCache &&
+    now - _waitingRoomsCache.ts <= WAITING_ROOMS_CACHE_MS &&
+    limit <= _waitingRoomsCache.limit
+  ) {
     bumpDuoMetric('lobbyFetchHits');
     return _waitingRoomsCache.rows.slice(0, limit);
   }
@@ -148,7 +159,11 @@ export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } 
     } catch {
       try {
         bumpDuoMetric('roomReadOps');
-        const fallbackSnap = await db.collection(DUO_ROOMS_COLLECTION).where('status', '==', 'waiting').limit(limit * 2).get();
+        const fallbackSnap = await db
+          .collection(DUO_ROOMS_COLLECTION)
+          .where('status', '==', 'waiting')
+          .limit(limit * 2)
+          .get();
         const rows = normalize(fallbackSnap);
         _waitingRoomsCache = { rows, ts: Date.now(), limit };
         return rows;
@@ -190,7 +205,9 @@ function startDuoRoomHeartbeat(): void {
     }
   };
   void tick();
-  _duoHeartbeatTimer = setInterval(() => { void tick(); }, DUO_HEARTBEAT_MS);
+  _duoHeartbeatTimer = setInterval(() => {
+    void tick();
+  }, DUO_HEARTBEAT_MS);
 }
 
 export function stopDuoRoomHeartbeat(): void {
@@ -207,7 +224,14 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
   const db = gs.db;
   const now = Date.now();
   if (!force && now - _lastDuoCleanupMs < DUO_CLEANUP_INTERVAL_MS) return;
+  // Cross-tab debounce via localStorage
+  const LS_CLEANUP_KEY = 'sudoku_duo_last_cleanup_ms';
+  if (!force) {
+    const lastGlobal = Number(localStorage.getItem(LS_CLEANUP_KEY) || '0');
+    if (now - lastGlobal < DUO_CLEANUP_INTERVAL_MS) return;
+  }
   _lastDuoCleanupMs = now;
+  localStorage.setItem(LS_CLEANUP_KEY, String(now));
   try {
     bumpDuoMetric('roomReadOps');
     const orderedSnap = await db
@@ -223,13 +247,22 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
       if (!d || !updatedAtMs || now - updatedAtMs < DUO_ROOM_WAITING_TTL_MS) return;
       bumpDuoMetric('staleRoomCleanups');
       bumpDuoMetric('roomWriteOps');
-      writes.push(doc.ref.update({
-        status: 'idle',
-        guestId: null, guestAlias: null, guestTitle: null,
-        guestReady: false, guestProgress: 0, guestFinishTime: null, guestStars: null, guestDuoWins: null,
-        guestHeartbeatAtMs: null, guestOnline: false,
-        updatedAt: firebaseServerTimestamp(),
-      }));
+      writes.push(
+        doc.ref.update({
+          status: 'idle',
+          guestId: null,
+          guestAlias: null,
+          guestTitle: null,
+          guestReady: false,
+          guestProgress: 0,
+          guestFinishTime: null,
+          guestStars: null,
+          guestDuoWins: null,
+          guestHeartbeatAtMs: null,
+          guestOnline: false,
+          updatedAt: firebaseServerTimestamp(),
+        }),
+      );
     });
     if (writes.length) await Promise.allSettled(writes);
 
@@ -260,7 +293,13 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
 
 // ── Create room ──────────────────────────────────────────────────────
 
-function buildHostRoom(tierId: string, modeId: string, puzzleSeed: number, playerId: string, alias: string): Record<string, unknown> {
+function buildHostRoom(
+  tierId: string,
+  modeId: string,
+  puzzleSeed: number,
+  playerId: string,
+  alias: string,
+): Record<string, unknown> {
   const profile = loadDuoProfile();
   const now = Date.now();
   return {
@@ -277,8 +316,14 @@ function buildHostRoom(tierId: string, modeId: string, puzzleSeed: number, playe
     hostFinishTime: null,
     hostStars: null,
     hostDuoWins: profile.wins,
-    guestId: null, guestAlias: null, guestTitle: null,
-    guestReady: false, guestProgress: 0, guestFinishTime: null, guestStars: null, guestDuoWins: null,
+    guestId: null,
+    guestAlias: null,
+    guestTitle: null,
+    guestReady: false,
+    guestProgress: 0,
+    guestFinishTime: null,
+    guestStars: null,
+    guestDuoWins: null,
     startAt: null,
     levelLocked: false,
     hostHeartbeatAtMs: now,
@@ -291,11 +336,13 @@ function buildHostRoom(tierId: string, modeId: string, puzzleSeed: number, playe
 
 export async function createDuoRoom(tierId: string, modeId: string): Promise<string | null> {
   if (!gs.firebaseReady) return null;
-  const { playerId, alias } = getPlayerIdentity();
+  const { alias } = getPlayerIdentity();
+  const authUid = getAuthUid();
+  if (!authUid) return null;
   const roomId = makeRoomId();
   const puzzleSeed = Math.floor(Math.random() * 1_000_000);
   try {
-    await duoRoomRef(roomId).set(buildHostRoom(tierId, modeId, puzzleSeed, playerId, alias));
+    await duoRoomRef(roomId).set(buildHostRoom(tierId, modeId, puzzleSeed, authUid, alias));
     bumpDuoMetric('roomWriteOps');
     setActiveRoomId(roomId);
     gs.duoRole = 'host';
@@ -312,23 +359,25 @@ export async function createDuoRoom(tierId: string, modeId: string): Promise<str
 
 export async function joinDuoRoom(roomId: string): Promise<boolean> {
   if (!gs.firebaseReady || !roomId) return false;
-  const { playerId, alias } = getPlayerIdentity();
+  const { alias } = getPlayerIdentity();
+  const authUid = getAuthUid();
+  if (!authUid) return false;
   try {
     await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
       const doc = await tx.get(duoRoomRef(roomId));
       if (!doc.exists) throw new Error('room_not_found');
       const d = doc.data() as unknown as DuoRoomData;
       if (d.status !== 'waiting') throw new Error('room_not_waiting');
-      if (d.hostId === playerId) {
+      if (d.hostId === authUid) {
         gs.duoRole = 'host';
         gs.duoMyReady = !!d.hostReady;
         return;
       }
-      if (d.guestId && d.guestId !== playerId) throw new Error('room_full');
+      if (d.guestId && d.guestId !== authUid) throw new Error('room_full');
 
       const profile = loadDuoProfile();
       tx.update(duoRoomRef(roomId), {
-        guestId: playerId,
+        guestId: authUid,
         guestAlias: alias,
         guestTitle: getEquippedTitleDisplay(),
         guestReady: false,
@@ -382,7 +431,12 @@ function _attachSnapshotListener(): void {
       import('./duoLobby').then((m) => m.setDuoLobbyConnectionState('reconnecting')).catch(() => {});
       if (_snapshotRetryCount <= MAX_SNAPSHOT_RETRIES) {
         showFeedback(t('duoRuntime.connectionRetry'), 'neutral');
-        setTimeout(() => { _attachSnapshotListener(); }, 2000 * Math.pow(1.5, _snapshotRetryCount));
+        setTimeout(
+          () => {
+            _attachSnapshotListener();
+          },
+          2000 * Math.pow(1.5, _snapshotRetryCount),
+        );
       } else {
         showFeedback(t('duoRuntime.connectionFailed'), 'error');
         import('./duoLobby').then((m) => m.setDuoLobbyConnectionState('failed')).catch(() => {});
@@ -396,7 +450,8 @@ function _attachSnapshotListener(): void {
 
 export async function resumeDuoRoomIfAny(): Promise<boolean> {
   if (!gs.firebaseReady || !_activeRoomId) return false;
-  const { playerId } = getPlayerIdentity();
+  const authUid = getAuthUid();
+  if (!authUid) return false;
   try {
     const doc = await duoRoomRef(_activeRoomId).get();
     if (!doc.exists) {
@@ -408,15 +463,14 @@ export async function resumeDuoRoomIfAny(): Promise<boolean> {
       setActiveRoomId(null);
       return false;
     }
-    // Don't resume rooms that are already finished or idle
     if (d.status === 'finished' || d.status === 'idle') {
       setActiveRoomId(null);
       return false;
     }
-    if (d.hostId === playerId) {
+    if (d.hostId === authUid) {
       gs.duoRole = 'host';
       gs.duoMyReady = !!d.hostReady;
-    } else if (d.guestId === playerId) {
+    } else if (d.guestId === authUid) {
       gs.duoRole = 'guest';
       gs.duoMyReady = !!d.guestReady;
     } else {
@@ -444,13 +498,20 @@ export async function leaveDuoRoom(): Promise<void> {
     } else {
       bumpDuoMetric('roomWriteOps');
       await duoRoomRef().update({
-        guestId: null, guestAlias: null, guestReady: false,
-        guestProgress: 0, guestFinishTime: null, guestStars: null,
-        guestOnline: false, guestHeartbeatAtMs: null,
+        guestId: null,
+        guestAlias: null,
+        guestReady: false,
+        guestProgress: 0,
+        guestFinishTime: null,
+        guestStars: null,
+        guestOnline: false,
+        guestHeartbeatAtMs: null,
         updatedAt: firebaseServerTimestamp(),
       });
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   if (_resetHandler) _resetHandler();
 }
 
@@ -462,4 +523,8 @@ export { _activeRoomId as __activeRoomId, _lastStaleGuestPruneMs };
 
 export function setLastStaleGuestPruneMs(ms: number): void {
   _lastStaleGuestPruneMs = ms;
+}
+
+export function getLastStaleGuestPruneMs(): number {
+  return _lastStaleGuestPruneMs;
 }

@@ -31,6 +31,7 @@ export function TeachOverlay(): ReactElement {
     open,
     module,
     flow,
+    launchSource,
     stepIndex,
     practiceIndex,
     practice,
@@ -56,6 +57,7 @@ export function TeachOverlay(): ReactElement {
   const practiceItem = module?.practice?.[practiceIndex] ?? null;
   const hasFillTargets = (practiceItem?.answer.fills?.length ?? 0) > 0;
   const stage = getTeachStageLabel(module?.stars);
+  const showReplaySource = launchSource === 'replay';
 
   useEffect(() => {
     if (!stepTextRef.current || !policy.allowGsapTimeline) return;
@@ -121,10 +123,13 @@ export function TeachOverlay(): ReactElement {
             <div className="relative overflow-hidden rounded-card bg-surface p-4">
               {policy.allowCanvasFx ? <StepPulseCanvas active={flow === 'stepping'} /> : null}
 
-              <h2 className="teach-title relative z-10">{module?.name ?? t('teachOverlay.defaultTitle')}</h2>
-              <p className="teach-subtitle relative z-10">
-                【{stage}】{module?.subtitle ?? ''}
-              </p>
+              <div className="teach-header relative z-10">
+                <h2 className="teach-title">{module?.name ?? t('teachOverlay.defaultTitle')}</h2>
+                <p className="teach-subtitle">
+                  【{stage}】{module?.subtitle ?? ''}
+                </p>
+                {showReplaySource ? <span className="teach-source-badge">{t('teachOverlay.replaySource')}</span> : null}
+              </div>
 
               <div className="teach-explanation relative z-10">
                 <p className="teach-level-note">{t('teachOverlay.chapterLabel', { stage })}</p>
@@ -162,12 +167,21 @@ export function TeachOverlay(): ReactElement {
                       {module?.name} · {module?.technique}
                     </span>
                     <span className="practice-instruction">
-                      {hasFillTargets ? t('teachOverlay.practiceInstructionMixed') : t('teachOverlay.practiceInstruction')}
+                      {hasFillTargets
+                        ? t('teachOverlay.practiceInstructionMixed')
+                        : t('teachOverlay.practiceInstruction')}
                     </span>
                   </div>
-                  <PracticeBoard item={practiceItem} practice={practice} onToggle={toggleSelection} onToggleFill={toggleFillSelection} />
+                  <PracticeBoard
+                    item={practiceItem}
+                    practice={practice}
+                    onToggle={toggleSelection}
+                    onToggleFill={toggleFillSelection}
+                  />
                   <div className="practice-status">
-                    <span id="practice-counter">{t('teachOverlay.selectedCount', { count: String(practice.selected.size) })}</span>
+                    <span id="practice-counter">
+                      {t('teachOverlay.selectedCount', { count: String(practice.selected.size) })}
+                    </span>
                     <button className="rz-focus-ring" onClick={showHint}>
                       {t('teachOverlay.hint')}
                     </button>

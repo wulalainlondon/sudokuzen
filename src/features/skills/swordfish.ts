@@ -4,7 +4,14 @@ import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 import { evaluateFish } from './fishHelper';
 
-const META = { id: 'swordfish', get name() { return t('skills.swordfishName'); }, subtitle: 'Swordfish', sweepDirection: 'outward' as const };
+const META = {
+  id: 'swordfish',
+  get name() {
+    return t('skills.swordfishName');
+  },
+  subtitle: 'Swordfish',
+  sweepDirection: 'outward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   if (selectedCells.length < 3 || selectedCells.length > 9)

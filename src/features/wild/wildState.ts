@@ -89,7 +89,7 @@ export interface BestiaryEntry {
   kills: number; // successful completions
   escapes: number;
   bestTime: number | null;
-  modesCleared: string[];  // challenge modes cleared for this technique, e.g. ['standard', 'blind']
+  modesCleared: string[]; // challenge modes cleared for this technique, e.g. ['standard', 'blind']
 }
 
 export interface WildProfile {
@@ -103,8 +103,10 @@ export interface WildProfile {
   battlefieldMode: 'knight' | 'monk' | 'ascetic';
   autoCastEnabled: boolean; // true = mastered techniques auto-resolve; false = all manual
   currentSession: WildSession | null;
-  fragments: Record<string, number>;   // technique key → fragment count collected
-  studiedSkills: string[];             // technique keys that have been studied (teach read)
+  fragments: Record<string, number>; // technique key → fragment count collected
+  studiedSkills: string[]; // technique keys that have been studied (teach read)
+  tutorialCompleted: boolean;
+  tutorialRound: number; // 0, 1, 2, 3 (3 = all completed)
 }
 
 export interface WildEncounter {
@@ -115,7 +117,7 @@ export interface WildEncounter {
   solution: number[];
   startedAt: number;
   challengeMode: ChallengeMode;
-  mentorTime: number;  // 弈塵's estimated clear time in seconds (0 = T4, he can't solve)
+  mentorTime: number; // 弈塵's estimated clear time in seconds (0 = T4, he can't solve)
 }
 
 const DEFAULT_PROFILE: WildProfile = {
@@ -131,11 +133,20 @@ const DEFAULT_PROFILE: WildProfile = {
   currentSession: null,
   fragments: {},
   studiedSkills: [],
+  tutorialCompleted: false,
+  tutorialRound: 0,
 };
 
 export function loadWildProfile(): WildProfile {
   const raw = readJson<Partial<WildProfile>>(SK.WILD_PROFILE, {});
-  return { ...DEFAULT_PROFILE, ...raw };
+  const result = { ...DEFAULT_PROFILE, ...raw };
+  // Protect existing players: if no tutorial state saved but they have encounter history,
+  // skip the tutorial entirely so they aren't regressed through it.
+  if (!raw.tutorialCompleted && raw.totalEncounters !== undefined && raw.totalEncounters > 0) {
+    result.tutorialCompleted = true;
+    result.tutorialRound = 3;
+  }
+  return result;
 }
 
 let _saveProfileTimer: ReturnType<typeof setTimeout> | null = null;

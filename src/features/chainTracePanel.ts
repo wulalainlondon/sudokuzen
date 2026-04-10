@@ -102,7 +102,7 @@ export function onChainDigitTap(cell: number, digit: number): void {
     const last = nodes[nodes.length - 1];
     const lastNode = encodeNode(last.cell, last.digit);
     // Hop index 0 (1st→2nd) is strong, 1 (2nd→3rd) is weak, alternating
-    const expectStrong = (nodes.length % 2) === 1;
+    const expectStrong = nodes.length % 2 === 1;
     const linkMap = expectStrong ? graph.strong : graph.weak;
 
     if (!linkMap.get(lastNode)?.has(newNode)) {
@@ -111,7 +111,7 @@ export function onChainDigitTap(cell: number, digit: number): void {
       return;
     }
     nodes.push({ cell, digit });
-    const nextExpectStrong = (nodes.length % 2) === 1;
+    const nextExpectStrong = nodes.length % 2 === 1;
     const nextType = nextExpectStrong ? '強鏈' : '弱鏈';
     const hint = nodes.length >= 3 ? `或按驗證` : '';
     setInstruction(`繼續選節點（${nextType}）${hint}`);
@@ -131,7 +131,7 @@ export function undoChainTrace(): void {
   if (nodes.length === 0) {
     resetPanelUI();
   } else {
-    const nextExpectStrong = (nodes.length % 2) === 1;
+    const nextExpectStrong = nodes.length % 2 === 1;
     setInstruction(`已撤回 — 繼續選節點（${nextExpectStrong ? '強鏈' : '弱鏈'}）`);
     renderChainText();
     highlightValidNextNodes();
@@ -193,7 +193,7 @@ function resolveChainType(nodes: Array<{ cell: number; digit: number }>): string
   if (digits.size === 1) return `X-Chain（數字 ${[...digits][0]}）`;
   // Check bivalue bridge: same cell, different digits between consecutive nodes
   const hasBridge = nodes.some(
-    (n, i) => i > 0 && i < nodes.length - 1 && nodes[i - 1].cell === n.cell && nodes[i + 1].cell === n.cell
+    (n, i) => i > 0 && i < nodes.length - 1 && nodes[i - 1].cell === n.cell && nodes[i + 1].cell === n.cell,
   );
   return hasBridge ? 'AIC（含雙值橋）' : 'AIC';
 }
@@ -228,9 +228,9 @@ export function revealChainResult(): void {
   }
 
   const digit = first.digit;
-  const elims = board.commonPeers([first.cell, last.cell]).filter(
-    (cell) => board.hasCandidate(cell, digit) && cell !== first.cell && cell !== last.cell,
-  );
+  const elims = board
+    .commonPeers([first.cell, last.cell])
+    .filter((cell) => board.hasCandidate(cell, digit) && cell !== first.cell && cell !== last.cell);
 
   if (elims.length === 0) {
     setInstruction('此鏈在當前局面無消除目標');
@@ -308,7 +308,7 @@ function highlightValidNextNodes(): void {
   const last = nodes[nodes.length - 1];
   const lastCode = encodeNode(last.cell, last.digit);
   const graph = getGraph();
-  const expectStrong = (nodes.length % 2) === 1;
+  const expectStrong = nodes.length % 2 === 1;
   const nextSet = (expectStrong ? graph.strong : graph.weak).get(lastCode) ?? new Set<number>();
   const validCssClass = expectStrong ? 'chain-valid-strong' : 'chain-valid-weak';
 
@@ -352,17 +352,17 @@ function renderChainText(): void {
   const textEl = document.getElementById('chain-trace-text');
   if (!textEl) return;
   const nodes = gs.chainTraceNodes;
-  if (nodes.length === 0) { textEl.innerHTML = ''; return; }
+  if (nodes.length === 0) {
+    textEl.innerHTML = '';
+    return;
+  }
 
   const parts: string[] = [];
   nodes.forEach(({ cell, digit }, i) => {
     parts.push(`<span class="ct-node">${cellLabel(cell)}(${digit})</span>`);
     if (i < nodes.length - 1) {
       const strong = i % 2 === 0;
-      parts.push(strong
-        ? '<span class="ct-strong">⟶强</span>'
-        : '<span class="ct-weak">⇢弱</span>',
-      );
+      parts.push(strong ? '<span class="ct-strong">⟶强</span>' : '<span class="ct-weak">⇢弱</span>');
     }
   });
   textEl.innerHTML = parts.join('');

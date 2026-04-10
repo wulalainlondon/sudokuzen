@@ -3,12 +3,7 @@ import { createPortal } from 'react-dom';
 import { gs } from '../../game/state';
 import { getAllLevels } from '../../data/dataRegistry';
 import { SK, readJson } from '../../storage/keys';
-import {
-  enterTier,
-  getDifficultyTiers,
-  getRealmUnlockState,
-  getTierUnlockMessage,
-} from '../../features/levels';
+import { enterTier, getDifficultyTiers, getRealmUnlockState, getTierUnlockMessage } from '../../features/levels';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 
@@ -108,7 +103,9 @@ export function NormalStageMap(): ReactElement | null {
           <div className="stage-bar-wrap">
             <div className="stage-bar-fill" style={{ width: `${node.pct}%` }} />
           </div>
-          <div className="stage-count">{node.cleared}/{node.total}</div>
+          <div className="stage-count">
+            {node.cleared}/{node.total}
+          </div>
         </div>
       ))}
     </>,

@@ -3,13 +3,7 @@ import type { PreLevelOpenPayload } from '../../entities/prelevel';
 
 export type { PreLevelOpenPayload };
 
-export type PreLevelCloseReason =
-  | 'backdrop'
-  | 'select-other'
-  | 'legacy-hide'
-  | 'start-level'
-  | 'system'
-  | string;
+export type PreLevelCloseReason = 'backdrop' | 'select-other' | 'legacy-hide' | 'start-level' | 'system' | string;
 
 let _lastOpenLevelId: number | null = null;
 

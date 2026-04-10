@@ -15,12 +15,7 @@ import {
   applyUnitCompleteClass,
   clearUnitCompleteClass,
 } from './coreUiBridge';
-import {
-  updateCellDisplay,
-  getUnitIndices,
-  isUnitComplete,
-  updateNumpadState,
-} from './board';
+import { updateCellDisplay, getUnitIndices, isUnitComplete, updateNumpadState } from './board';
 import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
 import { checkAllAchievements, unlockAchievement } from '../features/stats';
 import { clearGameStatus, saveProgress } from './persistence';
@@ -28,13 +23,19 @@ import { toClassicLevelRecord } from '../shared/records/levelRecords';
 
 // Lazy import to break circular: core ↔ duo
 async function callDuoFinish(sec: number, stars: number) {
-  try { const m = await import('../features/duo/duoGame'); m.submitDuoFinish(sec, stars); }
-  catch (e) { console.warn('lazy import duo failed:', e); }
+  try {
+    const m = await import('../features/duo/duoGame');
+    m.submitDuoFinish(sec, stars);
+  } catch (e) {
+    console.warn('lazy import duo failed:', e);
+  }
 }
 
 // ── Blind reveal guard ──────────────────────────────────────────────
 let _blindRevealing = false;
-export function isBlindRevealing(): boolean { return _blindRevealing; }
+export function isBlindRevealing(): boolean {
+  return _blindRevealing;
+}
 
 export function solutionDigitAt(idx: number): number {
   const raw = gs.currentLevel?.solution?.[idx];
@@ -60,10 +61,22 @@ export function checkWin(): void {
 
   // ── Wild mode: delegate to Wild controller ──
   if (gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild') {
-    import('../features/wild/wildController').then((m) => {
-      const result = m.onWildComplete(gs.seconds, gs.errors);
-      showWildWinCelebration(gs.seconds, result.expGained, result.leveledUp, result.newLevel, result.firstKill, result.firstKillSub, result.beatMentor);
-    }).catch(() => {});
+    import('../features/wild/wildController')
+      .then((m) => {
+        const result = m.onWildComplete(gs.seconds, gs.errors);
+        showWildWinCelebration(
+          gs.seconds,
+          result.expGained,
+          result.leveledUp,
+          result.newLevel,
+          result.firstKill,
+          result.firstKillSub,
+          result.firstKillKey,
+          result.beatMentor,
+          result.cleanSolveBonus,
+        );
+      })
+      .catch(() => {});
     return;
   }
 
@@ -71,9 +84,17 @@ export function checkWin(): void {
 
   // ── Practice mode: save to practice records (skip normal records & leaderboard) ──
   if (isPractice && gs.currentLevel!.maxTechnique) {
-    import('../features/practice/practiceLobby').then((m) => {
-      m.savePracticeRecord(gs.currentLevel!.id, gs.seconds, gs.errors, gs.currentLevel!.maxTechnique!, gs.actionHistory);
-    }).catch(() => {});
+    import('../features/practice/practiceLobby')
+      .then((m) => {
+        m.savePracticeRecord(
+          gs.currentLevel!.id,
+          gs.seconds,
+          gs.errors,
+          gs.currentLevel!.maxTechnique!,
+          gs.actionHistory,
+        );
+      })
+      .catch(() => {});
     clearGameStatus(gs.currentLevel!.id);
     const earnedStars = Math.max(1, 3 - gs.errors);
     showPracticeWinCelebration(earnedStars);
@@ -168,7 +189,10 @@ export async function checkBlindComplete(): Promise<void> {
     }
 
     // Update running count
-    showFeedback(t('feedback._blindRevealing', { correct: String(correct), errors: String(errors) }), errors > 0 ? 'error' : 'neutral');
+    showFeedback(
+      t('feedback._blindRevealing', { correct: String(correct), errors: String(errors) }),
+      errors > 0 ? 'error' : 'neutral',
+    );
 
     await new Promise((r) => setTimeout(r, 30));
   }
@@ -204,51 +228,59 @@ export function showGameOver(): void {
 
   // Delegate to React GameOverOverlay
   const mode = isWild ? 'wild' : isPractice ? 'practice' : 'normal';
-  import('../react/gameover/gameOverBridge').then(({ bridgeShowGameOver, bridgeSetGameOverWildSession }) => {
-    if (isWild) {
-      import('../features/wild/wildController').then((wc) => {
-        const enc = wc.getCurrentEncounter();
-        let wildInfo: { techName?: string; techSubtitle?: string; isIronman?: boolean } | undefined;
-        if (enc) {
-          import('../features/wild/techniqueMeta').then(({ getTechniqueMeta }) => {
-            const meta = getTechniqueMeta(enc.technique);
-            wildInfo = {
-              techName: meta?.name ?? '',
-              techSubtitle: meta?.subtitle ?? '',
-              isIronman: gs.wildChallengeMode === 'ironman',
-            };
-            bridgeShowGameOver(mode, wildInfo);
-          }).catch(() => {});
-        } else {
-          bridgeShowGameOver(mode);
-        }
-        const session = wc.getSession();
-        if (session) {
-          bridgeSetGameOverWildSession({ round: session.round, hasMore: session.round < 10 });
-        }
-      }).catch(() => {});
-    } else {
-      bridgeShowGameOver(mode);
-    }
-  }).catch(() => {});
+  import('../react/gameover/gameOverBridge')
+    .then(({ bridgeShowGameOver, bridgeSetGameOverWildSession }) => {
+      if (isWild) {
+        import('../features/wild/wildController')
+          .then((wc) => {
+            const enc = wc.getCurrentEncounter();
+            let wildInfo: { techName?: string; techSubtitle?: string; isIronman?: boolean } | undefined;
+            if (enc) {
+              import('../features/wild/techniqueMeta')
+                .then(({ getTechniqueMeta }) => {
+                  const meta = getTechniqueMeta(enc.technique);
+                  wildInfo = {
+                    techName: meta?.name ?? '',
+                    techSubtitle: meta?.subtitle ?? '',
+                    isIronman: gs.wildChallengeMode === 'ironman',
+                  };
+                  bridgeShowGameOver(mode, wildInfo);
+                })
+                .catch(() => {});
+            } else {
+              bridgeShowGameOver(mode);
+            }
+            const session = wc.getSession();
+            if (session) {
+              bridgeSetGameOverWildSession({ round: session.round, hasMore: session.round < 10 });
+            }
+          })
+          .catch(() => {});
+      } else {
+        bridgeShowGameOver(mode);
+      }
+    })
+    .catch(() => {});
 }
 
 // ── Win celebrations (delegated to React WinCelebration component) ────
 
 function showWinCelebration(earnedValue: number): void {
   const policy = getModePolicy();
-  import('../react/win/winBridge').then(({ bridgeShowWin }) => {
-    bridgeShowWin({
-      mode: 'normal',
-      levelName: gs.currentLevel!.displayName,
-      timeSeconds: gs.seconds,
-      stars: policy.useSubmissionValidation ? 0 : earnedValue,
-      isSpeedrun: policy.useSubmissionValidation,
-      submissions: policy.useSubmissionValidation ? earnedValue : 0,
-      showLeaderboard: true,
-      showReplay: true,
-    });
-  }).catch(() => {});
+  import('../react/win/winBridge')
+    .then(({ bridgeShowWin }) => {
+      bridgeShowWin({
+        mode: 'normal',
+        levelName: gs.currentLevel!.displayName,
+        timeSeconds: gs.seconds,
+        stars: policy.useSubmissionValidation ? 0 : earnedValue,
+        isSpeedrun: policy.useSubmissionValidation,
+        submissions: policy.useSubmissionValidation ? earnedValue : 0,
+        showLeaderboard: true,
+        showReplay: true,
+      });
+    })
+    .catch(() => {});
   showFeedback(t('feedback.complete'), 'success');
   playWinSound();
 }
@@ -256,68 +288,101 @@ function showWinCelebration(earnedValue: number): void {
 function showPracticeWinCelebration(earnedStars: number): void {
   // Compute practice progress for this technique
   const techKey = gs.currentLevel?.maxTechnique || '';
-  import('../features/practice/practiceLobby').then(async () => {
-    const { TECH_MAP } = await import('../features/teach-legacy');
-    const { SK, readJson } = await import('../storage/keys');
-    const records = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
-    // Count how many levels of this technique are cleared (including the one just won)
-    let cleared = 0;
-    for (const rec of Object.values(records)) {
-      const parsed = toClassicLevelRecord(rec);
-      if (parsed?.techKey === techKey) cleared++;
-    }
-    // The current win may not be saved yet, so add 1 if not already counted
-    if (!records[gs.currentLevel!.id]) cleared++;
+  import('../features/practice/practiceLobby')
+    .then(async () => {
+      const { TECH_MAP } = await import('../features/teach-legacy');
+      const { SK, readJson } = await import('../storage/keys');
+      const records = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
+      // Count how many levels of this technique are cleared (including the one just won)
+      let cleared = 0;
+      for (const rec of Object.values(records)) {
+        const parsed = toClassicLevelRecord(rec);
+        if (parsed?.techKey === techKey) cleared++;
+      }
+      // The current win may not be saved yet, so add 1 if not already counted
+      if (!records[gs.currentLevel!.id]) cleared++;
 
-    const { bridgeShowWin } = await import('../react/win/winBridge');
-    bridgeShowWin({
-      mode: 'practice',
-      levelName: gs.currentLevel!.displayName,
-      timeSeconds: gs.seconds,
-      stars: earnedStars,
-      showLeaderboard: false,
-      showReplay: true,
-      practiceTechName: TECH_MAP[techKey] || techKey,
-      practiceCleared: cleared,
-      practiceTotal: 25,
-    });
-  }).catch(() => {});
+      const { bridgeShowWin } = await import('../react/win/winBridge');
+      bridgeShowWin({
+        mode: 'practice',
+        levelName: gs.currentLevel!.displayName,
+        timeSeconds: gs.seconds,
+        stars: earnedStars,
+        showLeaderboard: false,
+        showReplay: true,
+        practiceTechName: TECH_MAP[techKey] || techKey,
+        practiceCleared: cleared,
+        practiceTotal: 25,
+      });
+    })
+    .catch(() => {});
   // Play softer zen complete sound for practice
   import('./zenAudio').then(({ playZenComplete }) => playZenComplete(0.03)).catch(() => {});
 }
 
-function showWildWinCelebration(seconds: number, expGained: number, leveledUp: boolean, newLevel: number, firstKill?: string | null, firstKillSub?: string | null, beatMentor?: boolean): void {
-  // Look up mentor note for first kill, then show celebration
-  const mentorNotePromise: Promise<string | null> = firstKill
-    ? import('../features/wild/mentorDialogue').then(({ MENTOR_MILESTONES }) => {
-        const line = MENTOR_MILESTONES.find((m) => m.key === 'first_kill');
-        return line?.text ?? null;
-      }).catch(() => null)
+function showWildWinCelebration(
+  seconds: number,
+  expGained: number,
+  leveledUp: boolean,
+  newLevel: number,
+  firstKill?: string | null,
+  firstKillSub?: string | null,
+  firstKillKey?: string | null,
+  beatMentor?: boolean,
+  cleanSolveBonus?: number,
+): void {
+  showFeedback(
+    leveledUp ? t('wildRuntime.levelUpFeedback', { level: String(newLevel) }) : t('wildRuntime.huntSuccess'),
+    'success',
+  );
+  playWinSound();
+
+  // Look up per-technique unveiled mentor note for first kill
+  const mentorNotePromise: Promise<string | null> = firstKillKey
+    ? import('../features/wild/mentorController')
+        .then(({ getMentorNote }) => getMentorNote(firstKillKey, true))
+        .catch(() => null)
     : Promise.resolve(null);
 
-  Promise.all([
-    mentorNotePromise,
-    import('../react/win/winBridge'),
-  ]).then(([mentorNote, { bridgeShowWildWin, bridgeSetWildSession }]) => {
-    bridgeShowWildWin({
-      levelName: gs.currentLevel!.displayName,
-      timeSeconds: seconds,
-      expGained,
-      leveledUp,
-      newLevel,
-      firstKill,
-      firstKillSub,
-      beatMentor,
-      mentorNote,
-    });
-    // Fetch session info async and update store
-    import('../features/wild/wildController').then((m) => {
-      const session = m.getSession();
-      bridgeSetWildSession(session ? { round: session.round, wins: session.wins, totalExp: session.totalExp } : null);
-    }).catch(() => {});
-  }).catch(() => {});
-  showFeedback(leveledUp ? t('wildRuntime.levelUpFeedback', { level: String(newLevel) }) : t('wildRuntime.huntSuccess'), 'success');
-  playWinSound();
+  const openWinScreen = (): void => {
+    Promise.all([mentorNotePromise, import('../react/win/winBridge')])
+      .then(([mentorNote, { bridgeShowWildWin, bridgeSetWildSession }]) => {
+        bridgeShowWildWin({
+          levelName: gs.currentLevel!.displayName,
+          timeSeconds: seconds,
+          expGained,
+          leveledUp,
+          newLevel,
+          firstKill,
+          firstKillSub,
+          beatMentor,
+          mentorNote,
+          cleanSolveBonus,
+        });
+        import('../features/wild/wildController')
+          .then((m) => {
+            const session = m.getSession();
+            bridgeSetWildSession(
+              session ? { round: session.round, wins: session.wins, totalExp: session.totalExp } : null,
+            );
+          })
+          .catch(() => {});
+      })
+      .catch(() => {});
+  };
+
+  if (firstKill) {
+    // Play revelation ceremony first; win screen opens when ceremony completes.
+    import('../react/wild/firstKillRevelationBridge')
+      .then(({ bridgeShowFirstKillRevelation }) => {
+        const essence = firstKillKey ? t(`mentor.techEssence.${firstKillKey}`) : '';
+        const resolvedEssence = essence === `mentor.techEssence.${firstKillKey}` ? '' : essence;
+        bridgeShowFirstKillRevelation(firstKill, resolvedEssence, openWinScreen);
+      })
+      .catch(() => openWinScreen()); // fallback: open win screen directly on import error
+  } else {
+    openWinScreen();
+  }
 }
 
 export function celebrateCompletedUnits(idx: number, beforeState: { row: boolean; col: boolean; box: boolean }): void {
@@ -340,7 +405,11 @@ export function celebrateCompletedUnits(idx: number, beforeState: { row: boolean
   });
   // Exclude the trigger cell (idx) from unit-complete ripple so fill-pop animation
   // can complete without conflict; the wave still starts from the nearest neighbours.
-  applyUnitCompleteClass(gs.gridEl, sorted.filter((i) => i !== idx), 25);
+  applyUnitCompleteClass(
+    gs.gridEl,
+    sorted.filter((i) => i !== idx),
+    25,
+  );
   setTimeout(() => {
     clearUnitCompleteClass(gs.gridEl, [...flashSet]);
   }, 900);

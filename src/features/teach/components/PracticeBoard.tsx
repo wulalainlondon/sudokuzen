@@ -53,7 +53,13 @@ export function PracticeBoard({ item, practice, onToggle, onToggleFill }: Props)
         if (focusSet.has(i)) cellClass += ' focus';
         if (fillSelection && selected.has(fillSelection)) cellClass += ' fill-selected';
         if (practice.revealed && fillSelection && correctFill.has(fillSelection)) cellClass += ' fill-correct';
-        if (practice.tone === 'error' && fillSelection && selected.has(fillSelection) && !correctFill.has(fillSelection)) cellClass += ' fill-wrong';
+        if (
+          practice.tone === 'error' &&
+          fillSelection &&
+          selected.has(fillSelection) &&
+          !correctFill.has(fillSelection)
+        )
+          cellClass += ' fill-wrong';
 
         return (
           <div
@@ -78,8 +84,14 @@ export function PracticeBoard({ item, practice, onToggle, onToggleFill }: Props)
 
                   if (selected.has(elimSelection)) noteClass += ' strike';
                   if (selected.has(fillSelectionForDigit)) noteClass += ' fill-pick';
-                  if (practice.tone === 'error' && selected.has(elimSelection) && !correctElim.has(elimSelection)) noteClass += ' wrong';
-                  if (practice.tone === 'error' && selected.has(fillSelectionForDigit) && !correctFill.has(fillSelectionForDigit)) noteClass += ' wrong';
+                  if (practice.tone === 'error' && selected.has(elimSelection) && !correctElim.has(elimSelection))
+                    noteClass += ' wrong';
+                  if (
+                    practice.tone === 'error' &&
+                    selected.has(fillSelectionForDigit) &&
+                    !correctFill.has(fillSelectionForDigit)
+                  )
+                    noteClass += ' wrong';
                   if (practice.revealed && correctElim.has(elimSelection)) noteClass += ' correct-reveal';
                   if (practice.revealed && correctFill.has(fillSelectionForDigit)) noteClass += ' fill-correct-reveal';
 

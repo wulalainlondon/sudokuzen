@@ -5,7 +5,14 @@ export { DUO_TIERS, DUO_MODES, DUO_TIER_MAP, DUO_MODE_MAP, loadDuoTierPuzzles, p
 export type { DuoTier, DuoMode, DuoTierId, DuoModeId } from './duoTiers';
 
 // Profile
-export { loadDuoProfile, saveDuoProfile, recordDuoMatch, getUnlockedTiers, getUnlockedModes, checkNewUnlocks } from './duoProfile';
+export {
+  loadDuoProfile,
+  saveDuoProfile,
+  recordDuoMatch,
+  getUnlockedTiers,
+  getUnlockedModes,
+  checkNewUnlocks,
+} from './duoProfile';
 export type { DuoProfile, NewUnlocks } from './duoProfile';
 
 // Room

@@ -22,21 +22,21 @@ interface DataManifest {
 // Compact shard format (short keys to save bandwidth)
 interface CompactLevel {
   id: number;
-  s: number;       // stars
-  dn: string;      // difficultyName
-  dp: string;      // displayName
-  p: number[];     // puzzle
-  sl: number[];    // solution
-  mt: string;      // maxTechnique
-  tt: string;      // techTier
-  ds: number;      // difficultyScore
-  ls: boolean;     // logicSolvable
-  sr: number;      // singleRatio
-  src: string;     // source
+  s: number; // stars
+  dn: string; // difficultyName
+  dp: string; // displayName
+  p: number[]; // puzzle
+  sl: number[]; // solution
+  mt: string; // maxTechnique
+  tt: string; // techTier
+  ds: number; // difficultyScore
+  ls: boolean; // logicSolvable
+  sr: number; // singleRatio
+  src: string; // source
   // Duo-exclusive metadata
-  gv?: number;     // givens count
-  cd?: number;     // total candidates at start
-  ac?: number;     // avg candidates per empty cell
+  gv?: number; // givens count
+  cd?: number; // total candidates at start
+  ac?: number; // avg candidates per empty cell
 }
 
 // ── Internal state ─────────────────────────────────────────────────
@@ -44,7 +44,6 @@ interface CompactLevel {
 let _manifest: DataManifest | null = null;
 let _manifestPromise: Promise<DataManifest | null> | null = null;
 const _shardCache = new Map<string, LevelData[]>();
-
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -85,12 +84,18 @@ export async function getDataManifest(): Promise<DataManifest | null> {
   if (_manifest) return _manifest;
   if (_manifestPromise) return _manifestPromise;
   _manifestPromise = fetch(resolveDataPath('manifest.json'))
-    .then(r => {
+    .then((r) => {
       if (!r.ok) throw new Error(`data manifest ${r.status}`);
       return r.json() as Promise<DataManifest>;
     })
-    .then(m => { _manifest = m; return m; })
-    .catch(() => { _manifestPromise = null; return null; });
+    .then((m) => {
+      _manifest = m;
+      return m;
+    })
+    .catch(() => {
+      _manifestPromise = null;
+      return null;
+    });
   return _manifestPromise;
 }
 
@@ -114,7 +119,7 @@ async function loadShard(name: string, mode: GameMode): Promise<LevelData[]> {
     const r = await fetch(url);
     if (!r.ok) throw new Error(`shard ${name}: ${r.status}`);
     const compact: CompactLevel[] = await r.json();
-    const expanded = compact.map(c => expandLevel(c, mode));
+    const expanded = compact.map((c) => expandLevel(c, mode));
     _shardCache.set(name, expanded);
     return expanded;
   } catch {
@@ -149,8 +154,8 @@ export async function getAllWorldLevels(): Promise<LevelData[]> {
   const manifest = await getDataManifest();
   if (!manifest) return [];
 
-  const worldShards = Object.keys(manifest.shards).filter(k => k.startsWith('world-'));
-  const results = await Promise.all(worldShards.map(name => loadShard(name, 'world')));
+  const worldShards = Object.keys(manifest.shards).filter((k) => k.startsWith('world-'));
+  const results = await Promise.all(worldShards.map((name) => loadShard(name, 'world')));
   return results.flat();
 }
 
@@ -159,11 +164,7 @@ export async function getAllWorldLevels(): Promise<LevelData[]> {
  * Replaces the old synchronous getAllLevels().
  */
 export async function getAllLevelsAsync(): Promise<LevelData[]> {
-  const [normal, practice, world] = await Promise.all([
-    getNormalLevels(),
-    getPracticeLevels(),
-    getAllWorldLevels(),
-  ]);
+  const [normal, practice, world] = await Promise.all([getNormalLevels(), getPracticeLevels(), getAllWorldLevels()]);
   return [...normal, ...practice, ...world];
 }
 
@@ -212,6 +213,7 @@ export interface TeachManifest {
 let _teachManifest: TeachManifest | null = null;
 let _teachManifestPromise: Promise<TeachManifest | null> | null = null;
 const _teachShardCache = new Map<string, unknown>();
+const FETCH_TIMEOUT_MS = 6000;
 
 function resolveTeachPath(file: string): string {
   try {
@@ -222,13 +224,31 @@ function resolveTeachPath(file: string): string {
   }
 }
 
+async function fetchJsonWithTimeout<T>(url: string, timeoutMs = FETCH_TIMEOUT_MS): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const r = await fetch(url, { signal: controller.signal });
+    if (!r.ok) throw new Error(`fetch ${r.status}`);
+    return (await r.json()) as T;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function getTeachManifest(): Promise<TeachManifest | null> {
   if (_teachManifest) return _teachManifest;
   if (_teachManifestPromise) return _teachManifestPromise;
-  _teachManifestPromise = fetch(resolveTeachPath('manifest.json'))
-    .then(r => { if (!r.ok) throw new Error(`manifest ${r.status}`); return r.json() as Promise<TeachManifest>; })
-    .then(m => { _teachManifest = m; return m; })
-    .catch(() => null);
+  _teachManifestPromise = fetchJsonWithTimeout<TeachManifest>(resolveTeachPath('manifest.json'))
+    .then((m) => {
+      _teachManifest = m;
+      return m;
+    })
+    .catch(() => {
+      // Allow retry on next call after transient failures (offline, timeout, etc.).
+      _teachManifestPromise = null;
+      return null;
+    });
   return _teachManifestPromise;
 }
 
@@ -239,12 +259,12 @@ export async function getTeachShard(stars: string | number): Promise<unknown | n
   if (!manifest || !manifest.modules[key]) return null;
   try {
     const url = resolveTeachPath(`${key}.json`) + `?v=${manifest.version}`;
-    const r = await fetch(url);
-    if (!r.ok) throw new Error(`shard ${key}: ${r.status}`);
-    const data = await r.json();
+    const data = await fetchJsonWithTimeout<unknown>(url);
     _teachShardCache.set(key, data);
     return data;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 export function warmTeachManifest(): void {

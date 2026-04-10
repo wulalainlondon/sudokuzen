@@ -129,6 +129,7 @@ export function updateCellDisplay(cell: HTMLElement, data: CellData): void {
     } else {
       cell.classList.remove('user-val');
     }
+    cell.removeAttribute('data-ccount');
   } else {
     const ng = document.createElement('div');
     ng.className = 'notes-grid';
@@ -146,6 +147,12 @@ export function updateCellDisplay(cell: HTMLElement, data: CellData): void {
       ng.appendChild(nd);
     }
     cell.appendChild(ng);
+    // Update constraint map candidate count attribute
+    if (gs.constraintMapEnabled) {
+      cell.setAttribute('data-ccount', String(Math.min(data.notes.length, 5)));
+    } else {
+      cell.removeAttribute('data-ccount');
+    }
   }
 }
 

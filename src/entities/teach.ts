@@ -1,4 +1,9 @@
-export type TeachLaunchSource = 'tier' | 'library';
+export type TeachLaunchSource = 'tier' | 'library' | 'replay' | 'stats';
+
+export type TeachOpenOptions = {
+  preferredStep?: 'first' | 'firstInteractive' | number;
+  skipDemo?: boolean;
+};
 
 export type TeachEliminateTarget = {
   cell: number;
@@ -124,7 +129,7 @@ declare global {
   interface Window {
     TEACH_DATA?: Record<string, unknown>;
     __reactTeachBridge?: {
-      openTeach: (stars: string | number, source?: TeachLaunchSource) => Promise<boolean>;
+      openTeach: (stars: string | number, source?: TeachLaunchSource, options?: TeachOpenOptions) => Promise<boolean>;
       closeTeach: () => void;
     };
   }

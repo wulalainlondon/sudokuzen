@@ -9,7 +9,9 @@ import { t } from '../../i18n/t';
 
 const META = {
   id: 'naked_single',
-  get name() { return t('skills.nakedSingleName'); },
+  get name() {
+    return t('skills.nakedSingleName');
+  },
   subtitle: 'Naked Single',
   sweepDirection: 'inward' as const,
 };
@@ -21,7 +23,11 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   const idx = selectedCells[0];
   const cell = cells[idx];
   if (!cell || cell.value !== 0) return makeEmptyPreview(META, t('skills.cellFilled'));
-  if (cell.notes.length !== 1) return makeEmptyPreview(META, cell.notes.length === 0 ? t('skills.noCandidates') : t('skills.candidatesMoreThanOne'));
+  if (cell.notes.length !== 1)
+    return makeEmptyPreview(
+      META,
+      cell.notes.length === 0 ? t('skills.noCandidates') : t('skills.candidatesMoreThanOne'),
+    );
 
   const digit = cell.notes[0];
   return {

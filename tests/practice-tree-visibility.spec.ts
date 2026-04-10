@@ -30,4 +30,3 @@ describe('practice tree locked-node visibility', () => {
     expect(isTreeNodeVisible('finned_x_wing', nodes)).toBe(false);
   });
 });
-

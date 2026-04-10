@@ -16,9 +16,11 @@ export function LibraryOverlay(): ReactElement {
   useEffect(() => {
     if (visible && listRef.current) {
       // Legacy renderLibraryCards uses gs.libraryListEl — we wire it up
-      import('../../features/teach-legacy').then(({ renderLibraryCards }) => {
-        renderLibraryCards();
-      }).catch(() => {});
+      import('../../features/teach-legacy')
+        .then(({ renderLibraryCards }) => {
+          renderLibraryCards();
+        })
+        .catch(() => {});
     }
   }, [visible]);
 
@@ -44,7 +46,9 @@ export function LibraryOverlay(): ReactElement {
       <div className="library-page">
         <ZenStagger>
           <div className="library-header">
-            <button className="library-back-btn" onClick={handleClose}>{t('nav.back')}</button>
+            <button className="library-back-btn" onClick={handleClose}>
+              {t('nav.back')}
+            </button>
             <h2 className="library-title">{t('library.title')}</h2>
             <div className="library-subtitle">{t('library.subtitle')}</div>
           </div>

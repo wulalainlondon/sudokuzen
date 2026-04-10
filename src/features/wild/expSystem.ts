@@ -7,7 +7,7 @@ import type { WildProfile } from './wildState';
  * P2b: Steeper early curve (25 * N * (N+1) / 2) so Lv.1-20 feels less instant.
  * Old: ~2 rounds per level at Lv.5. New: ~3 rounds per level at Lv.5. */
 export function expForLevel(n: number): number {
-  return Math.floor(25 * n * (n + 1) / 2);
+  return Math.floor((25 * n * (n + 1)) / 2);
 }
 
 /** Derive IQ level from total EXP. */
@@ -37,9 +37,9 @@ export function calculateExp(
 
 /** Check which basic skills are still unlearned for the Lv.20 gate. */
 export function getUnstudiedGateSkills(profile: WildProfile): string[] {
-  const requiredSkills = TECHNIQUE_TABLE.filter(t => t.fragmentsRequired > 0).map(t => t.key);
+  const requiredSkills = TECHNIQUE_TABLE.filter((t) => t.fragmentsRequired > 0).map((t) => t.key);
   const studied = profile.studiedSkills || [];
-  return requiredSkills.filter(k => !studied.includes(k));
+  return requiredSkills.filter((k) => !studied.includes(k));
 }
 
 /** Release any gate-banked EXP once all required skills are studied. */

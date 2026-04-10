@@ -88,11 +88,13 @@ export function getLibraryLearningGroups(items: LibraryItem[]) {
   const byId = new Map(items.map((item) => [item.book, item]));
   const used = new Set<number>();
 
-  const groups = getGroups().map((group) => {
-    const groupItems = group.ids.map((id) => byId.get(id)).filter(Boolean) as LibraryItem[];
-    groupItems.forEach((item) => used.add(item.book));
-    return { ...group, items: groupItems };
-  }).filter((group) => group.items.length > 0);
+  const groups = getGroups()
+    .map((group) => {
+      const groupItems = group.ids.map((id) => byId.get(id)).filter(Boolean) as LibraryItem[];
+      groupItems.forEach((item) => used.add(item.book));
+      return { ...group, items: groupItems };
+    })
+    .filter((group) => group.items.length > 0);
 
   const ungrouped = items.filter((item) => !used.has(item.book));
   if (ungrouped.length) {

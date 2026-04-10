@@ -40,8 +40,13 @@ describe('wild pause routing', () => {
       <div class="game-container" style="display:flex"></div>
     `;
     localStorage.clear();
-    vi.stubGlobal('confirm', vi.fn(() => true));
-    exitWildMock.mockClear().mockImplementation(() => { gs.wildChallengeMode = null; });
+    vi.stubGlobal(
+      'confirm',
+      vi.fn(() => true),
+    );
+    exitWildMock.mockClear().mockImplementation(() => {
+      gs.wildChallengeMode = null;
+    });
     emitNavigationMock.mockClear();
     abandonWildEncounterMock.mockClear();
     gs.timerInterval = null;

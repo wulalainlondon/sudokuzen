@@ -43,10 +43,14 @@ export function AchievementToast(): ReactElement {
           exit={{ x: '100%', opacity: 0 }}
           transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
         >
-          <div className="achievement-toast-icon" id="achievement-toast-icon">{currentIcon}</div>
+          <div className="achievement-toast-icon" id="achievement-toast-icon">
+            {currentIcon}
+          </div>
           <div className="achievement-toast-text">
             <span className="achievement-toast-label">{t('toast.achievementUnlock')}</span>
-            <span className="achievement-toast-name" id="achievement-toast-name">{currentName}</span>
+            <span className="achievement-toast-name" id="achievement-toast-name">
+              {currentName}
+            </span>
           </div>
         </motion.div>
       )}

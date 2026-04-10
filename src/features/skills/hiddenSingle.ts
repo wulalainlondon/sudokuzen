@@ -10,7 +10,9 @@ import { t } from '../../i18n/t';
 
 const META = {
   id: 'hidden_single',
-  get name() { return t('skills.hiddenSingleName'); },
+  get name() {
+    return t('skills.hiddenSingleName');
+  },
   subtitle: 'Hidden Single',
   sweepDirection: 'inward' as const,
 };

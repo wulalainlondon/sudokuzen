@@ -246,8 +246,8 @@ describe('skyscraperSkill', () => {
     for (let i = 0; i < 81; i++) cells[i].value = 1;
 
     // Row 0: only these 2 cells have digit 5
-    cells[0] = { value: 0, fixed: false, notes: [5, 7], isError: false };  // r0c0 (base 1)
-    cells[5] = { value: 0, fixed: false, notes: [5, 3], isError: false };  // r0c5 (roof 1)
+    cells[0] = { value: 0, fixed: false, notes: [5, 7], isError: false }; // r0c0 (base 1)
+    cells[5] = { value: 0, fixed: false, notes: [5, 3], isError: false }; // r0c5 (roof 1)
 
     // Row 3: only these 2 cells have digit 5
     cells[27] = { value: 0, fixed: false, notes: [5, 8], isError: false }; // r3c0 (base 2)
@@ -352,8 +352,8 @@ describe('skyscraperSkill', () => {
     // r6c4 (idx 58) sees r6c2 (same row) and r8c5 (same box). BOTH!
     // And r6c4 is not in col 2 or col 5, so it doesn't break the 2-position constraint!
 
-    cells[2] = { value: 0, fixed: false, notes: [5, 7], isError: false };  // r0c2
-    cells[5] = { value: 0, fixed: false, notes: [5, 3], isError: false };  // r0c5
+    cells[2] = { value: 0, fixed: false, notes: [5, 7], isError: false }; // r0c2
+    cells[5] = { value: 0, fixed: false, notes: [5, 3], isError: false }; // r0c5
     cells[56] = { value: 0, fixed: false, notes: [5, 8], isError: false }; // r6c2 (roof 1)
     cells[77] = { value: 0, fixed: false, notes: [5, 2], isError: false }; // r8c5 (roof 2)
     cells[58] = { value: 0, fixed: false, notes: [5, 9], isError: false }; // r6c4 — target
@@ -443,8 +443,8 @@ describe('twoStringKiteSkill', () => {
 
     for (let i = 0; i < 81; i++) cells[i].value = 1;
 
-    cells[1] = { value: 0, fixed: false, notes: [3, 5], isError: false };  // r0c1
-    cells[7] = { value: 0, fixed: false, notes: [3, 6], isError: false };  // r0c7
+    cells[1] = { value: 0, fixed: false, notes: [3, 5], isError: false }; // r0c1
+    cells[7] = { value: 0, fixed: false, notes: [3, 6], isError: false }; // r0c7
     cells[11] = { value: 0, fixed: false, notes: [3, 8], isError: false }; // r1c2
     cells[65] = { value: 0, fixed: false, notes: [3, 9], isError: false }; // r7c2
     cells[70] = { value: 0, fixed: false, notes: [3, 4], isError: false }; // r7c7 — target
@@ -531,9 +531,9 @@ describe('finnedXWingSkill', () => {
 
     for (let i = 0; i < 81; i++) cells[i].value = 1;
 
-    cells[0] = { value: 0, fixed: false, notes: [7, 2], isError: false };  // r0c0
-    cells[3] = { value: 0, fixed: false, notes: [7, 4], isError: false };  // r0c3
-    cells[9] = { value: 0, fixed: false, notes: [7, 6], isError: false };  // r1c0
+    cells[0] = { value: 0, fixed: false, notes: [7, 2], isError: false }; // r0c0
+    cells[3] = { value: 0, fixed: false, notes: [7, 4], isError: false }; // r0c3
+    cells[9] = { value: 0, fixed: false, notes: [7, 6], isError: false }; // r1c0
     cells[12] = { value: 0, fixed: false, notes: [7, 8], isError: false }; // r1c3
     cells[10] = { value: 0, fixed: false, notes: [7, 5], isError: false }; // r1c1 (fin)
     cells[18] = { value: 0, fixed: false, notes: [7, 9], isError: false }; // r2c0 — target (box 0, col 0)

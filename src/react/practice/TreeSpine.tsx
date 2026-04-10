@@ -12,9 +12,7 @@ export function TreeSpine({ label, children }: TreeSpineProps): ReactElement {
   return (
     <div className="tree-spine">
       {label && <div className="tree-spine-label">{label}</div>}
-      <div className="tree-spine-nodes">
-        {children}
-      </div>
+      <div className="tree-spine-nodes">{children}</div>
     </div>
   );
 }

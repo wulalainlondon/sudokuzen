@@ -19,9 +19,15 @@ export function MentorOverlay(): ReactElement {
     <ZenOverlay visible={visible} onClose={handleDismiss} id="mentor-overlay">
       <div className="mentor-panel">
         <ZenStagger>
-          <div className="mentor-text" id="mentor-text" style={{ whiteSpace: 'pre-wrap' }}>{text}</div>
-          <div className="mentor-sub" id="mentor-sub" style={{ whiteSpace: 'pre-wrap' }}>{subText}</div>
-          <button className="mentor-dismiss-btn" onClick={handleDismiss}>{"......"}</button>
+          <div className="mentor-text" id="mentor-text" style={{ whiteSpace: 'pre-wrap' }}>
+            {text}
+          </div>
+          <div className="mentor-sub" id="mentor-sub" style={{ whiteSpace: 'pre-wrap' }}>
+            {subText}
+          </div>
+          <button className="mentor-dismiss-btn" onClick={handleDismiss}>
+            {'......'}
+          </button>
         </ZenStagger>
       </div>
     </ZenOverlay>

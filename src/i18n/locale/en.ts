@@ -12,6 +12,10 @@ export const en: Widen<Locale> = {
   // ── Merge mentor dialogue & game strings ─────────────────────────────
   ...enMentor,
   ...enGame,
+  teachOverlay: {
+    ...enGame.teachOverlay,
+    replaySource: 'Replay recommendation',
+  },
 
   // ── App chrome ──────────────────────────────────────────────────────
   app: {
@@ -177,7 +181,8 @@ export const en: Widen<Locale> = {
     longPressHint: 'Tip: long-press two cells to cast a skill',
     continuousFillHint: 'Tip: enable to directly tap empty cells to fill the selected digit',
     gateBlocked: '{count} basic technique(s) unstudied. Visit Practice to break past Lv.20',
-    gateBlockedWithOverflow: '{count} basic technique(s) unstudied ({exp} EXP banked). Visit Practice to break past Lv.20',
+    gateBlockedWithOverflow:
+      '{count} basic technique(s) unstudied ({exp} EXP banked). Visit Practice to break past Lv.20',
     gateOverflowBanked: '{exp} EXP banked',
     gateOverflowReleased: 'Study complete — released banked EXP: {exp}',
     watchIntro: 'Watch Mentor Prologue',
@@ -189,6 +194,7 @@ export const en: Widen<Locale> = {
     savedEncounterInfo: 'Last encounter: {tech} · {time}',
     abandonEncounter: 'Abandon Encounter',
     abandonConfirm: 'Abandoning counts as escape (cooldown applies)',
+    cleanSolveBonus: 'clean solve',
   },
 
   // ── Timer & game chrome ─────────────────────────────────────────────
@@ -266,15 +272,18 @@ export const en: Widen<Locale> = {
     bestRecordSpeed: 'Best: {time} \u26A1 {submissions} submissions',
     techDisplay: '\uD83D\uDCA1 Core technique: {tech}',
     techDisplayTier: '\uD83D\uDCA1 Core technique: {tech} ({tier})',
+    techUnknown: 'Unknown',
   },
 
   // ── Stats modal ─────────────────────────────────────────────────────
   stats: {
     title: 'Stats',
     tabOverview: 'Overview',
+    tabLearning: 'Learning',
     tabAchievements: 'Achievements',
     sectionGameData: 'Game Data',
     sectionTierProgress: 'Tier Progress',
+    sectionLearning: 'Learning Progress',
     sectionAchievements: 'Achievement Badges',
     cleared: 'Cleared ({pct}%)',
     threeStar: '3-Star Clears',
@@ -284,6 +293,30 @@ export const en: Widen<Locale> = {
     totalStars: 'Total Stars',
     totalTime: 'Total Best Time',
     practiceProgress: 'Practice ({pct}%) \u00B7 {techs}/41 fully cleared',
+    learningRead: 'Teach modules read',
+    learningPractice: 'Practice modules cleared',
+    learningUnread: 'Unread teach modules',
+    learningUnfinished: 'Unfinished practice techniques',
+    learningNextAction: 'Next action',
+    learningNextActionRead: 'Read {count} more teach module(s)',
+    learningNextActionPractice: 'Clear {count} more practice technique(s)',
+    learningTopTechniques: 'Top mastered techniques',
+    learningRiskAlerts: 'Risk alerts',
+    learningRank: 'Rank',
+    learningCompletion: 'Completion',
+    learningClears: 'Clears',
+    learningTechnique: 'Technique',
+    learningRisk: 'Risk',
+    learningLoopTitle: 'Learning loop',
+    learningLoopClicks: 'Recommendation clicks',
+    learningLoopCompletions: 'Replay-to-teach completions',
+    learningLoopNextDay: 'Next-day returns',
+    learningLoopNextDayRate: 'Next-day return rate',
+    learningLoopRate: 'Completion rate',
+    learningLoopTopModules: 'Top converting modules',
+    learningLoopTopModulesEmpty: 'No conversion data yet',
+    learningLoopOpenModule: 'Open module',
+    learningLoopOpenModuleFailed: 'Unable to open module',
     achievementsUnlocked: '{unlocked} / {total} unlocked',
   },
 
@@ -362,6 +395,29 @@ export const en: Widen<Locale> = {
     stepInfo: 'Step {current} / {total}',
   },
 
+  // ── Replay diagnosis ───────────────────────────────────────────────
+  replayDiagnosis: {
+    title: 'Replay Diagnosis',
+    subtitle: 'See your reasoning patterns directly from the replay',
+    ctaLearning: 'View learning route',
+    openModule: 'Open teaching module',
+    openModuleFailed: 'Unable to open teaching module',
+    recommendations: 'Recommendations',
+    recommendationsEmpty: 'No concrete recommendations yet.',
+    recommendationModule: 'Module #{id}',
+    mistakes: 'Mistakes',
+    keySteps: 'Key steps',
+    pace: 'Pace',
+    focus: 'Priority',
+    suggestions: 'Suggestions',
+    slowPace: 'Pace is slow',
+    goodPace: 'Pace is steady',
+    manyMistakes: 'Too many mistakes',
+    fewKeySteps: 'Too few key steps',
+    tryReviewingMistakes: 'Review mistake steps and the two moves around them first',
+    tryMoreKeySteps: 'Try to create more meaningful key steps',
+  },
+
   // ── Encounter transition ────────────────────────────────────────────
   encounter: {
     firstEncounterBadge: 'First',
@@ -404,6 +460,7 @@ export const en: Widen<Locale> = {
     hint: '\uD83D\uDCA1 Hint',
     confirmElim: 'Confirm Elimination',
     revealAnswer: 'Show Answer',
+    loadFailed: 'Failed to load lesson data',
     group1: 'Layer 1: Fundamentals',
     group1Hint: 'Build basic concepts and candidate discipline',
     group2: 'Layer 2: Candidate Structure',
@@ -599,7 +656,10 @@ export const en: Widen<Locale> = {
     grade_s: { name: 'Peak Performance', desc: 'Earn an S grade on replay scoring' },
     grade_s_10: { name: 'Consistent Excellence', desc: 'Earn S grade 10 times total' },
     streak_3_s: { name: 'Triple Crown', desc: '3 consecutive S-grade games' },
-    tech_locked: { name: 'First Sight: Locked Candidates', desc: 'Use Locked Candidates elimination for the first time' },
+    tech_locked: {
+      name: 'First Sight: Locked Candidates',
+      desc: 'Use Locked Candidates elimination for the first time',
+    },
     tech_fish: { name: 'First Sight: Fish', desc: 'Use X-Wing or Swordfish for the first time' },
     tech_wing: { name: 'First Sight: Wings', desc: 'Use XY-Wing or W-Wing for the first time' },
     tech_chain: { name: 'First Sight: Chains', desc: 'Use AIC or Forcing Chain for the first time' },
@@ -628,18 +688,16 @@ export const en: Widen<Locale> = {
 
   // ── Learning group names ───────────────────────────────────────────
   learnGroups: {
-    foundation: 'Layer 1: Foundations',
-    foundationHint: 'Build basic concepts and candidate discipline',
-    candidate: 'Layer 2: Candidate Structure',
-    candidateHint: 'Understand line/box candidate relationships and basic eliminations',
-    pattern: 'Layer 3: Patterns & Eliminations',
-    patternHint: 'Wings, fish, and locked chain techniques in practice',
-    chain: 'Layer 4: Chain Reasoning',
-    chainHint: 'Color chains, unique rectangles, and advanced fish patterns',
-    master: 'Layer 5: Advanced Integration',
-    masterHint: 'ALS, Template, Sue de Coq, and other advanced techniques',
-    legend: 'Layer 6: Grandmaster Structures',
-    legendHint: 'Exocet, Death Blossom, and other expert-level structures',
+    eye1: 'First Eye · Forced Cells',
+    eye1Hint: 'The cell with fewest candidates breaks the lock',
+    eye2: 'Second Eye · Confined Units',
+    eye2Hint: 'Digits forced into smaller regions',
+    eye3: 'Third Eye · Digit Distribution',
+    eye3Hint: 'Tracking one digit reveals eliminations',
+    eye4: 'Fourth Eye · Bivalue Cells',
+    eye4Hint: 'Two-candidate cells anchor every chain',
+    eye5: 'Fifth Eye · Link Skeleton',
+    eye5Hint: 'Strong links are the backbone of chain logic',
     extra: 'Supplementary Guides',
     extraHint: 'Extra techniques to study after completing the main path',
   },

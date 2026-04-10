@@ -151,9 +151,11 @@ export function back(): void {
     return;
   }
   if (useEncounterTransitionStore.getState().active) {
-    import('../../react/wild/encounterTransitionBridge').then(({ bridgeDismissEncounterTransition }) => {
-      bridgeDismissEncounterTransition();
-    }).catch(() => {});
+    import('../../react/wild/encounterTransitionBridge')
+      .then(({ bridgeDismissEncounterTransition }) => {
+        bridgeDismissEncounterTransition();
+      })
+      .catch(() => {});
     return;
   }
 

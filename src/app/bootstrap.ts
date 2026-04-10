@@ -69,13 +69,28 @@ export function bootstrapApp(): void {
     const err = e instanceof Error ? e : new Error(String(e));
     const msg = err.message || String(e);
     const stack = err.stack || '';
-    document.body.insertAdjacentHTML('afterbegin',
-      `<pre style="position:fixed;top:0;left:0;right:0;z-index:9999;background:red;color:white;padding:12px;font-size:11px;max-height:40vh;overflow:auto;">BOOT ERROR: ${msg}\n${stack}</pre>`);
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      `<pre style="position:fixed;top:0;left:0;right:0;z-index:9999;background:red;color:white;padding:12px;font-size:11px;max-height:40vh;overflow:auto;">BOOT ERROR: ${msg}\n${stack}</pre>`,
+    );
     console.error('bootstrapApp fatal:', e);
   }
 
   // Expose test hooks in dev mode for E2E (Playwright)
   if (import.meta.env.DEV) {
-    (window as SudokuWindow).__e2e = { gs, initGame, handleInput, erase, saveGameStatus, selectCell, replay, getCurrentEncounter, isWildActive, onWildComplete, getWildProfile, deferMentorIntro };
+    (window as SudokuWindow).__e2e = {
+      gs,
+      initGame,
+      handleInput,
+      erase,
+      saveGameStatus,
+      selectCell,
+      replay,
+      getCurrentEncounter,
+      isWildActive,
+      onWildComplete,
+      getWildProfile,
+      deferMentorIntro,
+    };
   }
 }

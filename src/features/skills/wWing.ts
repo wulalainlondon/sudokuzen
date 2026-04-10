@@ -3,10 +3,18 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther, getCommonPeers, getUnitCells } from './types';
 
-const META = { id: 'w_wing', get name() { return t('skills.wWingName'); }, subtitle: 'W-Wing', sweepDirection: 'outward' as const };
+const META = {
+  id: 'w_wing',
+  get name() {
+    return t('skills.wWingName');
+  },
+  subtitle: 'W-Wing',
+  sweepDirection: 'outward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 2) return makeEmptyPreview(META, selectedCells.length < 2 ? '' : t('skills.needSelectN', { n: '2' }));
+  if (selectedCells.length !== 2)
+    return makeEmptyPreview(META, selectedCells.length < 2 ? '' : t('skills.needSelectN', { n: '2' }));
 
   const [a, b] = selectedCells;
   const dA = cells[a],

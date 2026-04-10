@@ -1,18 +1,42 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import os from 'node:os';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
-function runValidator(): { code: number; stdout: string; stderr: string } {
-  try {
-    const stdout = execFileSync('node', ['scripts/validate-teach-data.mjs'], {
-      encoding: 'utf8',
-      timeout: 10000,
-    });
-    return { code: 0, stdout, stderr: '' };
-  } catch (e: unknown) {
-    const err = e as { status?: number; stdout?: string; stderr?: string };
-    return { code: err.status ?? 1, stdout: err.stdout ?? '', stderr: err.stderr ?? '' };
-  }
+const VALIDATOR_SCRIPT = path.resolve('scripts/validate-teach-data.mjs');
+
+function writeTempTeachData(mutator?: (data: Record<string, unknown>) => void): string {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'teach-data-'));
+  const filePath = path.join(dir, 'teach-data.json');
+  const data = JSON.parse(fs.readFileSync('teach-data.json', 'utf8')) as Record<string, unknown>;
+  mutator?.(data);
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  return dir;
+}
+
+function runValidator(options: { strict?: boolean; cwd?: string; baselineFile?: string } = {}): {
+  code: number;
+  stdout: string;
+  stderr: string;
+} {
+  const result = spawnSync('node', [VALIDATOR_SCRIPT], {
+    cwd: options.cwd,
+    env: {
+      ...process.env,
+      ...(options.strict ? { TEACH_VALIDATE_STRICT: '1' } : {}),
+      ...(options.baselineFile ? { TEACH_VALIDATE_BASELINE_FILE: options.baselineFile } : {}),
+    },
+    encoding: 'utf8',
+    timeout: 10000,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+
+  return {
+    code: result.status ?? 1,
+    stdout: result.stdout ?? '',
+    stderr: result.stderr ?? '',
+  };
 }
 
 describe('teach-data.json validation', () => {
@@ -20,6 +44,31 @@ describe('teach-data.json validation', () => {
     const result = runValidator();
     expect(result.code).toBe(0);
     expect(result.stdout).toContain('validated');
+    expect(result.stdout).not.toContain('notice(s)');
+  });
+
+  it('strict mode passes on the current teach-data.json', () => {
+    const result = runValidator({ strict: true });
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain('validated');
+    expect(result.stdout).not.toContain('notice(s)');
+  });
+
+  it('strict mode fails when a new empty-interaction notice is introduced', () => {
+    const cwd = writeTempTeachData((data) => {
+      const module33 = data['33'] as { practice?: Array<{ answer?: Record<string, unknown> }> };
+      const practice = module33.practice?.[0];
+      if (!practice?.answer) throw new Error('expected practice answer to exist');
+      practice.answer.eliminates = [];
+      practice.answer.fills = [];
+    });
+    const result = runValidator({ strict: true, cwd });
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain('validation failed');
+    expect(result.stderr).toContain('new notice(s) must be fixed');
+    expect(result.stderr).toContain(
+      "New notice: [33] practice[0] answer.eliminates and answer.fills are empty (practice won't be interactive)",
+    );
   });
 
   it('is valid JSON with 40 modules', () => {

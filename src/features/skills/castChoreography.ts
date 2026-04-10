@@ -98,7 +98,13 @@ function centroid(gridEl: HTMLElement, cells: number[]): { x: number; y: number 
 function recordTargets(ctx: CastContext): void {
   const { result, cellLabel: cl, recordAction, recordElimination } = ctx;
   for (const tgt of result.targets) {
-    recordAction('skill_eliminate', t('skills.skillEliminate', { cell: cl(tgt.cell), skill: result.skillName, digit: String(tgt.digit) }), tgt.cell, tgt.digit, null);
+    recordAction(
+      'skill_eliminate',
+      t('skills.skillEliminate', { cell: cl(tgt.cell), skill: result.skillName, digit: String(tgt.digit) }),
+      tgt.cell,
+      tgt.digit,
+      null,
+    );
     recordElimination();
   }
 }

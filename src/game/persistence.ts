@@ -3,7 +3,7 @@
 import { gs, type ActionRecord } from './state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { getSaveKeyForCurrentMode, getRecordsStorageKeyForLevelList, getModePolicy } from './modePolicy';
-import { toClassicLevelRecord, toSpeedLevelRecord } from '../shared/records/levelRecords';
+import { sanitizeReplayHistory, toClassicLevelRecord, toSpeedLevelRecord } from '../shared/records/levelRecords';
 
 export interface SavedGameState {
   levelId: number;
@@ -20,7 +20,7 @@ export function saveGameStatus(): void {
   if (!gs.currentLevel) return;
   // Wild mode puzzles save to dedicated wild save key (pause/resume)
   if (gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild') {
-    import('../features/wild/wildController').then(m => m.saveCurrentEncounter()).catch(() => {});
+    import('../features/wild/wildController').then((m) => m.saveCurrentEncounter()).catch(() => {});
     return;
   }
   const saveKey = getSaveKeyForCurrentMode(gs.currentLevel.id);
@@ -59,6 +59,7 @@ export function clearGameStatus(levelId: number): void {
 
 export function saveProgress(): number {
   const recordsKey = getRecordsStorageKeyForLevelList(false);
+  const replayHistory = sanitizeReplayHistory(gs.actionHistory);
   if (getModePolicy().useSubmissionValidation) {
     const records = readJson<Record<string, unknown>>(recordsKey, {});
     const existing = records[gs.currentLevel!.id];
@@ -69,7 +70,7 @@ export function saveProgress(): number {
       currentSubs < (existingRec?.submissions ?? Infinity) ||
       (currentSubs === (existingRec?.submissions ?? Infinity) && gs.seconds < (existingRec?.time ?? Infinity));
     if (shouldUpdate) {
-      records[gs.currentLevel!.id] = { time: gs.seconds, submissions: currentSubs, replayHistory: gs.actionHistory };
+      records[gs.currentLevel!.id] = { time: gs.seconds, submissions: currentSubs, replayHistory };
       writeJson(recordsKey, records);
     }
     return currentSubs;
@@ -83,7 +84,7 @@ export function saveProgress(): number {
       earnedStars > (existingRec?.stars ?? 1) ||
       (earnedStars === (existingRec?.stars ?? 1) && gs.seconds < (existingRec?.time ?? Infinity));
     if (shouldUpdate) {
-      records[gs.currentLevel!.id] = { time: gs.seconds, stars: earnedStars, replayHistory: gs.actionHistory };
+      records[gs.currentLevel!.id] = { time: gs.seconds, stars: earnedStars, replayHistory };
       writeJson(recordsKey, records);
     }
     return earnedStars;

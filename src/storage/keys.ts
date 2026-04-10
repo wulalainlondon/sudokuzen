@@ -30,9 +30,12 @@ export const SK = {
   STRONG_LINK_PANEL: 'sudoku_strong_link_panel',
   CHAIN_TRACE_PANEL: 'sudoku_chain_trace_panel',
   CHAIN_MAP_PANEL: 'sudoku_chain_map_panel',
+  CTM_ENABLED: 'sudoku_ctm_enabled',
+  CONSTRAINT_MAP_ENABLED: 'ctm_constraint_map',
   DUO_METRICS: 'sudoku_duo_metrics_v1',
   DUO_ACTIVE_ROOM_ID: 'sudoku_duo_active_room_id',
   PRACTICE_PHASE_TEACH_SEEN: 'sudoku_practice_phase_teach_seen_v1',
+  LEARNING_LOOP_METRICS: 'sudoku_learning_loop_metrics_v1',
 
   /** Returns the save-game key for a given level id. */
   save(levelId: number, speedrun: boolean): string {

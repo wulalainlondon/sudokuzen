@@ -132,15 +132,23 @@ export function initSlPanel(): void {
   if (!wrapper) return;
 
   let touchStartY = 0;
-  wrapper.addEventListener('touchstart', (e) => {
-    touchStartY = (e as TouchEvent).touches[0].clientY;
-  }, { passive: true });
-  wrapper.addEventListener('touchend', (e) => {
-    const deltaY = (e as TouchEvent).changedTouches[0].clientY - touchStartY;
-    if (deltaY < -40 && isSlPanelEnabled() && !gs.strongLinkPanelOpen) {
-      openSlPanel();
-    } else if (deltaY > 40 && gs.strongLinkPanelOpen) {
-      closeSlPanel();
-    }
-  }, { passive: true });
+  wrapper.addEventListener(
+    'touchstart',
+    (e) => {
+      touchStartY = (e as TouchEvent).touches[0].clientY;
+    },
+    { passive: true },
+  );
+  wrapper.addEventListener(
+    'touchend',
+    (e) => {
+      const deltaY = (e as TouchEvent).changedTouches[0].clientY - touchStartY;
+      if (deltaY < -40 && isSlPanelEnabled() && !gs.strongLinkPanelOpen) {
+        openSlPanel();
+      } else if (deltaY > 40 && gs.strongLinkPanelOpen) {
+        closeSlPanel();
+      }
+    },
+    { passive: true },
+  );
 }

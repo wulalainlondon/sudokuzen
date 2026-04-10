@@ -11,7 +11,11 @@ import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
 import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
 import { bridgeSetWildLobbyViewModel, bridgeSetWildLobbyVisible } from '../../react/wild/wildLobbyBridge';
-import type { EnterButtonState, RarityFilter as StoreRarityFilter, BestiaryFilter as StoreBestiaryFilter } from '../../react/wild/wildLobbyStore';
+import type {
+  EnterButtonState,
+  RarityFilter as StoreRarityFilter,
+  BestiaryFilter as StoreBestiaryFilter,
+} from '../../react/wild/wildLobbyStore';
 import {
   getLevelTitle,
   getWildBestiaryFilters,
@@ -22,7 +26,16 @@ import {
 } from './bestiaryUI';
 
 // Re-export bestiary UI symbols so existing consumers keep working.
-export { type BestiaryFilter, type RarityFilter, getWildBestiaryFilters, setWildBestiaryFilter, setWildRarityFilter, LEVEL_TITLES, RARITY_LABEL, getEnterChip } from './bestiaryUI';
+export {
+  type BestiaryFilter,
+  type RarityFilter,
+  getWildBestiaryFilters,
+  setWildBestiaryFilter,
+  setWildRarityFilter,
+  LEVEL_TITLES,
+  RARITY_LABEL,
+  getEnterChip,
+} from './bestiaryUI';
 
 // Wire the render callback so filter changes trigger renderWildLobby.
 _setBestiaryRenderCallback(() => renderWildLobby());
@@ -90,11 +103,19 @@ function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {
   const enterSub =
     session.round >= 10
       ? t('wild.lastRoundSub', { wins: String(session.wins), exp: String(session.totalExp) })
-      : t('wildLobby.nextRoundSub', { next: String(session.round + 1), wins: String(session.wins), round: String(session.round) });
+      : t('wildLobby.nextRoundSub', {
+          next: String(session.round + 1),
+          wins: String(session.wins),
+          round: String(session.round),
+        });
   return {
     roundText: pace,
     fillPct,
-    metaText: t('wild.sessionMeta', { exp: String(session.totalExp), wins: String(session.wins), round: String(Math.max(1, session.round)) }),
+    metaText: t('wild.sessionMeta', {
+      exp: String(session.totalExp),
+      wins: String(session.wins),
+      round: String(Math.max(1, session.round)),
+    }),
     techText: techniques > 0 ? t('wild.sessionTechs', { count: String(techniques) }) : t('wild.noTechThisRound'),
     enterText,
     enterSub,
@@ -105,8 +126,13 @@ function getSessionSummary(profile: ReturnType<typeof loadWildProfile>): {
 
 // Technique key → teach star ID mapping
 const TECH_TO_STAR: Record<string, number> = {
-  naked_single: 1, hidden_single: 2, locked_candidates: 3,
-  naked_pair: 4, hidden_pair: 5, naked_triple: 6, hidden_triple: 7,
+  naked_single: 1,
+  hidden_single: 2,
+  locked_candidates: 3,
+  naked_pair: 4,
+  hidden_pair: 5,
+  naked_triple: 6,
+  hidden_triple: 7,
 };
 
 export async function studyWildSkill(techKey: string): Promise<void> {
@@ -114,7 +140,7 @@ export async function studyWildSkill(techKey: string): Promise<void> {
   if (!profile.studiedSkills) profile.studiedSkills = [];
   if (profile.studiedSkills.includes(techKey)) return;
 
-  const meta = TECHNIQUE_TABLE.find(t => t.key === techKey);
+  const meta = TECHNIQUE_TABLE.find((t) => t.key === techKey);
   if (!meta) return;
 
   const starId = TECH_TO_STAR[techKey];
@@ -137,8 +163,8 @@ export async function studyWildSkill(techKey: string): Promise<void> {
   showFeedback(t('wild.studyComplete', { name: meta.name, subtitle: meta.subtitle }), 'success');
 
   // Check if this unlocks Lv.21
-  const requiredSkills = TECHNIQUE_TABLE.filter(t => t.fragmentsRequired > 0).map(t => t.key);
-  const allStudied = requiredSkills.every(k => profile.studiedSkills.includes(k));
+  const requiredSkills = TECHNIQUE_TABLE.filter((t) => t.fragmentsRequired > 0).map((t) => t.key);
+  const allStudied = requiredSkills.every((k) => profile.studiedSkills.includes(k));
   if (allStudied) {
     setTimeout(() => {
       showFeedback(t('wild.allBasicsComplete'), 'success');
@@ -162,7 +188,7 @@ export async function studyWildSkill(techKey: string): Promise<void> {
 
 /** Wait for the teach modal to be closed by the player. */
 function waitForTeachClose(): Promise<void> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     // Wait a moment for the modal to actually open first
     setTimeout(() => {
       const check = setInterval(() => {
@@ -174,12 +200,18 @@ function waitForTeachClose(): Promise<void> {
         }
       }, 300);
       // Safety timeout
-      setTimeout(() => { clearInterval(check); resolve(); }, 120000);
+      setTimeout(() => {
+        clearInterval(check);
+        resolve();
+      }, 120000);
     }, 500);
   });
 }
 
-export function computeEnterButtonState(profile: ReturnType<typeof loadWildProfile>, hasSavedEncounter: boolean): EnterButtonState {
+export function computeEnterButtonState(
+  profile: ReturnType<typeof loadWildProfile>,
+  hasSavedEncounter: boolean,
+): EnterButtonState {
   if (hasSavedEncounter) return 'resume_saved';
   const session = profile.currentSession;
   if (session && session.round > 0 && session.round < 10) return 'session_continue';
@@ -240,7 +272,11 @@ export function renderWildLobby(): void {
   const autoCastNames = TECHNIQUE_TABLE.filter((tt) => autoKeys.has(tt.key)).map((tt) => tt.name);
   const autoCastHint = profile.autoCastEnabled
     ? autoKeys.size > 0
-      ? t('wild.autoCastMastered', { count: String(autoCastNames.length), conquered: String(conquered), total: String(TECHNIQUE_TABLE.length) })
+      ? t('wild.autoCastMastered', {
+          count: String(autoCastNames.length),
+          conquered: String(conquered),
+          total: String(TECHNIQUE_TABLE.length),
+        })
       : t('wild.autoCastNone')
     : t('wild.autoCastOff');
   const autoCastTitle = profile.autoCastEnabled && autoCastNames.length > 0 ? autoCastNames.join('、') : '';
@@ -352,7 +388,11 @@ export function renderWildLobby(): void {
     if (profile.autoCastEnabled) {
       if (autoKeys.size > 0) {
         const names = TECHNIQUE_TABLE.filter((t) => autoKeys.has(t.key)).map((t) => t.name);
-        hintEl.textContent = t('wild.autoCastMastered', { count: String(names.length), conquered: String(conquered), total: String(TECHNIQUE_TABLE.length) });
+        hintEl.textContent = t('wild.autoCastMastered', {
+          count: String(names.length),
+          conquered: String(conquered),
+          total: String(TECHNIQUE_TABLE.length),
+        });
         if (toggleBtn) toggleBtn.title = names.join('、');
       } else {
         hintEl.textContent = t('wild.autoCastNone');
@@ -366,7 +406,11 @@ export function renderWildLobby(): void {
 
   // Bestiary count
   const countEl = document.getElementById('wild-bestiary-count');
-  if (countEl) countEl.textContent = t('wild.bestiaryCount', { discovered: String(discovered), total: String(TECHNIQUE_TABLE.length) });
+  if (countEl)
+    countEl.textContent = t('wild.bestiaryCount', {
+      discovered: String(discovered),
+      total: String(TECHNIQUE_TABLE.length),
+    });
 
   // Bestiary grid
   const grid = document.getElementById('wild-bestiary-grid');
@@ -392,16 +436,65 @@ export function renderWildLobby(): void {
 
   // ── Phase-based bestiary display ──
   const PHASES: { name: string; minGate: number; keys: string[] }[] = [
-    { name: t('wildLobby.phaseFundamentals'), minGate: 1, keys: ['naked_single','hidden_single','locked_candidates','naked_pair','hidden_pair','naked_triple','hidden_triple'] },
-    { name: t('wildLobby.phaseMidIntuitive'), minGate: 21, keys: ['x_wing','unique_rectangle','bug_plus_one'] },
-    { name: t('wildLobby.phaseMidDeductive'), minGate: 31, keys: ['skyscraper','two_string_kite','empty_rectangle','finned_x_wing','xy_wing','xyz_wing','w_wing','remote_pairs'] },
-    { name: t('wildLobby.phaseAdvanced'), minGate: 41, keys: ['swordfish','x_cycle_simple_coloring','finned_swordfish','jellyfish','finned_jellyfish'] },
-    { name: t('wildLobby.phaseChains'), minGate: 61, keys: ['aic','aic_mid_chain','aic_long_chain','grouped_aic_nice_loop','discontinuous_nice_loop','xy_chain'] },
-    { name: t('wildLobby.phaseALSForcing'), minGate: 71, keys: ['als_xz','als_xy','als_w_wing','als_chain','forcing_chain_net','cell_forcing_chain','region_forcing_chain'] },
-    { name: t('wildLobby.phaseUltimate'), minGate: 80, keys: ['sue_de_coq','template','death_blossom','exocet_death_blossom'] },
+    {
+      name: t('wildLobby.phaseFundamentals'),
+      minGate: 1,
+      keys: [
+        'naked_single',
+        'hidden_single',
+        'locked_candidates',
+        'naked_pair',
+        'hidden_pair',
+        'naked_triple',
+        'hidden_triple',
+      ],
+    },
+    { name: t('wildLobby.phaseMidIntuitive'), minGate: 21, keys: ['x_wing', 'unique_rectangle', 'bug_plus_one'] },
+    {
+      name: t('wildLobby.phaseMidDeductive'),
+      minGate: 31,
+      keys: [
+        'skyscraper',
+        'two_string_kite',
+        'empty_rectangle',
+        'finned_x_wing',
+        'xy_wing',
+        'xyz_wing',
+        'w_wing',
+        'remote_pairs',
+      ],
+    },
+    {
+      name: t('wildLobby.phaseAdvanced'),
+      minGate: 41,
+      keys: ['swordfish', 'x_cycle_simple_coloring', 'finned_swordfish', 'jellyfish', 'finned_jellyfish'],
+    },
+    {
+      name: t('wildLobby.phaseChains'),
+      minGate: 61,
+      keys: ['aic', 'aic_mid_chain', 'aic_long_chain', 'grouped_aic_nice_loop', 'discontinuous_nice_loop', 'xy_chain'],
+    },
+    {
+      name: t('wildLobby.phaseALSForcing'),
+      minGate: 71,
+      keys: [
+        'als_xz',
+        'als_xy',
+        'als_w_wing',
+        'als_chain',
+        'forcing_chain_net',
+        'cell_forcing_chain',
+        'region_forcing_chain',
+      ],
+    },
+    {
+      name: t('wildLobby.phaseUltimate'),
+      minGate: 80,
+      keys: ['sue_de_coq', 'template', 'death_blossom', 'exocet_death_blossom'],
+    },
   ];
 
-  const techByKey = new Map(TECHNIQUE_TABLE.map(t => [t.key, t]));
+  const techByKey = new Map(TECHNIQUE_TABLE.map((t) => [t.key, t]));
   let shownAnyPhase = false;
 
   for (const phase of PHASES) {
@@ -426,14 +519,18 @@ export function renderWildLobby(): void {
     // Phase header
     const phaseHeader = document.createElement('div');
     phaseHeader.className = 'wild-bestiary-phase';
-    const phaseDiscovered = phase.keys.filter(k => profile.bestiary[k]).length;
-    phaseHeader.textContent = t('wild.phaseHeader', { name: phase.name, discovered: String(phaseDiscovered), total: String(phase.keys.length) });
+    const phaseDiscovered = phase.keys.filter((k) => profile.bestiary[k]).length;
+    phaseHeader.textContent = t('wild.phaseHeader', {
+      name: phase.name,
+      discovered: String(phaseDiscovered),
+      total: String(phase.keys.length),
+    });
     grid.appendChild(phaseHeader);
 
     // Filter techniques in this phase
     const phaseTechs = phase.keys
-      .map(k => techByKey.get(k)!)
-      .filter(t => {
+      .map((k) => techByKey.get(k)!)
+      .filter((t) => {
         if (!t) return false;
         const entry = profile.bestiary[t.key];
         if (_bestiaryFilter === 'discovered' && !entry) return false;
@@ -445,116 +542,129 @@ export function renderWildLobby(): void {
 
     if (phaseTechs.length === 0 && _bestiaryFilter === 'all') {
       // Show placeholder for techniques not yet unlocked within this phase
-      const pending = phase.keys.filter(k => {
+      const pending = phase.keys.filter((k) => {
         const t = techByKey.get(k);
         return t && t.levelGate > profile.iqLevel;
       });
       if (pending.length > 0) {
         const hint = document.createElement('div');
         hint.className = 'wild-bestiary-hint';
-        const nextGate = Math.min(...pending.map(k => techByKey.get(k)!.levelGate));
+        const nextGate = Math.min(...pending.map((k) => techByKey.get(k)!.levelGate));
         hint.textContent = t('wild.unlockMore', { level: String(nextGate) });
         grid.appendChild(hint);
       }
     }
 
     for (const tech of phaseTechs) {
-    const entry = profile.bestiary[tech.key];
-    const card = document.createElement('div');
-    card.className = `wild-beast-card rarity-${tech.rarity}`;
-    if (!entry) card.classList.add('undiscovered');
+      const entry = profile.bestiary[tech.key];
+      const card = document.createElement('div');
+      card.className = `wild-beast-card rarity-${tech.rarity}`;
+      if (!entry) card.classList.add('undiscovered');
 
-    const nameSpan = document.createElement('div');
-    nameSpan.className = 'wild-beast-name';
-    nameSpan.textContent = entry ? tech.name : t('wild.unknown');
+      const nameSpan = document.createElement('div');
+      nameSpan.className = 'wild-beast-name';
+      nameSpan.textContent = entry ? tech.name : t('wild.unknown');
 
-    const subSpan = document.createElement('div');
-    subSpan.className = 'wild-beast-sub';
-    subSpan.textContent = entry ? `${tech.subtitle} · ${RARITY_LABEL[tech.rarity]}` : t('wild.undiscovered');
+      const subSpan = document.createElement('div');
+      subSpan.className = 'wild-beast-sub';
+      subSpan.textContent = entry ? `${tech.subtitle} · ${RARITY_LABEL[tech.rarity]}` : t('wild.undiscovered');
 
-    card.appendChild(nameSpan);
-    card.appendChild(subSpan);
+      card.appendChild(nameSpan);
+      card.appendChild(subSpan);
 
-    if (entry) {
-      const killsSpan = document.createElement('div');
-      killsSpan.className = 'wild-beast-kills';
-      killsSpan.textContent = t('wild.kills', { kills: String(entry.kills), encounters: String(entry.encounters) });
-      card.appendChild(killsSpan);
+      if (entry) {
+        const killsSpan = document.createElement('div');
+        killsSpan.className = 'wild-beast-kills';
+        killsSpan.textContent = t('wild.kills', { kills: String(entry.kills), encounters: String(entry.encounters) });
+        card.appendChild(killsSpan);
 
-      if (entry.kills > 0) {
-        const modesCleared = entry.modesCleared || [];
-        const allModes = ['standard', 'blind', 'ironman', 'noNotes'];
-        const modeLabels: Record<string, string> = { standard: t('wildLobby.modeBadgeStandard'), blind: t('wildLobby.modeBadgeBlind'), ironman: t('wildLobby.modeBadgeIronman'), noNotes: t('wildLobby.modeBadgeNoNotes') };
-        const badgesHtml = allModes.map(m => {
-          const cleared = modesCleared.includes(m);
-          return `<span class="mode-badge ${cleared ? 'cleared' : ''}">${modeLabels[m]}</span>`;
-        }).join('');
+        if (entry.kills > 0) {
+          const modesCleared = entry.modesCleared || [];
+          const allModes = ['standard', 'blind', 'ironman', 'noNotes'];
+          const modeLabels: Record<string, string> = {
+            standard: t('wildLobby.modeBadgeStandard'),
+            blind: t('wildLobby.modeBadgeBlind'),
+            ironman: t('wildLobby.modeBadgeIronman'),
+            noNotes: t('wildLobby.modeBadgeNoNotes'),
+          };
+          const badgesHtml = allModes
+            .map((m) => {
+              const cleared = modesCleared.includes(m);
+              return `<span class="mode-badge ${cleared ? 'cleared' : ''}">${modeLabels[m]}</span>`;
+            })
+            .join('');
 
-        const badgeRow = document.createElement('div');
-        badgeRow.className = 'wild-beast-modes';
-        badgeRow.innerHTML = badgesHtml;
-        card.appendChild(badgeRow);
+          const badgeRow = document.createElement('div');
+          badgeRow.className = 'wild-beast-modes';
+          badgeRow.innerHTML = badgesHtml;
+          card.appendChild(badgeRow);
+        }
       }
-    }
 
-    // Fragment display for T0-T1 techniques
-    if (tech.fragmentsRequired > 0) {
-      if (!profile.fragments) profile.fragments = {};
-      if (!profile.studiedSkills) profile.studiedSkills = [];
-      const frags = profile.fragments[tech.key] || 0;
-      const isStudied = profile.studiedSkills.includes(tech.key);
-      const isReady = frags >= tech.fragmentsRequired;
+      // Fragment display for T0-T1 techniques
+      if (tech.fragmentsRequired > 0) {
+        if (!profile.fragments) profile.fragments = {};
+        if (!profile.studiedSkills) profile.studiedSkills = [];
+        const frags = profile.fragments[tech.key] || 0;
+        const isStudied = profile.studiedSkills.includes(tech.key);
+        const isReady = frags >= tech.fragmentsRequired;
 
-      if (isStudied) {
-        const badge = document.createElement('div');
-        badge.className = 'wild-beast-studied';
-        badge.textContent = t('wild.studied');
-        card.appendChild(badge);
-      } else if (isReady) {
-        const studyBtn = document.createElement('button');
-        studyBtn.className = 'wild-beast-study-btn';
-        studyBtn.textContent = t('wild.study');
-        studyBtn.onclick = (e) => {
-          e.stopPropagation();
-          studyWildSkill(tech.key);
-        };
-        card.appendChild(studyBtn);
-      } else {
-        const fragBar = document.createElement('div');
-        fragBar.className = 'wild-beast-frag';
-        fragBar.textContent = t('wild.fragments', { current: String(frags), required: String(tech.fragmentsRequired) });
-        card.appendChild(fragBar);
+        if (isStudied) {
+          const badge = document.createElement('div');
+          badge.className = 'wild-beast-studied';
+          badge.textContent = t('wild.studied');
+          card.appendChild(badge);
+        } else if (isReady) {
+          const studyBtn = document.createElement('button');
+          studyBtn.className = 'wild-beast-study-btn';
+          studyBtn.textContent = t('wild.study');
+          studyBtn.onclick = (e) => {
+            e.stopPropagation();
+            studyWildSkill(tech.key);
+          };
+          card.appendChild(studyBtn);
+        } else {
+          const fragBar = document.createElement('div');
+          fragBar.className = 'wild-beast-frag';
+          fragBar.textContent = t('wild.fragments', {
+            current: String(frags),
+            required: String(tech.fragmentsRequired),
+          });
+          card.appendChild(fragBar);
+        }
       }
-    }
 
-    // Mentor note tooltip on tap
-    const conquered = entry ? entry.kills > 0 : false;
-    const note = getMentorNote(tech.key, conquered);
-    if (note && entry) {
-      card.title = note;
-      card.style.cursor = 'pointer';
-      card.addEventListener('click', () => {
-        const existing = document.getElementById('beast-note-popup');
-        if (existing) existing.remove();
-        const popup = document.createElement('div');
-        popup.id = 'beast-note-popup';
-        popup.className = 'beast-note-popup';
-        popup.innerHTML = `<div class="beast-note-title">${conquered ? escapeHtml(tech.name) + ' · ' + escapeHtml(tech.subtitle) : '？？？'}</div>
+      // Mentor note tooltip on tap
+      const conquered = entry ? entry.kills > 0 : false;
+      const note = getMentorNote(tech.key, conquered);
+      if (note && entry) {
+        card.title = note;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+          const existing = document.getElementById('beast-note-popup');
+          if (existing) existing.remove();
+          const popup = document.createElement('div');
+          popup.id = 'beast-note-popup';
+          popup.className = 'beast-note-popup';
+          popup.innerHTML = `<div class="beast-note-title">${conquered ? escapeHtml(tech.name) + ' · ' + escapeHtml(tech.subtitle) : '？？？'}</div>
           <div class="beast-note-body">${escapeHtml(note)}</div>
           <div class="beast-note-attr">${t('wildLobby.mentorAttr')}</div>`;
-        popup.addEventListener('click', () => popup.remove());
-        document.body.appendChild(popup);
-      });
-    }
+          popup.addEventListener('click', () => popup.remove());
+          document.body.appendChild(popup);
+        });
+      }
 
-    grid.appendChild(card);
-  }
+      grid.appendChild(card);
+    }
   } // end phase loop
 
   // Total discovered footer
   const footer = document.createElement('div');
   footer.className = 'wild-bestiary-footer';
-  footer.textContent = t('wild.bestiaryFooter', { discovered: String(discovered), total: String(TECHNIQUE_TABLE.length) });
+  footer.textContent = t('wild.bestiaryFooter', {
+    discovered: String(discovered),
+    total: String(TECHNIQUE_TABLE.length),
+  });
   grid.appendChild(footer);
 }
 

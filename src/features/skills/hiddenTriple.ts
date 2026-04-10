@@ -3,7 +3,14 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview, getSharedUnits, getUnitCells } from './types';
 
-const META = { id: 'hidden_triple', get name() { return t('skills.hiddenTripleName'); }, subtitle: 'Hidden Triple', sweepDirection: 'inward' as const };
+const META = {
+  id: 'hidden_triple',
+  get name() {
+    return t('skills.hiddenTripleName');
+  },
+  subtitle: 'Hidden Triple',
+  sweepDirection: 'inward' as const,
+};
 
 function combinations<T>(arr: T[], k: number): T[][] {
   if (k === 1) return arr.map((x) => [x]);

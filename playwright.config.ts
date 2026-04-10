@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const useManagedWebServer = !!process.env.CI;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -18,10 +20,12 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
-  },
+  webServer: useManagedWebServer
+    ? {
+      command: 'npm run dev -- --host 127.0.0.1 --port 5173',
+      url: 'http://localhost:5173',
+      reuseExistingServer: false,
+      timeout: 30_000,
+    }
+    : undefined,
 });

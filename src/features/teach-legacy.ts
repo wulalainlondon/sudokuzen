@@ -43,7 +43,9 @@ export const TECH_MAP: Record<string, string> = new Proxy({} as Record<string, s
     // t() returns the key itself when missing — fall back to prop
     return val === `techMap.${prop}` ? prop : val;
   },
-  has() { return true; },
+  has() {
+    return true;
+  },
 });
 
 // ── Learning order & group definitions ────────────────────────────
@@ -54,12 +56,11 @@ export const LEARNING_ORDER = [
 ];
 
 const GROUP_DEFS = [
-  { id: 'foundation', ids: [1, 2, 3, 4, 5, 6, 7] },
-  { id: 'candidate', ids: [8, 10, 11, 13, 12, 14, 27, 29] },
-  { id: 'pattern', ids: [9, 16, 17, 30, 31, 26, 28, 32] },
-  { id: 'chain', ids: [15, 18, 19, 20, 33, 21, 24, 34, 35] },
-  { id: 'master', ids: [22, 23, 37, 38, 39, 36] },
-  { id: 'legend', ids: [25, 40] },
+  { id: 'eye1', ids: [1, 2] },
+  { id: 'eye2', ids: [3, 4, 5, 6, 7, 14, 29] },
+  { id: 'eye3', ids: [8, 10, 27, 28, 9, 16, 17, 30, 31] },
+  { id: 'eye4', ids: [11, 12, 13, 26, 32] },
+  { id: 'eye5', ids: [15, 18, 19, 21, 20, 33, 34, 35, 22, 37, 38, 23, 24, 39, 36, 40, 25] },
 ];
 
 export function getGroups() {
@@ -126,9 +127,7 @@ export function renderTeachModalContent(data: unknown, stars: number | string, s
     subtitle: typeof raw.subtitle === 'string' ? raw.subtitle : '',
     technique: typeof raw.technique === 'string' ? raw.technique : '',
     explanation: Array.isArray(raw.explanation) ? raw.explanation.map((p) => String(p)) : [],
-    example: raw.example && typeof raw.example === 'object'
-      ? (raw.example as TeachLegacyData['example'])
-      : undefined,
+    example: raw.example && typeof raw.example === 'object' ? (raw.example as TeachLegacyData['example']) : undefined,
     practice: Array.isArray(raw.practice) ? (raw.practice as unknown as TeachLegacyData['practice']) : [],
   };
   gs.teachData = teachData as unknown as LegacyTeachData;
@@ -145,9 +144,7 @@ export function renderTeachModalContent(data: unknown, stars: number | string, s
     .concat(explanation.map((p) => `<p>${escapeHtml(p)}</p>`))
     .join('');
 
-  const steps = Array.isArray(teachData.example?.steps)
-    ? teachData.example.steps as LegacyTeachStep[]
-    : [];
+  const steps = Array.isArray(teachData.example?.steps) ? (teachData.example.steps as LegacyTeachStep[]) : [];
   gs.teachSteps = steps;
   gs.teachCurrentStep = 0;
   renderTeachBoard();
@@ -253,7 +250,9 @@ export function applyTeachHighlights(stepInput: unknown): void {
     });
   });
 
-  const visibleCells: number[] = Array.isArray(step.visibleCells) ? step.visibleCells.map(Number).filter(Number.isFinite) : [];
+  const visibleCells: number[] = Array.isArray(step.visibleCells)
+    ? step.visibleCells.map(Number).filter(Number.isFinite)
+    : [];
   if (visibleCells.length > 0) {
     const visibleSet = new Set(visibleCells);
     cells.forEach((c, idx) => {
@@ -270,9 +269,10 @@ export function applyTeachHighlights(stepInput: unknown): void {
   });
 
   // Apply highlight digits (gold notes)
-  const hd = step.highlightDigits && typeof step.highlightDigits === 'object'
-    ? step.highlightDigits as Record<string, unknown>
-    : {};
+  const hd =
+    step.highlightDigits && typeof step.highlightDigits === 'object'
+      ? (step.highlightDigits as Record<string, unknown>)
+      : {};
   for (const [cellIdx, digits] of Object.entries(hd)) {
     const cell = cells[parseInt(cellIdx)];
     if (!cell) continue;

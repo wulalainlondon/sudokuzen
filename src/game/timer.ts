@@ -43,7 +43,9 @@ export function updateTimerUI(): void {
       noNotes: t('timer.modeNoNotes'),
       gauntlet: t('timer.modeGauntlet'),
     };
-    const mode = gs.wildChallengeMode ? (modeMap[gs.wildChallengeMode] ?? t('timer.modeStandard')) : t('timer.modeStandard');
+    const mode = gs.wildChallengeMode
+      ? (modeMap[gs.wildChallengeMode] ?? t('timer.modeStandard'))
+      : t('timer.modeStandard');
     gs.timerEl.textContent = `${t('timer.wildPrefix', { mode })} / ${mins}:${secs}`;
     return;
   }

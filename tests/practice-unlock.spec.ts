@@ -1,11 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest';
 import { SK } from '../src/storage/keys';
-import {
-  computeUnlockState,
-  TREE,
-  UNLOCK_THRESHOLD,
-} from '../src/features/practice/practiceLobby';
+import { computeUnlockState, TREE, UNLOCK_THRESHOLD } from '../src/features/practice/practiceLobby';
 
 // Helper: build practice records where each entry has { techKey, time, stars }
 function buildRecords(entries: Array<{ techKey: string; count: number }>): Record<string, unknown> {
@@ -38,33 +34,25 @@ describe('practice unlock tree', () => {
   });
 
   it('clearing 3 levels of naked_single unlocks hidden_single', () => {
-    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(
-      buildRecords([{ techKey: 'naked_single', count: 3 }]),
-    ));
+    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(buildRecords([{ techKey: 'naked_single', count: 3 }])));
     const state = computeUnlockState();
     expect(state.get('hidden_single')!.status).not.toBe('locked');
   });
 
   it('clearing only 2 levels of naked_single — hidden_single still locked', () => {
-    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(
-      buildRecords([{ techKey: 'naked_single', count: 2 }]),
-    ));
+    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(buildRecords([{ techKey: 'naked_single', count: 2 }])));
     const state = computeUnlockState();
     expect(state.get('hidden_single')!.status).toBe('locked');
   });
 
   it('clearing all 25 of naked_single — status should be completed', () => {
-    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(
-      buildRecords([{ techKey: 'naked_single', count: 25 }]),
-    ));
+    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(buildRecords([{ techKey: 'naked_single', count: 25 }])));
     const state = computeUnlockState();
     expect(state.get('naked_single')!.status).toBe('completed');
   });
 
   it('clearing partial levels — status should be partial', () => {
-    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(
-      buildRecords([{ techKey: 'naked_single', count: 10 }]),
-    ));
+    localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(buildRecords([{ techKey: 'naked_single', count: 10 }])));
     const state = computeUnlockState();
     expect(state.get('naked_single')!.status).toBe('partial');
     expect(state.get('naked_single')!.cleared).toBe(10);

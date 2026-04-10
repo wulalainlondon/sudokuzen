@@ -3,10 +3,18 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther, getCommonPeers } from './types';
 
-const META = { id: 'xyz_wing', get name() { return t('skills.xyzWingName'); }, subtitle: 'XYZ-Wing', sweepDirection: 'outward' as const };
+const META = {
+  id: 'xyz_wing',
+  get name() {
+    return t('skills.xyzWingName');
+  },
+  subtitle: 'XYZ-Wing',
+  sweepDirection: 'outward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 3) return makeEmptyPreview(META, selectedCells.length < 3 ? '' : t('skills.needSelectN', { n: '3' }));
+  if (selectedCells.length !== 3)
+    return makeEmptyPreview(META, selectedCells.length < 3 ? '' : t('skills.needSelectN', { n: '3' }));
 
   // Try each cell as pivot (the one with 3 candidates)
   for (let pi = 0; pi < 3; pi++) {

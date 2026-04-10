@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useTeachStore } from '../src/features/teach/state/teachStore';
 
@@ -80,5 +80,59 @@ describe('teach store state machine', () => {
     expect(useTeachStore.getState().flow).toBe('result');
     expect(useTeachStore.getState().practice.revealed).toBe(true);
     expect(useTeachStore.getState().practice.success).toBe(false);
+  });
+
+  it('preserves replay launch source without restoring the library overlay on close', async () => {
+    const renderLibraryCards = vi.fn();
+    const openLibraryOverlay = vi.fn();
+    const w = window as Window & {
+      renderLibraryCards?: typeof renderLibraryCards;
+      openLibraryOverlay?: typeof openLibraryOverlay;
+    };
+    w.renderLibraryCards = renderLibraryCards;
+    w.openLibraryOverlay = openLibraryOverlay;
+
+    const ok = await useTeachStore.getState().openTeach(1, 'replay');
+    expect(ok).toBe(true);
+    expect(useTeachStore.getState().launchSource).toBe('replay');
+
+    useTeachStore.getState().closeTeach();
+
+    expect(renderLibraryCards).not.toHaveBeenCalled();
+    expect(openLibraryOverlay).not.toHaveBeenCalled();
+    expect(useTeachStore.getState().launchSource).toBe('tier');
+  });
+
+  it('replay source opens directly in stepping and jumps to first interactive step', async () => {
+    window.TEACH_DATA = {
+      '1': {
+        technique: 'naked_single',
+        name: '啟蒙',
+        subtitle: 'test',
+        explanation: ['a'],
+        example: {
+          board: [],
+          given: [],
+          notes: {},
+          steps: [
+            { text: 'intro', focusCells: [], highlightDigits: {}, eliminateCells: [], warnCells: [], warnDigit: null },
+            {
+              text: 'interactive',
+              focusCells: [10],
+              highlightDigits: { '10': [5] },
+              eliminateCells: [{ cell: 10, digit: 2 }],
+              warnCells: [],
+              warnDigit: null,
+            },
+          ],
+        },
+        practice: [],
+      },
+    };
+
+    const ok = await useTeachStore.getState().openTeach(1, 'replay');
+    expect(ok).toBe(true);
+    expect(useTeachStore.getState().flow).toBe('stepping');
+    expect(useTeachStore.getState().stepIndex).toBe(1);
   });
 });

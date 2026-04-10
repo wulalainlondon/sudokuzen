@@ -28,7 +28,7 @@ function getMissing(indices: number[]): number[] {
 
 function renderDigits(digits: number[]): string {
   if (digits.length === 0) return `<span class="ua-complete">✓</span>`;
-  return digits.map(d => `<span class="ua-digit">${d}</span>`).join('');
+  return digits.map((d) => `<span class="ua-digit">${d}</span>`).join('');
 }
 
 export function showUnitAnalysis(idx: number): void {

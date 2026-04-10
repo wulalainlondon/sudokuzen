@@ -3,7 +3,14 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 
-const META = { id: 'finned_x_wing', get name() { return t('skills.finnedXWingName'); }, subtitle: 'Finned X-Wing', sweepDirection: 'outward' as const };
+const META = {
+  id: 'finned_x_wing',
+  get name() {
+    return t('skills.finnedXWingName');
+  },
+  subtitle: 'Finned X-Wing',
+  sweepDirection: 'outward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
   // Finned X-Wing needs at least 4 cells (the 4 X-Wing corners), possibly 5 with the fin

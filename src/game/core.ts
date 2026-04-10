@@ -6,16 +6,8 @@ import { gs, type LevelData, type ActionRecord } from './state';
 import { getAllLevels } from '../data/dataRegistry';
 import { SK } from '../storage/keys';
 import { formatSeconds, cellLabel, normalizeSavedCells } from './utils';
-import {
-  canInputByErrorGate,
-  getModePolicy,
-} from './modePolicy';
-import {
-  playFillSound,
-  playErrorFeedback,
-  playNoteToggleSound,
-  playEraseSound,
-} from './audio';
+import { canInputByErrorGate, getModePolicy } from './modePolicy';
+import { playFillSound, playErrorFeedback, playNoteToggleSound, playEraseSound } from './audio';
 import { showFeedback, markErrorArea } from '../ui/feedback';
 import { t } from '../i18n/t';
 import { emitNavigation } from '../app/navigation/navigationBus';
@@ -41,6 +33,7 @@ import {
   setLivesNoRemaining,
   setLivesRemaining,
   setDuoCooldownText,
+  setLevelTechniqueHint,
   addCooldownMask,
   removeCooldownMasks,
   highlightDigitOnGrid,
@@ -89,16 +82,28 @@ export { checkWin, showGameOver } from './winDetection';
 
 // Lazy imports to break circular: core ↔ duo ↔ levels ↔ core
 async function callDuoProgress() {
-  try { const m = await import('../features/duo/duoGame'); m.updateDuoProgress(); }
-  catch (e) { console.warn('lazy import duo failed:', e); }
+  try {
+    const m = await import('../features/duo/duoGame');
+    m.updateDuoProgress();
+  } catch (e) {
+    console.warn('lazy import duo failed:', e);
+  }
 }
 async function callCloseReplay() {
-  try { const m = await import('../features/replay'); m.closeReplayModal(); }
-  catch (e) { console.warn('lazy import replay failed:', e); }
+  try {
+    const m = await import('../features/replay');
+    m.closeReplayModal();
+  } catch (e) {
+    console.warn('lazy import replay failed:', e);
+  }
 }
 async function callCloseLibrary() {
-  try { const m = await import('../features/teach-legacy'); m.closeLibraryOverlay(); }
-  catch (e) { console.warn('lazy import teach-legacy failed:', e); }
+  try {
+    const m = await import('../features/teach-legacy');
+    m.closeLibraryOverlay();
+  } catch (e) {
+    console.warn('lazy import teach-legacy failed:', e);
+  }
 }
 
 // ── Auto-eliminate notes from peers ─────────────────────────────────
@@ -114,7 +119,13 @@ function eliminateNoteFromPeers(idx: number, digit: number): void {
     if (ni > -1) {
       cell.notes.splice(ni, 1);
       updateCellDisplay(gs.gridEl!.children[p] as HTMLElement, cell);
-      recordAction('eliminate', t('miscRuntime.elimLog', { cell: cellLabel(p), digit: String(digit) }), p, digit, cell.notes);
+      recordAction(
+        'eliminate',
+        t('miscRuntime.elimLog', { cell: cellLabel(p), digit: String(digit) }),
+        p,
+        digit,
+        cell.notes,
+      );
       recordElimination();
     }
   }
@@ -134,14 +145,7 @@ function recordAction(
 }
 
 // Re-export skill functions for legacy call sites (window facade, legacyRuntime).
-export {
-  evaluateLockedSkill,
-  toggleSkillMode,
-  handleCandidateProbeTap,
-  castLockedSkill,
-  exitSkillMode,
-  castSkill,
-};
+export { evaluateLockedSkill, toggleSkillMode, handleCandidateProbeTap, castLockedSkill, exitSkillMode, castSkill };
 
 // ── Board callbacks (Risk 6 fix: replace dynamic import() in event handlers) ──
 setBoardCallbacks({
@@ -196,6 +200,7 @@ export function initGame(
   localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
   const isWild = gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
   updateGameHeaderByMode(isWild);
+  setLevelTechniqueHint(gs.currentLevel.maxTechnique, gs.currentLevel.techTier);
 
   gs.isGhostMode = playWithGhost;
   gs.ghostHistory = gs.isGhostMode && ghostData ? ghostData : [];
@@ -296,7 +301,11 @@ export function handleInput(num: number): void {
     else data.notes.push(num);
     recordAction(
       'note',
-      t('miscRuntime.noteLog', { cell: cellLabel(gs.selectedIdx), digit: String(num), action: ni > -1 ? t('miscRuntime.noteRemove') : t('miscRuntime.noteAdd') }),
+      t('miscRuntime.noteLog', {
+        cell: cellLabel(gs.selectedIdx),
+        digit: String(num),
+        action: ni > -1 ? t('miscRuntime.noteRemove') : t('miscRuntime.noteAdd'),
+      }),
       gs.selectedIdx,
       null,
       data.notes,
@@ -310,7 +319,12 @@ export function handleInput(num: number): void {
       data.value = num;
       data.notes = [];
       data.isError = false;
-      recordAction('fill', t('miscRuntime.fillSpeedrun', { cell: cellLabel(gs.selectedIdx), digit: String(num) }), gs.selectedIdx, num);
+      recordAction(
+        'fill',
+        t('miscRuntime.fillSpeedrun', { cell: cellLabel(gs.selectedIdx), digit: String(num) }),
+        gs.selectedIdx,
+        num,
+      );
       playFillSound();
       updateCellDisplay(cellEl, data);
       saveGameStatus();
@@ -326,7 +340,12 @@ export function handleInput(num: number): void {
       gs.undoStack.push({ idx: gs.selectedIdx, prevValue: data.value, prevNotes: data.notes.slice() });
       data.value = num;
       data.notes = [];
-      recordAction('fill', t('miscRuntime.fillBlind', { cell: cellLabel(gs.selectedIdx), digit: String(num) }), gs.selectedIdx, num);
+      recordAction(
+        'fill',
+        t('miscRuntime.fillBlind', { cell: cellLabel(gs.selectedIdx), digit: String(num) }),
+        gs.selectedIdx,
+        num,
+      );
       playFillSound();
       updateCellDisplay(cellEl, data);
       saveGameStatus();
@@ -380,7 +399,12 @@ export function handleInput(num: number): void {
 
       playErrorFeedback();
       if (navigator.vibrate) navigator.vibrate([35, 20, 25]);
-      recordAction('mistake', t('miscRuntime.mistakeLog', { cell: cellLabel(gs.selectedIdx), digit: String(num) }), gs.selectedIdx, num);
+      recordAction(
+        'mistake',
+        t('miscRuntime.mistakeLog', { cell: cellLabel(gs.selectedIdx), digit: String(num) }),
+        gs.selectedIdx,
+        num,
+      );
       setTimeout(() => {
         data.isError = false;
         removeCellClasses(cellEl, 'error', 'wrong-preview');
@@ -403,7 +427,12 @@ export function handleInput(num: number): void {
     gs.cellsData[gs.selectedIdx].value = num;
     gs.cellsData[gs.selectedIdx].notes = [];
     gs.cellsData[gs.selectedIdx].isError = false;
-    recordAction('fill', t('miscRuntime.fillNormal', { cell: cellLabel(gs.selectedIdx), digit: String(num) }), gs.selectedIdx, num);
+    recordAction(
+      'fill',
+      t('miscRuntime.fillNormal', { cell: cellLabel(gs.selectedIdx), digit: String(num) }),
+      gs.selectedIdx,
+      num,
+    );
     // Auto-clear this digit from peer cells' notes
     eliminateNoteFromPeers(gs.selectedIdx, num);
     playFillSound();
@@ -548,16 +577,18 @@ export function pauseGame(): void {
   if (isWild) {
     if (leaderboardTitle) leaderboardTitle.textContent = t('wild.challengeRulesTitle');
     if (leaderboardList) {
-      import('../features/wild/wildState').then(({ CHALLENGE_CONFIGS }) => {
-        const mode = gs.wildChallengeMode || 'standard';
-        const config = CHALLENGE_CONFIGS[mode];
-        leaderboardList.innerHTML = `
+      import('../features/wild/wildState')
+        .then(({ CHALLENGE_CONFIGS }) => {
+          const mode = gs.wildChallengeMode || 'standard';
+          const config = CHALLENGE_CONFIGS[mode];
+          leaderboardList.innerHTML = `
           <div class="challenge-rule-card">
             <div class="challenge-rule-name">${config.displayName} · ${config.subtitle}</div>
             <div class="challenge-rule-desc">${config.description}</div>
             <div class="challenge-rule-detail">${t('wild.challengeExp', { mult: String(config.expMultiplier) })}${config.maxErrors === 1 ? ' · ' + t('wild.challengeOneLife') : config.maxErrors === 81 ? ' · ' + t('wild.challengeNoCheck') : ' · ' + t('wild.challengeLives', { n: String(config.maxErrors) })}${config.notesDisabled ? ' · ' + t('wild.challengeNoNotes') : ''}${config.timerCountdown ? ' · ' + t('wild.challengeTimer', { sec: String(config.timerCountdown) }) : ''}</div>
           </div>`;
-      }).catch(() => {});
+        })
+        .catch(() => {});
     }
   } else {
     if (leaderboardTitle) leaderboardTitle.textContent = '首通榜 TOP 3';
@@ -579,28 +610,34 @@ export function pauseGame(): void {
   // Strong link panel toggle — available in all modes
   const slCheckbox = document.getElementById('sl-checkbox') as HTMLInputElement | null;
   if (slCheckbox) {
-    import('../features/strongLinkPanel').then(({ isSlPanelEnabled, setSlPanelEnabled }) => {
-      slCheckbox.checked = isSlPanelEnabled();
-      slCheckbox.onchange = () => setSlPanelEnabled(slCheckbox.checked);
-    }).catch(() => {});
+    import('../features/strongLinkPanel')
+      .then(({ isSlPanelEnabled, setSlPanelEnabled }) => {
+        slCheckbox.checked = isSlPanelEnabled();
+        slCheckbox.onchange = () => setSlPanelEnabled(slCheckbox.checked);
+      })
+      .catch(() => {});
   }
 
   // Chain trace panel toggle — available in all modes
   const ctCheckbox = document.getElementById('chain-trace-checkbox') as HTMLInputElement | null;
   if (ctCheckbox) {
-    import('../features/chainTracePanel').then(({ isChainTracePanelEnabled, setChainTracePanelEnabled }) => {
-      ctCheckbox.checked = isChainTracePanelEnabled();
-      ctCheckbox.onchange = () => setChainTracePanelEnabled(ctCheckbox.checked);
-    }).catch(() => {});
+    import('../features/chainTracePanel')
+      .then(({ isChainTracePanelEnabled, setChainTracePanelEnabled }) => {
+        ctCheckbox.checked = isChainTracePanelEnabled();
+        ctCheckbox.onchange = () => setChainTracePanelEnabled(ctCheckbox.checked);
+      })
+      .catch(() => {});
   }
 
   // Chain map panel toggle — available in all modes
   const cmCheckbox = document.getElementById('chain-map-checkbox') as HTMLInputElement | null;
   if (cmCheckbox) {
-    import('../features/chainMapPanel').then(({ isChainMapPanelEnabled, setChainMapPanelEnabled }) => {
-      cmCheckbox.checked = isChainMapPanelEnabled();
-      cmCheckbox.onchange = () => setChainMapPanelEnabled(cmCheckbox.checked);
-    }).catch(() => {});
+    import('../features/chainMapPanel')
+      .then(({ isChainMapPanelEnabled, setChainMapPanelEnabled }) => {
+        cmCheckbox.checked = isChainMapPanelEnabled();
+        cmCheckbox.onchange = () => setChainMapPanelEnabled(cmCheckbox.checked);
+      })
+      .catch(() => {});
   }
 
   // Candidate Tracking Mode toggle — Wild mode only
@@ -612,6 +649,19 @@ export function pauseGame(): void {
     ctmCheckbox.onchange = () => {
       gs.candidateTrackingEnabled = ctmCheckbox.checked;
       localStorage.setItem(SK.CTM_ENABLED, ctmCheckbox.checked ? '1' : '0');
+    };
+  }
+
+  // Constraint Map toggle — Wild mode only
+  const cmapToggle = document.getElementById('pause-constraint-map-toggle');
+  const cmapCheckbox = document.getElementById('constraint-map-checkbox') as HTMLInputElement | null;
+  if (cmapToggle) cmapToggle.classList.toggle('hidden', !isWild);
+  if (cmapCheckbox) {
+    cmapCheckbox.checked = gs.constraintMapEnabled;
+    cmapCheckbox.onchange = () => {
+      gs.constraintMapEnabled = cmapCheckbox.checked;
+      localStorage.setItem(SK.CONSTRAINT_MAP_ENABLED, cmapCheckbox.checked ? '1' : '0');
+      import('../features/skills/candidateTrackingController').then((m) => m.refreshConstraintMap()).catch(() => {});
     };
   }
 
@@ -660,10 +710,10 @@ export async function abandonWildFromPause(): Promise<void> {
 export function resumeGame(): void {
   hidePauseScreen();
   const isWildTimed = !!(
-    gs.currentLevel
-    && gs.currentLevel.id < 0
-    && gs.currentLevel.source === 'wild'
-    && gs.wildChallengeMode === 'timed'
+    gs.currentLevel &&
+    gs.currentLevel.id < 0 &&
+    gs.currentLevel.source === 'wild' &&
+    gs.wildChallengeMode === 'timed'
   );
   if (isWildTimed) {
     import('../features/wild/wildController').then((m) => m.resumeTimedCountdown()).catch(() => {});

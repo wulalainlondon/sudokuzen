@@ -70,10 +70,11 @@ function normalizeExample(example: unknown): TeachExampleModel | null {
 
 function normalizePracticeItem(item: unknown): PracticeItemModel {
   const raw = (item && typeof item === 'object' ? item : {}) as Record<string, unknown>;
-  const answer = raw.answer && typeof raw.answer === 'object' ? raw.answer as Record<string, unknown> : {};
-  const notes = raw.notes && typeof raw.notes === 'object' && !Array.isArray(raw.notes)
-    ? (raw.notes as Record<string, unknown>)
-    : {};
+  const answer = raw.answer && typeof raw.answer === 'object' ? (raw.answer as Record<string, unknown>) : {};
+  const notes =
+    raw.notes && typeof raw.notes === 'object' && !Array.isArray(raw.notes)
+      ? (raw.notes as Record<string, unknown>)
+      : {};
   const normalizedNotes: Record<string, number[]> = {};
   for (const [k, v] of Object.entries(notes)) {
     normalizedNotes[k] = normalizeIntArray(v);
@@ -119,11 +120,21 @@ function normalizeModule(key: string, raw: unknown): TeachModuleModel {
     subtitle: String(data.subtitle ?? ''),
     explanation: Array.isArray(data.explanation) ? data.explanation.map(String) : [],
     example: normalizeExample(data.example),
-    demoStory: data.demoStory && typeof data.demoStory === 'object' && !Array.isArray(data.demoStory)
-      ? (data.demoStory as TeachModuleModel['demoStory'])
-      : undefined,
+    demoStory:
+      data.demoStory && typeof data.demoStory === 'object' && !Array.isArray(data.demoStory)
+        ? (data.demoStory as TeachModuleModel['demoStory'])
+        : undefined,
     practice: Array.isArray(data.practice) ? data.practice.map(normalizePracticeItem) : [],
   };
+}
+
+function hasUsableTeachPayload(raw: unknown): boolean {
+  if (!raw || typeof raw !== 'object') return false;
+  const data = raw as Record<string, unknown>;
+  const hasName = typeof data.name === 'string' && data.name.trim().length > 0;
+  const hasTechnique = typeof data.technique === 'string' && data.technique.trim().length > 0;
+  const hasExample = !!(data.example && typeof data.example === 'object');
+  return hasName || hasTechnique || hasExample;
 }
 
 /**
@@ -147,7 +158,7 @@ export async function fetchTeachModule(stars: string | number): Promise<TeachMod
 
   // Try lazy shard first
   const shard = await getTeachShard(key);
-  if (shard) return normalizeModule(key, shard);
+  if (hasUsableTeachPayload(shard)) return normalizeModule(key, shard);
 
   // Fall back to full blob (e.g. if shards aren't deployed yet)
   return getTeachModuleByStars(stars);

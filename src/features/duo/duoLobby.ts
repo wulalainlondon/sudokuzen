@@ -38,7 +38,6 @@ function setDuoViewActive(active: boolean): void {
   if (duoLobby) duoLobby.classList.toggle('hidden', !active);
 }
 
-
 // ── Tier/Mode selectors ──────────────────────────────────────────────
 
 function renderTierSelector(): void {
@@ -87,10 +86,12 @@ function renderModeRuleCard(): void {
   if (!el) return;
   const mode = DUO_MODE_MAP.get(_selectedMode);
   const tier = DUO_TIER_MAP.get(_selectedTier);
-  if (!mode || !tier) { el.textContent = ''; return; }
+  if (!mode || !tier) {
+    el.textContent = '';
+    return;
+  }
   el.innerHTML = `<div class="duo-rule-desc">${tier.description}</div><div class="duo-rule-detail">${mode.rules}</div>`;
 }
-
 
 // ── Room list ────────────────────────────────────────────────────────
 
@@ -174,7 +175,10 @@ function startLobbyPolling(): void {
 }
 
 function stopLobbyPolling(): void {
-  if (_duoLobbyPollTimer) { clearTimeout(_duoLobbyPollTimer); _duoLobbyPollTimer = null; }
+  if (_duoLobbyPollTimer) {
+    clearTimeout(_duoLobbyPollTimer);
+    _duoLobbyPollTimer = null;
+  }
 }
 
 // ── Labels ───────────────────────────────────────────────────────────
@@ -249,7 +253,10 @@ export function isDuoLobbyOpen(): boolean {
 export async function createDuoRoomFromLobby(): Promise<void> {
   const createBtn = document.getElementById('duo-create-btn-text') as HTMLButtonElement | null;
   const savedText = createBtn?.textContent ?? '';
-  if (createBtn) { createBtn.textContent = '...'; (createBtn.closest('button') as HTMLButtonElement | null)?.setAttribute('disabled', ''); }
+  if (createBtn) {
+    createBtn.textContent = '...';
+    (createBtn.closest('button') as HTMLButtonElement | null)?.setAttribute('disabled', '');
+  }
   try {
     const { createDuoRoom } = await import('./duoRoom');
     const roomId = await createDuoRoom(_selectedTier, _selectedMode);
@@ -262,7 +269,10 @@ export async function createDuoRoomFromLobby(): Promise<void> {
     const { openDuoRoomView } = await import('./duoRoomView');
     openDuoRoomView();
   } finally {
-    if (createBtn) { createBtn.textContent = savedText; (createBtn.closest('button') as HTMLButtonElement | null)?.removeAttribute('disabled'); }
+    if (createBtn) {
+      createBtn.textContent = savedText;
+      (createBtn.closest('button') as HTMLButtonElement | null)?.removeAttribute('disabled');
+    }
   }
 }
 
@@ -307,7 +317,10 @@ export function setDuoLobbyConnectionState(state: ConnState): void {
   for (const id of ['duo-conn-state', 'duo-room-conn-state']) {
     const el = document.getElementById(id);
     if (!el) continue;
-    if (state === 'connected') { el.style.display = 'none'; continue; }
+    if (state === 'connected') {
+      el.style.display = 'none';
+      continue;
+    }
     el.style.display = '';
     el.textContent = state === 'reconnecting' ? t('duo.connectionLost') : t('duo.connectionFailed');
   }

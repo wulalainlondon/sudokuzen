@@ -5,6 +5,7 @@ export interface SudokuWindow extends Window {
   closeReplayModal?: () => void;
   closeDuoResult?: () => void;
   surrenderDuo?: () => void;
+  openLibraryOverlay?: () => void;
   closeLibraryOverlay?: () => void;
   dismissMentor?: () => void;
   resetGame?: () => void;
@@ -28,7 +29,10 @@ export interface SudokuWindow extends Window {
   // E2E test hooks
   __e2e?: Record<string, unknown>;
   __pwaRuntime: { enforceAppVersion: (v: string) => Promise<boolean>; registerServiceWorkerUpdateFlow: () => void };
-  __reactTeachBridge?: { openTeach: (stars: string | number, source?: string) => Promise<boolean>; closeTeach: () => void };
+  __reactTeachBridge?: {
+    openTeach: (stars: string | number, source?: string) => Promise<boolean>;
+    closeTeach: () => void;
+  };
   __SUDOKU_HOST_BRIDGE?: {
     name: string;
     version?: string;

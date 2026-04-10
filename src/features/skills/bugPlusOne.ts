@@ -3,10 +3,18 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 
-const META = { id: 'bug_plus_one', get name() { return t('skills.bugPlusOneName'); }, subtitle: 'BUG+1', sweepDirection: 'inward' as const };
+const META = {
+  id: 'bug_plus_one',
+  get name() {
+    return t('skills.bugPlusOneName');
+  },
+  subtitle: 'BUG+1',
+  sweepDirection: 'inward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 1) return makeEmptyPreview(META, selectedCells.length < 1 ? '' : t('skills.needSelectN', { n: '1' }));
+  if (selectedCells.length !== 1)
+    return makeEmptyPreview(META, selectedCells.length < 1 ? '' : t('skills.needSelectN', { n: '1' }));
 
   const targetIdx = selectedCells[0];
   const targetCell = cells[targetIdx];

@@ -37,16 +37,13 @@ function tryExocet(board: SolverBoard): DetectionResult | null {
   return tryExocetOrientation(board, 'col');
 }
 
-function tryExocetOrientation(
-  board: SolverBoard,
-  orientation: 'row' | 'col',
-): DetectionResult | null {
+function tryExocetOrientation(board: SolverBoard, orientation: 'row' | 'col'): DetectionResult | null {
   const isRow = orientation === 'row';
 
   // Iterate each line (row or col)
   for (let line = 0; line < 9; line++) {
     const lineCells = isRow ? SolverBoard.ROW_CELLS[line] : SolverBoard.COL_CELLS[line];
-    const empties = lineCells.filter(c => board.values[c] === 0);
+    const empties = lineCells.filter((c) => board.values[c] === 0);
 
     // Try each pair of empty cells in the same box as base
     for (let i = 0; i < empties.length; i++) {

@@ -16,9 +16,7 @@ export function TreeFork({ type, branchCount, children }: TreeForkProps): ReactE
       <svg className="tree-fork-svg" viewBox={`0 0 300 60`} preserveAspectRatio="none">
         {type === 'split' ? renderSplit(branchCount) : renderMerge(branchCount)}
       </svg>
-      <div className="tree-fork-branches">
-        {children}
-      </div>
+      <div className="tree-fork-branches">{children}</div>
       {type === 'split' && null}
     </div>
   );

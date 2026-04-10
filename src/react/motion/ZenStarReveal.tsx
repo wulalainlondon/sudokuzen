@@ -6,7 +6,7 @@ import { useMemo, type ReactElement } from 'react';
 import { ZEN, isReducedMotion } from './zenMotion';
 
 interface ZenStarRevealProps {
-  stars: number;  // 1-3 earned
+  stars: number; // 1-3 earned
   total?: number; // max stars (default 3)
   /** Delay before the first star appears */
   delay?: number;
@@ -37,12 +37,7 @@ const reducedVariants = {
   visible: { opacity: 1, transition: { duration: 0.01 } },
 };
 
-export function ZenStarReveal({
-  stars,
-  total = 3,
-  delay = 0,
-  className,
-}: ZenStarRevealProps): ReactElement {
+export function ZenStarReveal({ stars, total = 3, delay = 0, className }: ZenStarRevealProps): ReactElement {
   const reduced = isReducedMotion();
 
   const items = useMemo(() => {
@@ -56,7 +51,8 @@ export function ZenStarReveal({
   if (reduced) {
     return (
       <span className={className}>
-        {'★'.repeat(stars)}{'☆'.repeat(total - stars)}
+        {'★'.repeat(stars)}
+        {'☆'.repeat(total - stars)}
       </span>
     );
   }

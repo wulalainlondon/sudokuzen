@@ -28,14 +28,15 @@ export const useGameOverStore = create<GameOverState>((set) => ({
   techSubtitle: '',
   isIronman: false,
 
-  open: (mode, wildInfo) => set({
-    visible: true,
-    mode,
-    wildSession: null,
-    techName: wildInfo?.techName ?? '',
-    techSubtitle: wildInfo?.techSubtitle ?? '',
-    isIronman: wildInfo?.isIronman ?? false,
-  }),
+  open: (mode, wildInfo) =>
+    set({
+      visible: true,
+      mode,
+      wildSession: null,
+      techName: wildInfo?.techName ?? '',
+      techSubtitle: wildInfo?.techSubtitle ?? '',
+      isIronman: wildInfo?.isIronman ?? false,
+    }),
   close: () => set({ visible: false }),
   setWildSession: (s) => set({ wildSession: s }),
 }));

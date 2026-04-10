@@ -5,7 +5,9 @@ import { t } from '../../i18n/t';
 
 const META = {
   id: 'locked_candidates',
-  get name() { return t('skills.lockedCandidatesName'); },
+  get name() {
+    return t('skills.lockedCandidatesName');
+  },
   subtitle: 'Locked Candidates',
   sweepDirection: 'outward' as const,
 };

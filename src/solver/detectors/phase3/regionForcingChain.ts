@@ -52,7 +52,8 @@ export function detectRegionForcingChain(board: SolverBoard): DetectionResult | 
 
         const actions: DetectionAction[] = [{ kind: val === 1 ? 'fill' : 'eliminate', cell: tCell, digit: tDigit }];
 
-        const unitName = unitIdx < 9 ? `Row ${unitIdx + 1}` : unitIdx < 18 ? `Col ${unitIdx - 8}` : `Box ${unitIdx - 17}`;
+        const unitName =
+          unitIdx < 9 ? `Row ${unitIdx + 1}` : unitIdx < 18 ? `Col ${unitIdx - 8}` : `Box ${unitIdx - 17}`;
 
         return {
           technique: 'region_forcing_chain',

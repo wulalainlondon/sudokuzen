@@ -1,6 +1,6 @@
 // Bridge: legacy replay.ts → React replay store
 
-import { useReplayStore, type ReplayFilter } from './replayStore';
+import { useReplayStore, type ReplayDiagnosis, type ReplayFilter } from './replayStore';
 
 export function bridgeOpenReplay(): void {
   useReplayStore.getState().open();
@@ -26,6 +26,12 @@ export function bridgeSetReplayListHtml(html: string): void {
   useReplayStore.getState().setListHtml(html);
 }
 
-export function bridgeSetReplayPlayback(partial: Parameters<ReturnType<typeof useReplayStore.getState>['setPlaybackState']>[0]): void {
+export function bridgeSetReplayDiagnosis(diagnosis: ReplayDiagnosis | null): void {
+  useReplayStore.getState().setDiagnosis(diagnosis);
+}
+
+export function bridgeSetReplayPlayback(
+  partial: Parameters<ReturnType<typeof useReplayStore.getState>['setPlaybackState']>[0],
+): void {
   useReplayStore.getState().setPlaybackState(partial);
 }

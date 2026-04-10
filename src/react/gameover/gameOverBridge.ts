@@ -1,6 +1,9 @@
 import { useGameOverStore, type GameOverMode, type WildSessionRef } from './gameOverStore';
 
-export function bridgeShowGameOver(mode: GameOverMode, wildInfo?: { techName?: string; techSubtitle?: string; isIronman?: boolean }): void {
+export function bridgeShowGameOver(
+  mode: GameOverMode,
+  wildInfo?: { techName?: string; techSubtitle?: string; isIronman?: boolean },
+): void {
   useGameOverStore.getState().open(mode, wildInfo);
 }
 

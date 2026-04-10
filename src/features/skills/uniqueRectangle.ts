@@ -3,10 +3,18 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
 
-const META = { id: 'unique_rectangle', get name() { return t('skills.uniqueRectangleName'); }, subtitle: 'Unique Rectangle', sweepDirection: 'inward' as const };
+const META = {
+  id: 'unique_rectangle',
+  get name() {
+    return t('skills.uniqueRectangleName');
+  },
+  subtitle: 'Unique Rectangle',
+  sweepDirection: 'inward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 4) return makeEmptyPreview(META, selectedCells.length < 4 ? '' : t('skills.needSelectN', { n: '4' }));
+  if (selectedCells.length !== 4)
+    return makeEmptyPreview(META, selectedCells.length < 4 ? '' : t('skills.needSelectN', { n: '4' }));
 
   // All must be empty with candidates
   for (const idx of selectedCells) {

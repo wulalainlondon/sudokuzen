@@ -70,15 +70,15 @@ function getAvailablePool(profile: WildProfile): TechniqueMeta[] {
 function newbieWeight(gate: number, level: number): number {
   if (level < gate) return 0;
   const age = level - gate;
-  if (age <= 2) return 0.3 + age * 0.35;  // ramp up: 0.3, 0.65, 1.0
-  if (age <= 4) return 1.0;                // peak holds
+  if (age <= 2) return 0.3 + age * 0.35; // ramp up: 0.3, 0.65, 1.0
+  if (age <= 4) return 1.0; // peak holds
   return Math.max(0.3, 1.0 - (age - 4) * 0.1); // gradual fade, min 0.3
 }
 
 /** Weighted pick for newbie zone (Lv.1-20). Each technique has a smooth probability curve. */
 function newbiePick(pool: TechniqueMeta[], iqLevel: number): TechniqueMeta {
   if (pool.length === 0) return TECHNIQUE_TABLE[0]; // safety fallback
-  const weights = pool.map(t => newbieWeight(t.levelGate, iqLevel));
+  const weights = pool.map((t) => newbieWeight(t.levelGate, iqLevel));
   const total = weights.reduce((s, w) => s + w, 0);
   if (total <= 0) return pool[Math.floor(Math.random() * pool.length)];
 
@@ -113,7 +113,7 @@ function getAdjustedTierProbs(iqLevel: number): Map<number, number> {
     const overflow = Math.max(0, iqLevel - gate);
     if (t === 0) {
       // P1b: T0 decays more aggressively — veterans should see more diverse content
-      const decay = Math.max(0.10, 1 - iqLevel / 80);
+      const decay = Math.max(0.1, 1 - iqLevel / 80);
       adjusted.set(t, base * decay);
     } else {
       // P1b: Higher tiers scale more per overflow — ensures Phase 2+ appear regularly
@@ -177,11 +177,11 @@ function tieredPick(pool: TechniqueMeta[], iqLevel: number): TechniqueMeta {
 
 /** Per-tier mode weights. P3: Enable timed mode at T1+ for variety. */
 const MODE_WEIGHTS: Record<number, Record<ChallengeMode, number>> = {
-  0: { standard: 0.80, ironman: 0.05, blind: 0.08, timed: 0.02, noNotes: 0.05, gauntlet: 0 },
-  1: { standard: 0.60, ironman: 0.10, blind: 0.10, timed: 0.08, noNotes: 0.12, gauntlet: 0 },
-  2: { standard: 0.48, ironman: 0.14, blind: 0.12, timed: 0.10, noNotes: 0.16, gauntlet: 0 },
-  3: { standard: 0.40, ironman: 0.17, blind: 0.13, timed: 0.12, noNotes: 0.18, gauntlet: 0 },
-  4: { standard: 0.35, ironman: 0.20, blind: 0.14, timed: 0.12, noNotes: 0.19, gauntlet: 0 },
+  0: { standard: 0.8, ironman: 0.05, blind: 0.08, timed: 0.02, noNotes: 0.05, gauntlet: 0 },
+  1: { standard: 0.6, ironman: 0.1, blind: 0.1, timed: 0.08, noNotes: 0.12, gauntlet: 0 },
+  2: { standard: 0.48, ironman: 0.14, blind: 0.12, timed: 0.1, noNotes: 0.16, gauntlet: 0 },
+  3: { standard: 0.4, ironman: 0.17, blind: 0.13, timed: 0.12, noNotes: 0.18, gauntlet: 0 },
+  4: { standard: 0.35, ironman: 0.2, blind: 0.14, timed: 0.12, noNotes: 0.19, gauntlet: 0 },
 };
 
 export function selectChallengeMode(tier: number, _profile: WildProfile): ChallengeMode {
@@ -255,7 +255,7 @@ export async function selectEncounter(profile: WildProfile): Promise<WildEncount
 
   // First ever encounter: force naked_single
   if (profile.totalEncounters === 0) {
-    picked = TECHNIQUE_TABLE.find(t => t.key === 'naked_single') ?? TECHNIQUE_TABLE[0];
+    picked = TECHNIQUE_TABLE.find((t) => t.key === 'naked_single') ?? TECHNIQUE_TABLE[0];
   } else if (pool.length === 0) {
     // Fallback: all on cooldown — pick from implemented basics ignoring cooldown
     const basics = TECHNIQUE_TABLE.filter((t) => IMPLEMENTED_SKILLS.has(t.key) && t.levelGate <= profile.iqLevel);

@@ -2,7 +2,7 @@
 
 import { gs } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
-import { getAllLevels } from '../data/dataRegistry';
+import { getAllLevels, getTeachData } from '../data/dataRegistry';
 import { toClassicLevelRecord } from '../shared/records/levelRecords';
 import { mergeCloudAchievements, syncAchievementsToCloud } from '../firebase/client';
 import { t } from '../i18n/t';
@@ -71,8 +71,12 @@ const ACHIEVEMENT_DEFS = [
 /** Localised achievement list — resolves name/desc from i18n at access time. */
 const ACHIEVEMENTS = ACHIEVEMENT_DEFS.map((def) => ({
   ...def,
-  get name() { return t(`achievements.${def.id}.name`); },
-  get desc() { return t(`achievements.${def.id}.desc`); },
+  get name() {
+    return t(`achievements.${def.id}.name`);
+  },
+  get desc() {
+    return t(`achievements.${def.id}.desc`);
+  },
 }));
 export { ACHIEVEMENTS };
 
@@ -84,6 +88,163 @@ export function loadAchievements(): Record<string, { date: string }> {
 
 export function saveAchievementsData(data: Record<string, { date: string }>): void {
   writeJson(SK.ACHIEVEMENTS, data);
+}
+
+type LearningLoopMetrics = {
+  recommendationClicks: number;
+  replayLaunchCompletions: number;
+  nextDayReturns: number;
+  lastRecommendationDate: string | null;
+  lastRecommendationModuleId: string | null;
+  lastReturnAwardDate: string | null;
+  moduleFunnels: Record<
+    string,
+    {
+      clicks: number;
+      completions: number;
+      techniqueKey: string | null;
+      sourceClicks: Record<string, number>;
+      sourceCompletions: Record<string, number>;
+    }
+  >;
+};
+
+type LearningLoopAttribution = {
+  source?: string;
+  techniqueKey?: string | null;
+};
+
+function todayKey(date = new Date()): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function readLearningLoopMetrics(): LearningLoopMetrics {
+  const raw = readJson<Partial<LearningLoopMetrics>>(SK.LEARNING_LOOP_METRICS, {});
+  const moduleFunnelsRaw =
+    raw.moduleFunnels && typeof raw.moduleFunnels === 'object' && !Array.isArray(raw.moduleFunnels)
+      ? (raw.moduleFunnels as Record<string, unknown>)
+      : {};
+  const moduleFunnels: LearningLoopMetrics['moduleFunnels'] = {};
+
+  for (const [moduleId, value] of Object.entries(moduleFunnelsRaw)) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+    const obj = value as Record<string, unknown>;
+    const sourceClicksRaw =
+      obj.sourceClicks && typeof obj.sourceClicks === 'object' && !Array.isArray(obj.sourceClicks)
+        ? (obj.sourceClicks as Record<string, unknown>)
+        : {};
+    const sourceCompletionsRaw =
+      obj.sourceCompletions && typeof obj.sourceCompletions === 'object' && !Array.isArray(obj.sourceCompletions)
+        ? (obj.sourceCompletions as Record<string, unknown>)
+        : {};
+    const sourceClicks: Record<string, number> = {};
+    const sourceCompletions: Record<string, number> = {};
+
+    for (const [source, count] of Object.entries(sourceClicksRaw)) {
+      sourceClicks[source] = Math.max(0, Number(count) || 0);
+    }
+    for (const [source, count] of Object.entries(sourceCompletionsRaw)) {
+      sourceCompletions[source] = Math.max(0, Number(count) || 0);
+    }
+
+    moduleFunnels[moduleId] = {
+      clicks: Math.max(0, Number(obj.clicks) || 0),
+      completions: Math.max(0, Number(obj.completions) || 0),
+      techniqueKey: typeof obj.techniqueKey === 'string' && obj.techniqueKey.trim() ? obj.techniqueKey.trim() : null,
+      sourceClicks,
+      sourceCompletions,
+    };
+  }
+
+  return {
+    recommendationClicks: Math.max(0, Number(raw.recommendationClicks) || 0),
+    replayLaunchCompletions: Math.max(0, Number(raw.replayLaunchCompletions) || 0),
+    nextDayReturns: Math.max(0, Number(raw.nextDayReturns) || 0),
+    lastRecommendationDate: typeof raw.lastRecommendationDate === 'string' ? raw.lastRecommendationDate : null,
+    lastRecommendationModuleId:
+      typeof raw.lastRecommendationModuleId === 'string' ? raw.lastRecommendationModuleId : null,
+    lastReturnAwardDate: typeof raw.lastReturnAwardDate === 'string' ? raw.lastReturnAwardDate : null,
+    moduleFunnels,
+  };
+}
+
+function writeLearningLoopMetrics(metrics: LearningLoopMetrics): void {
+  writeJson(SK.LEARNING_LOOP_METRICS, metrics);
+}
+
+export function recordLearningRecommendationClick(
+  moduleId: string | null,
+  date = new Date(),
+  attribution?: LearningLoopAttribution,
+): void {
+  const metrics = readLearningLoopMetrics();
+  metrics.recommendationClicks += 1;
+  metrics.lastRecommendationDate = todayKey(date);
+  metrics.lastRecommendationModuleId = typeof moduleId === 'string' && moduleId.trim() ? moduleId.trim() : null;
+  const normalizedId = typeof moduleId === 'string' && moduleId.trim() ? moduleId.trim() : null;
+  const source =
+    typeof attribution?.source === 'string' && attribution.source.trim() ? attribution.source.trim() : 'unknown';
+  const techniqueKey =
+    typeof attribution?.techniqueKey === 'string' && attribution.techniqueKey.trim()
+      ? attribution.techniqueKey.trim()
+      : null;
+  if (normalizedId) {
+    const existing = metrics.moduleFunnels[normalizedId] ?? {
+      clicks: 0,
+      completions: 0,
+      techniqueKey: null,
+      sourceClicks: {},
+      sourceCompletions: {},
+    };
+    existing.clicks += 1;
+    existing.sourceClicks[source] = (existing.sourceClicks[source] || 0) + 1;
+    if (techniqueKey) existing.techniqueKey = techniqueKey;
+    metrics.moduleFunnels[normalizedId] = existing;
+  }
+  writeLearningLoopMetrics(metrics);
+}
+
+export function recordReplayRecommendationCompletion(
+  moduleId?: string | null,
+  attribution?: LearningLoopAttribution,
+): void {
+  const metrics = readLearningLoopMetrics();
+  metrics.replayLaunchCompletions += 1;
+  const normalizedId = typeof moduleId === 'string' && moduleId.trim() ? moduleId.trim() : null;
+  const source =
+    typeof attribution?.source === 'string' && attribution.source.trim() ? attribution.source.trim() : 'unknown';
+  const techniqueKey =
+    typeof attribution?.techniqueKey === 'string' && attribution.techniqueKey.trim()
+      ? attribution.techniqueKey.trim()
+      : null;
+  if (normalizedId) {
+    const existing = metrics.moduleFunnels[normalizedId] ?? {
+      clicks: 0,
+      completions: 0,
+      techniqueKey: null,
+      sourceClicks: {},
+      sourceCompletions: {},
+    };
+    existing.completions += 1;
+    existing.sourceCompletions[source] = (existing.sourceCompletions[source] || 0) + 1;
+    if (techniqueKey) existing.techniqueKey = techniqueKey;
+    metrics.moduleFunnels[normalizedId] = existing;
+  }
+  writeLearningLoopMetrics(metrics);
+}
+
+export function recordLearningTabVisit(date = new Date()): void {
+  const metrics = readLearningLoopMetrics();
+  if (!metrics.lastRecommendationDate) return;
+  const today = todayKey(date);
+  if (today <= metrics.lastRecommendationDate) return;
+  if (metrics.lastReturnAwardDate === today) return;
+  metrics.nextDayReturns += 1;
+  metrics.lastReturnAwardDate = today;
+  writeLearningLoopMetrics(metrics);
 }
 
 // ── Achievement unlock & toast ────────────────────────────────────────
@@ -112,9 +273,11 @@ export function processAchievementToasts(): void {
   gs.achievementToastActive = true;
   const a = gs.achievementToastQueue.shift()!;
 
-  import('../react/toast/achievementToastBridge').then(({ bridgeEnqueueToast }) => {
-    bridgeEnqueueToast(a.icon, a.name);
-  }).catch(() => {});
+  import('../react/toast/achievementToastBridge')
+    .then(({ bridgeEnqueueToast }) => {
+      bridgeEnqueueToast(a.icon, a.name);
+    })
+    .catch(() => {});
 
   // Auto-clear active flag after toast duration (3s) + gap (0.4s)
   setTimeout(() => {
@@ -209,6 +372,299 @@ export function computeStats() {
   };
 }
 
+type TeachModuleData = {
+  technique?: unknown;
+  practice?: unknown;
+  name?: unknown;
+};
+
+type LearningTechniqueProgress = {
+  id: string;
+  totalModules: number;
+  readModules: number;
+  practicedModules: number;
+  masteryPct: number;
+  technique: string;
+  name: string;
+  read: number;
+  practiced: number;
+  clears: number;
+  total: number;
+  pct: number;
+};
+
+type LearningRiskSeverity = 'high' | 'medium';
+
+type LearningRiskAlert = LearningTechniqueProgress & {
+  title: string;
+  detail: string;
+  severity: LearningRiskSeverity;
+  reason: string;
+  action: string;
+};
+
+function isTeachModuleData(value: unknown): value is TeachModuleData {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isTruthyFlag(value: unknown): boolean {
+  return value === true || value === 'true' || value === 1;
+}
+
+function getTeachModuleEntries(): Array<[string, TeachModuleData]> {
+  const teachData = getTeachData();
+  const entries: Array<[string, TeachModuleData]> = [];
+  for (const [key, mod] of Object.entries(teachData)) {
+    if (isTeachModuleData(mod)) entries.push([key, mod]);
+  }
+  return entries;
+}
+
+function normalizeTechniqueKey(value: unknown, fallback: string): string {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+}
+
+function normalizeTechniqueName(value: unknown, fallback: string): string {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+}
+
+function buildLearningTechniqueProgress(): {
+  techniqueProgress: LearningTechniqueProgress[];
+  topTechniques: LearningTechniqueProgress[];
+  riskAlerts: LearningRiskAlert[];
+} {
+  const teachRead = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
+  const practiceDone = readJson<Record<string, boolean>>(SK.PRACTICE_DONE, {});
+  const practiceRecords = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
+  const teachModules = getTeachModuleEntries();
+
+  const progressMap = new Map<string, LearningTechniqueProgress>();
+  for (const [key, mod] of teachModules) {
+    const technique = normalizeTechniqueKey(mod.technique, `module-${key}`);
+    const name = normalizeTechniqueName(mod.name, `Module ${key}`);
+    const current = progressMap.get(technique) ?? {
+      id: technique,
+      totalModules: 0,
+      readModules: 0,
+      practicedModules: 0,
+      masteryPct: 0,
+      technique,
+      name,
+      read: 0,
+      practiced: 0,
+      clears: 0,
+      total: 0,
+      pct: 0,
+    };
+    if (current.name.startsWith('Module ') && name) current.name = name;
+    current.total += 1;
+    current.totalModules += 1;
+    if (isTruthyFlag(teachRead[key])) current.read += 1;
+    if (isTruthyFlag(teachRead[key])) current.readModules += 1;
+    if (Array.isArray(mod.practice) && mod.practice.length > 0 && isTruthyFlag(practiceDone[key]))
+      current.practiced += 1;
+    if (Array.isArray(mod.practice) && mod.practice.length > 0 && isTruthyFlag(practiceDone[key]))
+      current.practicedModules += 1;
+    progressMap.set(technique, current);
+  }
+
+  const techniqueClears = new Map<string, number>();
+  for (const rec of Object.values(practiceRecords)) {
+    const parsed = toClassicLevelRecord(rec);
+    if (!parsed?.techKey) continue;
+    const technique = normalizeTechniqueKey(parsed.techKey, '');
+    if (!technique) continue;
+    techniqueClears.set(technique, (techniqueClears.get(technique) || 0) + 1);
+  }
+
+  const techniqueProgress = [...progressMap.values()]
+    .map((item) => {
+      const clears = techniqueClears.get(item.technique) || 0;
+      const readRatio = item.total > 0 ? item.read / item.total : 0;
+      const practicedRatio = item.total > 0 ? item.practiced / item.total : 0;
+      const clearsRatio = item.total > 0 ? Math.min(clears, item.total) / item.total : 0;
+      const masteryPct = Math.round(((readRatio + practicedRatio + clearsRatio) / 3) * 100);
+      return {
+        ...item,
+        id: item.technique,
+        clears,
+        pct: masteryPct,
+        masteryPct,
+        totalModules: item.total,
+        readModules: item.read,
+        practicedModules: item.practiced,
+      };
+    })
+    .sort((a, b) => a.technique.localeCompare(b.technique) || a.name.localeCompare(b.name));
+
+  const topTechniques = [...techniqueProgress]
+    .sort(
+      (a, b) =>
+        b.pct - a.pct ||
+        b.clears - a.clears ||
+        b.practiced - a.practiced ||
+        b.read - a.read ||
+        a.technique.localeCompare(b.technique),
+    )
+    .slice(0, 5);
+
+  const riskAlerts = [...techniqueProgress]
+    .map<LearningRiskAlert | null>((item) => {
+      const clearsRatio = item.total > 0 ? Math.min(item.clears, item.total) / item.total : 0;
+
+      if (item.read > 0 && item.practiced === 0) {
+        return {
+          ...item,
+          title: item.name,
+          detail: '已讀但尚未完成練習',
+          severity: 'high',
+          reason: '已讀但尚未完成練習',
+          action: `完成 ${item.name} 的練習`,
+        };
+      }
+
+      if (item.practiced > 0 && clearsRatio < 0.25) {
+        return {
+          ...item,
+          title: item.name,
+          detail: '練習已做但清關數過低',
+          severity: 'medium',
+          reason: '練習已做但清關數過低',
+          action: `補強 ${item.name} 的實戰清關`,
+        };
+      }
+
+      return null;
+    })
+    .filter((item): item is LearningRiskAlert => !!item)
+    .sort((a, b) => {
+      const severityRank = (severity: LearningRiskSeverity) => (severity === 'high' ? 2 : 1);
+      return (
+        severityRank(b.severity) - severityRank(a.severity) ||
+        a.pct - b.pct ||
+        a.clears - b.clears ||
+        a.technique.localeCompare(b.technique)
+      );
+    })
+    .slice(0, 5);
+
+  return { techniqueProgress, topTechniques, riskAlerts };
+}
+
+export function computeLearningStats() {
+  const teachRead = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
+  const practiceDone = readJson<Record<string, boolean>>(SK.PRACTICE_DONE, {});
+  const teachModules = getTeachModuleEntries();
+  const teachTotal = teachModules.length;
+
+  const practiceModuleKeys = new Set(
+    teachModules.filter(([, mod]) => Array.isArray(mod.practice) && mod.practice.length > 0).map(([key]) => key),
+  );
+
+  const teachReadCount = teachModules.reduce((count, [key]) => count + (isTruthyFlag(teachRead[key]) ? 1 : 0), 0);
+  const practiceDoneCount = [...practiceModuleKeys].reduce(
+    (count, key) => count + (isTruthyFlag(practiceDone[key]) ? 1 : 0),
+    0,
+  );
+  const practiceTotalTechniques = practiceModuleKeys.size;
+  const unreadTeach = Math.max(0, teachTotal - teachReadCount);
+  const unmasteredTech = Math.max(0, practiceTotalTechniques - practiceDoneCount);
+  const practiceModules = teachModules.filter(([, mod]) => Array.isArray(mod.practice) && mod.practice.length > 0);
+  const masteredTechniqueCount = practiceDoneCount;
+  const totalTechniqueCount = practiceTotalTechniques;
+  const masteryPct =
+    teachTotal > 0 || practiceTotalTechniques > 0
+      ? Math.round(
+          (((teachTotal > 0 ? teachReadCount / teachTotal : 0) +
+            (practiceTotalTechniques > 0 ? practiceDoneCount / practiceTotalTechniques : 0)) /
+            ((teachTotal > 0 ? 1 : 0) + (practiceTotalTechniques > 0 ? 1 : 0) || 1)) *
+            100,
+        )
+      : 0;
+  const learningV2 = buildLearningTechniqueProgress();
+  const loopMetrics = readLearningLoopMetrics();
+  const replayCompletionRatePct =
+    loopMetrics.recommendationClicks > 0
+      ? Math.round((loopMetrics.replayLaunchCompletions / loopMetrics.recommendationClicks) * 100)
+      : 0;
+  const nextDayReturnRatePct =
+    loopMetrics.recommendationClicks > 0
+      ? Math.round((loopMetrics.nextDayReturns / loopMetrics.recommendationClicks) * 100)
+      : 0;
+
+  const teachModuleMap = new Map(teachModules.map(([id, mod]) => [id, mod] as const));
+  const topConvertingModules = Object.entries(loopMetrics.moduleFunnels)
+    .map(([moduleId, funnel]) => {
+      const mod = teachModuleMap.get(moduleId);
+      const name = typeof mod?.name === 'string' && mod.name.trim() ? mod.name.trim() : `Module ${moduleId}`;
+      const technique =
+        typeof mod?.technique === 'string' && mod.technique.trim() ? mod.technique.trim() : funnel.techniqueKey || '';
+      const clicks = Math.max(0, funnel.clicks);
+      const completions = Math.max(0, funnel.completions);
+      const rate = clicks > 0 ? Math.round((completions / clicks) * 100) : 0;
+      return { moduleId, name, technique, clicks, completions, completionRatePct: Math.max(0, Math.min(100, rate)) };
+    })
+    .filter((item) => item.clicks > 0 || item.completions > 0)
+    .sort(
+      (a, b) =>
+        b.completionRatePct - a.completionRatePct ||
+        b.completions - a.completions ||
+        b.clicks - a.clicks ||
+        Number(a.moduleId) - Number(b.moduleId),
+    )
+    .slice(0, 5);
+
+  const nextTeachModules = teachModules
+    .filter(([key]) => !isTruthyFlag(teachRead[key]))
+    .slice(0, 4)
+    .map(([key, mod]) => ({
+      id: key,
+      name: typeof mod.name === 'string' && mod.name.trim() ? mod.name : `Module ${key}`,
+      technique: typeof mod.technique === 'string' ? mod.technique : '',
+      read: false,
+      practiced: isTruthyFlag(practiceDone[key]),
+    }));
+
+  const nextPracticeModules = practiceModules
+    .filter(([key]) => isTruthyFlag(teachRead[key]) && !isTruthyFlag(practiceDone[key]))
+    .slice(0, 4)
+    .map(([key, mod]) => ({
+      id: key,
+      name: typeof mod.name === 'string' && mod.name.trim() ? mod.name : `Module ${key}`,
+      technique: typeof mod.technique === 'string' ? mod.technique : '',
+      read: true,
+      practiced: false,
+    }));
+
+  return {
+    teachReadCount,
+    teachTotal,
+    practiceDoneCount,
+    practiceTotalTechniques,
+    practiceTotal: practiceTotalTechniques,
+    masteredTechniqueCount,
+    totalTechniqueCount,
+    masteryPct,
+    techniqueProgress: learningV2.techniqueProgress,
+    topTechniques: learningV2.topTechniques,
+    riskAlerts: learningV2.riskAlerts,
+    nextTeachModules,
+    nextPracticeModules,
+    unreadTeach,
+    unmasteredTech,
+    learningLoop: {
+      recommendationClicks: loopMetrics.recommendationClicks,
+      replayLaunchCompletions: loopMetrics.replayLaunchCompletions,
+      nextDayReturns: loopMetrics.nextDayReturns,
+      replayCompletionRatePct,
+      nextDayReturnRatePct,
+      lastRecommendationDate: loopMetrics.lastRecommendationDate,
+      lastRecommendationModuleId: loopMetrics.lastRecommendationModuleId,
+      topConvertingModules,
+    },
+  };
+}
+
 // ── Achievement checking ──────────────────────────────────────────────
 
 export function checkAllAchievements(): void {
@@ -285,16 +741,22 @@ export function checkAllAchievements(): void {
   const wildRaw = readJson<Record<string, unknown>>(SK.WILD_PROFILE, {});
   const bestiary = (wildRaw.bestiary ?? {}) as Record<string, Record<string, unknown>>;
   const bEntries = Object.values(bestiary);
-  let hasBlind = false, hasIronman = false, hasNoNotes = false;
-  let blindTechCount = 0, anyAllModes = false;
+  let hasBlind = false,
+    hasIronman = false,
+    hasNoNotes = false;
+  let blindTechCount = 0,
+    anyAllModes = false;
   const requiredModes = ['standard', 'blind', 'ironman', 'noNotes'];
   for (const be of bEntries) {
     if (!be?.kills) continue;
-    const mc = Array.isArray(be.modesCleared) ? be.modesCleared as string[] : [];
-    if (mc.includes('blind')) { hasBlind = true; blindTechCount++; }
+    const mc = Array.isArray(be.modesCleared) ? (be.modesCleared as string[]) : [];
+    if (mc.includes('blind')) {
+      hasBlind = true;
+      blindTechCount++;
+    }
     if (mc.includes('ironman')) hasIronman = true;
     if (mc.includes('noNotes')) hasNoNotes = true;
-    if (requiredModes.every(m => mc.includes(m))) anyAllModes = true;
+    if (requiredModes.every((m) => mc.includes(m))) anyAllModes = true;
   }
   if (hasBlind) unlockAchievement('mode_blind_first');
   if (hasIronman) unlockAchievement('mode_ironman_first');

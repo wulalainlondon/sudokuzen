@@ -16,5 +16,7 @@ export function emitNavigation(intent: NavigationIntent): void {
 
 export function onNavigation(fn: Listener): () => void {
   listeners.add(fn);
-  return () => { listeners.delete(fn); };
+  return () => {
+    listeners.delete(fn);
+  };
 }

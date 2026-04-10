@@ -9,15 +9,24 @@ import { t } from '../i18n/t';
 import { getEquippedTitleDisplay } from '../features/titles';
 import type { FirestoreDoc, FirestoreTransaction } from './types';
 import type { SudokuWindow } from '../facade/windowTypes';
-import { ensureFirebaseRuntime, firebaseServerTimestamp } from './runtime';
+import { ensureFirebaseRuntime, firebaseServerTimestamp, initAnonymousAuth } from './runtime';
 import { escapeHtml } from '../shared/html/escape';
+import { sanitizeReplayHistory } from '../shared/records/levelRecords';
 
 let _firebaseInitPromise: Promise<boolean> | null = null;
 
 type AchievementMap = Record<string, { date: string }>;
 
-interface ClassicRecord { time: number; stars: number; replayHistory: unknown[] }
-interface SpeedRecord { time: number; submissions: number; replayHistory: unknown[] }
+interface ClassicRecord {
+  time: number;
+  stars: number;
+  replayHistory: unknown[];
+}
+interface SpeedRecord {
+  time: number;
+  submissions: number;
+  replayHistory: unknown[];
+}
 type GenericRecordMap = Record<string, ClassicRecord | SpeedRecord>;
 
 interface LeaderboardRow {
@@ -115,7 +124,7 @@ function normalizeClassicRecord(raw: unknown): ClassicRecord | null {
   if (!isPlainObject(raw)) return null;
   const time = Math.max(0, toInt(raw.time));
   const stars = Math.min(3, Math.max(1, toInt(raw.stars, 1)));
-  const replayHistory = Array.isArray(raw.replayHistory) ? (raw.replayHistory as unknown[]) : [];
+  const replayHistory = sanitizeReplayHistory(raw.replayHistory);
   return { time, stars, replayHistory };
 }
 
@@ -123,7 +132,7 @@ function normalizeSpeedRecord(raw: unknown): SpeedRecord | null {
   if (!isPlainObject(raw)) return null;
   const time = Math.max(0, toInt(raw.time));
   const submissions = Math.max(1, toInt(raw.submissions, 1));
-  const replayHistory = Array.isArray(raw.replayHistory) ? (raw.replayHistory as unknown[]) : [];
+  const replayHistory = sanitizeReplayHistory(raw.replayHistory);
   return { time, submissions, replayHistory };
 }
 
@@ -162,7 +171,8 @@ function mergeRecordMaps(
 ): GenericRecordMap {
   const out: GenericRecordMap = { ...remoteMap };
   for (const [levelId, localRec] of Object.entries(localMap)) {
-    const better = mode === 'classic' ? pickBetterClassic(localRec, out[levelId]) : pickBetterSpeed(localRec, out[levelId]);
+    const better =
+      mode === 'classic' ? pickBetterClassic(localRec, out[levelId]) : pickBetterSpeed(localRec, out[levelId]);
     if (better) out[levelId] = better;
   }
   return out;
@@ -296,14 +306,20 @@ export async function initPresence(): Promise<void> {
 
   // On unload: stop heartbeat only; doc deletion is unreliable here — TTL handles cleanup
   window.addEventListener('beforeunload', () => {
-    if (_presenceHeartbeatTimer) { clearInterval(_presenceHeartbeatTimer); _presenceHeartbeatTimer = null; }
+    if (_presenceHeartbeatTimer) {
+      clearInterval(_presenceHeartbeatTimer);
+      _presenceHeartbeatTimer = null;
+    }
   });
 
   // On hidden: pause heartbeat but keep doc so count stays stable while tab is backgrounded
   // On visible: refresh doc and resume heartbeat
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
-      if (_presenceHeartbeatTimer) { clearInterval(_presenceHeartbeatTimer); _presenceHeartbeatTimer = null; }
+      if (_presenceHeartbeatTimer) {
+        clearInterval(_presenceHeartbeatTimer);
+        _presenceHeartbeatTimer = null;
+      }
     } else {
       void _setPresenceDoc();
       if (!_presenceHeartbeatTimer) {
@@ -320,18 +336,19 @@ export async function initPresence(): Promise<void> {
 // (getOnlineCount with ONLINE_COUNT_CACHE_MS) to avoid N² read amplification.
 export function subscribeOnlineCount(callback: (count: number) => void): () => void {
   if (!gs.firebaseReady || !gs.db) return () => {};
-  const unsub = gs.db
-    .collection(PRESENCE_COLLECTION)
-    .onSnapshot((snap) => {
+  const unsub = gs.db.collection(PRESENCE_COLLECTION).onSnapshot(
+    (snap) => {
       const cutoff = Date.now() - PRESENCE_TTL_MS;
       const count = snap.docs.filter((doc) => {
         const ts = (doc.data()?.timestamp as { toMillis?: () => number } | undefined)?.toMillis?.() ?? 0;
         return ts > cutoff;
       }).length;
       callback(count);
-    }, (e) => {
+    },
+    (e) => {
       console.warn('subscribeOnlineCount failed:', e);
-    });
+    },
+  );
   return unsub;
 }
 
@@ -350,6 +367,7 @@ export async function initFirebase(): Promise<boolean> {
       if (!firebase.apps.length) firebase.initializeApp(win.SUDOKU_FIREBASE_CONFIG);
       gs.db = firebase.firestore();
       gs.firebaseReady = true;
+      void initAnonymousAuth();
       return true;
     } catch (e) {
       console.warn('Firebase init failed:', e);
@@ -379,7 +397,8 @@ export function getPlayerIdentity(): { playerId: string; alias: string } {
     localStorage.setItem(SK.PLAYER_ALIAS, alias);
   }
   alias = normalizeAlias(alias);
-  if (alias.length < ALIAS_MIN_LEN) alias = t('miscRuntime.defaultAlias', { code: String(Math.floor(Math.random() * 9000) + 1000) });
+  if (alias.length < ALIAS_MIN_LEN)
+    alias = t('miscRuntime.defaultAlias', { code: String(Math.floor(Math.random() * 9000) + 1000) });
   localStorage.setItem(SK.PLAYER_ALIAS, alias);
   return { playerId, alias };
 }
@@ -546,7 +565,11 @@ export async function syncSaveToCloud(saveKey: string, payload: Record<string, u
   }
 }
 
-export function scheduleSaveSync(saveKey: string, payload: Record<string, unknown>, delayMs = SAVE_SYNC_DEBOUNCE_MS): void {
+export function scheduleSaveSync(
+  saveKey: string,
+  payload: Record<string, unknown>,
+  delayMs = SAVE_SYNC_DEBOUNCE_MS,
+): void {
   if (!gs.firebaseReady || !gs.db) return;
   const oldTimer = pendingSaveSyncTimers.get(saveKey);
   if (oldTimer) clearTimeout(oldTimer);
@@ -724,7 +747,8 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
           .map((r: LeaderboardRow, i: number) => {
             const timeStr = formatSeconds(r.firstTimeSec);
             const titleStr = r.title ? escapeHtml(r.title) : '';
-            if (gs.isSpeedrunMode) return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${timeStr} ${t('miscRuntime.speedrunClassic')}`;
+            if (gs.isSpeedrunMode)
+              return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${timeStr} ${t('miscRuntime.speedrunClassic')}`;
             return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
           })
           .join('<br>');

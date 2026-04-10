@@ -58,7 +58,8 @@ export const de: Widen<Locale> = {
     unlocked: 'Freigeschaltet',
     locked: '\uD83D\uDD12 Sph\u00E4re gesperrt',
     lockHint: 'Vorherige Sph\u00E4re abschlie\u00DFen zum Freischalten',
-    unlockRequired: 'Alle Level von \u201E{prev}\u201C ({cleared}/{needed}) abschlie\u00DFen, um die n\u00E4chste Sph\u00E4re freizuschalten',
+    unlockRequired:
+      'Alle Level von \u201E{prev}\u201C ({cleared}/{needed}) abschlie\u00DFen, um die n\u00E4chste Sph\u00E4re freizuschalten',
     unlockGeneric: 'Sph\u00E4re noch nicht erreicht. Vorerst gesperrt.',
   },
 
@@ -175,7 +176,8 @@ export const de: Widen<Locale> = {
     longPressHint: 'Tipp: Zwei Zellen lang dr\u00FCcken, um eine Technik zu wirken',
     continuousFillHint: 'Tipp: Aktivieren, um leere Zellen direkt mit der gew\u00E4hlten Ziffer zu f\u00FCllen',
     gateBlocked: '{count} Grundtechnik(en) nicht studiert. Besuche Übung, um Lv.20 zu überschreiten',
-    gateBlockedWithOverflow: '{count} Grundtechnik(en) nicht studiert ({exp} EXP zwischengespeichert). Besuche Übung, um Lv.20 zu überschreiten',
+    gateBlockedWithOverflow:
+      '{count} Grundtechnik(en) nicht studiert ({exp} EXP zwischengespeichert). Besuche Übung, um Lv.20 zu überschreiten',
     gateOverflowBanked: '{exp} EXP zwischengespeichert',
     gateOverflowReleased: 'Studium abgeschlossen — gespeicherte EXP freigegeben: {exp}',
     watchIntro: 'Mentor-Prolog ansehen',
@@ -187,6 +189,7 @@ export const de: Widen<Locale> = {
     savedEncounterInfo: 'Letzte Begegnung: {tech} · {time}',
     abandonEncounter: 'Begegnung aufgeben',
     abandonConfirm: 'Aufgeben gilt als Flucht (Abklingzeit wird ausgelöst)',
+    cleanSolveBonus: 'Problemlose Lösung',
   },
 
   // ── Timer & game chrome ─────────────────────────────────────────────
@@ -251,7 +254,8 @@ export const de: Widen<Locale> = {
     subtextNormal: 'Du hast {maxErrors} Fehler gemacht',
     subtextWild: '\u201E{tech}\u201C verschwand im Nebel der Kandidaten.',
     ironmanQuoteAttr: '\u2500\u2500 Yi-Chen \u201EFragmente\u201C \u2500\u2500',
-    ironmanQuote: '\u201EEisenwand bedeutet nicht, niemals Fehler zu machen.\nEs bedeutet, denselben Fehler nie zweimal zu machen.\u201C',
+    ironmanQuote:
+      '\u201EEisenwand bedeutet nicht, niemals Fehler zu machen.\nEs bedeutet, denselben Fehler nie zweimal zu machen.\u201C',
   },
 
   // ── Pre-level modal ─────────────────────────────────────────────────
@@ -263,15 +267,18 @@ export const de: Widen<Locale> = {
     bestRecordSpeed: 'Bestzeit: {time} \u26A1 {submissions} Einreichungen',
     techDisplay: '\uD83D\uDCA1 Kerntechnik: {tech}',
     techDisplayTier: '\uD83D\uDCA1 Kerntechnik: {tech} ({tier})',
+    techUnknown: 'Unbekannt',
   },
 
   // ── Stats modal ─────────────────────────────────────────────────────
   stats: {
     title: 'Statistik',
     tabOverview: '\u00DCbersicht',
+    tabLearning: 'Lernen',
     tabAchievements: 'Erfolge',
     sectionGameData: 'Spieldaten',
     sectionTierProgress: 'Sph\u00E4ren-Fortschritt',
+    sectionLearning: 'Lernfortschritt',
     sectionAchievements: 'Erfolge',
     cleared: 'Gel\u00F6st ({pct}%)',
     threeStar: '3-Sterne-L\u00F6sungen',
@@ -281,6 +288,30 @@ export const de: Widen<Locale> = {
     totalStars: 'Sterne gesamt',
     totalTime: 'Bestzeit gesamt',
     practiceProgress: 'Training ({pct}%) \u00B7 {techs}/41 vollst\u00E4ndig',
+    learningRead: 'Gelesene Lehrmodule',
+    learningPractice: 'Abgeschlossene Praxismodule',
+    learningUnread: 'Ungelesene Lehrmodule',
+    learningUnfinished: 'Offene Praxistechniken',
+    learningNextAction: 'Nächste Aktion',
+    learningNextActionRead: 'Lies {count} weitere Lehrmodule',
+    learningNextActionPractice: 'Schließe {count} weitere Praxistechniken ab',
+    learningTopTechniques: 'Top-Meistertechniken',
+    learningRiskAlerts: 'Risiko-Hinweise',
+    learningRank: 'Rang',
+    learningCompletion: 'Fortschritt',
+    learningClears: 'Lösungen',
+    learningTechnique: 'Technik',
+    learningRisk: 'Risiko',
+    learningLoopTitle: 'Lernkreislauf',
+    learningLoopClicks: 'Empfehlungs-Klicks',
+    learningLoopCompletions: 'Replay-zu-Lehrmodul Abschlüsse',
+    learningLoopNextDay: 'Rückkehr am Folgetag',
+    learningLoopNextDayRate: 'Rückkehrrate am Folgetag',
+    learningLoopRate: 'Abschlussrate',
+    learningLoopTopModules: 'Top konvertierende Module',
+    learningLoopTopModulesEmpty: 'Noch keine Konversionsdaten',
+    learningLoopOpenModule: 'Modul öffnen',
+    learningLoopOpenModuleFailed: 'Modul konnte nicht geöffnet werden',
     achievementsUnlocked: '{unlocked} / {total} freigeschaltet',
   },
 
@@ -359,6 +390,29 @@ export const de: Widen<Locale> = {
     stepInfo: 'Schritt {current} / {total}',
   },
 
+  // ── Replay diagnosis ───────────────────────────────────────────────
+  replayDiagnosis: {
+    title: 'Replay-Diagnose',
+    subtitle: 'Sieh deine Denkweise direkt aus dem Replay heraus',
+    ctaLearning: 'Lernpfad anzeigen',
+    openModule: 'Lehrmodul öffnen',
+    openModuleFailed: 'Lehrmodul konnte nicht geöffnet werden',
+    recommendations: 'Empfohlene Techniken',
+    recommendationsEmpty: 'Noch keine konkrete Empfehlung.',
+    recommendationModule: 'Modul #{id}',
+    mistakes: 'Fehler',
+    keySteps: 'Schl\u00FCsselschritte',
+    pace: 'Tempo',
+    focus: 'Priorit\u00E4t',
+    suggestions: 'Empfehlungen',
+    slowPace: 'Tempo ist langsam',
+    goodPace: 'Tempo ist stabil',
+    manyMistakes: 'Zu viele Fehler',
+    fewKeySteps: 'Zu wenige Schl\u00FCsselschritte',
+    tryReviewingMistakes: 'Sieh dir zuerst Fehlerschritte und die zwei Z\u00FCge davor/danach an',
+    tryMoreKeySteps: 'Versuche, mehr aussagekr\u00E4ftige Schl\u00FCsselschritte zu erzeugen',
+  },
+
   // ── Encounter transition ────────────────────────────────────────────
   encounter: {
     firstEncounterBadge: 'Erst',
@@ -401,6 +455,7 @@ export const de: Widen<Locale> = {
     hint: '\uD83D\uDCA1 Hinweis',
     confirmElim: 'Eliminierung best\u00E4tigen',
     revealAnswer: 'Antwort zeigen',
+    loadFailed: 'Lektionsdaten konnten nicht geladen werden',
     group1: 'Stufe 1: Grundlagen',
     group1Hint: 'Basiskonzepte und Kandidaten-Disziplin aufbauen',
     group2: 'Stufe 2: Kandidatenstruktur',
@@ -535,6 +590,7 @@ export const de: Widen<Locale> = {
     backToSteps: 'Zur\u00FCck zu den Schritten',
     retryPractice: 'Neue Aufgabe',
     close: 'Schlie\u00DFen',
+    replaySource: 'Replay-Empfehlung',
   },
 
   // ── Replay (runtime strings) ─────────────────────────────────────
@@ -619,7 +675,8 @@ export const de: Widen<Locale> = {
   // ── Practice lobby (runtime strings) ──────────────────────────────
   practiceLobby: {
     levelFallback: 'Level {idx}',
-    allCompleteQuote: 'Du bist neunundrei\u00DFig Pfade gegangen\nund zwei weitere, die ich nicht markiert habe.\n\nTraining vollendet. Doch das Schwert hat kein Ende.',
+    allCompleteQuote:
+      'Du bist neunundrei\u00DFig Pfade gegangen\nund zwei weitere, die ich nicht markiert habe.\n\nTraining vollendet. Doch das Schwert hat kein Ende.',
     allCompleteAttr: '\u2014\u2014 Yi-Chen',
   },
 
@@ -763,18 +820,16 @@ export const de: Widen<Locale> = {
 
   // ── Learning group names ───────────────────────────────────────────
   learnGroups: {
-    foundation: 'Stufe 1: Grundlagen',
-    foundationHint: 'Basiskonzepte und Kandidaten-Disziplin aufbauen',
-    candidate: 'Stufe 2: Kandidatenstruktur',
-    candidateHint: 'Zeilen-/Block-Kandidatenbeziehungen und einfache Eliminierungen',
-    pattern: 'Stufe 3: Muster & Eliminierungen',
-    patternHint: 'Fl\u00FCgel, Fische und Sperrketten in der Praxis',
-    chain: 'Stufe 4: Kettenlogik',
-    chainHint: 'F\u00E4rbungsketten, Unique Rectangle und fortgeschrittene Fischmuster',
-    master: 'Stufe 5: Fortgeschrittene Integration',
-    masterHint: 'ALS, Template, Sue de Coq und weitere fortgeschrittene Techniken',
-    legend: 'Stufe 6: Gro\u00DFmeisterstrukturen',
-    legendHint: 'Exocet, Death Blossom und andere Expertenstrukturen',
+    eye1: 'Erstes Auge · Erzwungene Zellen',
+    eye1Hint: 'Die Zelle mit den wenigsten Kandidaten bricht das Schloss',
+    eye2: 'Zweites Auge · Begrenzte Einheiten',
+    eye2Hint: 'Ziffern in kleinere Bereiche gezwungen',
+    eye3: 'Drittes Auge · Ziffernverteilung',
+    eye3Hint: 'Eine Ziffer zu verfolgen zeigt Eliminierungen',
+    eye4: 'Viertes Auge · Zweiwert-Zellen',
+    eye4Hint: 'Zwei-Kandidaten-Zellen verankern jede Kette',
+    eye5: 'F\u00FCnftes Auge · Verbindungsgerippe',
+    eye5Hint: 'Starke Verbindungen sind das Fundament der Kettenlogik',
     extra: 'Erg\u00E4nzende F\u00FChrer',
     extraHint: 'Zus\u00E4tzliche Techniken nach Abschluss des Hauptpfades',
   },

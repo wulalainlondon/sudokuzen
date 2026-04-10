@@ -194,6 +194,7 @@ export const zhTW = {
     challengeLives: '{n} 條命',
     challengeNoNotes: '禁用筆記',
     challengeTimer: '限時 {sec} 秒',
+    cleanSolveBonus: '清淨通關',
   },
 
   // ── Timer & game chrome ─────────────────────────────────────────────
@@ -272,15 +273,18 @@ export const zhTW = {
     bestRecordSpeed: '最佳紀錄：{time} ⚡ {submissions}次提交',
     techDisplay: '💡 核心技巧: {tech}',
     techDisplayTier: '💡 核心技巧: {tech} ({tier})',
+    techUnknown: '待分析',
   },
 
   // ── Stats modal ─────────────────────────────────────────────────────
   stats: {
     title: '個人統計',
     tabOverview: '總覽',
+    tabLearning: '學習',
     tabAchievements: '成就',
     sectionGameData: '遊戲數據',
     sectionTierProgress: '各難度進度',
+    sectionLearning: '學習進度',
     sectionAchievements: '成就徽章',
     cleared: '通關數 ({pct}%)',
     threeStar: '三星通關',
@@ -290,6 +294,30 @@ export const zhTW = {
     totalStars: '總星數',
     totalTime: '最佳用時總計',
     practiceProgress: '修行通關 ({pct}%) · {techs}/41 技巧全通',
+    learningRead: '已讀教學模組',
+    learningPractice: '已通關練習模組',
+    learningUnread: '未讀教學模組',
+    learningUnfinished: '未完成練習技巧',
+    learningNextAction: '下一步行動',
+    learningNextActionRead: '再讀 {count} 個教學模組',
+    learningNextActionPractice: '再通關 {count} 個練習技巧',
+    learningTopTechniques: '已掌握技巧排行',
+    learningRiskAlerts: '風險提醒',
+    learningRank: '排行',
+    learningCompletion: '完成度',
+    learningClears: '通關數',
+    learningTechnique: '技巧',
+    learningRisk: '風險',
+    learningLoopTitle: '學習閉環',
+    learningLoopClicks: '推薦點擊',
+    learningLoopCompletions: '回放導入完成',
+    learningLoopNextDay: '隔日回訪',
+    learningLoopNextDayRate: '隔日回訪率',
+    learningLoopRate: '完成率',
+    learningLoopTopModules: '高轉換模組',
+    learningLoopTopModulesEmpty: '尚無轉換資料',
+    learningLoopOpenModule: '開啟模組',
+    learningLoopOpenModuleFailed: '無法開啟模組',
     achievementsUnlocked: '已解鎖 {unlocked} / {total}',
   },
 
@@ -419,6 +447,7 @@ export const zhTW = {
     hint: '💡 提示',
     confirmElim: '確認消去',
     revealAnswer: '看答案',
+    loadFailed: '教學資料載入失敗',
     // Group names
     group1: '第一層・基礎定式',
     group1Hint: '先建立基本觀念與候選數紀律',
@@ -556,6 +585,7 @@ export const zhTW = {
     backToSteps: '返回步驟',
     retryPractice: '再來一題',
     close: '關閉',
+    replaySource: '回放推薦',
   },
 
   // ── Replay (runtime strings) ─────────────────────────────────────
@@ -570,6 +600,29 @@ export const zhTW = {
     scoreSpeedBonus: '速度加成',
     scoreAccuracyBonus: '零失誤加成',
     scorePoints: '{points} 分',
+  },
+
+  // ── Replay diagnosis ───────────────────────────────────────────────
+  replayDiagnosis: {
+    title: '回放診斷',
+    subtitle: '從回放裡直接看出你的推理習慣',
+    ctaLearning: '查看學習路線',
+    openModule: '打開教學模組',
+    openModuleFailed: '無法打開教學模組',
+    recommendations: '推薦技巧',
+    recommendationsEmpty: '目前還沒有具體推薦。',
+    recommendationModule: '第 {id} 模組',
+    mistakes: '失誤數',
+    keySteps: '關鍵步',
+    pace: '節奏',
+    focus: '優先改善',
+    suggestions: '建議',
+    slowPace: '節奏偏慢',
+    goodPace: '節奏正常',
+    manyMistakes: '失誤偏多',
+    fewKeySteps: '關鍵步偏少',
+    tryReviewingMistakes: '先回看失誤步與其前後兩步',
+    tryMoreKeySteps: '試著增加有意義的關鍵步',
   },
 
   // ── HTML / index.html strings ────────────────────────────────────
@@ -651,23 +704,29 @@ export const zhTW = {
       intro_2: '讓你看一樣東西。',
     },
     postDemo: {
-      post_demo_1: '封鎖、藏雙、隱流……\n每一道牆我都翻過去了。\n\n最後那三步，叫天劫。\n我看了它三天。每一條推理都把我帶回原點。\n\n我沒能走過去。',
+      post_demo_1:
+        '封鎖、藏雙、隱流……\n每一道牆我都翻過去了。\n\n最後那三步，叫天劫。\n我看了它三天。每一條推理都把我帶回原點。\n\n我沒能走過去。',
       post_demo_1_sub: '—— 弈塵',
-      post_demo_2: '我叫弈塵。\n這條路上的三十九道坎，我都留了記號。\n圖鑑裡有我的筆跡，但有些頁——\n要你親手翻開。\n\n去吧。從最淺的水開始。\n\n如果有一天，你站在我倒下的地方，\n往前再走一步。',
+      post_demo_2:
+        '我叫弈塵。\n這條路上的三十九道坎，我都留了記號。\n圖鑑裡有我的筆跡，但有些頁——\n要你親手翻開。\n\n去吧。從最淺的水開始。\n\n如果有一天，你站在我倒下的地方，\n往前再走一步。',
       post_demo_2_sub: '—— 弈塵《殘篇·序》',
     },
     milestones: {
       first_kill: '第一次斬落，記住這個感覺。\n邏輯不會騙人，但它會藏起來。',
       first_kill_sub: '—— 弈塵',
-      tier1_mastered: '基礎的技巧已經成為你的呼吸。\n從現在起，數字會開始成對出現，像影子一樣糾纏。\n別怕。影子也有輪廓。',
+      tier1_mastered:
+        '基礎的技巧已經成為你的呼吸。\n從現在起，數字會開始成對出現，像影子一樣糾纏。\n別怕。影子也有輪廓。',
       tier1_mastered_sub: '—— 弈塵《殘篇·影》',
-      tier2_unlocked: '你開始看見了嗎？\n行列之間、宮格之外，有些東西在移動。\n我第一次注意到它們的時候，以為自己眼花了。',
+      tier2_unlocked:
+        '你開始看見了嗎？\n行列之間、宮格之外，有些東西在移動。\n我第一次注意到它們的時候，以為自己眼花了。',
       tier2_unlocked_sub: '—— 弈塵《殘篇·風》',
-      tier3_unlocked: '走到這裡的人不多。\n從這裡開始，推理不再是直線，而是一張網。\n我曾經在某條鏈上走了很遠，最後發現自己回到了原點。',
+      tier3_unlocked:
+        '走到這裡的人不多。\n從這裡開始，推理不再是直線，而是一張網。\n我曾經在某條鏈上走了很遠，最後發現自己回到了原點。',
       tier3_unlocked_sub: '—— 弈塵《殘篇·鏈》',
       tier3_deep: '你已經比大多數人走得更遠了。\n鏈術的盡頭不是答案，而是另一個問題。\n但你會習慣的。',
       tier3_deep_sub: '—— 弈塵《殘篇·迴》',
-      tier4_threshold: '……\n我走到這裡就再也沒能前進了。\n殘集、逼宮、死綻……每一個都像是深淵回望著你。\n\n後面的路，要靠你自己了。',
+      tier4_threshold:
+        '……\n我走到這裡就再也沒能前進了。\n殘集、逼宮、死綻……每一個都像是深淵回望著你。\n\n後面的路，要靠你自己了。',
       tier4_threshold_sub: '—— 弈塵《殘篇·末頁》\n（此處筆跡雜亂，像是被淚水浸濕過）',
     },
     techniques: {
@@ -701,7 +760,8 @@ export const zhTW = {
       },
       unique_rectangle: {
         veiled: '數獨有一條鐵律：答案必須唯一。有些圖形，正是利用了這條鐵律。',
-        unveiled: '禁矩。它不是一種推理，而是一種信仰——如果這個矩形成立了，答案就不唯一了。所以它不能成立。反證法的優雅。',
+        unveiled:
+          '禁矩。它不是一種推理，而是一種信仰——如果這個矩形成立了，答案就不唯一了。所以它不能成立。反證法的優雅。',
       },
       skyscraper: {
         veiled: '兩條平行線，在遠方交錯。',
@@ -713,11 +773,13 @@ export const zhTW = {
       },
       empty_rectangle: {
         veiled: '有時候，空白本身就是線索。',
-        unveiled: '虛空。宮格裡的空白畫出了一個長方形，然後那個長方形指向了唯一的出口。用虛無來指引方向，這大概是最像禪的技巧了。',
+        unveiled:
+          '虛空。宮格裡的空白畫出了一個長方形，然後那個長方形指向了唯一的出口。用虛無來指引方向，這大概是最像禪的技巧了。',
       },
       x_wing: {
         veiled: '那個在行列間交叉的影子……我曾以為那是兩把鎖，後來才發現，那是一道通往高維的門。',
-        unveiled: '鋒刃。兩行兩列，四個交叉點，構成一把十字型的刃。揮出去的瞬間，整條線上的雜質全部斬落。它是最乾淨的殺招。',
+        unveiled:
+          '鋒刃。兩行兩列，四個交叉點，構成一把十字型的刃。揮出去的瞬間，整條線上的雜質全部斬落。它是最乾淨的殺招。',
       },
       finned_x_wing: {
         veiled: '完美的對稱被打破了一角。但正是那個缺口，暴露了它的本質。',
@@ -725,7 +787,8 @@ export const zhTW = {
       },
       xy_wing: {
         veiled: '三個格子，像三片葉子從一個根部散開。',
-        unveiled: '翼擊。一個軸心連著兩片翼。它們各自只有兩個候選，但組合起來卻能打到意想不到的地方。我很喜歡這招，因為它像風。',
+        unveiled:
+          '翼擊。一個軸心連著兩片翼。它們各自只有兩個候選，但組合起來卻能打到意想不到的地方。我很喜歡這招，因為它像風。',
       },
       xyz_wing: {
         veiled: '比翼多了一個維度。軸心變得更複雜了。',
@@ -749,7 +812,8 @@ export const zhTW = {
       },
       swordfish: {
         veiled: '鋒刃的延伸。從二維到三維。',
-        unveiled: '三叉。三行三列的鋒刃。它的形狀不再是十字，而是一張不規則的網。當你學會看見它的時候，你已經不是初學者了。',
+        unveiled:
+          '三叉。三行三列的鋒刃。它的形狀不再是十字，而是一張不規則的網。當你學會看見它的時候，你已經不是初學者了。',
       },
       finned_swordfish: {
         veiled: '三叉上的一根多餘的刺。',
@@ -765,7 +829,8 @@ export const zhTW = {
       },
       aic: {
         veiled: '第一條鏈。從此以後，推理不再是一步，而是一條路。',
-        unveiled: '玄鏈。交替推理鏈。強連結和弱連結交替出現，像呼吸一樣——吸氣是確定的，呼氣是可能的。走到終點時，起點的命運就改變了。',
+        unveiled:
+          '玄鏈。交替推理鏈。強連結和弱連結交替出現，像呼吸一樣——吸氣是確定的，呼氣是可能的。走到終點時，起點的命運就改變了。',
       },
       aic_mid_chain: {
         veiled: '鏈走到一半，中間的某個節點突然暴露了弱點。',
@@ -789,7 +854,8 @@ export const zhTW = {
       },
       als_xz: {
         veiled: '……殘集。把一組格子當作一個整體來思考。我到這裡的時候，開始感覺腦子不夠用了。',
-        unveiled: '殘集·交。兩個幾乎自洽的集合，共享一個數字，互相交叉。我理解了它的邏輯，但每次用它時都像是在搬一座山。',
+        unveiled:
+          '殘集·交。兩個幾乎自洽的集合，共享一個數字，互相交叉。我理解了它的邏輯，但每次用它時都像是在搬一座山。',
       },
       als_xy: {
         veiled: '……兩個殘集，通過中間人交換了情報。',
@@ -825,7 +891,8 @@ export const zhTW = {
       },
       death_blossom: {
         veiled: '……花開的瞬間，所有花瓣都指向同一個方向。然後那個方向就死了。',
-        unveiled: '死綻。一朵由殘集組成的花。軸心的每個候選都連著一片花瓣（ALS），花瓣們的共同視野就是死亡地帶。美麗而致命。',
+        unveiled:
+          '死綻。一朵由殘集組成的花。軸心的每個候選都連著一片花瓣（ALS），花瓣們的共同視野就是死亡地帶。美麗而致命。',
       },
       exocet_death_blossom: {
         veiled: '……\n\n（最後的筆跡幾乎無法辨認）\n\n我看見了它的輪廓。就在那一瞬間，我的功力……\n\n（此後再無文字）',
@@ -1111,18 +1178,16 @@ export const zhTW = {
 
   // ── Learning group names (teach-legacy.ts) ─────────────────────────
   learnGroups: {
-    foundation: '第一層・基礎定式',
-    foundationHint: '先建立基本觀念與候選數紀律',
-    candidate: '第二層・候選數結構',
-    candidateHint: '看懂線上/宮內候選關係與初階刪減',
-    pattern: '第三層・圖形與刪減',
-    patternHint: '翼型、魚型與鎖定鏈的實戰應用',
-    chain: '第四層・鏈式推理',
-    chainHint: '進入顏色鏈、唯一矩形與高階魚型',
-    master: '第五層・高階整合',
-    masterHint: 'ALS、Template、Sue de Coq 等高階可訓練整合技',
-    legend: '第六層・宗師結構',
-    legendHint: 'Exocet / Death Blossom 等超高難結構技巧',
+    eye1: '第一眼・找強制格',
+    eye1Hint: '候選數最少的格是突破口',
+    eye2: '第二眼・找收斂單位',
+    eye2Hint: '數字被限制在更小的範圍',
+    eye3: '第三眼・追數字分布',
+    eye3Hint: '一個數字的分布揭示消除',
+    eye4: '第四眼・找雙候選格',
+    eye4Hint: '雙值格是鏈的天然起點',
+    eye5: '第五眼・建連結骨架',
+    eye5Hint: '強連結是一切鏈式推理的基礎',
     extra: '補充・延伸秘笈',
     extraHint: '額外補充的技巧，建議在前面路徑完成後再讀',
   },

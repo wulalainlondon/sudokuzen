@@ -11,20 +11,20 @@ import { isReducedMotion } from '../motion/zenMotion';
 
 // ── Timings (ms) ─────────────────────────────────────────────────────
 
-const FADE_OUT_AT  = 1600;  // backdrop + name begin fading out
-const COMPLETE_AT  = 2000;  // dismiss → win screen appears
+const FADE_OUT_AT = 1600; // backdrop + name begin fading out
+const COMPLETE_AT = 2000; // dismiss → win screen appears
 
 const EASE_ZEN: [number, number, number, number] = [0.2, 0.8, 0.2, 1];
 
 // ── Component ────────────────────────────────────────────────────────
 
 export function FirstKillRevelation(): ReactElement {
-  const { active, techName, onComplete, dismiss } = useFirstKillRevelationStore();
+  const { active, techName, techEssence, onComplete, dismiss } = useFirstKillRevelationStore();
 
   const [exiting, setExiting] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const cycleRef = useRef(0);
-  const reduced  = isReducedMotion();
+  const reduced = isReducedMotion();
 
   const clearTimers = useCallback(() => {
     timerRef.current.forEach(clearTimeout);
@@ -144,6 +144,24 @@ export function FirstKillRevelation(): ReactElement {
             >
               {techName}
             </div>
+
+            {/* Essence — one-line anchor description */}
+            {techEssence && (
+              <div
+                style={{
+                  fontSize: 'min(3.8vw, 15px)',
+                  color: 'rgba(255,255,255,0.55)',
+                  letterSpacing: '1px',
+                  marginTop: '8px',
+                  fontWeight: 300,
+                  maxWidth: '280px',
+                  textAlign: 'center',
+                  lineHeight: 1.5,
+                }}
+              >
+                {techEssence}
+              </div>
+            )}
           </motion.div>
         </motion.div>
       )}

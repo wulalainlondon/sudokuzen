@@ -3,10 +3,18 @@ import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther } from './types';
 
-const META = { id: 'skyscraper', get name() { return t('skills.skyscraperName'); }, subtitle: 'Skyscraper', sweepDirection: 'outward' as const };
+const META = {
+  id: 'skyscraper',
+  get name() {
+    return t('skills.skyscraperName');
+  },
+  subtitle: 'Skyscraper',
+  sweepDirection: 'outward' as const,
+};
 
 function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
-  if (selectedCells.length !== 2) return makeEmptyPreview(META, selectedCells.length < 2 ? '' : t('skills.needSelectN', { n: '2' }));
+  if (selectedCells.length !== 2)
+    return makeEmptyPreview(META, selectedCells.length < 2 ? '' : t('skills.needSelectN', { n: '2' }));
 
   // Both must be empty with candidates
   for (const idx of selectedCells) {

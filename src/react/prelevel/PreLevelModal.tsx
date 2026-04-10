@@ -9,10 +9,8 @@ import { getReplayHistory } from '../../shared/records/levelRecords';
 import type { ActionRecord } from '../../game/state';
 
 export function PreLevelModal(): ReactElement {
-  const {
-    visible, displayName, techName, techTier, bestRecord, hasRecord,
-    hasReplay, leaderboardHtml,
-  } = usePreLevelStore();
+  const { visible, displayName, techName, techTier, bestRecord, hasRecord, hasReplay, leaderboardHtml } =
+    usePreLevelStore();
   const close = useCallback((reason: string = 'system') => closePreLevel(reason), []);
   const safeLeaderboardHtml = useMemo(() => sanitizeHtml(leaderboardHtml), [leaderboardHtml]);
 
@@ -52,7 +50,9 @@ export function PreLevelModal(): ReactElement {
     }
   }, []);
 
-  const techDisplay = techTier ? t('prelevel.techDisplayTier', { tech: techName, tier: techTier }) : t('prelevel.techDisplay', { tech: techName });
+  const techDisplay = techTier
+    ? t('prelevel.techDisplayTier', { tech: techName, tier: techTier })
+    : t('prelevel.techDisplay', { tech: techName });
 
   return (
     <ZenOverlay visible={visible} onClose={close} id="pre-level-modal" backdropCloseDelayMs={220}>
@@ -60,7 +60,9 @@ export function PreLevelModal(): ReactElement {
         <ZenStagger>
           <h2 id="pre-level-name">{displayName}</h2>
           <p className={`pre-level-record${hasRecord ? ' has-record' : ''}`}>{bestRecord}</p>
-          <p className="pre-level-tech" id="pre-level-tech">{techDisplay}</p>
+          <p className="pre-level-tech" id="pre-level-tech">
+            {techDisplay}
+          </p>
 
           <div className="leaderboard-card">
             <div className="leaderboard-title">{t('prelevel.leaderboardTitle')}</div>
@@ -72,8 +74,9 @@ export function PreLevelModal(): ReactElement {
             />
           </div>
 
-
-          <button className="resume-btn" id="pre-level-start-btn" onClick={handleStart}>{t('nav.startChallenge')}</button>
+          <button className="resume-btn" id="pre-level-start-btn" onClick={handleStart}>
+            {t('nav.startChallenge')}
+          </button>
           {hasReplay && (
             <button className="resume-btn btn-ghost" onClick={handleGhostWithData}>
               {t('win.ghostChallenge')}
@@ -84,7 +87,9 @@ export function PreLevelModal(): ReactElement {
               {t('win.viewBestReplay')}
             </button>
           )}
-          <button className="back-btn-light" onClick={() => close('select-other')}>{t('nav.selectOther')}</button>
+          <button className="back-btn-light" onClick={() => close('select-other')}>
+            {t('nav.selectOther')}
+          </button>
         </ZenStagger>
       </div>
     </ZenOverlay>

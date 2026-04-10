@@ -4,7 +4,13 @@ import { PracticeTree } from './practice/PracticeTree';
 import { NormalStageMap } from './normal/NormalStageMap';
 import { NormalLevelList } from './normal/NormalLevelList';
 import { WildBestiaryGrid } from './wild/WildBestiaryGrid';
-import { WildAutoCastRow, WildBestiaryControls, WildEnterButton, WildProfileCard, WildSessionCard } from './wild/WildLobbyPanels';
+import {
+  WildAutoCastRow,
+  WildBestiaryControls,
+  WildEnterButton,
+  WildProfileCard,
+  WildSessionCard,
+} from './wild/WildLobbyPanels';
 import { WildMentorNoteModal } from './wild/WildMentorNoteModal';
 import { useTeachStore } from '../features/teach/state/teachStore';
 import { useWinStore } from './win/winStore';
@@ -17,8 +23,11 @@ import { useAchievementToastStore } from './toast/achievementToastStore';
 import { useLibraryStore } from './library/libraryStore';
 import { useMentorStore } from './mentor/mentorStore';
 import { useEncounterTransitionStore } from './wild/encounterTransitionStore';
+import { useFirstKillRevelationStore } from './wild/firstKillRevelationStore';
 
-const TeachOverlay = lazy(() => import('../features/teach/components/TeachOverlay').then((m) => ({ default: m.TeachOverlay })));
+const TeachOverlay = lazy(() =>
+  import('../features/teach/components/TeachOverlay').then((m) => ({ default: m.TeachOverlay })),
+);
 const WinCelebration = lazy(() => import('./win/WinCelebration').then((m) => ({ default: m.WinCelebration })));
 const GameOverOverlay = lazy(() => import('./gameover/GameOverOverlay').then((m) => ({ default: m.GameOverOverlay })));
 const StatsModal = lazy(() => import('./stats/StatsModal').then((m) => ({ default: m.StatsModal })));
@@ -28,7 +37,12 @@ const DuoResultModal = lazy(() => import('./duoresult/DuoResultModal').then((m) 
 const AchievementToast = lazy(() => import('./toast/AchievementToast').then((m) => ({ default: m.AchievementToast })));
 const LibraryOverlay = lazy(() => import('./library/LibraryOverlay').then((m) => ({ default: m.LibraryOverlay })));
 const MentorOverlay = lazy(() => import('./mentor/MentorOverlay').then((m) => ({ default: m.MentorOverlay })));
-const EncounterTransition = lazy(() => import('./wild/EncounterTransition').then((m) => ({ default: m.EncounterTransition })));
+const EncounterTransition = lazy(() =>
+  import('./wild/EncounterTransition').then((m) => ({ default: m.EncounterTransition })),
+);
+const FirstKillRevelation = lazy(() =>
+  import('./wild/FirstKillRevelation').then((m) => ({ default: m.FirstKillRevelation })),
+);
 
 export function AppShell(): ReactElement {
   const teachOpen = useTeachStore((s) => s.open);
@@ -42,6 +56,7 @@ export function AppShell(): ReactElement {
   const libraryVisible = useLibraryStore((s) => s.visible);
   const mentorVisible = useMentorStore((s) => s.visible);
   const encounterActive = useEncounterTransitionStore((s) => s.active);
+  const revelationActive = useFirstKillRevelationStore((s) => s.active);
 
   return (
     <>
@@ -57,6 +72,7 @@ export function AppShell(): ReactElement {
         {libraryVisible ? <LibraryOverlay /> : null}
         {mentorVisible ? <MentorOverlay /> : null}
         {encounterActive ? <EncounterTransition /> : null}
+        {revelationActive ? <FirstKillRevelation /> : null}
       </Suspense>
       <PracticeTree />
       <NormalStageMap />

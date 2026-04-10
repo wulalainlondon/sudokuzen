@@ -47,7 +47,11 @@ export function enforceAppVersion(appVersion: string): Promise<boolean> {
   localStorage.setItem(SK.APP_VERSION, appVersion);
   // Clear the reload-once guard so this forced update always goes through,
   // even if a SW-triggered safeReload already fired in this session.
-  try { sessionStorage.removeItem(RELOAD_ONCE_KEY); } catch { /* ignore */ }
+  try {
+    sessionStorage.removeItem(RELOAD_ONCE_KEY);
+  } catch {
+    /* ignore */
+  }
 
   if ('serviceWorker' in navigator) {
     return navigator.serviceWorker

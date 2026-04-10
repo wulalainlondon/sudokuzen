@@ -8,26 +8,42 @@ import { t } from '../../i18n/t';
 
 // ── Real puzzle: exocet_death_blossom.json[17] ──────────────────────
 
-const DEMO_PUZZLE = [0,4,2,0,6,0,0,0,0,0,0,0,0,0,0,8,0,0,0,5,0,2,4,0,0,0,0,0,0,8,0,0,0,1,0,0,0,0,0,7,0,0,0,0,9,0,0,0,0,9,2,0,3,0,4,6,9,0,1,0,3,0,0,0,0,1,0,0,0,6,0,0,0,8,0,0,3,4,0,0,1];
-const DEMO_SOLUTION = [8,4,2,3,6,9,5,1,7,6,9,3,5,7,1,8,4,2,1,5,7,2,4,8,9,6,3,9,2,8,4,5,3,1,7,6,3,1,4,7,8,6,2,5,9,5,7,6,1,9,2,4,3,8,4,6,9,8,1,7,3,2,5,7,3,1,9,2,5,6,8,4,2,8,5,6,3,4,7,9,1];
+const DEMO_PUZZLE = [
+  0, 4, 2, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 5, 0, 2, 4, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+  7, 0, 0, 0, 0, 9, 0, 0, 0, 0, 9, 2, 0, 3, 0, 4, 6, 9, 0, 1, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 6, 0, 0, 0, 8, 0, 0, 3, 4,
+  0, 0, 1,
+];
+const DEMO_SOLUTION = [
+  8, 4, 2, 3, 6, 9, 5, 1, 7, 6, 9, 3, 5, 7, 1, 8, 4, 2, 1, 5, 7, 2, 4, 8, 9, 6, 3, 9, 2, 8, 4, 5, 3, 1, 7, 6, 3, 1, 4,
+  7, 8, 6, 2, 5, 9, 5, 7, 6, 1, 9, 2, 4, 3, 8, 4, 6, 9, 8, 1, 7, 3, 2, 5, 7, 3, 1, 9, 2, 5, 6, 8, 4, 2, 8, 5, 6, 3, 4,
+  7, 9, 1,
+];
 
 // ── Full solver with step-by-step logging ────────────────────────────
 
-interface Elim { cellIdx: number; digit: number }
+interface Elim {
+  cellIdx: number;
+  digit: number;
+}
 
 interface DemoStep {
-  technique: string;       // 'naked_single' | 'hidden_single' | 'locked_candidates' | ...
-  label: string;           // Chinese display name
-  eliminations: Elim[];    // candidates removed (before fill)
-  fills: { cellIdx: number; digit: number }[];  // cells filled
-  sourceCells: number[];   // cells that form the pattern (for highlighting)
+  technique: string; // 'naked_single' | 'hidden_single' | 'locked_candidates' | ...
+  label: string; // Chinese display name
+  eliminations: Elim[]; // candidates removed (before fill)
+  fills: { cellIdx: number; digit: number }[]; // cells filled
+  sourceCells: number[]; // cells that form the pattern (for highlighting)
 }
 
 function getPeers(idx: number): number[] {
-  const r = Math.floor(idx / 9), c = idx % 9;
-  const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+  const r = Math.floor(idx / 9),
+    c = idx % 9;
+  const br = Math.floor(r / 3) * 3,
+    bc = Math.floor(c / 3) * 3;
   const s = new Set<number>();
-  for (let i = 0; i < 9; i++) { s.add(r * 9 + i); s.add(i * 9 + c); }
+  for (let i = 0; i < 9; i++) {
+    s.add(r * 9 + i);
+    s.add(i * 9 + c);
+  }
   for (let dr = 0; dr < 3; dr++) for (let dc = 0; dc < 3; dc++) s.add((br + dr) * 9 + (bc + dc));
   s.delete(idx);
   return [...s];
@@ -36,11 +52,11 @@ function getPeers(idx: number): number[] {
 type Grid = { value: number; cands: Set<number> }[];
 
 function initGrid(puzzle: number[]): Grid {
-  const g: Grid = puzzle.map(v => ({ value: v, cands: new Set<number>() }));
+  const g: Grid = puzzle.map((v) => ({ value: v, cands: new Set<number>() }));
   for (let i = 0; i < 81; i++) {
     if (g[i].value !== 0) continue;
     for (let d = 1; d <= 9; d++) {
-      if (getPeers(i).every(p => g[p].value !== d)) g[i].cands.add(d);
+      if (getPeers(i).every((p) => g[p].value !== d)) g[i].cands.add(d);
     }
   }
   return g;
@@ -61,7 +77,8 @@ function getUnits(): number[][] {
   for (let r = 0; r < 9; r++) u.push(Array.from({ length: 9 }, (_, c) => r * 9 + c));
   for (let c = 0; c < 9; c++) u.push(Array.from({ length: 9 }, (_, r) => r * 9 + c));
   for (let b = 0; b < 9; b++) {
-    const br = Math.floor(b / 3) * 3, bc = (b % 3) * 3;
+    const br = Math.floor(b / 3) * 3,
+      bc = (b % 3) * 3;
     const cells: number[] = [];
     for (let dr = 0; dr < 3; dr++) for (let dc = 0; dc < 3; dc++) cells.push((br + dr) * 9 + (bc + dc));
     u.push(cells);
@@ -83,7 +100,13 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
       if (g[i].value !== 0 || g[i].cands.size !== 1) continue;
       const d = [...g[i].cands][0];
       const elims = placeAndLog(g, i, d);
-      steps.push({ technique: 'naked_single', label: t('skills.nakedSingleName'), eliminations: elims, fills: [{ cellIdx: i, digit: d }], sourceCells: [i] });
+      steps.push({
+        technique: 'naked_single',
+        label: t('skills.nakedSingleName'),
+        eliminations: elims,
+        fills: [{ cellIdx: i, digit: d }],
+        sourceCells: [i],
+      });
       progress = true;
     }
     if (progress) continue;
@@ -91,16 +114,25 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
     // ── Hidden Singles ──
     for (const unit of units) {
       for (let d = 1; d <= 9; d++) {
-        if (unit.some(c => g[c].value === d)) continue;
-        const cells = unit.filter(c => g[c].value === 0 && g[c].cands.has(d));
+        if (unit.some((c) => g[c].value === d)) continue;
+        const cells = unit.filter((c) => g[c].value === 0 && g[c].cands.has(d));
         if (cells.length !== 1) continue;
         const idx = cells[0];
         const selfElims: Elim[] = [];
         for (const c of [...g[idx].cands]) {
-          if (c !== d) { g[idx].cands.delete(c); selfElims.push({ cellIdx: idx, digit: c }); }
+          if (c !== d) {
+            g[idx].cands.delete(c);
+            selfElims.push({ cellIdx: idx, digit: c });
+          }
         }
         const peerElims = placeAndLog(g, idx, d);
-        steps.push({ technique: 'hidden_single', label: t('skills.hiddenSingleName'), eliminations: [...selfElims, ...peerElims], fills: [{ cellIdx: idx, digit: d }], sourceCells: [idx] });
+        steps.push({
+          technique: 'hidden_single',
+          label: t('skills.hiddenSingleName'),
+          eliminations: [...selfElims, ...peerElims],
+          fills: [{ cellIdx: idx, digit: d }],
+          sourceCells: [idx],
+        });
         progress = true;
         break;
       }
@@ -110,31 +142,44 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
 
     // ── Locked Candidates ──
     for (let box = 0; box < 9; box++) {
-      const br = Math.floor(box / 3) * 3, bc = (box % 3) * 3;
+      const br = Math.floor(box / 3) * 3,
+        bc = (box % 3) * 3;
       const boxCells: number[] = [];
       for (let r = br; r < br + 3; r++) for (let c = bc; c < bc + 3; c++) boxCells.push(r * 9 + c);
       for (let d = 1; d <= 9; d++) {
-        const cells = boxCells.filter(i => g[i].value === 0 && g[i].cands.has(d));
+        const cells = boxCells.filter((i) => g[i].value === 0 && g[i].cands.has(d));
         if (cells.length < 2) continue;
-        const rows = new Set(cells.map(i => Math.floor(i / 9)));
-        const cols = new Set(cells.map(i => i % 9));
+        const rows = new Set(cells.map((i) => Math.floor(i / 9)));
+        const cols = new Set(cells.map((i) => i % 9));
         const elims: Elim[] = [];
         if (rows.size === 1) {
           const row = [...rows][0];
           for (let c = 0; c < 9; c++) {
             const idx = row * 9 + c;
-            if (!boxCells.includes(idx) && g[idx].cands.has(d)) { g[idx].cands.delete(d); elims.push({ cellIdx: idx, digit: d }); }
+            if (!boxCells.includes(idx) && g[idx].cands.has(d)) {
+              g[idx].cands.delete(d);
+              elims.push({ cellIdx: idx, digit: d });
+            }
           }
         }
         if (cols.size === 1) {
           const col = [...cols][0];
           for (let r = 0; r < 9; r++) {
             const idx = r * 9 + col;
-            if (!boxCells.includes(idx) && g[idx].cands.has(d)) { g[idx].cands.delete(d); elims.push({ cellIdx: idx, digit: d }); }
+            if (!boxCells.includes(idx) && g[idx].cands.has(d)) {
+              g[idx].cands.delete(d);
+              elims.push({ cellIdx: idx, digit: d });
+            }
           }
         }
         if (elims.length > 0) {
-          steps.push({ technique: 'locked_candidates', label: t('skills.lockedCandidatesName'), eliminations: elims, fills: [], sourceCells: cells });
+          steps.push({
+            technique: 'locked_candidates',
+            label: t('skills.lockedCandidatesName'),
+            eliminations: elims,
+            fills: [],
+            sourceCells: cells,
+          });
           progress = true;
           break;
         }
@@ -152,19 +197,35 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
               if (g[idx].value === 0 && g[idx].cands.has(d)) cells.push(idx);
             }
             if (cells.length < 2) continue;
-            const boxes = new Set(cells.map(i => { const r = Math.floor(i / 9), c = i % 9; return Math.floor(r / 3) * 3 + Math.floor(c / 3); }));
+            const boxes = new Set(
+              cells.map((i) => {
+                const r = Math.floor(i / 9),
+                  c = i % 9;
+                return Math.floor(r / 3) * 3 + Math.floor(c / 3);
+              }),
+            );
             if (boxes.size !== 1) continue;
             const box = [...boxes][0];
-            const br2 = Math.floor(box / 3) * 3, bc2 = (box % 3) * 3;
+            const br2 = Math.floor(box / 3) * 3,
+              bc2 = (box % 3) * 3;
             const elims: Elim[] = [];
             for (let r = br2; r < br2 + 3; r++) {
               for (let c = bc2; c < bc2 + 3; c++) {
                 const idx = r * 9 + c;
-                if (!cells.includes(idx) && g[idx].cands.has(d)) { g[idx].cands.delete(d); elims.push({ cellIdx: idx, digit: d }); }
+                if (!cells.includes(idx) && g[idx].cands.has(d)) {
+                  g[idx].cands.delete(d);
+                  elims.push({ cellIdx: idx, digit: d });
+                }
               }
             }
             if (elims.length > 0) {
-              steps.push({ technique: 'locked_candidates', label: t('skills.lockedCandidatesName'), eliminations: elims, fills: [], sourceCells: cells });
+              steps.push({
+                technique: 'locked_candidates',
+                label: t('skills.lockedCandidatesName'),
+                eliminations: elims,
+                fills: [],
+                sourceCells: cells,
+              });
               progress = true;
               break;
             }
@@ -177,22 +238,32 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
 
     // ── Hidden Pairs ──
     for (const unit of units) {
-      const empty = unit.filter(i => g[i].value === 0);
+      const empty = unit.filter((i) => g[i].value === 0);
       const missing: number[] = [];
-      for (let d = 1; d <= 9; d++) if (!unit.some(i => g[i].value === d)) missing.push(d);
+      for (let d = 1; d <= 9; d++) if (!unit.some((i) => g[i].value === d)) missing.push(d);
       for (let a = 0; a < missing.length; a++) {
         for (let b = a + 1; b < missing.length; b++) {
-          const d1 = missing[a], d2 = missing[b];
-          const cells = empty.filter(i => g[i].cands.has(d1) || g[i].cands.has(d2));
+          const d1 = missing[a],
+            d2 = missing[b];
+          const cells = empty.filter((i) => g[i].cands.has(d1) || g[i].cands.has(d2));
           if (cells.length !== 2) continue;
           const elims: Elim[] = [];
           for (const i of cells) {
             for (const c of [...g[i].cands]) {
-              if (c !== d1 && c !== d2) { g[i].cands.delete(c); elims.push({ cellIdx: i, digit: c }); }
+              if (c !== d1 && c !== d2) {
+                g[i].cands.delete(c);
+                elims.push({ cellIdx: i, digit: c });
+              }
             }
           }
           if (elims.length > 0) {
-            steps.push({ technique: 'hidden_pair', label: t('skills.hiddenPairName'), eliminations: elims, fills: [], sourceCells: cells });
+            steps.push({
+              technique: 'hidden_pair',
+              label: t('skills.hiddenPairName'),
+              eliminations: elims,
+              fills: [],
+              sourceCells: cells,
+            });
             progress = true;
             break;
           }
@@ -205,23 +276,32 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
 
     // ── Hidden Triples ──
     for (const unit of units) {
-      const empty = unit.filter(i => g[i].value === 0);
+      const empty = unit.filter((i) => g[i].value === 0);
       const missing: number[] = [];
-      for (let d = 1; d <= 9; d++) if (!unit.some(i => g[i].value === d)) missing.push(d);
+      for (let d = 1; d <= 9; d++) if (!unit.some((i) => g[i].value === d)) missing.push(d);
       for (let a = 0; a < missing.length; a++) {
         for (let b = a + 1; b < missing.length; b++) {
           for (let c = b + 1; c < missing.length; c++) {
             const ds = [missing[a], missing[b], missing[c]];
-            const cells = empty.filter(i => ds.some(d => g[i].cands.has(d)));
+            const cells = empty.filter((i) => ds.some((d) => g[i].cands.has(d)));
             if (cells.length !== 3) continue;
             const elims: Elim[] = [];
             for (const i of cells) {
               for (const cd of [...g[i].cands]) {
-                if (!ds.includes(cd)) { g[i].cands.delete(cd); elims.push({ cellIdx: i, digit: cd }); }
+                if (!ds.includes(cd)) {
+                  g[i].cands.delete(cd);
+                  elims.push({ cellIdx: i, digit: cd });
+                }
               }
             }
             if (elims.length > 0) {
-              steps.push({ technique: 'hidden_triple', label: t('skills.hiddenTripleName'), eliminations: elims, fills: [], sourceCells: cells });
+              steps.push({
+                technique: 'hidden_triple',
+                label: t('skills.hiddenTripleName'),
+                eliminations: elims,
+                fills: [],
+                sourceCells: cells,
+              });
               progress = true;
               break;
             }
@@ -239,7 +319,7 @@ function generateRealSteps(puzzle: number[]): DemoStep[] {
 
 // ── Animation ────────────────────────────────────────────────────────
 
-const wait = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
+const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 function findNoteSpan(cellEl: HTMLElement, digit: number): HTMLElement | null {
   return cellEl.querySelector(`.note-num[data-digit="${digit}"]`) as HTMLElement | null;
@@ -247,8 +327,13 @@ function findNoteSpan(cellEl: HTMLElement, digit: number): HTMLElement | null {
 
 // Colors keyed by technique ID
 const TECH_COLORS_BY_ID: Record<string, string> = {
-  domain_expansion: '#dfe6e9', naked_single: '#74b9ff', hidden_single: '#a29bfe',
-  locked_candidates: '#00cec9', hidden_pair: '#fd79a8', hidden_triple: '#81ecec', exocet: '#ff3333',
+  domain_expansion: '#dfe6e9',
+  naked_single: '#74b9ff',
+  hidden_single: '#a29bfe',
+  locked_candidates: '#00cec9',
+  hidden_pair: '#fd79a8',
+  hidden_triple: '#81ecec',
+  exocet: '#ff3333',
 };
 
 function getTechColor(techId: string): string {
@@ -263,11 +348,18 @@ export async function runMentorDemo(): Promise<void> {
   if (container) container.style.display = 'flex';
 
   gs.currentLevel = {
-    id: -1, stars: 0, difficultyName: t('wildRuntime.difficultyWorld'), displayName: t('skills.mentorDemoTitle'),
-    puzzle: DEMO_PUZZLE, solution: DEMO_SOLUTION, maxTechnique: 'exocet_death_blossom', source: 'demo',
+    id: -1,
+    stars: 0,
+    difficultyName: t('wildRuntime.difficultyWorld'),
+    displayName: t('skills.mentorDemoTitle'),
+    puzzle: DEMO_PUZZLE,
+    solution: DEMO_SOLUTION,
+    maxTechnique: 'exocet_death_blossom',
+    source: 'demo',
   };
-  gs.cellsData = DEMO_PUZZLE.map(v => ({ value: v, fixed: v !== 0, notes: [] as number[], isError: false }));
-  gs.errors = 0; gs.seconds = 0;
+  gs.cellsData = DEMO_PUZZLE.map((v) => ({ value: v, fixed: v !== 0, notes: [] as number[], isError: false }));
+  gs.errors = 0;
+  gs.seconds = 0;
 
   const header = container?.querySelector('header') as HTMLElement | null;
   const infoBar = container?.querySelector('.grid-info-bar') as HTMLElement | null;
@@ -289,7 +381,7 @@ export async function runMentorDemo(): Promise<void> {
   counter.className = 'demo-step-counter';
   document.body.appendChild(counter);
 
-  let filled = DEMO_PUZZLE.filter(v => v !== 0).length;
+  let filled = DEMO_PUZZLE.filter((v) => v !== 0).length;
   counter.textContent = `${filled}/81`;
 
   await wait(600);
@@ -327,7 +419,8 @@ export async function runMentorDemo(): Promise<void> {
 
     // Reveal cells by distance from center (same order as real)
     const cellOrder = Array.from({ length: 81 }, (_, i) => {
-      const row = Math.floor(i / 9), col = i % 9;
+      const row = Math.floor(i / 9),
+        col = i % 9;
       const dist = Math.sqrt((row - 4) ** 2 + (col - 4) ** 2);
       return { i, dist };
     }).sort((a, b) => a.dist - b.dist);
@@ -357,8 +450,8 @@ export async function runMentorDemo(): Promise<void> {
 
   // ── Generate REAL steps ──
   const allSteps = generateRealSteps(DEMO_PUZZLE);
-  const singlesSteps = allSteps.filter(s => s.technique === 'naked_single' || s.technique === 'hidden_single');
-  const midSteps = allSteps.filter(s => s.technique !== 'naked_single' && s.technique !== 'hidden_single');
+  const singlesSteps = allSteps.filter((s) => s.technique === 'naked_single' || s.technique === 'hidden_single');
+  const midSteps = allSteps.filter((s) => s.technique !== 'naked_single' && s.technique !== 'hidden_single');
 
   // ── Helper: apply eliminations to cellsData + DOM ──
   function applyEliminations(elims: Elim[]): void {
@@ -386,12 +479,22 @@ export async function runMentorDemo(): Promise<void> {
 
   function cleanupSkillClasses(): void {
     if (!gs.gridEl) return;
-    const cls = ['skill-source-pulse', 'skill-strike', 'skill-strike-inward',
-      'skill-pair-bond', 'skill-purify-pulse', 'skill-quickcast-flash'];
-    Array.from(gs.gridEl.children).forEach(c => { for (const cl of cls) c.classList.remove(cl); });
-    gs.gridEl.querySelectorAll('.skill-noise-digit, .skill-elim-digit, .skill-reveal-digit, .skill-lock-digit-ring').forEach(el => {
-      el.classList.remove('skill-noise-digit', 'skill-elim-digit', 'skill-reveal-digit', 'skill-lock-digit-ring');
+    const cls = [
+      'skill-source-pulse',
+      'skill-strike',
+      'skill-strike-inward',
+      'skill-pair-bond',
+      'skill-purify-pulse',
+      'skill-quickcast-flash',
+    ];
+    Array.from(gs.gridEl.children).forEach((c) => {
+      for (const cl of cls) c.classList.remove(cl);
     });
+    gs.gridEl
+      .querySelectorAll('.skill-noise-digit, .skill-elim-digit, .skill-reveal-digit, .skill-lock-digit-ring')
+      .forEach((el) => {
+        el.classList.remove('skill-noise-digit', 'skill-elim-digit', 'skill-reveal-digit', 'skill-lock-digit-ring');
+      });
   }
 
   // ── Phase 1: Singles blitz (uses quickcast flash — same as real 明眼/暗眼) ──
@@ -414,7 +517,7 @@ export async function runMentorDemo(): Promise<void> {
     }
 
     // Update peers
-    refreshCells(new Set(step.eliminations.map(e => e.cellIdx).filter(idx => gs.cellsData[idx].value === 0)));
+    refreshCells(new Set(step.eliminations.map((e) => e.cellIdx).filter((idx) => gs.cellsData[idx].value === 0)));
 
     counter.textContent = `${filled}/81`;
     if (i % 3 === 0) await wait(40);
@@ -469,7 +572,10 @@ export async function runMentorDemo(): Promise<void> {
       if (cellEl) {
         cellEl.classList.add(strikeClass);
         const span = findNoteSpan(cellEl, e.digit);
-        if (span) { span.classList.remove('skill-noise-digit'); span.classList.add('skill-elim-digit'); }
+        if (span) {
+          span.classList.remove('skill-noise-digit');
+          span.classList.add('skill-elim-digit');
+        }
       }
       if (j < step.eliminations.length - 1) await wait(80);
     }
@@ -490,7 +596,11 @@ export async function runMentorDemo(): Promise<void> {
     }
 
     // Update displays
-    const affected = new Set([...step.eliminations.map(e => e.cellIdx), ...step.sourceCells, ...step.fills.map(f => f.cellIdx)]);
+    const affected = new Set([
+      ...step.eliminations.map((e) => e.cellIdx),
+      ...step.sourceCells,
+      ...step.fills.map((f) => f.cellIdx),
+    ]);
     refreshCells(affected);
 
     // Fill animation for filled cells
@@ -564,9 +674,9 @@ export async function runMentorDemo(): Promise<void> {
   for (let i = 0; i < 81; i++) {
     if (gs.cellsData[i].value !== 0) continue;
     if (gs.cellsData[i].notes.length >= 2) {
-      stuckCells.push(i);  // These form the exocet bottleneck
+      stuckCells.push(i); // These form the exocet bottleneck
     } else {
-      waitingCells.push(i);  // These are waiting for the bottleneck to clear
+      waitingCells.push(i); // These are waiting for the bottleneck to clear
     }
   }
 
@@ -612,7 +722,7 @@ export async function runMentorDemo(): Promise<void> {
   if (levelScreenRestore) levelScreenRestore.style.display = 'flex';
   if (gs.gridEl) {
     gs.gridEl.classList.remove('demo-frozen');
-    Array.from(gs.gridEl.children).forEach(c => {
+    Array.from(gs.gridEl.children).forEach((c) => {
       c.classList.remove('demo-fill-flash', 'demo-skill-pulse', 'demo-exocet-pulse');
     });
   }

@@ -184,6 +184,7 @@ export const ja: Widen<Locale> = {
     savedEncounterInfo: '前回の対陣：{tech} · {time}',
     abandonEncounter: '対陣を退出',
     abandonConfirm: '退出は力尽きたと見なされます（クールダウン発生）',
+    cleanSolveBonus: '無提示通関',
   },
 
   // ── Timer & game chrome ─────────────────────────────────────────────
@@ -260,15 +261,18 @@ export const ja: Widen<Locale> = {
     bestRecordSpeed: 'ベスト記録：{time} ⚡ {submissions}回送信',
     techDisplay: '💡 核心技法: {tech}',
     techDisplayTier: '💡 核心技法: {tech} ({tier})',
+    techUnknown: '解析中',
   },
 
   // ── Stats modal ─────────────────────────────────────────────────────
   stats: {
     title: '統計',
     tabOverview: '概要',
+    tabLearning: '学習',
     tabAchievements: '実績',
     sectionGameData: 'ゲームデータ',
     sectionTierProgress: '難易度別進捗',
+    sectionLearning: '学習進捗',
     sectionAchievements: '実績バッジ',
     cleared: 'クリア数 ({pct}%)',
     threeStar: '三つ星クリア',
@@ -278,6 +282,30 @@ export const ja: Widen<Locale> = {
     totalStars: '総星数',
     totalTime: 'ベストタイム合計',
     practiceProgress: '修行クリア ({pct}%) · {techs}/41 技法全通',
+    learningRead: '読了した教材',
+    learningPractice: 'クリアした練習',
+    learningUnread: '未読の教材',
+    learningUnfinished: '未完了の練習技法',
+    learningNextAction: '次の行動',
+    learningNextActionRead: '教材をあと {count} つ読む',
+    learningNextActionPractice: '練習技法をあと {count} つクリアする',
+    learningTopTechniques: '習得技法ランキング',
+    learningRiskAlerts: 'リスク警告',
+    learningRank: '順位',
+    learningCompletion: '達成率',
+    learningClears: 'クリア数',
+    learningTechnique: '技法',
+    learningRisk: 'リスク',
+    learningLoopTitle: '学習ループ',
+    learningLoopClicks: '推薦クリック',
+    learningLoopCompletions: 'リプレイ導線完了',
+    learningLoopNextDay: '翌日再訪',
+    learningLoopNextDayRate: '翌日再訪率',
+    learningLoopRate: '完了率',
+    learningLoopTopModules: '高転換モジュール',
+    learningLoopTopModulesEmpty: '転換データはまだありません',
+    learningLoopOpenModule: 'モジュールを開く',
+    learningLoopOpenModuleFailed: 'モジュールを開けませんでした',
     achievementsUnlocked: '{unlocked} / {total} 解放済み',
   },
 
@@ -356,6 +384,29 @@ export const ja: Widen<Locale> = {
     stepInfo: 'ステップ {current} / {total}',
   },
 
+  // ── Replay diagnosis ───────────────────────────────────────────────
+  replayDiagnosis: {
+    title: 'リプレイ診断',
+    subtitle: 'リプレイから推理の癖を直接確認する',
+    ctaLearning: '学習ルートを見る',
+    openModule: '教材モジュールを開く',
+    openModuleFailed: '教材モジュールを開けませんでした',
+    recommendations: 'おすすめ',
+    recommendationsEmpty: '具体的なおすすめはまだありません。',
+    recommendationModule: 'モジュール #{id}',
+    mistakes: 'ミス数',
+    keySteps: 'キーステップ',
+    pace: 'ペース',
+    focus: '改善優先',
+    suggestions: '提案',
+    slowPace: 'ペースが遅め',
+    goodPace: 'ペースは安定',
+    manyMistakes: 'ミスが多い',
+    fewKeySteps: 'キーステップが少ない',
+    tryReviewingMistakes: 'まずミスした手とその前後2手を見直す',
+    tryMoreKeySteps: '意味のあるキーステップを増やそう',
+  },
+
   // ── Encounter transition ────────────────────────────────────────────
   encounter: {
     firstEncounterBadge: '初遇',
@@ -398,6 +449,7 @@ export const ja: Widen<Locale> = {
     hint: '💡 ヒント',
     confirmElim: '消去を確認',
     revealAnswer: '答えを見る',
+    loadFailed: '教材データの読み込みに失敗しました',
     group1: '第一層・基礎定石',
     group1Hint: '基本概念と候補数の規律を身につける',
     group2: '第二層・候補構造',
@@ -532,6 +584,7 @@ export const ja: Widen<Locale> = {
     backToSteps: 'ステップに戻る',
     retryPractice: 'もう一問',
     close: '閉じる',
+    replaySource: 'リプレイ推薦',
   },
 
   // ── Replay (runtime strings) ─────────────────────────────────────
@@ -616,7 +669,8 @@ export const ja: Widen<Locale> = {
   // ── Practice lobby (runtime strings) ──────────────────────────────
   practiceLobby: {
     levelFallback: '第{idx}ステージ',
-    allCompleteQuote: '三十九の関門を越え、\nさらに私が印を残さなかった二つも越えた。\n\n修行は円満。されど剣に終わりはない。',
+    allCompleteQuote:
+      '三十九の関門を越え、\nさらに私が印を残さなかった二つも越えた。\n\n修行は円満。されど剣に終わりはない。',
     allCompleteAttr: '── 弈塵',
   },
 
@@ -763,18 +817,16 @@ export const ja: Widen<Locale> = {
 
   // ── Learning group names ───────────────────────────────────────────
   learnGroups: {
-    foundation: '第一層・基礎定石',
-    foundationHint: '基本概念と候補数の規律を身につける',
-    candidate: '第二層・候補構造',
-    candidateHint: 'ライン/ブロック内の候補関係と初級消去を理解する',
-    pattern: '第三層・パターンと消去',
-    patternHint: 'ウィング、フィッシュ、ロック鎖の実戦応用',
-    chain: '第四層・鎖式推理',
-    chainHint: '着色鎖、Unique Rectangle、上級フィッシュパターン',
-    master: '第五層・上級統合',
-    masterHint: 'ALS、Template、Sue de Coq などの上級統合技',
-    legend: '第六層・宗匠構造',
-    legendHint: 'Exocet / Death Blossom などの超高難度構造技法',
+    eye1: '第一眼・強制マスを探す',
+    eye1Hint: '候補数が最も少ないマスが突破口',
+    eye2: '第二眼・収束ユニットを探す',
+    eye2Hint: '数字がより小さい範囲に限定される',
+    eye3: '第三眼・数字の分布を追う',
+    eye3Hint: '一つの数字の分布が消去を明らかにする',
+    eye4: '第四眼・二値マスを探す',
+    eye4Hint: '二候補マスは鎖の自然な起点',
+    eye5: '第五眼・連結骨格を構築する',
+    eye5Hint: '強連結はあらゆる鎖式推理の根幹',
     extra: '補足・発展秘伝書',
     extraHint: 'メインパス完了後に学ぶ追加技法',
   },

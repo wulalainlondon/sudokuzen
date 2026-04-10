@@ -136,7 +136,8 @@ export const enGame = {
   // ── Practice lobby (runtime strings) ──────────────────────────────
   practiceLobby: {
     levelFallback: 'Level {idx}',
-    allCompleteQuote: "You walked thirty-nine paths,\nand two more I didn't mark.\n\nTraining complete. But the sword has no end.",
+    allCompleteQuote:
+      "You walked thirty-nine paths,\nand two more I didn't mark.\n\nTraining complete. But the sword has no end.",
     allCompleteAttr: '\u2014\u2014 Yi Chen',
   },
 } as const;
