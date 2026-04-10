@@ -13,6 +13,8 @@ on:
 
 jobs:
   e2e-full:
+    permissions:
+      contents: read
     if: >
       github.event_name == 'workflow_dispatch' ||
       contains(github.event.pull_request.labels.*.name, 'full-e2e')

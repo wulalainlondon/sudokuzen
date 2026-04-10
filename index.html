@@ -257,6 +257,10 @@
                 <input type="checkbox" id="ctm-checkbox">
                 <span>候選追蹤模式</span>
             </label>
+            <label class="pause-toggle hidden" id="pause-constraint-map-toggle">
+                <input type="checkbox" id="constraint-map-checkbox">
+                <span>候選密度圖</span>
+            </label>
             <button class="resume-btn" id="pause-resume-btn" onclick="resumeGame()">繼續遊戲</button>
             <button class="back-btn back-btn-light" id="pause-leave-btn" onclick="showLevelScreen(true)">放棄關卡</button>
             <button class="back-btn back-btn-light" id="pause-abandon-btn" style="display:none;">退出對陣</button>
@@ -300,6 +304,7 @@
                 </div>
             </div>
             <div class="grid-right">
+                <div class="level-tech-hint" id="level-tech-hint">💡 核心技巧: --</div>
                 <div class="grid-actions">
                     <button class="mini-btn" id="continuous-fill-toggle" onclick="toggleContinuousFill()" aria-label="連續填入模式">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -484,7 +489,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.09-V9';
+        var INLINE_VER = '2026.04.11-V2';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

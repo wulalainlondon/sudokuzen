@@ -4,7 +4,19 @@
 import { gs, type LevelData } from '../../game/state';
 import { formatSeconds } from '../../game/utils';
 import { showFeedback } from '../../ui/feedback';
-import { loadWildProfile, saveWildProfile, CHALLENGE_CONFIGS, saveWildEncounter, loadWildSave, clearWildSave, type WildProfile, type WildEncounter, type WildSaveData, type ChallengeMode } from './wildState';
+import { showConfirm } from '../../ui/dialog';
+import {
+  loadWildProfile,
+  saveWildProfile,
+  CHALLENGE_CONFIGS,
+  saveWildEncounter,
+  loadWildSave,
+  clearWildSave,
+  type WildProfile,
+  type WildEncounter,
+  type WildSaveData,
+  type ChallengeMode,
+} from './wildState';
 import { selectEncounter, selectSessionEncounter, tickCooldowns, setEscapeCooldown } from './ecologyEngine';
 import { getTechniqueMeta, getAutoCastKeys } from './techniqueMeta';
 import { calculateExp, applyExp, expForLevel, getUnstudiedGateSkills } from './expSystem';
@@ -18,10 +30,15 @@ import {
   triggerMilestoneIfNeeded,
   triggerFinaleIfNeeded,
   triggerContinuousFillHint,
+  startEncounterHintTimers,
+  stopEncounterHintTimers,
+  triggerCtmIntroIfNeeded,
+  getEncounterHintLevel,
 } from './mentorController';
 import { bridgeShowEncounterTransition } from '../../react/wild/encounterTransitionBridge';
 import { playZenEnter, playZenEncounter, playZenBoss } from '../../game/zenAudio';
 import { t } from '../../i18n/t';
+import { SK } from '../../storage/keys';
 import { getEquippedTitle, getTitleResonanceBonus } from '../titles';
 import { setNextLevelScreenReturnTarget } from '../levels';
 
@@ -37,9 +54,9 @@ import {
   resetGauntletState,
 } from './gauntletEngine';
 
-import {
-  sessionStreakMultiplier,
-} from './sessionManager';
+import { sessionStreakMultiplier } from './sessionManager';
+
+import { TUTORIAL_TOTAL } from './wildTutorial';
 
 // ── Re-exports from extracted modules ────────────────────────────────
 
@@ -78,7 +95,7 @@ export function saveCurrentEncounter(): void {
       solution: gs.currentLevel.solution,
       maxTechnique: gs.currentLevel.maxTechnique || '',
     },
-    cellsData: gs.cellsData.map(c => ({ value: c.value, fixed: c.fixed, notes: [...c.notes], isError: false })),
+    cellsData: gs.cellsData.map((c) => ({ value: c.value, fixed: c.fixed, notes: [...c.notes], isError: false })),
     seconds: gs.seconds,
     errors: gs.errors,
     challengeMode: _encounter.challengeMode,
@@ -117,14 +134,17 @@ export async function resumeWildEncounter(): Promise<void> {
   // Write to normal save key so initGame(forceReset=false) can load it
   const { SK } = await import('../../storage/keys');
   const saveKey = SK.save(wildLevel.id, false);
-  localStorage.setItem(saveKey, JSON.stringify({
-    levelId: wildLevel.id,
-    cellsData: save.cellsData,
-    seconds: save.seconds,
-    errors: save.errors,
-    submissionCount: 0,
-    actionHistory: save.actionHistory,
-  }));
+  localStorage.setItem(
+    saveKey,
+    JSON.stringify({
+      levelId: wildLevel.id,
+      cellsData: save.cellsData,
+      seconds: save.seconds,
+      errors: save.errors,
+      submissionCount: 0,
+      actionHistory: save.actionHistory,
+    }),
+  );
 
   // Launch game — initGame with forceReset=false will pick up the save
   const levelScreenEl = document.getElementById('level-screen');
@@ -214,9 +234,99 @@ export function resumeTimedCountdown(): void {
 export async function startWildEncounter(): Promise<void> {
   const profile = getWildProfile();
 
+  // Tutorial: first 3 encounters are fixed for new players
+  if (!profile.tutorialCompleted) {
+    if (!isMentorIntroDeferred()) {
+      await triggerIntroIfNeeded();
+    }
+
+    const { TUTORIAL_ENCOUNTERS } = await import('./wildTutorial');
+    const tutEnc = TUTORIAL_ENCOUNTERS[profile.tutorialRound ?? 0];
+    if (tutEnc) {
+      _encounter = { ...tutEnc, startedAt: Date.now() };
+
+      _active = true;
+      profile.totalEncounters = (profile.totalEncounters ?? 0) + 1;
+
+      import('../../features/skills/candidateTrackingController')
+        .then((m) => m.resetTrackingEncounterState())
+        .catch(() => {});
+
+      const meta = getTechniqueMeta(_encounter.technique);
+      if (meta) {
+        if (!profile.bestiary[_encounter.technique]) {
+          profile.bestiary[_encounter.technique] = {
+            discovered: new Date().toISOString().slice(0, 10),
+            encounters: 0,
+            kills: 0,
+            escapes: 0,
+            bestTime: null,
+            modesCleared: [],
+          };
+        }
+        profile.bestiary[_encounter.technique].encounters++;
+        saveWildProfile(profile);
+      }
+
+      const config = CHALLENGE_CONFIGS[_encounter.challengeMode];
+      const bestiaryEntry = profile.bestiary[_encounter.technique];
+      const isFirstEncounter = bestiaryEntry ? bestiaryEntry.encounters === 1 : false;
+      const wildLevel: LevelData = {
+        id: -Date.now(),
+        stars: 0,
+        difficultyName: t('wildRuntime.difficultyWorld'),
+        displayName: meta ? `${meta.name} · ${meta.subtitle}` : t('wildRuntime.difficultyWorld'),
+        puzzle: _encounter.puzzle,
+        solution: _encounter.solution,
+        maxTechnique: _encounter.technique,
+        source: 'wild',
+      };
+
+      applyRarityTint(_encounter.rarity);
+      bridgeShowEncounterTransition({
+        techName: meta?.name ?? '???',
+        techSubtitle: meta?.subtitle ?? '',
+        rarity: _encounter.rarity,
+        challengeMode: _encounter.challengeMode,
+        isBoss: false,
+        isFirstEncounter,
+        rarityTone: _encounter.rarity,
+        isResume: false,
+      });
+      playZenEnter();
+      setTimeout(() => playZenEncounter(), 400);
+
+      const levelScreenLaunch = document.getElementById('level-screen');
+      if (levelScreenLaunch) levelScreenLaunch.style.display = 'none';
+      const { initGame } = await import('../../game/core');
+      initGame(wildLevel.id, true, false, null, wildLevel);
+
+      gs.wildChallengeMode = _encounter.challengeMode;
+      gs.maxErrors = config.maxErrors;
+      gs.wildBlindMode = false;
+      gs.wildNotesDisabled = false;
+
+      const { updateLivesUI } = await import('../../game/core');
+      updateLivesUI();
+
+      // Auto-unlock CTM at locked_candidates tutorial encounter
+      if (isFirstEncounter && _encounter.technique === 'locked_candidates' && !gs.candidateTrackingEnabled) {
+        gs.candidateTrackingEnabled = true;
+        localStorage.setItem(SK.CTM_ENABLED, '1');
+      }
+
+      startEncounterHintTimers(_encounter.technique, isFirstEncounter, false);
+      triggerCtmIntroIfNeeded(_encounter.technique, isFirstEncounter, false);
+
+      showFeedback(t('wild.encounterLoading'), 'success');
+
+      return;
+    }
+  }
+
   // First entry: allow skipping/deferring mentor prologue so the first puzzle starts immediately.
   if (!hasCompletedMentorIntro() && !isMentorIntroDeferred()) {
-    const shouldWatchNow = window.confirm(t('wild.introPrompt'));
+    const shouldWatchNow = await showConfirm(t('wild.introPrompt'), t('wild.watchIntro'), t('cancel'));
     if (shouldWatchNow) {
       await triggerIntroIfNeeded();
     } else {
@@ -232,7 +342,10 @@ export async function startWildEncounter(): Promise<void> {
     saveWildProfile(profile);
   }
 
-  showFeedback(session ? t('wild.sessionRound', { round: String(session.round) }) : t('wild.encounterLoading'), 'success');
+  showFeedback(
+    session ? t('wild.sessionRound', { round: String(session.round) }) : t('wild.encounterLoading'),
+    'success',
+  );
 
   try {
     if (session) {
@@ -258,6 +371,11 @@ export async function startWildEncounter(): Promise<void> {
 
   _active = true;
   profile.totalEncounters = (profile.totalEncounters ?? 0) + 1;
+
+  // Reset per-encounter CTM transient state (e.g. firstDiscovery toast guard)
+  import('../../features/skills/candidateTrackingController')
+    .then((m) => m.resetTrackingEncounterState())
+    .catch(() => {});
 
   // Record encounter in bestiary
   const meta = getTechniqueMeta(_encounter.technique);
@@ -289,7 +407,7 @@ export async function startWildEncounter(): Promise<void> {
       const result = autoSolve(_encounter.puzzle, _encounter.solution, autoCastKeys);
       // P1a: Ensure at least 5 empty cells remain after auto-solve
       // If auto-solve leaves too few, fall back to original puzzle
-      const emptyCount = result.partialPuzzle.filter(v => v === 0).length;
+      const emptyCount = result.partialPuzzle.filter((v) => v === 0).length;
       if (emptyCount >= 5) {
         puzzleToUse = result.partialPuzzle;
         // Keep encounters manual: do not auto-fill candidates.
@@ -302,13 +420,21 @@ export async function startWildEncounter(): Promise<void> {
   const modeLabel = mode !== 'standard' ? ` [${config.displayName}]` : '';
   const sessionLabel = session ? `[${session.round}/10] ` : '';
   const bossLabel = session && session.round === 10 ? ' 【BOSS】' : '';
+  const isBoss = !!(session && session.round === 10);
+  const bestiaryEntry = profile.bestiary[_encounter.technique];
+  const isFirstEncounter = bestiaryEntry ? bestiaryEntry.encounters === 1 : false;
+  const isConquered = bestiaryEntry ? bestiaryEntry.kills > 0 : false;
+  // Tier 2+ not-yet-conquered encounters: veil the name as ??? throughout the encounter
+  const veilName = !isConquered && meta !== undefined && meta.tier >= 2;
   const wildLevel: LevelData = {
     id: -Date.now(), // negative = Wild mode, unique per encounter
     stars: 0,
     difficultyName: t('wildRuntime.difficultyWorld'),
-    displayName: meta
-      ? `${sessionLabel}${meta.name} · ${meta.subtitle}${modeLabel}${bossLabel}`
-      : `${sessionLabel}${t('wildRuntime.difficultyWorld')}${modeLabel}${bossLabel}`,
+    displayName: veilName
+      ? `${sessionLabel}??? · ${t('wildRuntime.unknownPattern')}${modeLabel}${bossLabel}`
+      : meta
+        ? `${sessionLabel}${meta.name} · ${meta.subtitle}${modeLabel}${bossLabel}`
+        : `${sessionLabel}${t('wildRuntime.difficultyWorld')}${modeLabel}${bossLabel}`,
     puzzle: puzzleToUse,
     solution: _encounter.solution,
     maxTechnique: _encounter.technique,
@@ -319,12 +445,9 @@ export async function startWildEncounter(): Promise<void> {
   applyRarityTint(_encounter.rarity);
 
   // Trigger encounter transition overlay with zen audio
-  const isBoss = !!(session && session.round === 10);
-  const bestiaryForFirst = profile.bestiary[_encounter.technique];
-  const isFirstEncounter = bestiaryForFirst ? bestiaryForFirst.encounters === 1 : false;
   bridgeShowEncounterTransition({
-    techName: meta?.name ?? '???',
-    techSubtitle: meta ? `${meta.subtitle}` : t('wildRuntime.difficultyWorld'),
+    techName: veilName ? '???' : (meta?.name ?? '???'),
+    techSubtitle: veilName ? t('wildRuntime.unknownPattern') : meta ? meta.subtitle : t('wildRuntime.difficultyWorld'),
     rarity: _encounter.rarity,
     challengeMode: mode,
     isBoss,
@@ -385,7 +508,11 @@ export async function startWildEncounter(): Promise<void> {
   } else {
     const bestiaryEntry = profile.bestiary[_encounter.technique];
     if (bestiaryEntry && bestiaryEntry.encounters === 1) {
-      showFeedback(t('wild.firstEncounter'), 'success');
+      if (veilName) {
+        showFeedback(t('wild.firstEncounter'), 'success');
+      } else {
+        showFeedback(t('wild.firstEncounterNamed', { name: meta?.name ?? '???' }), 'success');
+      }
     }
   }
 
@@ -406,6 +533,18 @@ export async function startWildEncounter(): Promise<void> {
   if (profile.totalEncounters <= 1) {
     triggerContinuousFillHint();
   }
+
+  // Auto-unlock CTM at first Locked Candidates encounter
+  if (isFirstEncounter && _encounter.technique === 'locked_candidates' && !gs.candidateTrackingEnabled) {
+    gs.candidateTrackingEnabled = true;
+    localStorage.setItem(SK.CTM_ENABLED, '1');
+  }
+
+  // Start encounter hint timers for first encounters and re-encounters of unmastered techniques
+  startEncounterHintTimers(_encounter.technique, isFirstEncounter, veilName);
+
+  // Immediate CTM introduction for first ??? encounter (any Tier 2+ technique)
+  triggerCtmIntroIfNeeded(_encounter.technique, isFirstEncounter, veilName);
 }
 
 // ── Win handler (called from core.ts checkWin) ───────────────────────
@@ -413,8 +552,27 @@ export async function startWildEncounter(): Promise<void> {
 export function onWildComplete(
   seconds: number,
   errors: number,
-): { expGained: number; leveledUp: boolean; newLevel: number; firstKill: string | null; firstKillSub: string | null; beatMentor: boolean } {
-  if (!_encounter || !_active) return { expGained: 0, leveledUp: false, newLevel: 1, firstKill: null, firstKillSub: null, beatMentor: false };
+): {
+  expGained: number;
+  leveledUp: boolean;
+  newLevel: number;
+  firstKill: string | null;
+  firstKillSub: string | null;
+  firstKillKey: string | null;
+  beatMentor: boolean;
+  cleanSolveBonus: number;
+} {
+  if (!_encounter || !_active)
+    return {
+      expGained: 0,
+      leveledUp: false,
+      newLevel: 1,
+      firstKill: null,
+      firstKillSub: null,
+      firstKillKey: null,
+      beatMentor: false,
+      cleanSolveBonus: 0,
+    };
 
   // Handle gauntlet advancement
   if (isGauntletActive()) {
@@ -425,7 +583,15 @@ export function onWildComplete(
       // Gauntlet complete
       _active = false;
       resetWildGsFields();
-      return { ...gauntletResult.result!, firstKill: null, firstKillSub: null, beatMentor: false };
+      stopEncounterHintTimers();
+      return {
+        ...gauntletResult.result!,
+        firstKill: null,
+        firstKillSub: null,
+        firstKillKey: null,
+        beatMentor: false,
+        cleanSolveBonus: 0,
+      };
     }
 
     // Not final — advance to next encounter
@@ -435,7 +601,16 @@ export function onWildComplete(
     launchGauntletNext(profile, _encounter, applyRarityTint);
 
     // Return 0 exp (not finished yet) — the win celebration should show gauntlet progress
-    return { expGained: 0, leveledUp: false, newLevel: profile.iqLevel, firstKill: null, firstKillSub: null, beatMentor: false };
+    return {
+      expGained: 0,
+      leveledUp: false,
+      newLevel: profile.iqLevel,
+      firstKill: null,
+      firstKillSub: null,
+      firstKillKey: null,
+      beatMentor: false,
+      cleanSolveBonus: 0,
+    };
   }
 
   const profile = getWildProfile();
@@ -458,6 +633,11 @@ export function onWildComplete(
     expGained = Math.round(expGained * (1 + titleBonus));
     showFeedback(t('titles.resonanceBonus'), 'success');
   }
+
+  // Clean solve bonus: +20 EXP for completing without any mentor hints
+  const CLEAN_SOLVE_BONUS = 20;
+  const cleanSolveBonus = getEncounterHintLevel() === 0 ? CLEAN_SOLVE_BONUS : 0;
+  if (cleanSolveBonus > 0) expGained += cleanSolveBonus;
 
   const result = applyExp(profile, expGained);
 
@@ -483,6 +663,14 @@ export function onWildComplete(
     }
   }
 
+  // Advance tutorial round if in tutorial
+  if (!profile.tutorialCompleted) {
+    profile.tutorialRound = (profile.tutorialRound ?? 0) + 1;
+    if (profile.tutorialRound >= TUTORIAL_TOTAL) {
+      profile.tutorialCompleted = true;
+    }
+  }
+
   // Tick cooldowns (completed a puzzle)
   profile.puzzlesCompleted++;
   tickCooldowns(profile);
@@ -505,8 +693,10 @@ export function onWildComplete(
         profile.fragments[_encounter.technique] = Math.min(current + award, fragMeta.fragmentsRequired);
 
         // Check if just reached threshold
-        if (profile.fragments[_encounter.technique] >= fragMeta.fragmentsRequired
-            && current < fragMeta.fragmentsRequired) {
+        if (
+          profile.fragments[_encounter.technique] >= fragMeta.fragmentsRequired &&
+          current < fragMeta.fragmentsRequired
+        ) {
           const techName = fragMeta.name;
           setTimeout(async () => {
             const { showFeedback: fb } = await import('../../ui/feedback');
@@ -531,12 +721,23 @@ export function onWildComplete(
     _active = false;
     resetWildGsFields();
     clearWildSave();
-    return { expGained, leveledUp: result.leveledUp, newLevel: result.newLevel, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null, beatMentor };
+    stopEncounterHintTimers();
+    return {
+      expGained,
+      leveledUp: result.leveledUp,
+      newLevel: result.newLevel,
+      firstKill: isFirstKill ? (meta?.name ?? null) : null,
+      firstKillSub: isFirstKill ? (meta?.subtitle ?? null) : null,
+      firstKillKey: isFirstKill ? _encounter.technique : null,
+      beatMentor,
+      cleanSolveBonus,
+    };
   }
 
   _active = false;
   resetWildGsFields();
   clearWildSave();
+  stopEncounterHintTimers();
 
   // Mentor triggers (async, non-blocking — fire after win celebration)
   setTimeout(async () => {
@@ -554,7 +755,14 @@ export function onWildComplete(
     await triggerFinaleIfNeeded(conqueredCount >= totalTechs);
   }, 2000);
 
-  return { ...result, firstKill: isFirstKill ? meta?.name ?? null : null, firstKillSub: isFirstKill ? meta?.subtitle ?? null : null, beatMentor };
+  return {
+    ...result,
+    firstKill: isFirstKill ? (meta?.name ?? null) : null,
+    firstKillSub: isFirstKill ? (meta?.subtitle ?? null) : null,
+    firstKillKey: isFirstKill ? _encounter.technique : null,
+    beatMentor,
+    cleanSolveBonus,
+  };
 }
 
 // ── Fail / escape handler (called from core.ts showGameOver) ─────────
@@ -587,6 +795,7 @@ export function onWildEscape(): void {
   _active = false;
   resetWildGsFields();
   clearWildSave();
+  stopEncounterHintTimers();
 }
 
 // ── Continue to next encounter ───────────────────────────────────────
@@ -614,6 +823,7 @@ export function exitWild(): void {
     saveCurrentEncounter();
   }
 
+  stopEncounterHintTimers();
   _active = false;
   _encounter = null;
   resetGauntletState();

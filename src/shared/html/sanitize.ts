@@ -28,8 +28,17 @@ export function sanitizeHtml(input: string): string {
         el.removeAttribute(attr.name);
         continue;
       }
-      if ((name === 'href' || name === 'src') && value.startsWith('javascript:')) {
-        el.removeAttribute(attr.name);
+      if (name === 'href' || name === 'src') {
+        const colonIdx = value.indexOf(':');
+        const slashIdx = value.indexOf('/');
+        const hasScheme = colonIdx !== -1 && (slashIdx === -1 || colonIdx < slashIdx);
+        if (hasScheme) {
+          const scheme = value.slice(0, colonIdx + 1);
+          const allowed = ['http:', 'https:', 'mailto:', 'tel:', 'ftp:'];
+          if (!allowed.includes(scheme)) {
+            el.removeAttribute(attr.name);
+          }
+        }
       }
     }
   });
