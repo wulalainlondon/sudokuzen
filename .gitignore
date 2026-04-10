@@ -1,4 +1,6 @@
+firebase-config.js
 firebase-config.local.js
+public/firebase-config.js
 public/firebase-config.local.js
 node_modules/
 dist/
