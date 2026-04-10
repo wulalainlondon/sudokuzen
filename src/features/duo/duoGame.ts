@@ -452,6 +452,14 @@ export async function launchDuoGame(): Promise<void> {
     statusUpdate.hostFinishTime = null;
     statusUpdate.guestFinishTime = null;
   }
+  const timerEl = document.getElementById('timer');
+  if (timerEl) timerEl.style.display = 'none';
+  const quitBtn = document.getElementById('quit-btn');
+  if (quitBtn) quitBtn.style.display = 'none';
+  const levelTechHint = document.getElementById('level-tech-hint');
+  if (levelTechHint) levelTechHint.style.display = 'none';
+
+  // Update room status to playing via transaction — only host resets progress
   try {
     bumpDuoMetric('roomWriteOps');
     await duoRoomRef().set(statusUpdate, { merge: true });
@@ -793,6 +801,12 @@ export function resetDuoState(): void {
   if (progressContainer) progressContainer.style.display = 'none';
   const emojiBarEl = document.getElementById('duo-emoji-bar');
   if (emojiBarEl) emojiBarEl.style.display = 'none';
+  const timerEl = document.getElementById('timer');
+  if (timerEl) timerEl.style.display = '';
+  const quitBtn = document.getElementById('quit-btn');
+  if (quitBtn) quitBtn.style.display = '';
+  const levelTechHint = document.getElementById('level-tech-hint');
+  if (levelTechHint) levelTechHint.style.display = '';
   const forfeitBtn = document.getElementById('duo-forfeit-btn');
   if (forfeitBtn) forfeitBtn.remove();
   gs.duoLastEmojiSeen = '';
