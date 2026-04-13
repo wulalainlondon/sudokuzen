@@ -199,6 +199,11 @@ export function initGame(
   callCloseReplay();
   localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
   const isWild = gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
+  void import('./bgm').then(({ playBgm, stopBgm }) => {
+    if (gs.isDuoMode) playBgm('duo');
+    else if (isWild) playBgm('wild');
+    else stopBgm();
+  });
   updateGameHeaderByMode(isWild);
   setLevelTechniqueHint(gs.currentLevel.maxTechnique, gs.currentLevel.techTier);
 

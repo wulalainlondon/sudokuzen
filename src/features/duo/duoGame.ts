@@ -843,6 +843,7 @@ export async function closeDuoResult(): Promise<void> {
 // ── Reset ────────────────────────────────────────────────────────────
 
 export function resetDuoState(): void {
+  void import('../../game/bgm').then(({ stopBgm }) => stopBgm());
   _countdownRafCancelled = true;
   _duoResultShown = false;
   _countdownLaunched = false;

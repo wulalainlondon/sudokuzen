@@ -817,6 +817,7 @@ export async function continueWild(): Promise<void> {
 // ── Exit Wild (return to level screen) ───────────────────────────────
 
 export function exitWild(): void {
+  void import('../../game/bgm').then(({ stopBgm }) => stopBgm());
   setNextLevelScreenReturnTarget('world');
   // Save encounter state for resume (if mid-encounter and not gauntlet)
   if (_active && _encounter && getGauntletQueue().length === 0) {
