@@ -41,6 +41,7 @@ export interface SudokuWindow extends Window {
     onBeforeUnload?: () => void;
   };
   __SUDOKU_HOST_API?: unknown;
+  openSettingsModal?: () => void;
   // Audio
   AudioContext?: typeof AudioContext;
   webkitAudioContext?: typeof AudioContext;

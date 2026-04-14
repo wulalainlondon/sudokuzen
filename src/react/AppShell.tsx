@@ -24,6 +24,7 @@ import { useLibraryStore } from './library/libraryStore';
 import { useMentorStore } from './mentor/mentorStore';
 import { useEncounterTransitionStore } from './wild/encounterTransitionStore';
 import { useFirstKillRevelationStore } from './wild/firstKillRevelationStore';
+import { useSettingsStore } from './settings/settingsStore';
 
 const TeachOverlay = lazy(() =>
   import('../features/teach/components/TeachOverlay').then((m) => ({ default: m.TeachOverlay })),
@@ -43,6 +44,9 @@ const EncounterTransition = lazy(() =>
 const FirstKillRevelation = lazy(() =>
   import('./wild/FirstKillRevelation').then((m) => ({ default: m.FirstKillRevelation })),
 );
+const SettingsModal = lazy(() =>
+  import('./settings/SettingsModal').then((m) => ({ default: m.SettingsModal })),
+);
 
 export function AppShell(): ReactElement {
   const teachOpen = useTeachStore((s) => s.open);
@@ -57,6 +61,7 @@ export function AppShell(): ReactElement {
   const mentorVisible = useMentorStore((s) => s.visible);
   const encounterActive = useEncounterTransitionStore((s) => s.active);
   const revelationActive = useFirstKillRevelationStore((s) => s.active);
+  const settingsVisible = useSettingsStore((s) => s.visible);
 
   return (
     <>
@@ -73,6 +78,7 @@ export function AppShell(): ReactElement {
         {mentorVisible ? <MentorOverlay /> : null}
         {encounterActive ? <EncounterTransition /> : null}
         {revelationActive ? <FirstKillRevelation /> : null}
+        {settingsVisible ? <SettingsModal /> : null}
       </Suspense>
       <PracticeTree />
       <NormalStageMap />

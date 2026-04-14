@@ -1,11 +1,13 @@
 // BGM manager — HTML Audio element for looping background music.
 // Separate from audio.ts which uses Web Audio API for short SFX.
 
+import { getAudioSettings } from './audioSettings';
+
 let _audio: HTMLAudioElement | null = null;
 let _currentTrack: BgmTrack | null = null;
+let _intendedTrack: BgmTrack | null = null;  // track requested, regardless of enabled state
 let _fadeTimer: ReturnType<typeof setInterval> | null = null;
 
-const BGM_VOLUME = 0.45;
 const FADE_STEPS = 25;
 const FADE_INTERVAL_MS = 40; // ~1 second total fade
 
@@ -17,11 +19,17 @@ const TRACKS = {
 export type BgmTrack = keyof typeof TRACKS;
 
 export function playBgm(track: BgmTrack): void {
+  _intendedTrack = track;
+
+  const { bgmEnabled, bgmVolume } = getAudioSettings();
+  if (!bgmEnabled) return;
+
   if (_currentTrack === track && _audio && !_audio.paused) return;
 
   _clearFade();
   _stopImmediate();
 
+  const targetVol = bgmVolume;
   const audio = new Audio(TRACKS[track]);
   audio.loop = true;
   audio.volume = 0;
@@ -33,11 +41,11 @@ export function playBgm(track: BgmTrack): void {
     _fadeTimer = setInterval(() => {
       step++;
       if (_audio === audio) {
-        audio.volume = Math.min(BGM_VOLUME, BGM_VOLUME * (step / FADE_STEPS));
+        audio.volume = Math.min(targetVol, targetVol * (step / FADE_STEPS));
       }
       if (step >= FADE_STEPS) {
         _clearFade();
-        if (_audio === audio) audio.volume = BGM_VOLUME;
+        if (_audio === audio) audio.volume = targetVol;
       }
     }, FADE_INTERVAL_MS);
   }).catch(() => {
@@ -66,6 +74,20 @@ export function stopBgm(): void {
       }
     }
   }, FADE_INTERVAL_MS);
+}
+
+/** Called by settings panel when BGM volume changes (live update). */
+export function applyBgmVolume(volume: number): void {
+  if (_audio) _audio.volume = Math.max(0, Math.min(1, volume));
+}
+
+/** Called by settings panel when BGM enabled toggle changes (live update). */
+export function applyBgmEnabled(enabled: boolean): void {
+  if (!enabled) {
+    stopBgm();
+  } else if (_intendedTrack && (!_audio || _audio.paused)) {
+    playBgm(_intendedTrack);
+  }
 }
 
 function _clearFade(): void {

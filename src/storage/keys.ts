@@ -36,6 +36,10 @@ export const SK = {
   DUO_ACTIVE_ROOM_ID: 'sudoku_duo_active_room_id',
   PRACTICE_PHASE_TEACH_SEEN: 'sudoku_practice_phase_teach_seen_v1',
   LEARNING_LOOP_METRICS: 'sudoku_learning_loop_metrics_v1',
+  SFX_ENABLED: 'sudoku_sfx_enabled',
+  SFX_VOLUME: 'sudoku_sfx_volume',
+  BGM_ENABLED: 'sudoku_bgm_enabled',
+  BGM_VOLUME: 'sudoku_bgm_volume',
 
   /** Returns the save-game key for a given level id. */
   save(levelId: number, speedrun: boolean): string {

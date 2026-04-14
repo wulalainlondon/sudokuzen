@@ -71,6 +71,7 @@ import { continueWild, exitWild, startWorldSession } from '../features/wild/wild
 import { dismissMentor } from '../features/wild/mentorController';
 import { openPracticeLobby, closePracticeLobby } from '../features/practice/practiceLobby';
 import { initSlPanel, openSlPanel, closeSlPanel } from '../features/strongLinkPanel';
+import { bridgeOpenSettings } from '../react/settings/settingsBridge';
 import {
   initChainTracePanel,
   openChainTracePanel,
@@ -305,6 +306,7 @@ export function bootLegacyRuntime(appVersion: string): void {
   bindLegacyFacade({
     openLibraryOverlay,
     openStatsModal,
+    openSettingsModal: bridgeOpenSettings,
     toggleSpeedrunMode,
     openDuoLobby,
     closeDuoLobby,

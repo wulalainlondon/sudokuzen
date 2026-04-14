@@ -4,6 +4,7 @@
 
 import { gs } from './state';
 import type { SudokuWindow } from '../facade/windowTypes';
+import { getAudioSettings } from './audioSettings';
 
 // ── Shared audio graph ──────────────────────────────────────────────
 
@@ -82,10 +83,12 @@ function connectToRoom(node: AudioNode, ctx: AudioContext): void {
 
 // ── File-based playback (replaces synthesis when files are present) ──────────
 
-function playFile(src: string, volume = 0.6): void {
+function playFile(src: string, baseVolume = 0.6): void {
   try {
+    const { sfxEnabled, sfxVolume } = getAudioSettings();
+    if (!sfxEnabled) return;
     const audio = new Audio(src);
-    audio.volume = volume;
+    audio.volume = Math.min(1, baseVolume * sfxVolume);
     audio.play().catch(() => {});
   } catch {
     /* ignore */
