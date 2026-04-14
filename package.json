@@ -13,6 +13,8 @@
     "build": "npm run sync:version && npm run validate:teach && npm run build:teach && npm run build:data && vite build",
     "build:firebase": "DEPLOY_TARGET=firebase npm run build && node scripts/prepare-pages-dist.mjs && node scripts/smoke-test.mjs",
     "smoke": "node scripts/smoke-test.mjs",
+    "sfx:download": "node scripts/download-sfx.mjs",
+    "sfx:patch": "node scripts/patch-audio-to-files.mjs",
     "perf:check": "node scripts/perf-budget.mjs",
     "release:check": "node scripts/release-check.mjs && npm run perf:check",
     "release:check:live": "node scripts/release-check.mjs --live && npm run perf:check",

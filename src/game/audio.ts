@@ -79,287 +79,59 @@ function connectToRoom(node: AudioNode, ctx: AudioContext): void {
   if (gs._reverbNode) node.connect(gs._reverbNode);
 }
 
-// ── Sound: cell select — paper brush ────────────────────────────────
 
-export function playCellSelectSound(): void {
-  const ctx = getCtx();
-  if (!ctx) return;
-  ensureGraph(ctx);
+// ── File-based playback (replaces synthesis when files are present) ──────────
+
+function playFile(src: string, volume = 0.6): void {
   try {
-    const t = ctx.currentTime;
-    const src = ctx.createBufferSource();
-    src.buffer = getNoiseBuffer(ctx);
-    const hp = ctx.createBiquadFilter();
-    hp.type = 'highpass';
-    hp.frequency.value = 2200;
-    hp.Q.value = 0.3;
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.018, t + 0.002);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
-    src.connect(hp);
-    hp.connect(g);
-    connectToRoom(g, ctx);
-    src.start(t);
-    src.stop(t + 0.04);
+    const audio = new Audio(src);
+    audio.volume = volume;
+    audio.play().catch(() => {});
   } catch {
     /* ignore */
   }
+}
+
+// ── Sound: cell select — paper brush ────────────────────────────────
+
+export function playCellSelectSound(): void {
+  playFile('/sounds/cell_select.ogg', 0.55);
 }
 
 // ── Sound: number fill — ceramic pebble on wood ─────────────────────
 
 export function playFillSound(): void {
-  const ctx = getCtx();
-  if (!ctx) return;
-  ensureGraph(ctx);
-  try {
-    const t = ctx.currentTime;
-
-    // Body: warm triangle tone
-    const osc = ctx.createOscillator();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(1100, t);
-    osc.frequency.exponentialRampToValueAtTime(780, t + 0.06);
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 1800;
-    lp.Q.value = 0.7;
-    const g1 = ctx.createGain();
-    g1.gain.setValueAtTime(0, t);
-    g1.gain.linearRampToValueAtTime(0.065, t + 0.004);
-    g1.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
-    osc.connect(lp);
-    lp.connect(g1);
-    connectToRoom(g1, ctx);
-    osc.start(t);
-    osc.stop(t + 0.12);
-
-    // Transient: noise click
-    const src = ctx.createBufferSource();
-    src.buffer = getNoiseBuffer(ctx);
-    const bp = ctx.createBiquadFilter();
-    bp.type = 'bandpass';
-    bp.frequency.value = 2800;
-    bp.Q.value = 1.2;
-    const g2 = ctx.createGain();
-    g2.gain.setValueAtTime(0.04, t);
-    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.012);
-    src.connect(bp);
-    bp.connect(g2);
-    connectToRoom(g2, ctx);
-    src.start(t);
-    src.stop(t + 0.025);
-  } catch {
-    /* ignore */
-  }
+  playFile('/sounds/fill.ogg', 0.65);
 }
 
 // ── Sound: note toggle — pencil tick ────────────────────────────────
 
 export function playNoteToggleSound(): void {
-  const ctx = getCtx();
-  if (!ctx) return;
-  ensureGraph(ctx);
-  try {
-    const t = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.value = 2200;
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.014, t + 0.002);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
-    osc.connect(g);
-    connectToRoom(g, ctx);
-    osc.start(t);
-    osc.stop(t + 0.05);
-  } catch {
-    /* ignore */
-  }
+  playFile('/sounds/note_toggle.ogg', 0.45);
 }
 
 // ── Sound: erase — soft brush sweep ─────────────────────────────────
 
 export function playEraseSound(): void {
-  const ctx = getCtx();
-  if (!ctx) return;
-  ensureGraph(ctx);
-  try {
-    const t = ctx.currentTime;
-    const src = ctx.createBufferSource();
-    src.buffer = getNoiseBuffer(ctx);
-    const bp = ctx.createBiquadFilter();
-    bp.type = 'bandpass';
-    bp.frequency.setValueAtTime(1400, t);
-    bp.frequency.exponentialRampToValueAtTime(700, t + 0.06);
-    bp.Q.value = 0.8;
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.022, t + 0.003);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
-    src.connect(bp);
-    bp.connect(g);
-    connectToRoom(g, ctx);
-    src.start(t);
-    src.stop(t + 0.08);
-  } catch {
-    /* ignore */
-  }
+  playFile('/sounds/erase.ogg', 0.5);
 }
 
 // ── Sound: unit complete — wind chime, two notes ────────────────────
 
 export function playUnitCompleteSound(): void {
-  const ctx = getCtx();
-  if (!ctx) return;
-  ensureGraph(ctx);
-  try {
-    const t = ctx.currentTime;
-    const notes: [number, number, number][] = [
-      [784, t, 0.04], // G5
-      [1175, t + 0.12, 0.03], // D6 — perfect fifth
-    ];
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 3800;
-    lp.Q.value = 0.5;
-    connectToRoom(lp, ctx);
-    // Boost reverb for this sound
-    if (gs._reverbGain) gs._reverbGain.gain.setValueAtTime(0.45, t);
-
-    for (const [freq, start, peak] of notes) {
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0, start);
-      g.gain.linearRampToValueAtTime(peak, start + 0.006);
-      g.gain.exponentialRampToValueAtTime(0.001, start + 0.65);
-      osc.connect(g);
-      g.connect(lp);
-      osc.start(start);
-      osc.stop(start + 0.7);
-    }
-
-    // Restore reverb level
-    if (gs._reverbGain) {
-      gs._reverbGain.gain.setValueAtTime(0.45, t + 0.8);
-      gs._reverbGain.gain.linearRampToValueAtTime(0.28, t + 1.2);
-    }
-  } catch {
-    /* ignore */
-  }
+  playFile('/sounds/unit_complete.ogg', 0.7);
 }
 
 // ── Sound: win — pentatonic cascade with afterglow ──────────────────
 
 export function playWinSound(): void {
-  const ctx = getCtx();
-  if (!ctx) return;
-  ensureGraph(ctx);
-  try {
-    const t = ctx.currentTime;
-    const freqs = [523, 659, 784, 1047, 1319]; // C5 E5 G5 C6 E6
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 3200;
-    lp.Q.value = 0.5;
-    connectToRoom(lp, ctx);
-    if (gs._reverbGain) gs._reverbGain.gain.setValueAtTime(0.55, t);
-
-    freqs.forEach((freq, i) => {
-      const start = t + i * 0.18;
-      const isLast = i === freqs.length - 1;
-      const decay = isLast ? 2.2 : 1.3;
-      const peak = isLast ? 0.04 : 0.035;
-
-      // Main tone
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0, start);
-      g.gain.linearRampToValueAtTime(peak, start + 0.008);
-      g.gain.exponentialRampToValueAtTime(0.001, start + decay);
-      osc.connect(g);
-      g.connect(lp);
-      osc.start(start);
-      osc.stop(start + decay + 0.1);
-
-      // Shimmer: slightly detuned octave
-      const osc2 = ctx.createOscillator();
-      osc2.type = 'sine';
-      osc2.frequency.value = freq * 2.008;
-      const g2 = ctx.createGain();
-      g2.gain.setValueAtTime(0, start + 0.02);
-      g2.gain.linearRampToValueAtTime(0.009, start + 0.04);
-      g2.gain.exponentialRampToValueAtTime(0.001, start + decay * 0.6);
-      osc2.connect(g2);
-      g2.connect(lp);
-      osc2.start(start);
-      osc2.stop(start + decay + 0.1);
-    });
-
-    // Restore reverb
-    if (gs._reverbGain) {
-      gs._reverbGain.gain.setValueAtTime(0.55, t + 3.5);
-      gs._reverbGain.gain.linearRampToValueAtTime(0.28, t + 4.2);
-    }
-  } catch {
-    /* ignore */
-  }
+  playFile('/sounds/win.ogg', 0.75);
 }
 
 // ── Sound: error — muted wooden thunk ───────────────────────────────
 
 export function playErrorFeedback(): void {
-  const ctx = getCtx();
-  if (!ctx) return;
-  ensureGraph(ctx);
-  try {
-    const t = ctx.currentTime;
-
-    // Low thud
-    const osc = ctx.createOscillator();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(160, t);
-    osc.frequency.exponentialRampToValueAtTime(100, t + 0.06);
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 350;
-    lp.Q.value = 1.0;
-    const g1 = ctx.createGain();
-    g1.gain.setValueAtTime(0, t);
-    g1.gain.linearRampToValueAtTime(0.045, t + 0.003);
-    g1.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
-    osc.connect(lp);
-    lp.connect(g1);
-    // Dry only — error should feel immediate, not spacious
-    if (gs._dryGain) g1.connect(gs._dryGain);
-    else g1.connect(gs._masterGain || ctx.destination);
-    osc.start(t);
-    osc.stop(t + 0.14);
-
-    // Transient thud
-    const src = ctx.createBufferSource();
-    src.buffer = getNoiseBuffer(ctx);
-    const bp = ctx.createBiquadFilter();
-    bp.type = 'bandpass';
-    bp.frequency.value = 700;
-    bp.Q.value = 1.8;
-    const g2 = ctx.createGain();
-    g2.gain.setValueAtTime(0.03, t);
-    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.018);
-    src.connect(bp);
-    bp.connect(g2);
-    if (gs._dryGain) g2.connect(gs._dryGain);
-    else g2.connect(gs._masterGain || ctx.destination);
-    src.start(t);
-    src.stop(t + 0.04);
-  } catch {
-    /* ignore */
-  }
+  playFile('/sounds/error.ogg', 0.6);
 }
 
 // ── Shared helpers (used by zenAudio.ts) ─────────────────────────────
