@@ -266,6 +266,7 @@
                 <span>候選密度圖</span>
             </label>
             <button class="resume-btn" id="pause-resume-btn" onclick="resumeGame()">繼續遊戲</button>
+            <button class="back-btn back-btn-light" onclick="openSettingsModal()">⚙️ 設定</button>
             <button class="back-btn back-btn-light" id="pause-leave-btn" onclick="showLevelScreen(true)">放棄關卡</button>
             <button class="back-btn back-btn-light" id="pause-abandon-btn" style="display:none;">退出對陣</button>
         </div>
@@ -493,7 +494,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.14-V2';
+        var INLINE_VER = '2026.04.14-V3';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

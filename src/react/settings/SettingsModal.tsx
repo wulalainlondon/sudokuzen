@@ -2,6 +2,8 @@ import { useState, useCallback, type ReactElement } from 'react';
 import { useSettingsStore } from './settingsStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { getAudioSettings, saveAudioSettings, type AudioSettings } from '../../game/audioSettings';
+import { getDocumentTheme, setDocumentTheme } from '../../game/coreUiBridge';
+import { SK } from '../../storage/keys';
 
 function VolumeSlider({
   value,
@@ -120,6 +122,7 @@ function SettingsRow({
 export function SettingsModal(): ReactElement {
   const { visible, close } = useSettingsStore();
   const [settings, setSettings] = useState<AudioSettings>(() => getAudioSettings());
+  const [isDark, setIsDark] = useState(() => getDocumentTheme() === 'dark');
 
   const apply = useCallback((patch: Partial<AudioSettings>) => {
     const next = { ...settings, ...patch };
@@ -135,9 +138,17 @@ export function SettingsModal(): ReactElement {
     }
   }, [settings]);
 
+  const toggleTheme = useCallback(() => {
+    const next = isDark ? 'light' : 'dark';
+    setIsDark(!isDark);
+    setDocumentTheme(next);
+    localStorage.setItem(SK.THEME, next);
+  }, [isDark]);
+
   // Sync state when modal opens
   const handleOpen = useCallback(() => {
     setSettings(getAudioSettings());
+    setIsDark(getDocumentTheme() === 'dark');
   }, []);
 
   return (
@@ -153,6 +164,20 @@ export function SettingsModal(): ReactElement {
         ref={(el) => { if (el && visible) handleOpen(); }}
       >
         <h2 style={{ marginBottom: 4 }}>設定</h2>
+
+        {/* 主題 */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '14px 0',
+          borderBottom: '1px solid var(--cell-border)',
+        }}>
+          <span style={{ fontWeight: 600, fontSize: '1rem' }}>
+            {isDark ? '🌙 暗色模式' : '☀️ 亮色模式'}
+          </span>
+          <ToggleButton enabled={isDark} onToggle={toggleTheme} />
+        </div>
 
         <SettingsRow
           label="🔔 音效"
