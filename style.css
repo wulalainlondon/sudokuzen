@@ -590,7 +590,13 @@ header h1 {
 .grid-right {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
+}
+
+/* HUD 內的操作鍵略小，節省空間給技巧提示 */
+.grid-info-bar .mini-btn {
+  width: 34px;
+  height: 34px;
 }
 
 .level-tech-hint {
@@ -698,6 +704,9 @@ header h1 {
   padding: 5px 10px;
   background: color-mix(in srgb, var(--accent-soft) 75%, transparent);
   margin: 0;
+  /* 數字等寬，避免秒數變化時寬度波動造成 HUD reflow */
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* 生命值 ♥ ♥ ♥ (右上) — 統一 pill 風格 */
@@ -3366,7 +3375,8 @@ header h1 {
   gap: 6px;
   width: 100%;
   margin-bottom: 0;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  /* safe-area-inset-bottom 已由 .game-container padding 處理，此處不重複 */
+  padding-bottom: 16px;
 }
 
 .num-btn {
@@ -3466,7 +3476,7 @@ header h1 {
   .numpad {
     gap: 3px;
     width: min(72vw, 240px);
-    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    padding-bottom: 8px;
   }
 
   .num-btn {
@@ -3496,10 +3506,36 @@ header h1 {
   }
 }
 
+/* 覆蓋 851–920px：iPhone 14 Pro (852), iPhone 16 Pro (874), Note 20 (915) */
+@media (max-height: 920px) {
+  header {
+    margin-bottom: 1.2vh;
+  }
+
+  .grid-info-bar {
+    margin-bottom: 5px;
+  }
+
+  .numpad {
+    width: min(83vw, 290px);
+    gap: 6px;
+    padding-bottom: 12px;
+  }
+
+  .num-btn {
+    font-size: min(5.4vw, 1.15rem);
+  }
+
+  .numpad-skill-wrapper {
+    width: min(83vw, 290px);
+  }
+}
+
 @media (max-height: 850px) {
   .numpad {
     width: min(83vw, 290px);
     gap: 6px;
+    padding-bottom: 10px;
   }
 
   .num-btn {

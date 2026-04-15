@@ -24,6 +24,8 @@ const SCREENS = [
   'practice-level-grid',
   'wild-lobby',
   'tier-view',
+  'world-encounter',
+  'duo-lobby',
 ] as const;
 
 async function waitForE2E(page: Page) {
@@ -137,6 +139,42 @@ for (const device of DEVICES) {
         });
         expect(overflow).toBe(false);
       }
+    });
+
+    test('world encounter — game grid + wild HUD fit', async ({ page }) => {
+      // Skip mentor intro dialogs
+      await page.evaluate(() => {
+        localStorage.setItem('sudoku_mentor_seen', JSON.stringify(['intro_complete']));
+      });
+      // Enter Wild lobby
+      await page.locator('.world-entry-btn').click();
+      await page.locator('#wild-lobby:not(.hidden)').waitFor({ timeout: 8_000 });
+      // Click the enter button (same as player would)
+      await page.locator('#wild-enter-btn').waitFor({ state: 'visible', timeout: 5_000 });
+      await page.locator('#wild-enter-btn').click();
+      // Wait for encounter transition to finish and game grid to appear
+      await page.locator('#grid').waitFor({ state: 'visible', timeout: 20_000 });
+      // Transition overlay auto-dismisses at ~1720ms + 400ms exit animation = ~2200ms total.
+      // Wait 3s to ensure the full animation has played out before screenshotting.
+      await page.waitForTimeout(3000);
+      await page.screenshot({ path: `test-results/layout-${device.name}-world-encounter.png`, fullPage: false });
+      const overflow = await page.evaluate(() => {
+        return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+      });
+      expect(overflow).toBe(false);
+    });
+
+    test('duo lobby — tier/mode selection fits', async ({ page }) => {
+      // Open Duo lobby via window function
+      await page.evaluate(() => (window as unknown).openDuoLobby());
+      await page.locator('#duo-lobby').waitFor({ state: 'visible', timeout: 8_000 });
+      // Allow Firebase connection attempt to settle (UI should render regardless)
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: `test-results/layout-${device.name}-duo-lobby.png`, fullPage: false });
+      const overflow = await page.evaluate(() => {
+        return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+      });
+      expect(overflow).toBe(false);
     });
   });
 }
