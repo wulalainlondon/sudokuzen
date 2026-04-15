@@ -33,6 +33,7 @@ let _duoFinishSubmitted = false;
 let _duoResultShown = false;
 let _duoOpponentOfflineNotified = false;
 let _lastSubmittedProgress = -1;
+let _autoForfeitStarted = false;
 
 // ── Register with duoRoom ────────────────────────────────────────────
 
@@ -137,6 +138,18 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
       if ((oppHeartbeat > 0 && Date.now() - oppHeartbeat > DUO_STALE_HEARTBEAT_MS) || oppOnline === false) {
         _duoOpponentOfflineNotified = true;
         showFeedback(t('duoRuntime.opponentOffline'), 'error');
+      }
+    }
+
+    // Auto-forfeit offline opponent if we have already finished
+    // Covers two scenarios:
+    //   A) We finished first, then opponent disconnects → offline flag just set above → forfeit now
+    //   B) Opponent disconnected first, we finish later → _duoFinishSubmitted becomes true →
+    //      next snapshot hits here with both flags true → forfeit now
+    if (_duoFinishSubmitted && _duoOpponentOfflineNotified) {
+      const oppFinishCheck = gs.duoRole === 'host' ? d.guestFinishTime : d.hostFinishTime;
+      if (oppFinishCheck == null) {
+        void autoForfeitOpponent();
       }
     }
 
@@ -604,6 +617,24 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
   }
 }
 
+// ── Auto-forfeit disconnected opponent ───────────────────────────────
+
+async function autoForfeitOpponent(): Promise<void> {
+  if (_autoForfeitStarted || !gs.isDuoMode || !gs.firebaseReady) return;
+  _autoForfeitStarted = true;
+  const timeField = gs.duoRole === 'host' ? 'guestFinishTime' : 'hostFinishTime';
+  const starsField = gs.duoRole === 'host' ? 'guestStars' : 'hostStars';
+  try {
+    await duoRoomRef().update({
+      [timeField]: 9999,
+      [starsField]: 0,
+      updatedAt: getFirebaseFieldValue().serverTimestamp(),
+    });
+  } catch (e) {
+    console.warn('autoForfeitOpponent failed:', e);
+  }
+}
+
 // ── Result ───────────────────────────────────────────────────────────
 
 let _duoResultRetryTimer: ReturnType<typeof setTimeout> | null = null;
@@ -853,6 +884,7 @@ export function resetDuoState(): void {
     _duoResultRetryTimer = null;
   }
   _duoOpponentOfflineNotified = false;
+  _autoForfeitStarted = false;
   _lastSubmittedProgress = -1;
   gs.duoPenaltySeconds = 0;
   gs.duoCooldownUntil = 0;
