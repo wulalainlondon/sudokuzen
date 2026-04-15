@@ -37,6 +37,7 @@ export const enGame = {
     roomSyncFailed: 'Room sync failed (game started normally)',
     opponentFinished: '\u26A1 {alias} finished! {time}{stars} \u2014 keep going!',
     forfeit: 'Forfeit',
+    finishedFirst: 'Finished! Waiting for opponent...',
     resultWin: 'Win',
     resultLose: 'Lose',
     resultDraw: "It's a tie! Great minds think alike \uD83D\uDC95",

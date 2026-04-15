@@ -503,6 +503,7 @@ export const ja: Widen<Locale> = {
     roomSyncFailed: 'ルーム同期失敗（ゲームは正常に開始されました）',
     opponentFinished: '⚡ {alias} が完了！{time}{stars} — 頑張れ！',
     forfeit: '降参',
+    finishedFirst: '完了！対戦相手を待っています...',
     resultWin: '勝利',
     resultLose: '敗北',
     resultDraw: '引き分け！息ぴったり 💕',

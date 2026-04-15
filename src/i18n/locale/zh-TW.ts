@@ -502,6 +502,7 @@ export const zhTW = {
     roomSyncFailed: '房間狀態同步失敗（遊戲已正常啟動）',
     opponentFinished: '⚡ {alias} 已完成！{time}{stars} — 加油！',
     forfeit: '認輸',
+    finishedFirst: '你已完成！等待對手結果...',
     resultWin: '勝',
     resultLose: '敗',
     resultDraw: '平手！心有靈犀 💕',

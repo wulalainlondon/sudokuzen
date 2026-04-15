@@ -105,8 +105,13 @@ export function checkWin(): void {
 
   clearGameStatus(gs.currentLevel!.id);
   const earnedValue = saveProgress();
-  showWinCelebration(earnedValue);
-  if (gs.isDuoMode) callDuoFinish(gs.seconds, policy.useSubmissionValidation ? 0 : earnedValue);
+  if (gs.isDuoMode) {
+    showFeedback(t('duoRuntime.finishedFirst'), 'success');
+    playWinSound();
+    callDuoFinish(gs.seconds, policy.useSubmissionValidation ? 0 : earnedValue);
+  } else {
+    showWinCelebration(earnedValue);
+  }
   setTimeout(() => {
     if (gs.isGhostMode) unlockAchievement('ghost_win');
     checkAllAchievements();

@@ -509,6 +509,7 @@ export const de: Widen<Locale> = {
     roomSyncFailed: 'Raumsynchronisation fehlgeschlagen (Spiel normal gestartet)',
     opponentFinished: '\u26A1 {alias} fertig! {time}{stars} \u2014 Weitermachen!',
     forfeit: 'Aufgeben',
+    finishedFirst: 'Fertig! Warten auf Gegner...',
     resultWin: 'Sieg',
     resultLose: 'Niederlage',
     resultDraw: 'Gleichstand! Gro\u00DFe Geister denken gleich \uD83D\uDC95',
