@@ -276,17 +276,31 @@ test.describe('duo-spectator', () => {
   });
 
   test('2. 盤面同步：guest 填格後 host 的 spec-grid 版本更新', async () => {
-    // Read initial specBoardVersion from Firestore
-    const initialVersion = await hostPage.evaluate(async () => {
+    // Wait for initial sync (startBeingWatched) to settle in Firestore before we begin
+    await hostPage.waitForFunction(
+      async () => {
+        const e2e = (window as unknown).__e2e;
+        const roomId = localStorage.getItem('sudoku_duo_active_room_id');
+        if (!e2e?.gs?.firebaseReady || !roomId) return false;
+        const doc = await e2e.gs.db.collection('duo_rooms').doc(roomId).get().catch(() => null);
+        return doc?.exists && doc.data()?.specBoardVersion != null;
+      },
+      { timeout: 8_000 },
+    );
+
+    // Read the stabilized version as baseline
+    const baselineVersion = await hostPage.evaluate(async () => {
       const e2e = (window as unknown).__e2e;
       const roomId = localStorage.getItem('sudoku_duo_active_room_id');
-      if (!e2e?.gs?.firebaseReady || !roomId) return null;
       const doc = await e2e.gs.db.collection('duo_rooms').doc(roomId).get().catch(() => null);
       return doc?.exists ? (doc.data()?.specBoardVersion ?? null) : null;
     });
-    console.log('[spec-e2e] 2: initial specBoardVersion =', initialVersion);
+    console.log('[spec-e2e] 2: baseline specBoardVersion =', baselineVersion);
 
-    // Guest fills one more cell (still playing)
+    // Wait past throttle window so next fill triggers a new sync
+    await guestPage.waitForTimeout(600);
+
+    // Guest fills one cell (still playing)
     await guestPage.evaluate(() => {
       const e2e = (window as unknown).__e2e;
       const puzzle = e2e.gs.currentLevel.puzzle;
@@ -301,7 +315,7 @@ test.describe('duo-spectator', () => {
     });
     console.log('[spec-e2e] 2: guest filled one cell');
 
-    // Wait for Firestore specBoardVersion to increment
+    // Wait for Firestore specBoardVersion to increment beyond baseline
     await hostPage.waitForFunction(
       async (prevVer) => {
         const e2e = (window as unknown).__e2e;
@@ -312,12 +326,16 @@ test.describe('duo-spectator', () => {
         const newVer = doc.data()?.specBoardVersion;
         return newVer != null && newVer !== prevVer;
       },
-      initialVersion,
+      baselineVersion,
       { timeout: 8_000 },
     );
     console.log('[spec-e2e] 2: ✓ specBoardVersion incremented in Firestore');
 
-    // Verify host's spec-grid reflects the new fill (at least one filled cell besides givens)
+    // Also wait for host's onSnapshot to process and applySpecBoard to run
+    await hostPage.waitForFunction(
+      () => document.querySelectorAll('#duo-spec-grid .cell.filled').length > 0,
+      { timeout: 5_000 },
+    );
     const filledCells = await hostPage.evaluate(() => {
       return document.querySelectorAll('#duo-spec-grid .cell.filled').length;
     });
