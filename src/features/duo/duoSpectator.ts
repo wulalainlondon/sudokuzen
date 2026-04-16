@@ -292,6 +292,14 @@ export function handleBombSnapshot(d: DuoRoomData): void {
   const cells = d.specBombCells;
   if (!cells || cells.length === 0) return;
 
+  // Ensure the spec-bombed CSS is available on the "being watched" side too
+  if (!document.getElementById('duo-spec-style')) {
+    const styleEl = document.createElement('style');
+    styleEl.id = 'duo-spec-style';
+    styleEl.textContent = SPEC_STYLE_CSS;
+    document.head.appendChild(styleEl);
+  }
+
   const gridEl = document.getElementById('grid');
   if (!gridEl) return;
 
