@@ -728,6 +728,7 @@ export function StatsModal(): ReactElement {
   const [learning, setLearning] = useState<LearningViewModel | null>(null);
   const [achievements, setAchievements] = useState<AchievementDef[]>([]);
   const [achievementRecords, setAchievementRecords] = useState<AchievementRecord>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpenModule = (moduleId: string) => {
     void (async () => {
@@ -744,49 +745,75 @@ export function StatsModal(): ReactElement {
     })();
   };
 
-  // Load data when modal opens
+  // Load data when modal opens — deferred with setTimeout(0) so browser paints
+  // the loading spinner before the synchronous computation blocks the main thread
   useEffect(() => {
-    if (!visible) return;
-    import('../../features/stats')
-      .then((m) => {
-        const statsModule = m as typeof import('../../features/stats') & {
-          computeLearningStats?: () => unknown;
-        };
-        const s = m.computeStats();
-        setStats(s);
-        setLearning(
-          normalizeLearningStats(
-            statsModule.computeLearningStats
-              ? (statsModule.computeLearningStats() as unknown as Partial<LearningViewModel>)
-              : null,
-          ),
-        );
-        setAchievements(m.ACHIEVEMENTS);
-        setAchievementRecords(m.loadAchievements());
-        m.checkAllAchievements();
-      })
-      .catch(() => {
-        setLearning(normalizeLearningStats(null));
-      });
+    if (!visible) {
+      setStats(null);
+      setLearning(null);
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+    let cancelled = false;
+    const timerId = setTimeout(() => {
+      void import('../../features/stats')
+        .then((m) => {
+          if (cancelled) return;
+          const statsModule = m as typeof import('../../features/stats') & {
+            computeLearningStats?: () => unknown;
+          };
+          setStats(m.computeStats());
+          setLearning(
+            normalizeLearningStats(
+              statsModule.computeLearningStats
+                ? (statsModule.computeLearningStats() as unknown as Partial<LearningViewModel>)
+                : null,
+            ),
+          );
+          setAchievements(m.ACHIEVEMENTS);
+          setAchievementRecords(m.loadAchievements());
+          setIsLoading(false);
+          m.checkAllAchievements();
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setLearning(normalizeLearningStats(null));
+            setIsLoading(false);
+          }
+        });
+    }, 0);
+    return () => {
+      cancelled = true;
+      clearTimeout(timerId);
+    };
   }, [visible]);
 
   useEffect(() => {
     if (!visible || tab !== 'learning') return;
-    import('../../features/stats')
-      .then((m) => {
-        if (typeof m.recordLearningTabVisit === 'function') m.recordLearningTabVisit();
-        const statsModule = m as typeof import('../../features/stats') & {
-          computeLearningStats?: () => unknown;
-        };
-        setLearning(
-          normalizeLearningStats(
-            statsModule.computeLearningStats
-              ? (statsModule.computeLearningStats() as unknown as Partial<LearningViewModel>)
-              : null,
-          ),
-        );
-      })
-      .catch(() => {});
+    let cancelled = false;
+    const timerId = setTimeout(() => {
+      void import('../../features/stats')
+        .then((m) => {
+          if (cancelled) return;
+          if (typeof m.recordLearningTabVisit === 'function') m.recordLearningTabVisit();
+          const statsModule = m as typeof import('../../features/stats') & {
+            computeLearningStats?: () => unknown;
+          };
+          setLearning(
+            normalizeLearningStats(
+              statsModule.computeLearningStats
+                ? (statsModule.computeLearningStats() as unknown as Partial<LearningViewModel>)
+                : null,
+            ),
+          );
+        })
+        .catch(() => {});
+    }, 0);
+    return () => {
+      cancelled = true;
+      clearTimeout(timerId);
+    };
   }, [visible, tab]);
 
   return (
@@ -823,7 +850,9 @@ export function StatsModal(): ReactElement {
             </button>
           </ZenStagger>
         ) : (
-          <p style={{ color: 'var(--text-light)' }}>載入中...</p>
+          <div className="stats-loading">
+            <div className="stats-loading-spinner" />
+          </div>
         )}
       </div>
     </ZenOverlay>
