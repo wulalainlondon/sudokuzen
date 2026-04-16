@@ -728,7 +728,6 @@ export function StatsModal(): ReactElement {
   const [learning, setLearning] = useState<LearningViewModel | null>(null);
   const [achievements, setAchievements] = useState<AchievementDef[]>([]);
   const [achievementRecords, setAchievementRecords] = useState<AchievementRecord>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpenModule = (moduleId: string) => {
     void (async () => {
@@ -751,10 +750,8 @@ export function StatsModal(): ReactElement {
     if (!visible) {
       setStats(null);
       setLearning(null);
-      setIsLoading(false);
       return;
     }
-    setIsLoading(true);
     let cancelled = false;
     const timerId = setTimeout(() => {
       void import('../../features/stats')
@@ -773,14 +770,10 @@ export function StatsModal(): ReactElement {
           );
           setAchievements(m.ACHIEVEMENTS);
           setAchievementRecords(m.loadAchievements());
-          setIsLoading(false);
           m.checkAllAchievements();
         })
         .catch(() => {
-          if (!cancelled) {
-            setLearning(normalizeLearningStats(null));
-            setIsLoading(false);
-          }
+          if (!cancelled) setLearning(normalizeLearningStats(null));
         });
     }, 0);
     return () => {
