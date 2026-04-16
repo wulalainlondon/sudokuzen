@@ -128,6 +128,11 @@ export interface DuoRoomData {
   ccBoardVersion?: number;
   ccHostTotalMs?: number | null;
   ccGuestTotalMs?: number | null;
+  // ── Spectator / Bomb fields ────────────────────────────────────────
+  specBoardState?: string | null;    // JSON array of 81 numbers - 還在玩的那方的盤面
+  specBoardVersion?: number | null;  // 版本號，防止重複渲染
+  specBombAt?: number | null;        // 炸彈觸發時間戳 (epoch ms)
+  specBombCells?: number[] | null;   // 被炸的 5 個 cell index
 }
 
 export interface CandidateTrackingNode {

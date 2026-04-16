@@ -44,6 +44,29 @@ setResetHandler(resetDuoState);
 
 export function handleDuoSnapshot(d: DuoRoomData): void {
   if (!d || !gs.duoRole) return;
+
+  // ── 觀戰模式分發 ──────────────────────────────────────────────────
+  const myFinishTime = gs.duoRole === 'host' ? d.hostFinishTime : d.guestFinishTime;
+  const oppFinishTime = gs.duoRole === 'host' ? d.guestFinishTime : d.hostFinishTime;
+
+  // 對手剛完成，我還在玩 → 開始被觀看
+  if (!myFinishTime && oppFinishTime) {
+    import('./duoSpectator').then((m) => m.startBeingWatched()).catch(() => {});
+  }
+  // 炸彈處理（給正在被看的那方）
+  if (!myFinishTime && oppFinishTime && d.specBombAt) {
+    import('./duoSpectator').then((m) => m.handleBombSnapshot(d)).catch(() => {});
+  }
+  // 我在觀戰 → 把 snapshot 轉給 spectator 模組
+  if (myFinishTime && !oppFinishTime) {
+    import('./duoSpectator').then((m) => m.handleSpectatorSnapshot(d)).catch(() => {});
+  }
+  // 雙方都完成 → 退出觀戰
+  if (myFinishTime && oppFinishTime) {
+    import('./duoSpectator').then((m) => m.exitSpectatorMode()).catch(() => {});
+    import('./duoSpectator').then((m) => m.stopBeingWatched()).catch(() => {});
+  }
+
   import('./duoLobby')
     .then((m) => {
       m.setDuoLobbyConnectionState('connected');
@@ -556,6 +579,9 @@ export function updateDuoProgress(): void {
     .update({ [field]: filled, updatedAt: getFirebaseFieldValue().serverTimestamp() })
     .catch(() => {});
   bumpDuoMetric('roomWriteOps');
+
+  // 同步觀戰盤面（如果對手正在觀看）
+  import('./duoSpectator').then((m) => m.syncSpecBoardNow()).catch(() => {});
 }
 
 function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
@@ -629,6 +655,13 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
       updatedAt: getFirebaseFieldValue().serverTimestamp(),
     });
     console.log('[duo] submitDuoFinish OK role=', gs.duoRole);
+    // 進入觀戰模式（如果對手還未完成）
+    const oppDone = gs.duoRole === 'host'
+      ? !!(gs.duoRoomData?.guestFinishTime)
+      : !!(gs.duoRoomData?.hostFinishTime);
+    if (!oppDone) {
+      import('./duoSpectator').then((m) => m.enterSpectatorMode(gs.duoRoomData!)).catch(() => {});
+    }
   } catch (e) {
     console.warn('[duo] submitDuoFinish FAILED:', e);
   }
@@ -950,6 +983,7 @@ export function resetDuoState(): void {
   if (gs.isChessClockMode) {
     import('./duoChessClock').then((m) => m.resetChessClockState()).catch(() => {});
   }
+  import('./duoSpectator').then((m) => m.resetSpectatorState()).catch(() => {});
   import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch(() => {});
   const progressContainer = document.getElementById('duo-progress-container');
   if (progressContainer) progressContainer.style.display = 'none';

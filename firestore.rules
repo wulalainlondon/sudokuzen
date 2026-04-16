@@ -39,14 +39,22 @@ service cloud.firestore {
             && (request.resource.data.guestOnline == null || request.resource.data.guestOnline is bool)
             && (request.resource.data.tierId == null || request.resource.data.tierId is string)
             && (request.resource.data.modeId == null || request.resource.data.modeId is string)
-            && (request.resource.data.puzzleSeed == null || request.resource.data.puzzleSeed is int);
+            && (request.resource.data.puzzleSeed == null || request.resource.data.puzzleSeed is int)
+            && (request.resource.data.specBoardState == null || request.resource.data.specBoardState is string)
+            && (request.resource.data.specBoardVersion == null || request.resource.data.specBoardVersion is int)
+            && (request.resource.data.specBombAt == null || request.resource.data.specBombAt is int)
+            && (request.resource.data.specBombCells == null || request.resource.data.specBombCells is list);
       }
       allow read: if true;
       allow create: if request.auth != null
                     && request.resource.data.hostId == request.auth.uid
                     && validDuoFields();
       allow update: if request.auth != null
-                    && (request.auth.uid == resource.data.hostId || request.auth.uid == resource.data.guestId)
+                    && (
+                      request.auth.uid == resource.data.hostId
+                      || request.auth.uid == resource.data.guestId
+                      || (resource.data.guestId == null && resource.data.status == 'waiting')
+                    )
                     && validDuoFields();
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.hostId;
