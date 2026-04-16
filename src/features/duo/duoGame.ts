@@ -163,6 +163,7 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     }
 
     // Check if both finished
+    console.log('[duo] snap hT=', d.hostFinishTime, 'gT=', d.guestFinishTime, 'role=', gs.duoRole, 'resultShown=', _duoResultShown);
     if (d.hostFinishTime != null && d.guestFinishTime != null) {
       showDuoResult(d);
     }
@@ -486,6 +487,7 @@ export async function launchDuoGame(): Promise<void> {
 
   // Show duo progress bar and emoji bar
   const progressContainer = document.getElementById('duo-progress-container');
+  console.log('[duo] launchDuoGame: setting progressContainer display=flex, el=', !!progressContainer);
   if (progressContainer) progressContainer.style.display = 'flex';
   const emojiBar = document.getElementById('duo-emoji-bar');
   if (emojiBar) emojiBar.style.display = 'flex';
@@ -496,24 +498,26 @@ export async function launchDuoGame(): Promise<void> {
   const levelTechHint = document.getElementById('level-tech-hint');
   if (levelTechHint) levelTechHint.style.display = 'none';
 
-  // Update room status to playing via transaction — only host resets progress
+  // Update room status to playing via transaction — only host resets progress.
+  // IMPORTANT: Never reset finishTimes here. Each round uses a fresh room where
+  // finishTimes are already null from createDuoRoom. Resetting them in this
+  // transaction creates a race: if submitDuoFinish writes between the tx read
+  // and commit, the tx retries and overwrites the finishTime with null.
   try {
     bumpDuoMetric('roomWriteOps');
     await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
       const doc = await tx.get(duoRoomRef());
       if (!doc.exists) return;
       const d = doc.data() as unknown as DuoRoomData;
+      if (d.status === 'playing') return; // already transitioned
       if (gs.duoRole === 'host') {
         tx.update(duoRoomRef(), {
           status: 'playing',
           hostProgress: 0,
           guestProgress: 0,
-          hostFinishTime: null,
-          guestFinishTime: null,
           updatedAt: getFirebaseFieldValue().serverTimestamp(),
         });
-      } else if (d.status !== 'playing') {
-        // Guest: only nudge status if host hasn't written yet
+      } else {
         tx.update(duoRoomRef(), {
           status: 'playing',
           updatedAt: getFirebaseFieldValue().serverTimestamp(),
@@ -604,6 +608,7 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
   const timeField = gs.duoRole === 'host' ? 'hostFinishTime' : 'guestFinishTime';
   const starsField = gs.duoRole === 'host' ? 'hostStars' : 'guestStars';
   const progressField = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
+  console.log('[duo] submitDuoFinish START role=', gs.duoRole, 'time=', timeSec, 'fill=', gs.duoTotalToFill);
   try {
     bumpDuoMetric('roomWriteOps');
     await duoRoomRef().update({
@@ -612,8 +617,9 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
       [progressField]: gs.duoTotalToFill,
       updatedAt: getFirebaseFieldValue().serverTimestamp(),
     });
+    console.log('[duo] submitDuoFinish OK role=', gs.duoRole);
   } catch (e) {
-    console.warn('submitDuoFinish failed:', e);
+    console.warn('[duo] submitDuoFinish FAILED:', e);
   }
 }
 
@@ -874,6 +880,7 @@ export async function closeDuoResult(): Promise<void> {
 // ── Reset ────────────────────────────────────────────────────────────
 
 export function resetDuoState(): void {
+  console.log('[duo] resetDuoState called isDuoMode=', gs.isDuoMode, new Error('trace').stack?.split('\n').slice(1, 4).join(' | '));
   void import('../../game/bgm').then(({ stopBgm }) => stopBgm());
   _countdownRafCancelled = true;
   _duoResultShown = false;

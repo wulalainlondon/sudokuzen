@@ -446,6 +446,38 @@ function _attachSnapshotListener(): void {
   );
 }
 
+// ── Foreground recovery (PWA / mobile background) ───────────────────
+
+async function recoverDuoOnForeground(): Promise<void> {
+  if (!_activeRoomId || !gs.duoRole || !gs.firebaseReady) return;
+
+  // Re-attach snapshot listener (old one may be silently dead after backgrounding).
+  // Stop heartbeat first — startDuoRoomHeartbeat() no-ops if the timer ref is still set,
+  // even though the actual setInterval may have been killed by the OS.
+  stopDuoRoomHeartbeat();
+  subscribeDuoRoom();
+
+  // One-shot poll to catch updates missed while backgrounded
+  try {
+    const doc = await duoRoomRef().get();
+    if (!doc.exists) return;
+    const d = (doc.data() ?? null) as DuoRoomData | null;
+    if (!d) return;
+    gs.duoRoomData = d;
+    if (_snapshotHandler) _snapshotHandler(d);
+  } catch {
+    // Snapshot listener is already re-attached; poll failure is non-fatal
+  }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (!_activeRoomId || !gs.duoRole) return;
+    void recoverDuoOnForeground();
+  });
+}
+
 // ── Resume ───────────────────────────────────────────────────────────
 
 export async function resumeDuoRoomIfAny(): Promise<boolean> {
