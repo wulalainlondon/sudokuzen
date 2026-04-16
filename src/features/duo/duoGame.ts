@@ -49,20 +49,20 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
   const myFinishTime = gs.duoRole === 'host' ? d.hostFinishTime : d.guestFinishTime;
   const oppFinishTime = gs.duoRole === 'host' ? d.guestFinishTime : d.hostFinishTime;
 
-  // 對手剛完成，我還在玩 → 開始被觀看
-  if (!myFinishTime && oppFinishTime) {
+  // 對手剛完成，我還在玩 → 開始被觀看（用 != null 避免 finishTime=0 被判為 falsy）
+  if (myFinishTime == null && oppFinishTime != null) {
     import('./duoSpectator').then((m) => m.startBeingWatched()).catch(() => {});
   }
   // 炸彈處理（給正在被看的那方）
-  if (!myFinishTime && oppFinishTime && d.specBombAt) {
+  if (myFinishTime == null && oppFinishTime != null && d.specBombAt) {
     import('./duoSpectator').then((m) => m.handleBombSnapshot(d)).catch(() => {});
   }
   // 我在觀戰 → 把 snapshot 轉給 spectator 模組
-  if (myFinishTime && !oppFinishTime) {
+  if (myFinishTime != null && oppFinishTime == null) {
     import('./duoSpectator').then((m) => m.handleSpectatorSnapshot(d)).catch(() => {});
   }
   // 雙方都完成 → 退出觀戰
-  if (myFinishTime && oppFinishTime) {
+  if (myFinishTime != null && oppFinishTime != null) {
     import('./duoSpectator').then((m) => m.exitSpectatorMode()).catch(() => {});
     import('./duoSpectator').then((m) => m.stopBeingWatched()).catch(() => {});
   }
@@ -655,10 +655,10 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
       updatedAt: getFirebaseFieldValue().serverTimestamp(),
     });
     console.log('[duo] submitDuoFinish OK role=', gs.duoRole);
-    // 進入觀戰模式（如果對手還未完成）
+    // 進入觀戰模式（如果對手還未完成；用 != null 避免 finishTime=0 被判為 falsy）
     const oppDone = gs.duoRole === 'host'
-      ? !!(gs.duoRoomData?.guestFinishTime)
-      : !!(gs.duoRoomData?.hostFinishTime);
+      ? gs.duoRoomData?.guestFinishTime != null
+      : gs.duoRoomData?.hostFinishTime != null;
     if (!oppDone) {
       import('./duoSpectator').then((m) => m.enterSpectatorMode(gs.duoRoomData!)).catch(() => {});
     }
