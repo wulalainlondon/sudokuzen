@@ -351,14 +351,11 @@ test.describe('duo-spectator', () => {
     });
     expect(bombEnabled).toBe(true);
 
-    // Host throws bomb
-    await hostPage.evaluate(async () => {
-      const m = await import('/src/features/duo/duoSpectator.ts');
-      m.throwBomb();
-    });
-    console.log('[spec-e2e] 3: host threw bomb');
+    // Host throws bomb by CLICKING the bomb button (goes through app's module, not a fresh import)
+    await hostPage.click('#spec-bomb-btn');
+    console.log('[spec-e2e] 3: host threw bomb (via click)');
 
-    // Wait for specBombAt to appear in Firestore
+    // Wait for specBombAt to appear in Firestore (from guest's perspective)
     await guestPage.waitForFunction(
       async () => {
         const e2e = (window as unknown).__e2e;
