@@ -40,6 +40,7 @@ export interface DuoMode {
   blindReview: boolean;
   isChessClock?: boolean;      // true = 象棋鐘模式，遊戲邏輯完全不同
   lockedToTierId?: string;     // 若有值，Lobby 強制鎖定到此 tier
+  beta?: boolean;              // true = 顯示 BETA 標籤
 }
 
 export const DUO_MODES: DuoMode[] = [
@@ -70,13 +71,14 @@ export const DUO_MODES: DuoMode[] = [
   { id: 'blindReview', label: '盲審', rules: '全填才檢查，可筆記', maxErrors: 81, allowNotes: true, blindReview: true },
   {
     id: 'chessClock',
-    label: '象棋鐘',
+    label: '奪秒',
     rules: '輪流填格，各自計時，累積時間少者獲勝',
     maxErrors: 999,
     allowNotes: true,
     blindReview: false,
     isChessClock: true,
     lockedToTierId: 'tier0',
+    beta: true,
   },
 ];
 

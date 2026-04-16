@@ -77,7 +77,9 @@ function renderModeSelector(): void {
     if (!unlocked.has(mode.id)) continue;
     const pill = document.createElement('button');
     pill.className = `duo-mode-pill${mode.id === _selectedMode ? ' active' : ''}`;
-    pill.textContent = mode.label;
+    pill.innerHTML = mode.beta
+      ? `${mode.label}<span class="duo-mode-beta">BETA</span>`
+      : mode.label;
     pill.onclick = () => {
       _selectedMode = mode.id;
       // Chess Clock 鎖定 Tier 0
