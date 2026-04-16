@@ -120,50 +120,39 @@ export function handleChessClockSnapshot(d: DuoRoomData): void {
 
 // ── 函式三：onChessClockCorrect ──────────────────────────────────────
 
-export async function onChessClockCorrect(_cellIdx: number): Promise<void> {
+export function onChessClockCorrect(_cellIdx: number): void {
   if (!_chessClockActive) return;
 
   const deltaMs = Date.now() - gs.ccTurnStartMs;
+  const newMyAccum = gs.ccMyAccumMs + deltaMs;
   const newBoard = gs.cellsData.map((c) => c.value);
   const isComplete = newBoard.every((v) => v !== 0);
   const myAccumField = gs.duoRole === 'host' ? 'ccHostAccumMs' : 'ccGuestAccumMs';
   const oppRole: 'host' | 'guest' = gs.duoRole === 'host' ? 'guest' : 'host';
 
-  try {
-    await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
-      const doc = await tx.get(duoRoomRef());
-      if (!doc.exists) return;
-      const d = doc.data() as unknown as DuoRoomData;
-      if (d.ccActiveTurn !== gs.duoRole) return; // 不是我的回合，不寫
+  const updateData: Record<string, unknown> = {
+    ccBoardState: JSON.stringify(newBoard),
+    ccBoardVersion: gs.ccBoardVersion + 1,
+    ccActiveTurn: oppRole,
+    ccTurnStartedAt: firebaseServerTimestamp(),
+    [myAccumField]: newMyAccum,
+    ccCurrentCellErrors: 0,
+    ccCurrentCellIdx: null,
+    updatedAt: firebaseServerTimestamp(),
+  };
 
-      const updateData: Record<string, unknown> = {
-        ccBoardState: JSON.stringify(newBoard),
-        ccBoardVersion: (d.ccBoardVersion ?? 0) + 1,
-        ccActiveTurn: oppRole,
-        ccTurnStartedAt: firebaseServerTimestamp(),
-        [myAccumField]: ((d[myAccumField as keyof DuoRoomData] as number) ?? 0) + deltaMs,
-        ccCurrentCellErrors: 0,
-        ccCurrentCellIdx: null,
-        updatedAt: firebaseServerTimestamp(),
-      };
-
-      // 填完時寫入最終結算時間
-      if (isComplete && !_finishSubmitted) {
-        _finishSubmitted = true;
-        const myFinal = ((d[myAccumField as keyof DuoRoomData] as number) ?? 0) + deltaMs;
-        const oppAccumField = gs.duoRole === 'host' ? 'ccGuestAccumMs' : 'ccHostAccumMs';
-        const oppFinal = (d[oppAccumField as keyof DuoRoomData] as number) ?? 0;
-        updateData['ccHostTotalMs'] = gs.duoRole === 'host' ? myFinal : oppFinal;
-        updateData['ccGuestTotalMs'] = gs.duoRole === 'host' ? oppFinal : myFinal;
-      }
-
-      tx.update(duoRoomRef(), updateData);
-    });
-  } catch (e) {
-    console.warn('[chessClock] onChessClockCorrect transaction failed:', e);
+  // 填完時寫入最終結算時間
+  if (isComplete && !_finishSubmitted) {
+    _finishSubmitted = true;
+    updateData['ccHostTotalMs'] = gs.duoRole === 'host' ? newMyAccum : gs.ccOppAccumMs;
+    updateData['ccGuestTotalMs'] = gs.duoRole === 'host' ? gs.ccOppAccumMs : newMyAccum;
   }
 
-  gs.ccMyAccumMs += deltaMs;
+  duoRoomRef().update(updateData).catch(() => {});
+
+  // 本地立即更新，不等 snapshot
+  gs.ccMyAccumMs = newMyAccum;
+  gs.ccBoardVersion += 1;
 }
 
 // ── 函式四：onChessClockError ────────────────────────────────────────
