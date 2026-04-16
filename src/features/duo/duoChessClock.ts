@@ -91,6 +91,9 @@ export function handleChessClockSnapshot(d: DuoRoomData): void {
     return;
   }
 
+  // 尚未初始化（ccActiveTurn 為 null）→ 跳過，避免競爭覆寫 launchChessClockGame 設定的值
+  if (!d.ccActiveTurn) return;
+
   // 同步累積時間到本地
   if (gs.duoRole === 'host') {
     gs.ccMyAccumMs = d.ccHostAccumMs ?? 0;
@@ -112,8 +115,9 @@ export function handleChessClockSnapshot(d: DuoRoomData): void {
     renderTurnBanner();
   }
 
-  // 同步盤面（只在非我的回合時）
-  if (!gs.ccIsMyTurn && d.ccBoardState) {
+  // 同步盤面（對方剛填格時同步 — 用 wasMyTurn 而非 ccIsMyTurn，
+  // 因為對方填完後 ccActiveTurn 會切換回我這邊，此時 ccIsMyTurn 已變成 true）
+  if (!wasMyTurn && d.ccBoardState) {
     applyBoardState(d.ccBoardState);
   }
 }

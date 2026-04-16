@@ -179,6 +179,30 @@ async function startGame(hostPage: Page, guestPage: Page) {
     },
     { timeout: 8_000 },
   );
+  // 等兩個頁面的象棋鐘本地狀態都就緒（launchChessClockGame 完成且 gs.ccIsMyTurn 已設定）
+  await Promise.all([
+    hostPage.waitForFunction(
+      () => !!(window as unknown).__e2e?.gs?.isChessClockMode,
+      { timeout: 8_000 },
+    ),
+    guestPage.waitForFunction(
+      () => !!(window as unknown).__e2e?.gs?.isChessClockMode,
+      { timeout: 8_000 },
+    ),
+  ]);
+  // 等至少一方的 ccIsMyTurn 確認為 true（snapshot 已傳播到至少一個 page）
+  await Promise.race([
+    hostPage.waitForFunction(
+      () => !!(window as unknown).__e2e?.gs?.ccIsMyTurn,
+      { timeout: 8_000 },
+    ),
+    guestPage.waitForFunction(
+      () => !!(window as unknown).__e2e?.gs?.ccIsMyTurn,
+      { timeout: 8_000 },
+    ),
+  ]);
+  // 給另一個 page 追上的緩衝
+  await Promise.all([hostPage.waitForTimeout(300), guestPage.waitForTimeout(300)]);
 }
 
 /** 讓 page 的玩家填一格正確答案（必須是他的回合） */
@@ -206,16 +230,52 @@ async function fillOneWrong(page: Page): Promise<boolean> {
     const gs = e2e.gs;
     if (!gs.ccIsMyTurn) return false;
     const solution = gs.currentLevel?.solution ?? [];
+
+    // 計算每個數字在盤面上出現次數（用於跳過已完成的數字）
+    const counts = new Array(10).fill(0);
+    for (const c of gs.cellsData) {
+      if (c.value > 0) counts[c.value]++;
+    }
+
     for (let i = 0; i < 81; i++) {
       if (!gs.cellsData[i]?.fixed && gs.cellsData[i]?.value === 0) {
         e2e.selectCell(i);
-        const wrongDigit = solution[i] === 9 ? 1 : solution[i] + 1;
+        const correct = solution[i];
+        // 找一個尚未完成（< 9 個）且不等於正確答案的數字
+        let wrongDigit = 0;
+        for (let d = 1; d <= 9; d++) {
+          if (d !== correct && counts[d] < 9) {
+            wrongDigit = d;
+            break;
+          }
+        }
+        if (!wrongDigit) return false; // 找不到可用的錯誤數字
         e2e.handleInput(wrongDigit);
         return true;
       }
     }
     return false;
   });
+}
+
+/** 等待 page 的 ccIsMyTurn 確認為 true，同時驗證 Firestore ccActiveTurn 與 role 一致
+ *  在同一次 evaluate 中同時確認本地與 Firestore，消除兩次查詢之間的 snapshot race。
+ */
+async function waitForMyTurn(page: Page, role: 'host' | 'guest', timeoutMs = 8_000) {
+  await page.waitForFunction(
+    async (r) => {
+      const e2e = (window as unknown).__e2e;
+      const gs = e2e?.gs;
+      if (!gs?.isChessClockMode || !gs?.ccIsMyTurn) return false;
+      if (gs.duoRole !== r) return false; // sanity: this page should be the expected role
+      const roomId = localStorage.getItem('sudoku_duo_active_room_id');
+      if (!roomId) return false;
+      const doc = await e2e.gs.db.collection('duo_rooms').doc(roomId).get().catch(() => null);
+      return doc?.exists && doc.data()?.ccActiveTurn === r;
+    },
+    role,
+    { timeout: timeoutMs },
+  );
 }
 
 /** 填完整盤（輪流填，直到所有空格都填完） */
@@ -351,6 +411,9 @@ test.describe('duo-chess-clock', () => {
     const activePage = firstTurn === 'host' ? hostPage : guestPage;
     const nextTurn: 'host' | 'guest' = firstTurn === 'host' ? 'guest' : 'host';
 
+    // 確認先手 page 本地狀態就緒
+    await waitForMyTurn(activePage, firstTurn);
+
     // 先手填一格
     const didFill = await fillOneCorrect(activePage);
     expect(didFill).toBe(true);
@@ -384,8 +447,9 @@ test.describe('duo-chess-clock', () => {
     const myAccumField = firstTurn === 'host' ? 'ccHostAccumMs' : 'ccGuestAccumMs';
     const nextTurn: 'host' | 'guest' = firstTurn === 'host' ? 'guest' : 'host';
 
-    // 稍等讓時鐘累積一些時間
-    await activePage.waitForTimeout(500);
+    // 確認先手 page 本地狀態就緒，稍等讓時鐘累積一些時間
+    await waitForMyTurn(activePage, firstTurn);
+    await activePage.waitForTimeout(300);
 
     await fillOneCorrect(activePage);
     await waitForActiveTurn(hostPage, nextTurn);
@@ -408,7 +472,8 @@ test.describe('duo-chess-clock', () => {
     const firstTurn = room!.ccActiveTurn as 'host' | 'guest';
     const activePage = firstTurn === 'host' ? hostPage : guestPage;
 
-    // 填錯一次
+    // 確認先手 page 本地狀態就緒，填錯一次
+    await waitForMyTurn(activePage, firstTurn);
     const didFill = await fillOneWrong(activePage);
     expect(didFill).toBe(true);
 
@@ -442,7 +507,8 @@ test.describe('duo-chess-clock', () => {
     const activePage = firstTurn === 'host' ? hostPage : guestPage;
     const nextTurn: 'host' | 'guest' = firstTurn === 'host' ? 'guest' : 'host';
 
-    // 連填 3 次錯誤
+    // 確認先手 page 本地狀態就緒，連填 3 次錯誤
+    await waitForMyTurn(activePage, firstTurn);
     for (let i = 0; i < 3; i++) {
       await fillOneWrong(activePage);
       await activePage.waitForTimeout(500); // 等視覺反饋完成
@@ -483,7 +549,8 @@ test.describe('duo-chess-clock', () => {
     });
     expect(targetIdx).toBeGreaterThanOrEqual(0);
 
-    // 先手填格
+    // 確認先手 page 本地狀態就緒，填格
+    await waitForMyTurn(activePage, firstTurn);
     await fillOneCorrect(activePage);
 
     // 等被動方收到 snapshot 並同步盤面
