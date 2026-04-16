@@ -117,6 +117,17 @@ export interface DuoRoomData {
   guestHeartbeatAtMs?: number | null;
   hostOnline?: boolean;
   guestOnline?: boolean;
+  // ── Chess Clock fields (optional, only present in chessClock mode) ──
+  ccActiveTurn?: 'host' | 'guest' | null;
+  ccTurnStartedAt?: { toMillis?: () => number; seconds?: number } | null;
+  ccHostAccumMs?: number;
+  ccGuestAccumMs?: number;
+  ccCurrentCellErrors?: number;
+  ccCurrentCellIdx?: number | null;
+  ccBoardState?: string | null;
+  ccBoardVersion?: number;
+  ccHostTotalMs?: number | null;
+  ccGuestTotalMs?: number | null;
 }
 
 export interface CandidateTrackingNode {
@@ -223,6 +234,15 @@ export const gs = {
   duoEmojiCooldown: 0,
   duoLastEmojiSeen: '',
   duoOpponentNotified: false,
+
+  // ── Chess Clock mode state ─────────────────────────────────────────
+  isChessClockMode: false,
+  ccIsMyTurn: false,
+  ccMyAccumMs: 0,
+  ccOppAccumMs: 0,
+  ccTurnStartMs: 0,
+  ccCurrentCellErrors: 0,
+  ccBoardVersion: 0,
 
   // ── Teach (legacy) ────────────────────────────────────────────────
   teachCurrentStep: 0,

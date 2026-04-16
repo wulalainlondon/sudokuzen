@@ -97,9 +97,9 @@ describe('duo profile & match recording', () => {
 });
 
 describe('duo unlock logic', () => {
-  it('tierI is always unlocked', () => {
+  it('tier0 is always unlocked', () => {
     const p = emptyProfile();
-    expect(getUnlockedTiers(p)).toEqual(['tierI']);
+    expect(getUnlockedTiers(p)).toEqual(['tier0']);
   });
 
   it('tierII unlocks after 5 tierI plays', () => {

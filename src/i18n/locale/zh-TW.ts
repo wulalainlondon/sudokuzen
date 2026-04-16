@@ -379,6 +379,16 @@ export const zhTW = {
     unlockNew: '解鎖',
     unlockTierHint: '再打 {n} 場 {tier} 解鎖下一階',
     unlockModeHint: '再打 {n} 場 {mode} 解鎖下一模式',
+    chessClock: {
+      notYourTurn: '等待對手填格…',
+      forcedSwitch: '連錯 3 次，換對手回合',
+      turnSwitch: '換你了',
+      yourTurn: '你的回合',
+      oppTurn: '等待對手…',
+      resultWin: '你用時較少，獲勝！',
+      resultLoss: '對手用時較少，獲勝',
+      resultDiff: '時間差',
+    },
   },
 
   duoRoom: {

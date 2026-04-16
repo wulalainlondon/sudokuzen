@@ -378,6 +378,16 @@ export const en: Widen<Locale> = {
     unlockNew: 'Unlock',
     unlockTierHint: '{n} more {tier} games to unlock next tier',
     unlockModeHint: '{n} more {mode} games to unlock next mode',
+    chessClock: {
+      notYourTurn: 'Wait for your turn\u2026',
+      forcedSwitch: '3 errors \u2014 turn forced to opponent',
+      turnSwitch: 'Your turn',
+      yourTurn: 'Your turn',
+      oppTurn: 'Opponent thinking\u2026',
+      resultWin: 'You used less time \u2014 you win!',
+      resultLoss: 'Opponent used less time \u2014 opponent wins',
+      resultDiff: 'Time difference',
+    },
   },
 
   // ── Replay ──────────────────────────────────────────────────────────

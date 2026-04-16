@@ -295,6 +295,8 @@ export function handleInput(num: number): void {
   if (gs.selectedIdx === null || gs.cellsData[gs.selectedIdx].fixed) return;
   if (!canInputByErrorGate()) return;
   if (isDuoCooldownActive()) return;
+  // Chess Clock 模式：非我的回合不允許填格
+  if (gs.isChessClockMode && !gs.ccIsMyTurn) return;
 
   const data = gs.cellsData[gs.selectedIdx];
   const cellEl = gs.gridEl!.children[gs.selectedIdx] as HTMLElement;
@@ -361,6 +363,29 @@ export function handleInput(num: number): void {
     }
 
     if (num !== solutionDigitAt(gs.selectedIdx)) {
+      if (gs.isChessClockMode) {
+        // Chess clock 自己處理錯誤邏輯，這裡只做視覺反饋
+        import('../features/duo/duoChessClock')
+          .then((m) => m.onChessClockError(gs.selectedIdx!))
+          .catch(() => {});
+        data.isError = true;
+        addCellClasses(cellEl, 'error', 'wrong-preview');
+        const originalValue = data.value;
+        const originalNotes = data.notes.slice();
+        data.value = num;
+        data.notes = [];
+        updateCellDisplay(cellEl, data);
+        playErrorFeedback();
+        if (navigator.vibrate) navigator.vibrate([35, 20, 25]);
+        setTimeout(() => {
+          data.isError = false;
+          removeCellClasses(cellEl, 'error', 'wrong-preview');
+          data.value = originalValue;
+          data.notes = originalNotes;
+          updateCellDisplay(cellEl, data);
+        }, 400);
+        return;
+      }
       gs.errors++;
       data.isError = true;
       addCellClasses(cellEl, 'error');
@@ -449,6 +474,11 @@ export function handleInput(num: number): void {
     }
     if (!policy.useSubmissionValidation) celebrateCompletedUnits(gs.selectedIdx, beforeState);
     if (gs.isDuoMode) callDuoProgress();
+    if (gs.isChessClockMode) {
+      import('../features/duo/duoChessClock')
+        .then((m) => m.onChessClockCorrect(gs.selectedIdx!))
+        .catch(() => {});
+    }
     checkWin();
   }
   updateCellDisplay(cellEl, data);

@@ -88,7 +88,8 @@ function totalPlaysForMode(p: DuoProfile, modeId: string): number {
 }
 
 export function getUnlockedTiers(p: DuoProfile): string[] {
-  const unlocked: string[] = ['tierI']; // always unlocked
+  const unlocked: string[] = ['tier0']; // always unlocked
+  if (totalPlaysForTier(p, 'tier0') >= 5) unlocked.push('tierI');
   if (totalPlaysForTier(p, 'tierI') >= 5) unlocked.push('tierII');
   if (totalPlaysForTier(p, 'tierII') >= 5) unlocked.push('tierIII');
   if (totalPlaysForTier(p, 'tierIII') >= 8) unlocked.push('tierIV');
@@ -99,6 +100,7 @@ export function getUnlockedTiers(p: DuoProfile): string[] {
 export function getUnlockedModes(p: DuoProfile): string[] {
   const unlocked: string[] = ['standard']; // always unlocked
   if (totalPlaysForMode(p, 'standard') >= 3) unlocked.push('noNotes');
+  unlocked.push('chessClock'); // always unlocked for T0 entry mode
   if (totalPlaysForMode(p, 'noNotes') >= 3) unlocked.push('ironWall');
   if (totalPlaysForMode(p, 'ironWall') >= 3) unlocked.push('blindReview');
   return unlocked;

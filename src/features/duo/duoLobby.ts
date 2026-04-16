@@ -16,7 +16,7 @@ const LOBBY_POLL_FAST_WINDOW_MS = 15_000;
 const ROOM_FRESHNESS_MS = DUO_STALE_HEARTBEAT_MS * 2; // ~90s — hide rooms with no recent heartbeat
 let _duoLobbyPollTimer: ReturnType<typeof setTimeout> | null = null;
 let _duoLobbyOpenedAtMs = 0;
-let _selectedTier = 'tierI';
+let _selectedTier = 'tier0';
 let _selectedMode = 'standard';
 
 function duoLobbyEl(): HTMLElement | null {
@@ -52,11 +52,17 @@ function renderTierSelector(): void {
     pill.className = `duo-tier-pill${tier.id === _selectedTier ? ' active' : ''}`;
     pill.textContent = tier.label;
     pill.title = tier.description;
-    pill.onclick = () => {
-      _selectedTier = tier.id;
-      renderTierSelector();
-      renderModeRuleCard();
-    };
+    const isLocked = !!DUO_MODE_MAP.get(_selectedMode)?.lockedToTierId;
+    if (isLocked) {
+      pill.disabled = true;
+      pill.title = tier.description + '（此模式固定使用此難度）';
+    } else {
+      pill.onclick = () => {
+        _selectedTier = tier.id;
+        renderTierSelector();
+        renderModeRuleCard();
+      };
+    }
     container.appendChild(pill);
   }
 }
@@ -74,6 +80,9 @@ function renderModeSelector(): void {
     pill.textContent = mode.label;
     pill.onclick = () => {
       _selectedMode = mode.id;
+      // Chess Clock 鎖定 Tier 0
+      const lockedTier = DUO_MODE_MAP.get(_selectedMode)?.lockedToTierId;
+      if (lockedTier) _selectedTier = lockedTier;
       renderModeSelector();
       renderModeRuleCard();
     };

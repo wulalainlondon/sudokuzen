@@ -14,6 +14,7 @@ export interface DuoTier {
 }
 
 export const DUO_TIERS: DuoTier[] = [
+  { id: 'tier0', label: 'Tier 0', shardKeys: ['T00'], description: 'Naked / Hidden Single（入門）' },
   { id: 'tierI', label: 'Tier I', shardKeys: ['T01'], description: 'Naked / Hidden Single' },
   { id: 'tierII', label: 'Tier II', shardKeys: ['T02'], description: 'Locked Candidates, Pairs' },
   { id: 'tierIII', label: 'Tier III', shardKeys: ['T03', 'T04'], description: 'Triples, X-Wing, UR' },
@@ -37,6 +38,8 @@ export interface DuoMode {
   maxErrors: number;
   allowNotes: boolean;
   blindReview: boolean;
+  isChessClock?: boolean;      // true = 象棋鐘模式，遊戲邏輯完全不同
+  lockedToTierId?: string;     // 若有值，Lobby 強制鎖定到此 tier
 }
 
 export const DUO_MODES: DuoMode[] = [
@@ -65,6 +68,16 @@ export const DUO_MODES: DuoMode[] = [
     blindReview: false,
   },
   { id: 'blindReview', label: '盲審', rules: '全填才檢查，可筆記', maxErrors: 81, allowNotes: true, blindReview: true },
+  {
+    id: 'chessClock',
+    label: '象棋鐘',
+    rules: '輪流填格，各自計時，累積時間少者獲勝',
+    maxErrors: 999,
+    allowNotes: true,
+    blindReview: false,
+    isChessClock: true,
+    lockedToTierId: 'tier0',
+  },
 ];
 
 export const DUO_MODE_MAP = new Map(DUO_MODES.map((m) => [m.id, m]));

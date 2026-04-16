@@ -124,6 +124,11 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     }
   }
 
+  if (d.status === 'playing' && d.modeId === 'chessClock') {
+    import('./duoChessClock').then((m) => m.handleChessClockSnapshot(d)).catch(() => {});
+    return; // chess clock 完全接管
+  }
+
   if (d.status === 'playing') {
     gs.duoRoundLaunched = true;
     const oppProgress = gs.duoRole === 'host' ? d.guestProgress : d.hostProgress;
@@ -527,6 +532,12 @@ export async function launchDuoGame(): Promise<void> {
   } catch (e) {
     console.warn('launchDuoGame transaction failed:', e);
     showFeedback(t('duoRuntime.roomSyncFailed'), 'error');
+  }
+
+  // Chess Clock 模式：由 duoChessClock 接管後續邏輯
+  if (modeId === 'chessClock') {
+    const { launchChessClockGame } = await import('./duoChessClock');
+    await launchChessClockGame();
   }
 }
 
@@ -935,6 +946,9 @@ export function resetDuoState(): void {
     } catch {
       /* no active room */
     }
+  }
+  if (gs.isChessClockMode) {
+    import('./duoChessClock').then((m) => m.resetChessClockState()).catch(() => {});
   }
   import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch(() => {});
   const progressContainer = document.getElementById('duo-progress-container');
