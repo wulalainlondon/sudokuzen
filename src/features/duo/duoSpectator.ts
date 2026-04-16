@@ -362,7 +362,7 @@ export function throwBomb(): void {
   const lastBoard = _lastRenderedSpecBoard;
   const puzzle = gs.currentLevel?.puzzle ?? [];
 
-  let emptyCells: number[] = [];
+  const emptyCells: number[] = [];
   if (lastBoard && lastBoard.length === 81) {
     for (let i = 0; i < 81; i++) {
       if (lastBoard[i] === 0 && puzzle[i] === 0) {
