@@ -1,4 +1,4 @@
-import { useState, useCallback, type ReactElement } from 'react';
+import { useState, useCallback, useEffect, type ReactElement } from 'react';
 import { useSettingsStore } from './settingsStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { getAudioSettings, saveAudioSettings, type AudioSettings } from '../../game/audioSettings';
@@ -146,10 +146,11 @@ export function SettingsModal(): ReactElement {
   }, [isDark]);
 
   // Sync state when modal opens
-  const handleOpen = useCallback(() => {
+  useEffect(() => {
+    if (!visible) return;
     setSettings(getAudioSettings());
     setIsDark(getDocumentTheme() === 'dark');
-  }, []);
+  }, [visible]);
 
   return (
     <ZenOverlay
@@ -161,7 +162,6 @@ export function SettingsModal(): ReactElement {
       <div
         className="stats-panel"
         style={{ maxWidth: 340, width: '90vw' }}
-        ref={(el) => { if (el && visible) handleOpen(); }}
       >
         <h2 style={{ marginBottom: 4 }}>設定</h2>
 
