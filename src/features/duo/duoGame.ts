@@ -476,6 +476,16 @@ export async function launchDuoGame(): Promise<void> {
   gs.duoProgressThrottle = 0;
   _lastSubmittedProgress = -1;
 
+  // Safety reset: clear per-round flags that may be stale if resetDuoState() was
+  // skipped (e.g., user pressed hardware back button from the result screen).
+  // Without this, _duoFinishSubmitted + _duoOpponentOfflineNotified from the
+  // previous round cause autoForfeitOpponent() to fire immediately in game 2.
+  _duoFinishSubmitted = false;
+  _duoOpponentOfflineNotified = false;
+  _autoForfeitStarted = false;
+  _duoResultShown = false;
+  gs.duoOpponentNotified = false;
+
   const roomData = gs.duoRoomData;
   const tierId: string = roomData.tierId || 'tierI';
   const puzzleSeed: number = roomData.puzzleSeed || 0;
@@ -938,7 +948,6 @@ export async function closeDuoResult(): Promise<void> {
 // ── Reset ────────────────────────────────────────────────────────────
 
 export function resetDuoState(): void {
-  console.log('[duo] resetDuoState called isDuoMode=', gs.isDuoMode, new Error('trace').stack?.split('\n').slice(1, 4).join(' | '));
   void import('../../game/bgm').then(({ stopBgm }) => stopBgm());
   _countdownRafCancelled = true;
   if (_countdownRafHandle !== null) {
