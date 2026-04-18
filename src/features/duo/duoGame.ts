@@ -29,6 +29,7 @@ import { escapeHtml } from '../../shared/html/escape';
 
 let _countdownLaunched = false;
 let _countdownRafCancelled = false;
+let _countdownRafHandle: number | null = null;
 let _duoFinishSubmitted = false;
 let _duoResultShown = false;
 let _duoOpponentOfflineNotified = false;
@@ -373,7 +374,9 @@ function playCountdownBeep(final = false): void {
     osc.frequency.value = final ? 880 : 440;
     gain.gain.value = 0.15;
     osc.start();
-    osc.stop(ctx.currentTime + (final ? 0.3 : 0.15));
+    const duration = final ? 0.3 : 0.15;
+    osc.stop(ctx.currentTime + duration);
+    setTimeout(() => ctx.close().catch(() => {}), duration * 1000 + 200);
   } catch {}
 }
 
@@ -419,7 +422,10 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
 
   let lastShown: number | null = null;
   function updateCountdownUI() {
-    if (_countdownRafCancelled) return;
+    if (_countdownRafCancelled) {
+      _countdownRafHandle = null;
+      return;
+    }
     const remaining = Math.max(0, Math.ceil((targetMs - Date.now()) / 1000));
     if (remaining > 0) {
       if (remaining !== lastShown) {
@@ -429,8 +435,15 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
         playCountdownBeep();
         if (navigator.vibrate) navigator.vibrate(50);
       }
-      requestAnimationFrame(updateCountdownUI);
+      _countdownRafHandle = requestAnimationFrame(updateCountdownUI);
+    } else {
+      _countdownRafHandle = null;
     }
+  }
+  // Cancel any previous countdown RAF before starting new one
+  if (_countdownRafHandle !== null) {
+    cancelAnimationFrame(_countdownRafHandle);
+    _countdownRafHandle = null;
   }
   updateCountdownUI();
 
@@ -927,6 +940,10 @@ export function resetDuoState(): void {
   console.log('[duo] resetDuoState called isDuoMode=', gs.isDuoMode, new Error('trace').stack?.split('\n').slice(1, 4).join(' | '));
   void import('../../game/bgm').then(({ stopBgm }) => stopBgm());
   _countdownRafCancelled = true;
+  if (_countdownRafHandle !== null) {
+    cancelAnimationFrame(_countdownRafHandle);
+    _countdownRafHandle = null;
+  }
   _duoResultShown = false;
   _countdownLaunched = false;
   _duoFinishSubmitted = false;
@@ -1000,8 +1017,7 @@ export function resetDuoState(): void {
   gs.duoLastEmojiSeen = '';
   const countdownOverlay = document.getElementById('duo-countdown-overlay');
   if (countdownOverlay) countdownOverlay.remove();
-  const emojiBubble = document.querySelector('.duo-emoji-bubble');
-  if (emojiBubble) emojiBubble.remove();
+  document.querySelectorAll('.duo-emoji-bubble, .duo-emoji-float').forEach((el) => el.remove());
   clearActiveRoomId();
   invalidateWaitingRoomsCache();
   import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch(() => {});
