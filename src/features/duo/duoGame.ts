@@ -191,14 +191,15 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
       showDuoOpponentFinished(oppAlias, oppFinish, oppStars);
     }
 
-    // Check if both finished
+    // Check if both finished — guard gs.isDuoMode to prevent stale snapshots
+    // from triggering a result before the game has actually launched.
     console.log('[duo] snap hT=', d.hostFinishTime, 'gT=', d.guestFinishTime, 'role=', gs.duoRole, 'resultShown=', _duoResultShown);
-    if (d.hostFinishTime != null && d.guestFinishTime != null) {
+    if (d.hostFinishTime != null && d.guestFinishTime != null && gs.isDuoMode) {
       showDuoResult(d);
     }
   }
 
-  if (d.status === 'finished') {
+  if (d.status === 'finished' && gs.isDuoMode) {
     showDuoResult(d);
   }
 }

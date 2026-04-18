@@ -499,6 +499,12 @@ export async function resumeDuoRoomIfAny(): Promise<boolean> {
       setActiveRoomId(null);
       return false;
     }
+    // If app was killed after both finished but before result was dismissed,
+    // the room is still 'playing' with both finish times set — treat as finished.
+    if (d.status === 'playing' && d.hostFinishTime != null && d.guestFinishTime != null) {
+      setActiveRoomId(null);
+      return false;
+    }
     if (d.hostId === authUid) {
       gs.duoRole = 'host';
       gs.duoMyReady = !!d.hostReady;
