@@ -37,7 +37,7 @@ const DUO_ROOMS_COLLECTION = 'duo_rooms';
 const WAITING_ROOMS_CACHE_MS = 5000;
 const WAITING_ROOMS_MIN_FETCH_GAP_MS = 1200;
 const DUO_HEARTBEAT_MS = 15_000;
-export const DUO_STALE_HEARTBEAT_MS = 45_000;
+export const DUO_STALE_HEARTBEAT_MS = 60_000;
 const DUO_ROOM_WAITING_TTL_MS = 15 * 60_000;
 const DUO_ROOM_FINISHED_RETENTION_MS = 6 * 60 * 60_000;
 const DUO_CLEANUP_INTERVAL_MS = 5 * 60_000;
@@ -59,6 +59,7 @@ let _duoHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
 let _lastStaleGuestPruneMs = 0;
 let _lastDuoCleanupMs = 0;
 let _snapshotRetryCount = 0;
+let _heartbeatConsecFailures = 0;
 
 // Snapshot handler — set by duoGame.ts to break circular dependency
 let _snapshotHandler: ((d: DuoRoomData) => void) | null = null;
@@ -200,8 +201,14 @@ function startDuoRoomHeartbeat(): void {
         [hbField]: Date.now(),
         [onlineField]: true,
       });
+      _heartbeatConsecFailures = 0;
     } catch {
-      // noop
+      _heartbeatConsecFailures++;
+      // Retry once quickly on transient failure (≤2 consecutive) so opponent
+      // doesn't see a stale heartbeat during a brief network blip.
+      if (_heartbeatConsecFailures <= 2) {
+        setTimeout(() => { void tick(); }, 3_000);
+      }
     }
   };
   void tick();
@@ -215,6 +222,7 @@ export function stopDuoRoomHeartbeat(): void {
     clearInterval(_duoHeartbeatTimer);
     _duoHeartbeatTimer = null;
   }
+  _heartbeatConsecFailures = 0;
 }
 
 // ── Cleanup stale rooms ──────────────────────────────────────────────
@@ -514,6 +522,17 @@ export async function resumeDuoRoomIfAny(): Promise<boolean> {
     } else {
       setActiveRoomId(null);
       return false;
+    }
+    // If we've already submitted our finish in a still-playing game, don't
+    // resume — prevents experienced players from being trapped in old rooms
+    // where one side finished but the room was never fully cleaned up.
+    if (d.status === 'playing') {
+      const myFinishTime = gs.duoRole === 'host' ? d.hostFinishTime : d.guestFinishTime;
+      if (myFinishTime != null) {
+        setActiveRoomId(null);
+        gs.duoRole = null;
+        return false;
+      }
     }
     subscribeDuoRoom();
     return true;

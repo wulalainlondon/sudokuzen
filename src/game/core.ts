@@ -705,14 +705,22 @@ export function pauseGame(): void {
   const abandonBtn = document.getElementById('pause-abandon-btn') as HTMLButtonElement | null;
   if (resumeBtn) resumeBtn.textContent = t('nav.resumeGame');
   if (leaveBtn) {
-    leaveBtn.textContent = isWild ? t('nav.tempLeaveEncounter') : t('nav.abandonLevel');
-    leaveBtn.onclick = isWild
-      ? () => {
-          void leaveWildFromPause();
-        }
-      : () => {
-          emitNavigation({ type: 'show-level-screen', returnToTier: true });
-        };
+    if (gs.isDuoMode) {
+      leaveBtn.textContent = t('duoRuntime.surrender');
+      leaveBtn.onclick = () => {
+        hidePauseScreen();
+        import('../features/duo/duoGame').then((m) => m.submitDuoFinish(9999, 0)).catch(() => {});
+      };
+    } else {
+      leaveBtn.textContent = isWild ? t('nav.tempLeaveEncounter') : t('nav.abandonLevel');
+      leaveBtn.onclick = isWild
+        ? () => {
+            void leaveWildFromPause();
+          }
+        : () => {
+            emitNavigation({ type: 'show-level-screen', returnToTier: true });
+          };
+    }
   }
   if (abandonBtn) {
     abandonBtn.style.display = isWild ? '' : 'none';

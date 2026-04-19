@@ -35,6 +35,11 @@ let _duoResultShown = false;
 let _duoOpponentOfflineNotified = false;
 let _lastSubmittedProgress = -1;
 let _autoForfeitStarted = false;
+let _gameStartedAtMs = 0;
+
+// Grace period after game start: don't flag opponent offline during this window.
+// Covers cases where heartbeat was briefly paused at the countdown→playing transition.
+const GAME_START_GRACE_MS = 60_000;
 
 // ── Register with duoRoom ────────────────────────────────────────────
 
@@ -161,12 +166,24 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     updateDuoProgressUI(oppAlias, oppProgress || 0);
 
     // Detect opponent disconnect
-    if (!_duoOpponentOfflineNotified) {
+    {
+      const now = Date.now();
       const oppHeartbeat = gs.duoRole === 'host' ? Number(d.guestHeartbeatAtMs || 0) : Number(d.hostHeartbeatAtMs || 0);
       const oppOnline = gs.duoRole === 'host' ? d.guestOnline : d.hostOnline;
-      if ((oppHeartbeat > 0 && Date.now() - oppHeartbeat > DUO_STALE_HEARTBEAT_MS) || oppOnline === false) {
-        _duoOpponentOfflineNotified = true;
-        showFeedback(t('duoRuntime.opponentOffline'), 'error');
+      const isOppStale = (oppHeartbeat > 0 && now - oppHeartbeat > DUO_STALE_HEARTBEAT_MS) || oppOnline === false;
+      // Don't flag during the grace period right after game start — heartbeats may
+      // be momentarily stale during the countdown→playing transition.
+      const inGracePeriod = _gameStartedAtMs > 0 && now - _gameStartedAtMs < GAME_START_GRACE_MS;
+
+      if (isOppStale && !inGracePeriod) {
+        if (!_duoOpponentOfflineNotified) {
+          _duoOpponentOfflineNotified = true;
+          showFeedback(t('duoRuntime.opponentOffline'), 'error');
+        }
+      } else if (!isOppStale && _duoOpponentOfflineNotified) {
+        // Opponent's heartbeat recovered — retract the offline flag so that
+        // auto-forfeit doesn't fire if we finish later in the same game.
+        _duoOpponentOfflineNotified = false;
       }
     }
 
@@ -485,6 +502,7 @@ export async function launchDuoGame(): Promise<void> {
   _autoForfeitStarted = false;
   _duoResultShown = false;
   gs.duoOpponentNotified = false;
+  _gameStartedAtMs = Date.now();
 
   const roomData = gs.duoRoomData;
   const tierId: string = roomData.tierId || 'tierI';
@@ -780,22 +798,30 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     contentHtml += `<div id="duo-result-streak"><div class="duo-streak-badge">${t('duoRuntime.streakBadgeExcl', { holder: '你', count: String(profileAfter.currentStreak) })}</div></div>`;
   }
 
-  function makeCard(alias: string, time: number, stars: number | null, isWinner: boolean): string {
+  const FORFEIT_SENTINEL = 9999;
+  const hostForfeited = hTime === FORFEIT_SENTINEL;
+  const guestForfeited = gTime === FORFEIT_SENTINEL;
+
+  function makeCard(alias: string, time: number, stars: number | null, isWinner: boolean, forfeited: boolean): string {
     const resultLabel = isWinner
       ? `<div class="duo-result-label win">${t('duoRuntime.resultWin')}</div>`
       : isDraw
         ? ''
         : `<div class="duo-result-label lose">${t('duoRuntime.resultLose')}</div>`;
+    const timeDisplay = forfeited
+      ? `<div class="duo-result-time forfeit">${t('duoRuntime.resultForfeitTime')}</div>`
+      : `<div class="duo-result-time">${formatSeconds(time)}</div>`;
+    const starsDisplay = forfeited ? '' : `<div class="duo-result-stars">${stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars) : ''}</div>`;
     return `<div class="duo-result-card ${isWinner ? 'winner' : ''}">
       ${resultLabel}
       <div class="duo-result-crown">${isWinner ? '\u{1F451}' : ''}</div>
       <div class="duo-result-alias">${alias || '--'}</div>
-      <div class="duo-result-time">${formatSeconds(time)}</div>
-      <div class="duo-result-stars">${stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars) : ''}</div>
+      ${timeDisplay}
+      ${starsDisplay}
     </div>`;
   }
 
-  contentHtml += `<div class="duo-result-cards" id="duo-result-cards">${makeCard(d.hostAlias, hTime, d.hostStars, hWin)}${makeCard(d.guestAlias || '', gTime, d.guestStars, gWin)}</div>`;
+  contentHtml += `<div class="duo-result-cards" id="duo-result-cards">${makeCard(d.hostAlias, hTime, d.hostStars, hWin, hostForfeited)}${makeCard(d.guestAlias || '', gTime, d.guestStars, gWin, guestForfeited)}</div>`;
 
   // Tier + mode info
   const tierLabel = DUO_TIER_MAP.get(tierId)?.label || tierId;
@@ -804,6 +830,9 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
 
   if (isDraw) {
     contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultDraw')}</div>`;
+  } else if (hostForfeited || guestForfeited) {
+    // One player forfeited — show that instead of a meaningless time diff
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultOpponentForfeit')}</div>`;
   } else {
     const winnerAlias = hWin ? d.hostAlias : d.guestAlias || '';
     const diffClass = iWon ? 'faster' : 'slower';
@@ -964,6 +993,7 @@ export function resetDuoState(): void {
   _duoOpponentOfflineNotified = false;
   _autoForfeitStarted = false;
   _lastSubmittedProgress = -1;
+  _gameStartedAtMs = 0;
   gs.duoPenaltySeconds = 0;
   gs.duoCooldownUntil = 0;
   gs.duoLastErrorCell = -1;

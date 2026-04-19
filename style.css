@@ -6873,6 +6873,11 @@ header h1 {
   font-weight: 600;
   color: var(--accent-strong);
 }
+.duo-result-time.forfeit {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
 .duo-result-stars {
   font-size: 0.85rem;
   color: var(--star-color);
