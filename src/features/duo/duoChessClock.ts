@@ -361,6 +361,7 @@ export function stopChessClockUI(): void {
     _rafHandle = null;
   }
   document.getElementById('cc-clock-bar')?.remove();
+  document.getElementById('cc-clock-style')?.remove();
   const livesEl = document.getElementById('lives');
   if (livesEl) livesEl.style.display = '';
 }

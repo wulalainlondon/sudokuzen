@@ -994,6 +994,7 @@ export function resetDuoState(): void {
   _autoForfeitStarted = false;
   _lastSubmittedProgress = -1;
   _gameStartedAtMs = 0;
+  gs.duoEmojiCooldown = 0;
   gs.duoPenaltySeconds = 0;
   gs.duoCooldownUntil = 0;
   gs.duoLastErrorCell = -1;
