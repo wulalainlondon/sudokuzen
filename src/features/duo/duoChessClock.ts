@@ -80,6 +80,12 @@ export async function launchChessClockGame(): Promise<void> {
 
   startChessClockUI();
   renderTurnBanner();
+
+  // Chess clock 不用傳統愛心計命（maxErrors=999 會渲染 999 個♥）和進度百分比
+  const livesEl = document.getElementById('lives');
+  if (livesEl) livesEl.style.display = 'none';
+  const progressContainer = document.getElementById('duo-progress-container');
+  if (progressContainer) progressContainer.style.display = 'none';
 }
 
 // ── 函式二：handleChessClockSnapshot ────────────────────────────────
@@ -355,6 +361,8 @@ export function stopChessClockUI(): void {
     _rafHandle = null;
   }
   document.getElementById('cc-clock-bar')?.remove();
+  const livesEl = document.getElementById('lives');
+  if (livesEl) livesEl.style.display = '';
 }
 
 // ── 函式十一：resetChessClockState ───────────────────────────────────
