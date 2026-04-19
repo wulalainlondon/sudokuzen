@@ -59,6 +59,7 @@ let _duoHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
 let _lastStaleGuestPruneMs = 0;
 let _lastDuoCleanupMs = 0;
 let _snapshotRetryCount = 0;
+let _snapshotRetryTimeout: ReturnType<typeof setTimeout> | null = null;
 let _heartbeatConsecFailures = 0;
 
 // Snapshot handler — set by duoGame.ts to break circular dependency
@@ -414,6 +415,10 @@ export async function joinDuoRoom(roomId: string): Promise<boolean> {
 
 export function subscribeDuoRoom(): void {
   if (!_activeRoomId) return;
+  if (_snapshotRetryTimeout !== null) {
+    clearTimeout(_snapshotRetryTimeout);
+    _snapshotRetryTimeout = null;
+  }
   if (gs.duoUnsubscribe) gs.duoUnsubscribe();
   _snapshotRetryCount = 0;
   _attachSnapshotListener();
@@ -439,8 +444,9 @@ function _attachSnapshotListener(): void {
       import('./duoLobby').then((m) => m.setDuoLobbyConnectionState('reconnecting')).catch(() => {});
       if (_snapshotRetryCount <= MAX_SNAPSHOT_RETRIES) {
         showFeedback(t('duoRuntime.connectionRetry'), 'neutral');
-        setTimeout(
+        _snapshotRetryTimeout = setTimeout(
           () => {
+            _snapshotRetryTimeout = null;
             _attachSnapshotListener();
           },
           2000 * Math.pow(1.5, _snapshotRetryCount),
