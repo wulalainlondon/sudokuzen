@@ -295,7 +295,7 @@ export const duoWatchdog = functions.pubsub
       const countdownStaleAt = new Date(now - DUO_ROOM_COUNTDOWN_STALE_MS);
       const snap = await db.collection(DUO_ROOMS)
         .where('status', '==', 'countdown')
-        .where('updatedAt', '<', countdownStaleAt)
+        .where('countdownStartedAt', '<', countdownStaleAt)
         .get();
 
       const batch = db.batch();
