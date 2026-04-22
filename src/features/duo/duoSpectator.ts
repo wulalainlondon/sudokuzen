@@ -2,8 +2,8 @@
 // 觀戰模式 + 表情轟炸邏輯
 
 import { gs, type DuoRoomData } from '../../game/state';
-import { duoRoomRef } from './duoRoom';
-import { firebaseServerTimestamp } from '../../firebase/runtime';
+import { duoRoomRef, getActiveDuoRoomId } from './duoRoom';
+import { firebaseServerTimestamp, callDuoFunction } from '../../firebase/runtime';
 import { updateCellDisplay } from '../../game/board';
 
 // ── Module-level state ───────────────────────────────────────────────
@@ -78,11 +78,6 @@ const SPEC_STYLE_CSS = `
   border-radius: 4px;
   z-index: 2;
 }
-.spec-emoji-bar {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-}
 #duo-being-watched-badge {
   position: absolute;
   top: 4px;
@@ -154,38 +149,6 @@ export function enterSpectatorMode(roomData: DuoRoomData): void {
   const gridContainer = document.createElement('div');
   gridContainer.id = 'duo-spec-grid';
   overlay.appendChild(gridContainer);
-
-  // Emoji bar
-  const emojiBar = document.createElement('div');
-  emojiBar.id = 'spec-emoji-bar';
-  emojiBar.className = 'spec-emoji-bar';
-
-  const emojis: Array<{ emoji: string; id?: string }> = [
-    { emoji: '😤' },
-    { emoji: '💀' },
-    { emoji: '🫣' },
-    { emoji: '💣', id: 'spec-bomb-btn' },
-    { emoji: '👻' },
-  ];
-
-  emojis.forEach(({ emoji, id }) => {
-    const btn = document.createElement('button');
-    btn.className = 'duo-emoji-btn';
-    if (id) btn.id = id;
-    btn.dataset.specEmoji = emoji;
-    btn.textContent = emoji;
-    btn.addEventListener('click', () => {
-      if (emoji === '💣') {
-        throwBomb();
-      } else {
-        // Use dynamic import to avoid circular dependency
-        import('./duoGame').then((m) => m.sendDuoEmoji(emoji)).catch(() => {});
-      }
-    });
-    emojiBar.appendChild(btn);
-  });
-
-  overlay.appendChild(emojiBar);
   document.body.appendChild(overlay);
 
   // Build the grid
@@ -257,7 +220,7 @@ export function handleSpectatorSnapshot(d: DuoRoomData): void {
   ) {
     return;
   }
-  _lastSpecBoardVersion = d.specBoardVersion ?? 0;
+  _lastSpecBoardVersion = d.specBoardVersion ?? -1;
 
   if (d.specBoardState) {
     applySpecBoard(d.specBoardState);
@@ -349,7 +312,7 @@ export function syncSpecBoardNow(): void {
         specBoardVersion: _specVersion,
         updatedAt: firebaseServerTimestamp(),
       })
-      .catch(() => {});
+      .catch((e) => console.warn('[duo] syncSpecBoard failed:', e));
   });
 }
 
@@ -388,13 +351,12 @@ export function throwBomb(): void {
     pool.splice(randIdx, 1);
   }
 
-  duoRoomRef()
-    .update({
-      specBombAt: Date.now(),
-      specBombCells: selected,
-      updatedAt: firebaseServerTimestamp(),
-    })
-    .catch(() => {});
+  if (selected.length === 0) return;
+
+  callDuoFunction('duoThrowBomb', {
+    roomId: getActiveDuoRoomId()!,
+    selectedCells: selected,
+  }).catch((e) => console.warn('[duo] throwBomb failed:', e));
 }
 
 // ── 函式九：applySpecBoard ───────────────────────────────────────────

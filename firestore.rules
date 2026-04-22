@@ -60,7 +60,8 @@ service cloud.firestore {
                          .hasAny([
                            'hostFinishTime', 'guestFinishTime', 'hostStars', 'guestStars',
                            'status', 'hostReady', 'guestReady', 'countdownStartedAt', 'startAt',
-                           'guestId', 'guestAlias', 'guestTitle', 'guestDuoWins'
+                           'guestId', 'guestAlias', 'guestTitle', 'guestDuoWins',
+                           'specBombAt', 'specBombCells'
                          ]);
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.hostId;

@@ -807,6 +807,70 @@ export const duoJoinRoom = functions.https.onCall(
   }
 );
 
+// ── duoThrowBomb ──────────────────────────────────────────────────────
+
+interface ThrowBombRequest {
+  roomId: string;
+  selectedCells: number[];
+}
+
+export const duoThrowBomb = functions.https.onCall(
+  async (data: ThrowBombRequest, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated.');
+    }
+
+    const { roomId, selectedCells } = data;
+
+    if (!roomId) {
+      throw new functions.https.HttpsError('invalid-argument', 'roomId is required.');
+    }
+
+    if (
+      !Array.isArray(selectedCells) ||
+      selectedCells.length < 1 ||
+      selectedCells.length > 5 ||
+      !selectedCells.every((v) => Number.isInteger(v) && v >= 0 && v <= 80)
+    ) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'selectedCells must be an array of 1–5 integers each in range 0–80.'
+      );
+    }
+
+    const uid = context.auth.uid;
+    const roomRef = db.collection(DUO_ROOMS).doc(roomId);
+
+    const snap = await roomRef.get();
+    if (!snap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Room not found.');
+    }
+    const room = snap.data() as DuoRoomData;
+
+    if (uid !== room.hostId && uid !== room.guestId) {
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        'Caller is not a participant of this room.'
+      );
+    }
+
+    if (room.status !== 'playing') {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        `Room is not in playing state (current: ${room.status}).`
+      );
+    }
+
+    await roomRef.update({
+      specBombAt: Date.now(),
+      specBombCells: selectedCells,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    return { success: true };
+  }
+);
+
 // ── Billing Protection ───────────────────────────────────────────────
 // Triggered by Pub/Sub budget alert → disables billing to stop all charges
 export const stopBillingOnBudgetAlert = functions.pubsub
