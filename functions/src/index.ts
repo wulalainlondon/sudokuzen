@@ -5,6 +5,10 @@ admin.initializeApp();
 const db = admin.firestore();
 const DUO_ROOMS = 'duo_rooms';
 const DUO_STALE_HEARTBEAT_MS = 60_000;
+const DUO_ROOM_WAITING_TTL_MS = 15 * 60_000;       // waiting 房間 15 分鐘後清理
+const DUO_ROOM_FINISHED_RETENTION_MS = 6 * 60 * 60_000; // finished 房間 6 小時後刪除
+const DUO_ROOM_COUNTDOWN_STALE_MS = 3 * 60_000;    // countdown 超過 3 分鐘視為卡死
+const DUO_PLAYING_BOTH_OFFLINE_MS = 2 * 60_000;    // 雙方都離線超過 2 分鐘 → forfeit
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -264,3 +268,179 @@ export const duoSurrender = functions.https.onCall(
     return { success: true };
   }
 );
+
+// ── duoWatchdog ──────────────────────────────────────────────────────
+
+export const duoWatchdog = functions.pubsub
+  .schedule('every 2 minutes')
+  .onRun(async (_context) => {
+    const now = Date.now();
+    const FieldValue = admin.firestore.FieldValue;
+
+    const GUEST_CLEAR = {
+      guestId: null,
+      guestAlias: null,
+      guestTitle: null,
+      guestReady: false,
+      guestProgress: 0,
+      guestFinishTime: null,
+      guestStars: null,
+      guestDuoWins: null,
+      guestHeartbeatAtMs: null,
+      guestOnline: false,
+    };
+
+    // ── Task 1：重置卡死 countdown 房間 ─────────────────────────────
+    try {
+      const countdownStaleAt = new Date(now - DUO_ROOM_COUNTDOWN_STALE_MS);
+      const snap = await db.collection(DUO_ROOMS)
+        .where('status', '==', 'countdown')
+        .where('updatedAt', '<', countdownStaleAt)
+        .get();
+
+      const batch = db.batch();
+      snap.docs.forEach((doc) => {
+        batch.update(doc.ref, {
+          status: 'waiting',
+          startAt: null,
+          countdownStartedAt: null,
+          hostReady: false,
+          guestReady: false,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+      });
+      if (!snap.empty) await batch.commit();
+      console.log(`[watchdog] task1 reset ${snap.size} stale countdown room(s)`);
+    } catch (e) {
+      console.error('[watchdog] task1 failed:', e);
+    }
+
+    // ── Task 2：踢出心跳死亡的 guest（waiting 狀態）─────────────────
+    try {
+      const snap = await db.collection(DUO_ROOMS)
+        .where('status', '==', 'waiting')
+        .where('guestId', '!=', null)
+        .get();
+
+      const batch = db.batch();
+      let count = 0;
+      snap.docs.forEach((doc) => {
+        const room = doc.data() as DuoRoomData;
+        const hbMs = room.guestHeartbeatAtMs;
+        if (hbMs && hbMs > 0 && now - hbMs > DUO_STALE_HEARTBEAT_MS) {
+          batch.update(doc.ref, {
+            ...GUEST_CLEAR,
+            updatedAt: FieldValue.serverTimestamp(),
+          });
+          count++;
+        }
+      });
+      if (count > 0) await batch.commit();
+      console.log(`[watchdog] task2 kicked ${count} stale guest(s)`);
+    } catch (e) {
+      console.error('[watchdog] task2 failed:', e);
+    }
+
+    // ── Task 3：清理 waiting 房間 TTL ───────────────────────────────
+    try {
+      const waitingExpiredAt = new Date(now - DUO_ROOM_WAITING_TTL_MS);
+      const snap = await db.collection(DUO_ROOMS)
+        .where('status', '==', 'waiting')
+        .where('updatedAt', '<', waitingExpiredAt)
+        .limit(30)
+        .get();
+
+      const batch = db.batch();
+      snap.docs.forEach((doc) => {
+        batch.update(doc.ref, {
+          status: 'idle',
+          ...GUEST_CLEAR,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+      });
+      if (!snap.empty) await batch.commit();
+      console.log(`[watchdog] task3 idled ${snap.size} expired waiting room(s)`);
+    } catch (e) {
+      console.error('[watchdog] task3 failed:', e);
+    }
+
+    // ── Task 4：刪除舊 finished 房間 ────────────────────────────────
+    try {
+      const finishedExpiredAt = new Date(now - DUO_ROOM_FINISHED_RETENTION_MS);
+      const snap = await db.collection(DUO_ROOMS)
+        .where('status', '==', 'finished')
+        .where('updatedAt', '<', finishedExpiredAt)
+        .limit(30)
+        .get();
+
+      const batch = db.batch();
+      snap.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      if (!snap.empty) await batch.commit();
+      console.log(`[watchdog] task4 deleted ${snap.size} old finished room(s)`);
+    } catch (e) {
+      console.error('[watchdog] task4 failed:', e);
+    }
+
+    // ── Task 5：強制結束雙方都離線的 playing 房間 ───────────────────
+    try {
+      const snap = await db.collection(DUO_ROOMS)
+        .where('status', '==', 'playing')
+        .limit(20)
+        .get();
+
+      const batch = db.batch();
+      let count = 0;
+      snap.docs.forEach((doc) => {
+        const room = doc.data() as DuoRoomData;
+        const hostHb = room.hostHeartbeatAtMs;
+        const guestHb = room.guestHeartbeatAtMs;
+        const hostOffline = hostHb && hostHb > 0 && now - hostHb > DUO_PLAYING_BOTH_OFFLINE_MS;
+        const guestOffline = guestHb && guestHb > 0 && now - guestHb > DUO_PLAYING_BOTH_OFFLINE_MS;
+
+        if (hostOffline && guestOffline) {
+          const update: Record<string, unknown> = {
+            updatedAt: FieldValue.serverTimestamp(),
+          };
+          if (room.hostFinishTime === null || room.hostFinishTime === undefined) {
+            update.hostFinishTime = 9999;
+            update.hostStars = 0;
+          }
+          if (room.guestFinishTime === null || room.guestFinishTime === undefined) {
+            update.guestFinishTime = 9999;
+            update.guestStars = 0;
+          }
+          batch.update(doc.ref, update);
+          count++;
+        }
+      });
+      if (count > 0) await batch.commit();
+      console.log(`[watchdog] task5 force-finished ${count} both-offline playing room(s)`);
+    } catch (e) {
+      console.error('[watchdog] task5 failed:', e);
+    }
+  });
+
+// ── Billing Protection ───────────────────────────────────────────────
+// Triggered by Pub/Sub budget alert → disables billing to stop all charges
+export const stopBillingOnBudgetAlert = functions.pubsub
+  .topic('billing-alerts')
+  .onPublish(async (message) => {
+    const data = message.json as { costAmount: number; budgetAmount: number };
+    if (data.costAmount <= data.budgetAmount) return; // 未超預算，不動作
+
+    const { GoogleAuth } = await import('google-auth-library');
+    const auth = new GoogleAuth({ scopes: ['https://www.googleapis.com/auth/cloud-billing'] });
+    const client = await auth.getClient();
+    const projectId = process.env.GCLOUD_PROJECT!;
+
+    const billingUrl = `https://cloudbilling.googleapis.com/v1/projects/${projectId}/billingInfo`;
+    await client.request({
+      url: billingUrl,
+      method: 'PUT',
+      data: { billingAccountName: '' }, // 空字串 = 停用計費
+    });
+
+    console.log(`[BillingProtection] 超過預算 $${data.budgetAmount}，已停用計費。`);
+  });
