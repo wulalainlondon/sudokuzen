@@ -23,7 +23,6 @@ import {
 import { pickDuoPuzzle, loadDuoTierPuzzles, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import { loadDuoProfile, recordDuoMatch, checkNewUnlocks, type DuoProfile } from './duoProfile';
 import type { SudokuWindow } from '../../facade/windowTypes';
-import type { FirestoreTransaction } from '../../firebase/types';
 import { escapeHtml } from '../../shared/html/escape';
 import { callDuoFunction } from '../../firebase/runtime';
 
@@ -338,25 +337,11 @@ export function updateDuoRoomUI(d: DuoRoomData): void {
 
 export async function toggleDuoReady(): Promise<void> {
   if (!gs.firebaseReady || !gs.duoRole) return;
-  const field = gs.duoRole === 'host' ? 'hostReady' : 'guestReady';
+  const roomId = getActiveDuoRoomId();
+  if (!roomId) return;
   const newReady = !gs.duoMyReady;
   try {
-    await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
-      const doc = await tx.get(duoRoomRef());
-      if (!doc.exists) return;
-      const d = doc.data() as unknown as DuoRoomData;
-      const update: Record<string, unknown> = {
-        [field]: newReady,
-        updatedAt: getFirebaseFieldValue().serverTimestamp(),
-      };
-      const hostReady = gs.duoRole === 'host' ? newReady : (d.hostReady ?? false);
-      const guestReady = gs.duoRole === 'guest' ? newReady : (d.guestReady ?? false);
-      if (hostReady && guestReady && d.guestId && d.status === 'waiting') {
-        update.status = 'countdown';
-        update.countdownStartedAt = getFirebaseFieldValue().serverTimestamp();
-      }
-      tx.update(duoRoomRef(), update);
-    });
+    await callDuoFunction('duoToggleReady', { roomId });
     gs.duoMyReady = newReady;
   } catch (e) {
     console.warn('toggleDuoReady failed:', e);
@@ -395,18 +380,9 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
 
   const targetMs = startAtTs.toMillis ? startAtTs.toMillis() : (startAtTs.seconds ?? 0) * 1000;
 
-  // Stale countdown: startAt expired >30s ago — room is stuck; host resets it back to waiting
+  // Stale countdown: startAt expired >30s ago — Watchdog handles server-side reset
   const STALE_THRESHOLD_MS = 30_000;
   if (Date.now() - targetMs > STALE_THRESHOLD_MS) {
-    if (gs.duoRole === 'host') {
-      duoRoomRef()
-        .update({
-          status: 'waiting',
-          startAt: null,
-          updatedAt: getFirebaseFieldValue().serverTimestamp(),
-        })
-        .catch((e) => console.warn('[duo] staleCountdown reset failed:', e));
-    }
     return;
   }
 
@@ -506,23 +482,9 @@ export async function launchDuoGame(): Promise<void> {
     gs.isDuoMode = false;
     _countdownLaunched = false;
     gs.duoRoundLaunched = false;
-    if (gs.duoRole === 'host') {
-      // Also reset hostReady so the waiting-handler doesn't immediately re-trigger countdown
-      duoRoomRef()
-        .update({
-          status: 'waiting',
-          startAt: null,
-          hostReady: false,
-          updatedAt: getFirebaseFieldValue().serverTimestamp(),
-        })
-        .catch((e) => console.warn('[duo] puzzleLoadFail hostReset failed:', e));
-    } else {
-      duoRoomRef()
-        .update({
-          guestReady: false,
-          updatedAt: getFirebaseFieldValue().serverTimestamp(),
-        })
-        .catch((e) => console.warn('[duo] puzzleLoadFail guestReset failed:', e));
+    const roomId = getActiveDuoRoomId();
+    if (roomId) {
+      await callDuoFunction('duoAbortGame', { roomId }).catch((e) => console.warn('[duo] duoAbortGame failed:', e));
     }
     return;
   }
@@ -555,34 +517,11 @@ export async function launchDuoGame(): Promise<void> {
   const levelTechHint = document.getElementById('level-tech-hint');
   if (levelTechHint) levelTechHint.style.display = 'none';
 
-  // Update room status to playing via transaction — only host resets progress.
-  // IMPORTANT: Never reset finishTimes here. Each round uses a fresh room where
-  // finishTimes are already null from createDuoRoom. Resetting them in this
-  // transaction creates a race: if submitDuoFinish writes between the tx read
-  // and commit, the tx retries and overwrites the finishTime with null.
+  // Update room status to playing via Cloud Function — only host resets progress.
   try {
-    bumpDuoMetric('roomWriteOps');
-    await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
-      const doc = await tx.get(duoRoomRef());
-      if (!doc.exists) return;
-      const d = doc.data() as unknown as DuoRoomData;
-      if (d.status === 'playing') return; // already transitioned
-      if (gs.duoRole === 'host') {
-        tx.update(duoRoomRef(), {
-          status: 'playing',
-          hostProgress: 0,
-          guestProgress: 0,
-          updatedAt: getFirebaseFieldValue().serverTimestamp(),
-        });
-      } else {
-        tx.update(duoRoomRef(), {
-          status: 'playing',
-          updatedAt: getFirebaseFieldValue().serverTimestamp(),
-        });
-      }
-    });
+    await callDuoFunction('duoSetPlaying', { roomId: getActiveDuoRoomId()! });
   } catch (e) {
-    console.warn('launchDuoGame transaction failed:', e);
+    console.warn('duoSetPlaying failed:', e);
     showFeedback(t('duoRuntime.roomSyncFailed'), 'error');
   }
 
@@ -862,16 +801,11 @@ export async function closeDuoResult(): Promise<void> {
   import('../../react/duoresult/duoResultBridge')
     .then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult())
     .catch((e) => console.warn('[duo] bridgeCloseDuoResult failed:', e));
-  if (gs.firebaseReady) {
-    try {
-      bumpDuoMetric('roomWriteOps');
-      await duoRoomRef().update({ status: 'finished', updatedAt: getFirebaseFieldValue().serverTimestamp() });
-    } catch {
-      /* ignore */
-    }
+  const roomId = getActiveDuoRoomId();
+  if (gs.firebaseReady && roomId) {
+    await callDuoFunction('duoCloseResult', { roomId }).catch(() => {});
   }
   resetDuoState();
-  // Navigate back to duo lobby instead of level screen
   emitNavigation({ type: 'show-duo-lobby' });
 }
 

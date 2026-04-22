@@ -422,6 +422,267 @@ export const duoWatchdog = functions.pubsub
     }
   });
 
+// ── duoToggleReady ────────────────────────────────────────────────────
+
+interface ToggleReadyRequest {
+  roomId: string;
+}
+
+export const duoToggleReady = functions.https.onCall(
+  async (data: ToggleReadyRequest, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated.');
+    }
+    const { roomId } = data;
+    if (!roomId) {
+      throw new functions.https.HttpsError('invalid-argument', 'roomId is required.');
+    }
+    const uid = context.auth.uid;
+    const roomRef = db.collection(DUO_ROOMS).doc(roomId);
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(roomRef);
+      if (!snap.exists) {
+        throw new functions.https.HttpsError('not-found', 'Room not found.');
+      }
+      const room = snap.data() as DuoRoomData;
+
+      let role: 'host' | 'guest';
+      if (uid === room.hostId) {
+        role = 'host';
+      } else if (uid === room.guestId) {
+        role = 'guest';
+      } else {
+        throw new functions.https.HttpsError('permission-denied', 'Caller is not a participant of this room.');
+      }
+
+      const newReady = !(role === 'host' ? room.hostReady : room.guestReady);
+      const update: Record<string, unknown> = {
+        [`${role}Ready`]: newReady,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      const hostReady = role === 'host' ? newReady : room.hostReady;
+      const guestReady = role === 'guest' ? newReady : room.guestReady;
+      if (hostReady && guestReady && room.guestId && room.status === 'waiting') {
+        update.status = 'countdown';
+        update.countdownStartedAt = admin.firestore.FieldValue.serverTimestamp();
+      }
+
+      tx.update(roomRef, update);
+    });
+
+    return { success: true };
+  }
+);
+
+// ── duoSetPlaying ─────────────────────────────────────────────────────
+
+interface SetPlayingRequest {
+  roomId: string;
+}
+
+export const duoSetPlaying = functions.https.onCall(
+  async (data: SetPlayingRequest, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated.');
+    }
+    const { roomId } = data;
+    if (!roomId) {
+      throw new functions.https.HttpsError('invalid-argument', 'roomId is required.');
+    }
+    const uid = context.auth.uid;
+    const roomRef = db.collection(DUO_ROOMS).doc(roomId);
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(roomRef);
+      if (!snap.exists) {
+        throw new functions.https.HttpsError('not-found', 'Room not found.');
+      }
+      const room = snap.data() as DuoRoomData;
+
+      let role: 'host' | 'guest';
+      if (uid === room.hostId) {
+        role = 'host';
+      } else if (uid === room.guestId) {
+        role = 'guest';
+      } else {
+        throw new functions.https.HttpsError('permission-denied', 'Caller is not a participant of this room.');
+      }
+
+      if (room.status === 'playing') return;
+
+      if (role === 'host') {
+        tx.update(roomRef, {
+          status: 'playing',
+          hostProgress: 0,
+          guestProgress: 0,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      } else {
+        tx.update(roomRef, {
+          status: 'playing',
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+    });
+
+    return { success: true };
+  }
+);
+
+// ── duoAbortGame ──────────────────────────────────────────────────────
+
+interface AbortGameRequest {
+  roomId: string;
+}
+
+export const duoAbortGame = functions.https.onCall(
+  async (data: AbortGameRequest, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated.');
+    }
+    const { roomId } = data;
+    if (!roomId) {
+      throw new functions.https.HttpsError('invalid-argument', 'roomId is required.');
+    }
+    const uid = context.auth.uid;
+    const roomRef = db.collection(DUO_ROOMS).doc(roomId);
+
+    const snap = await roomRef.get();
+    if (!snap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Room not found.');
+    }
+    const room = snap.data() as DuoRoomData;
+
+    let role: 'host' | 'guest';
+    if (uid === room.hostId) {
+      role = 'host';
+    } else if (uid === room.guestId) {
+      role = 'guest';
+    } else {
+      throw new functions.https.HttpsError('permission-denied', 'Caller is not a participant of this room.');
+    }
+
+    if (role === 'host') {
+      await roomRef.update({
+        status: 'waiting',
+        startAt: null,
+        countdownStartedAt: null,
+        hostReady: false,
+        guestReady: false,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    } else {
+      await roomRef.update({
+        guestReady: false,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    return { success: true };
+  }
+);
+
+// ── duoLeaveRoom ──────────────────────────────────────────────────────
+
+interface LeaveRoomRequest {
+  roomId: string;
+}
+
+export const duoLeaveRoom = functions.https.onCall(
+  async (data: LeaveRoomRequest, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated.');
+    }
+    const { roomId } = data;
+    if (!roomId) {
+      throw new functions.https.HttpsError('invalid-argument', 'roomId is required.');
+    }
+    const uid = context.auth.uid;
+    const roomRef = db.collection(DUO_ROOMS).doc(roomId);
+
+    const snap = await roomRef.get();
+    if (!snap.exists) {
+      return { success: true };
+    }
+    const room = snap.data() as DuoRoomData;
+
+    let role: 'host' | 'guest' | null = null;
+    if (uid === room.hostId) {
+      role = 'host';
+    } else if (uid === room.guestId) {
+      role = 'guest';
+    } else {
+      return { success: true };
+    }
+
+    if (role === 'host') {
+      await roomRef.update({
+        status: 'idle',
+        countdownStartedAt: null,
+        startAt: null,
+        hostReady: false,
+        guestReady: false,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    } else {
+      await roomRef.update({
+        guestId: null,
+        guestAlias: null,
+        guestTitle: null,
+        guestReady: false,
+        guestProgress: 0,
+        guestFinishTime: null,
+        guestStars: null,
+        guestDuoWins: null,
+        guestHeartbeatAtMs: null,
+        guestOnline: false,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    return { success: true };
+  }
+);
+
+// ── duoCloseResult ────────────────────────────────────────────────────
+
+interface CloseResultRequest {
+  roomId: string;
+}
+
+export const duoCloseResult = functions.https.onCall(
+  async (data: CloseResultRequest, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated.');
+    }
+    const { roomId } = data;
+    if (!roomId) {
+      throw new functions.https.HttpsError('invalid-argument', 'roomId is required.');
+    }
+    const uid = context.auth.uid;
+    const roomRef = db.collection(DUO_ROOMS).doc(roomId);
+
+    const snap = await roomRef.get();
+    if (!snap.exists) {
+      return { success: true };
+    }
+    const room = snap.data() as DuoRoomData;
+
+    if (uid !== room.hostId && uid !== room.guestId) {
+      return { success: true };
+    }
+
+    await roomRef.update({
+      status: 'finished',
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    return { success: true };
+  }
+);
+
 // ── Billing Protection ───────────────────────────────────────────────
 // Triggered by Pub/Sub budget alert → disables billing to stop all charges
 export const stopBillingOnBudgetAlert = functions.pubsub

@@ -56,10 +56,13 @@ service cloud.firestore {
                       || (resource.data.guestId == null && resource.data.status == 'waiting')
                     )
                     && validDuoFields()
-                    // Phase 1: finishTime/stars 只能透過 Cloud Functions 寫入
+                    // Phase 1+3+4: finishTime/stars/status/ready/countdown 只能透過 Cloud Functions 寫入
                     && !request.resource.data.diff(resource.data)
                          .affectedKeys()
-                         .hasAny(['hostFinishTime', 'guestFinishTime', 'hostStars', 'guestStars']);
+                         .hasAny([
+                           'hostFinishTime', 'guestFinishTime', 'hostStars', 'guestStars',
+                           'status', 'hostReady', 'guestReady', 'countdownStartedAt', 'startAt'
+                         ]);
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.hostId;
     }
