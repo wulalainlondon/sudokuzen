@@ -89,10 +89,6 @@ export function getActiveDuoRoomId(): string | null {
   return _activeRoomId;
 }
 
-function makeRoomId(): string {
-  return `r_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
-}
-
 export function duoRoomRef(roomId?: string) {
   const id = roomId || _activeRoomId;
   if (!id) throw new Error('duoRoomRef: no room id');
@@ -348,47 +344,6 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
 }
 
 // ── Create room ──────────────────────────────────────────────────────
-
-function buildHostRoom(
-  tierId: string,
-  modeId: string,
-  puzzleSeed: number,
-  playerId: string,
-  alias: string,
-): Record<string, unknown> {
-  const profile = loadDuoProfile();
-  const now = Date.now();
-  return {
-    tierId,
-    modeId,
-    puzzleSeed,
-    levelId: 0, // legacy compat — actual puzzle chosen by seed
-    status: 'waiting',
-    hostId: playerId,
-    hostAlias: alias,
-    hostTitle: getEquippedTitleDisplay(),
-    hostReady: false,
-    hostProgress: 0,
-    hostFinishTime: null,
-    hostStars: null,
-    hostDuoWins: profile.wins,
-    guestId: null,
-    guestAlias: null,
-    guestTitle: null,
-    guestReady: false,
-    guestProgress: 0,
-    guestFinishTime: null,
-    guestStars: null,
-    guestDuoWins: null,
-    startAt: null,
-    levelLocked: false,
-    hostHeartbeatAtMs: now,
-    guestHeartbeatAtMs: null,
-    hostOnline: true,
-    guestOnline: false,
-    updatedAt: firebaseServerTimestamp(),
-  };
-}
 
 export async function createDuoRoom(tierId: string, modeId: string): Promise<string | null> {
   if (!gs.firebaseReady) return null;
