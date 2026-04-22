@@ -13,11 +13,16 @@ interface FirebaseAuth {
   onAuthStateChanged(cb: (user: { uid: string } | null) => void): () => void;
 }
 
+interface FirebaseFunctions {
+  httpsCallable(name: string): (data?: unknown) => Promise<{ data: unknown }>;
+}
+
 export interface FirebaseCompat {
   apps: unknown[];
   initializeApp(config: Record<string, string>): void;
   firestore: FirestoreNamespace;
   auth(): FirebaseAuth;
+  functions(): FirebaseFunctions;
 }
 
 let _firebaseCompat: FirebaseCompat | null = null;
@@ -70,6 +75,7 @@ export async function ensureFirebaseRuntime(): Promise<FirebaseCompat | null> {
     const appModule = await import('firebase/compat/app');
     await import('firebase/compat/firestore');
     await import('firebase/compat/auth');
+    await import('firebase/compat/functions');
     _firebaseCompat = (appModule.default || appModule) as unknown as FirebaseCompat;
     return _firebaseCompat;
   })();
@@ -113,4 +119,12 @@ export async function initAnonymousAuth(): Promise<string | null> {
 
 export function getAuthUid(): string | null {
   return _authUid;
+}
+
+export async function callDuoFunction<T = unknown>(name: string, data: unknown): Promise<T> {
+  const fb = await ensureFirebaseRuntime();
+  if (!fb) throw new Error('Firebase not available');
+  const fn = fb.functions().httpsCallable(name);
+  const result = await fn(data);
+  return result.data as T;
 }

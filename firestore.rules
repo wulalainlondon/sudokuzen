@@ -55,7 +55,11 @@ service cloud.firestore {
                       || request.auth.uid == resource.data.guestId
                       || (resource.data.guestId == null && resource.data.status == 'waiting')
                     )
-                    && validDuoFields();
+                    && validDuoFields()
+                    // Phase 1: finishTime/stars 只能透過 Cloud Functions 寫入
+                    && !request.resource.data.diff(resource.data)
+                         .affectedKeys()
+                         .hasAny(['hostFinishTime', 'guestFinishTime', 'hostStars', 'guestStars']);
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.hostId;
     }

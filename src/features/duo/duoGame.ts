@@ -1,4 +1,4 @@
-// Duo game logic — countdown, progress, emoji, result
+// Duo game logic — countdown, progress, result
 // Extracted from duo.ts, adapted for tier/mode system.
 
 import { gs, type DuoRoomData } from '../../game/state';
@@ -18,12 +18,14 @@ import {
   DUO_STALE_HEARTBEAT_MS,
   setLastStaleGuestPruneMs,
   getLastStaleGuestPruneMs,
+  getActiveDuoRoomId,
 } from './duoRoom';
 import { pickDuoPuzzle, loadDuoTierPuzzles, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import { loadDuoProfile, recordDuoMatch, checkNewUnlocks, type DuoProfile } from './duoProfile';
 import type { SudokuWindow } from '../../facade/windowTypes';
 import type { FirestoreTransaction } from '../../firebase/types';
 import { escapeHtml } from '../../shared/html/escape';
+import { callDuoFunction } from '../../firebase/runtime';
 
 // ── Module-level guards ──────────────────────────────────────────────
 
@@ -58,20 +60,20 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
 
   // 對手剛完成，我還在玩 → 開始被觀看（用 != null 避免 finishTime=0 被判為 falsy）
   if (myFinishTime == null && oppFinishTime != null) {
-    import('./duoSpectator').then((m) => m.startBeingWatched()).catch(() => {});
+    import('./duoSpectator').then((m) => m.startBeingWatched()).catch((e) => console.warn('[duo] startBeingWatched failed:', e));
   }
   // 炸彈處理（給正在被看的那方）
   if (myFinishTime == null && oppFinishTime != null && d.specBombAt) {
-    import('./duoSpectator').then((m) => m.handleBombSnapshot(d)).catch(() => {});
+    import('./duoSpectator').then((m) => m.handleBombSnapshot(d)).catch((e) => console.warn('[duo] handleBombSnapshot failed:', e));
   }
   // 我在觀戰 → 把 snapshot 轉給 spectator 模組
   if (myFinishTime != null && oppFinishTime == null) {
-    import('./duoSpectator').then((m) => m.handleSpectatorSnapshot(d)).catch(() => {});
+    import('./duoSpectator').then((m) => m.handleSpectatorSnapshot(d)).catch((e) => console.warn('[duo] handleSpectatorSnapshot failed:', e));
   }
   // 雙方都完成 → 退出觀戰
   if (myFinishTime != null && oppFinishTime != null) {
-    import('./duoSpectator').then((m) => m.exitSpectatorMode()).catch(() => {});
-    import('./duoSpectator').then((m) => m.stopBeingWatched()).catch(() => {});
+    import('./duoSpectator').then((m) => m.exitSpectatorMode()).catch((e) => console.warn('[duo] exitSpectatorMode failed:', e));
+    import('./duoSpectator').then((m) => m.stopBeingWatched()).catch((e) => console.warn('[duo] stopBeingWatched failed:', e));
   }
 
   import('./duoLobby')
@@ -79,7 +81,7 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
       m.setDuoLobbyConnectionState('connected');
       if (d.status === 'waiting') m.refreshDuoLobbyRoom();
     })
-    .catch(() => {});
+    .catch((e) => console.warn('[duo] duoLobby sync failed:', e));
 
   if (d.status === 'waiting' || d.status === 'countdown') {
     const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
@@ -118,7 +120,7 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
           guestOnline: false,
           updatedAt: getFirebaseFieldValue().serverTimestamp(),
         })
-        .catch(() => {});
+        .catch((e) => console.warn('[duo] staleGuestPrune failed:', e));
       bumpDuoMetric('staleGuestReleases');
       bumpDuoMetric('roomWriteOps');
     }
@@ -132,7 +134,7 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
       : d.startAt;
     if (effectiveStartAt) {
       if (d.tierId) {
-        loadDuoTierPuzzles(d.tierId).catch(() => {});
+        loadDuoTierPuzzles(d.tierId).catch((e) => console.warn('[duo] loadDuoTierPuzzles failed:', e));
       }
       const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
       const isInGame = gameContainer && gameContainer.style.display !== 'none' && !gs.isDuoMode;
@@ -143,8 +145,7 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
   }
 
   if (d.status === 'playing' && d.modeId === 'chessClock') {
-    import('./duoChessClock').then((m) => m.handleChessClockSnapshot(d)).catch(() => {});
-    handleDuoEmoji(d);
+    import('./duoChessClock').then((m) => m.handleChessClockSnapshot(d)).catch((e) => console.warn('[duo] handleChessClockSnapshot failed:', e));
     return;
   }
 
@@ -188,8 +189,6 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
         void autoForfeitOpponent();
       }
     }
-
-    handleDuoEmoji(d);
 
     // Check opponent finished
     const oppFinish = gs.duoRole === 'host' ? d.guestFinishTime : d.hostFinishTime;
@@ -406,7 +405,7 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
           startAt: null,
           updatedAt: getFirebaseFieldValue().serverTimestamp(),
         })
-        .catch(() => {});
+        .catch((e) => console.warn('[duo] staleCountdown reset failed:', e));
     }
     return;
   }
@@ -516,14 +515,14 @@ export async function launchDuoGame(): Promise<void> {
           hostReady: false,
           updatedAt: getFirebaseFieldValue().serverTimestamp(),
         })
-        .catch(() => {});
+        .catch((e) => console.warn('[duo] puzzleLoadFail hostReset failed:', e));
     } else {
       duoRoomRef()
         .update({
           guestReady: false,
           updatedAt: getFirebaseFieldValue().serverTimestamp(),
         })
-        .catch(() => {});
+        .catch((e) => console.warn('[duo] puzzleLoadFail guestReset failed:', e));
     }
     return;
   }
@@ -539,18 +538,16 @@ export async function launchDuoGame(): Promise<void> {
 
   // Hide room view & lobby, start game
   emitNavigation({ type: 'hide-pre-level-modal' });
-  import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch(() => {});
-  import('./duoLobby').then((m) => m.closeDuoLobby()).catch(() => {});
+  import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch((e) => console.warn('[duo] closeDuoRoomView failed:', e));
+  import('./duoLobby').then((m) => m.closeDuoLobby()).catch((e) => console.warn('[duo] closeDuoLobby failed:', e));
   const levelScreen = document.getElementById('level-screen');
   if (levelScreen) levelScreen.style.display = 'none';
   const { initGame } = await import('../../game/core');
   initGame(level.id, true, false, null, level);
 
-  // Show duo progress bar and emoji bar
+  // Show duo progress bar
   const progressContainer = document.getElementById('duo-progress-container');
   if (progressContainer) progressContainer.style.display = 'flex';
-  const emojiBar = document.getElementById('duo-emoji-bar');
-  if (emojiBar) emojiBar.style.display = 'flex';
   const timerEl = document.getElementById('timer');
   if (timerEl) timerEl.style.display = 'none';
   const quitBtn = document.getElementById('quit-btn');
@@ -609,11 +606,11 @@ export function updateDuoProgress(): void {
   const field = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
   duoRoomRef()
     .update({ [field]: filled, updatedAt: getFirebaseFieldValue().serverTimestamp() })
-    .catch(() => {});
+    .catch((e) => console.warn('[duo] updateDuoProgress failed:', e));
   bumpDuoMetric('roomWriteOps');
 
   // 同步觀戰盤面（如果對手正在觀看）
-  import('./duoSpectator').then((m) => m.syncSpecBoardNow()).catch(() => {});
+  import('./duoSpectator').then((m) => m.syncSpecBoardNow()).catch((e) => console.warn('[duo] syncSpecBoardNow import failed:', e));
 }
 
 function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
@@ -663,8 +660,9 @@ function showDuoOpponentFinished(alias: string, timeSec: number, stars: number |
       btn.remove();
       await submitDuoFinish(9999, 0);
     };
-    const emojiBarEl = document.getElementById('duo-emoji-bar');
-    if (emojiBarEl) emojiBarEl.insertAdjacentElement('afterend', btn);
+    const progressContainer = document.getElementById('duo-progress-container');
+    if (progressContainer) progressContainer.insertAdjacentElement('afterend', btn);
+    else document.body.appendChild(btn);
   }
 }
 
@@ -674,23 +672,21 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
   if (!gs.isDuoMode || !gs.firebaseReady) return;
   if (_duoFinishSubmitted) return;
   _duoFinishSubmitted = true;
-  const timeField = gs.duoRole === 'host' ? 'hostFinishTime' : 'guestFinishTime';
-  const starsField = gs.duoRole === 'host' ? 'hostStars' : 'guestStars';
-  const progressField = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
+  const roomId = getActiveDuoRoomId();
+  if (!roomId) return;
   try {
-    bumpDuoMetric('roomWriteOps');
-    await duoRoomRef().update({
-      [timeField]: timeSec,
-      [starsField]: stars,
-      [progressField]: gs.duoTotalToFill,
-      updatedAt: getFirebaseFieldValue().serverTimestamp(),
+    await callDuoFunction('duoSubmitFinish', {
+      roomId,
+      timeSec,
+      stars,
+      progress: gs.duoTotalToFill,
     });
     // 進入觀戰模式（如果對手還未完成；用 != null 避免 finishTime=0 被判為 falsy）
     const oppDone = gs.duoRole === 'host'
       ? gs.duoRoomData?.guestFinishTime != null
       : gs.duoRoomData?.hostFinishTime != null;
     if (!oppDone) {
-      import('./duoSpectator').then((m) => m.enterSpectatorMode(gs.duoRoomData!)).catch(() => {});
+      import('./duoSpectator').then((m) => m.enterSpectatorMode(gs.duoRoomData!)).catch((e) => console.warn('[duo] enterSpectatorMode failed:', e));
     }
   } catch (e) {
     console.warn('[duo] submitDuoFinish FAILED:', e);
@@ -702,14 +698,10 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
 async function autoForfeitOpponent(): Promise<void> {
   if (_autoForfeitStarted || !gs.isDuoMode || !gs.firebaseReady) return;
   _autoForfeitStarted = true;
-  const timeField = gs.duoRole === 'host' ? 'guestFinishTime' : 'hostFinishTime';
-  const starsField = gs.duoRole === 'host' ? 'guestStars' : 'hostStars';
+  const roomId = getActiveDuoRoomId();
+  if (!roomId) return;
   try {
-    await duoRoomRef().update({
-      [timeField]: 9999,
-      [starsField]: 0,
-      updatedAt: getFirebaseFieldValue().serverTimestamp(),
-    });
+    await callDuoFunction('duoAutoForfeitOpponent', { roomId });
   } catch (e) {
     console.warn('autoForfeitOpponent failed:', e);
   }
@@ -840,9 +832,6 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     showFeedback(t('duo.unlockNew') + ': ' + items.join(', '), 'success');
   }
 
-  // Hide emoji bar
-  const emojiBarEl = document.getElementById('duo-emoji-bar');
-  if (emojiBarEl) emojiBarEl.style.display = 'none';
   const forfeitBtn = document.getElementById('duo-forfeit-btn');
   if (forfeitBtn) forfeitBtn.remove();
 
@@ -856,83 +845,7 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     .then(({ bridgeOpenDuoResult }) => {
       bridgeOpenDuoResult({ contentHtml, iWon, isDraw, levelId: d.levelId ?? null });
     })
-    .catch(() => {});
-}
-
-// ── Emoji ────────────────────────────────────────────────────────────
-
-export function sendDuoEmoji(emoji: string): void {
-  if (!gs.isDuoMode || !gs.firebaseReady) return;
-  const now = Date.now();
-  if (now - gs.duoEmojiCooldown < 1500) return;
-  gs.duoEmojiCooldown = now;
-  const field = gs.duoRole === 'host' ? 'hostEmoji' : 'guestEmoji';
-  const tsField = gs.duoRole === 'host' ? 'hostEmojiTs' : 'guestEmojiTs';
-  duoRoomRef()
-    .update({ [field]: emoji, [tsField]: Date.now() })
-    .catch(() => {});
-  spawnEmojiFloat(emoji, true);
-  // Sent ring feedback on the button
-  const btns = document.querySelectorAll('.duo-emoji-btn');
-  btns.forEach((btn) => {
-    if (btn.textContent?.trim() === emoji) {
-      btn.classList.remove('sent');
-      void (btn as HTMLElement).offsetWidth; // reflow
-      btn.classList.add('sent');
-      setTimeout(() => btn.classList.remove('sent'), 500);
-    }
-  });
-}
-
-function handleDuoEmoji(d: DuoRoomData): void {
-  if (!gs.isDuoMode) return;
-  const emojiField = gs.duoRole === 'host' ? 'guestEmoji' : 'hostEmoji';
-  const tsField = gs.duoRole === 'host' ? 'guestEmojiTs' : 'hostEmojiTs';
-  const emoji = d[emojiField];
-  const ts = d[tsField];
-  if (!emoji || !ts) return;
-  const key = `${ts}`;
-  if (key === gs.duoLastEmojiSeen) return;
-  gs.duoLastEmojiSeen = key;
-  spawnEmojiFloat(emoji, false);
-
-  // Show bubble with opponent name
-  const oppAlias = gs.duoRole === 'host' ? d.guestAlias || '' : d.hostAlias;
-  spawnEmojiBubble(emoji, oppAlias);
-}
-
-function spawnEmojiBubble(emoji: string, alias: string): void {
-  const existing = document.querySelector('.duo-emoji-bubble');
-  if (existing) existing.remove();
-  const el = document.createElement('div');
-  el.className = 'duo-emoji-bubble';
-  const nameSpan = document.createElement('span');
-  nameSpan.className = 'duo-emoji-bubble-name';
-  nameSpan.textContent = alias;
-  const emojiSpan = document.createElement('span');
-  emojiSpan.className = 'duo-emoji-bubble-emoji';
-  emojiSpan.textContent = emoji;
-  el.appendChild(nameSpan);
-  el.appendChild(emojiSpan);
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2200);
-}
-
-function spawnEmojiFloat(emoji: string, isSelf: boolean): void {
-  const el = document.createElement('div');
-  el.className = 'duo-emoji-float';
-  el.textContent = emoji;
-  const x = 50 + (Math.random() - 0.5) * 30;
-  if (isSelf) {
-    el.style.bottom = '120px';
-    el.style.left = `${x}%`;
-  } else {
-    el.style.top = '80px';
-    el.style.left = `${x}%`;
-    if (navigator.vibrate) navigator.vibrate(15);
-  }
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1500);
+    .catch((e) => console.warn('[duo] bridgeOpenDuoResult failed:', e));
 }
 
 // ── Surrender ────────────────────────────────────────────────────────
@@ -948,7 +861,7 @@ export async function surrenderDuo(): Promise<void> {
 export async function closeDuoResult(): Promise<void> {
   import('../../react/duoresult/duoResultBridge')
     .then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult())
-    .catch(() => {});
+    .catch((e) => console.warn('[duo] bridgeCloseDuoResult failed:', e));
   if (gs.firebaseReady) {
     try {
       bumpDuoMetric('roomWriteOps');
@@ -984,7 +897,6 @@ export function resetDuoState(): void {
   _autoForfeitStarted = false;
   _lastSubmittedProgress = -1;
   _gameStartedAtMs = 0;
-  gs.duoEmojiCooldown = 0;
   gs.duoPenaltySeconds = 0;
   gs.duoCooldownUntil = 0;
   gs.duoLastErrorCell = -1;
@@ -1013,30 +925,13 @@ export function resetDuoState(): void {
     gs.duoUnsubscribe = null;
   }
   stopDuoRoomHeartbeat();
-  // Clean up emoji fields
-  if (gs.firebaseReady) {
-    try {
-      duoRoomRef()
-        .update({
-          hostEmoji: null,
-          hostEmojiTs: null,
-          guestEmoji: null,
-          guestEmojiTs: null,
-        })
-        .catch(() => {});
-    } catch {
-      /* no active room */
-    }
-  }
-  if (gs.isChessClockMode) {
-    import('./duoChessClock').then((m) => m.resetChessClockState()).catch(() => {});
-  }
-  import('./duoSpectator').then((m) => m.resetSpectatorState()).catch(() => {});
-  import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch(() => {});
+  // Always reset chess clock state — resetChessClockState() is idempotent when not active.
+  // Guarding on gs.isChessClockMode risks leaving the RAF alive if the flag was never set.
+  import('./duoChessClock').then((m) => m.resetChessClockState()).catch((e) => console.warn('[duo] resetChessClockState failed:', e));
+  import('./duoSpectator').then((m) => m.resetSpectatorState()).catch((e) => console.warn('[duo] resetSpectatorState failed:', e));
+  import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch((e) => console.warn('[duo] closeDuoRoomView (reset) failed:', e));
   const progressContainer = document.getElementById('duo-progress-container');
   if (progressContainer) progressContainer.style.display = 'none';
-  const emojiBarEl = document.getElementById('duo-emoji-bar');
-  if (emojiBarEl) emojiBarEl.style.display = 'none';
   const timerEl = document.getElementById('timer');
   if (timerEl) timerEl.style.display = '';
   const quitBtn = document.getElementById('quit-btn');
@@ -1045,11 +940,9 @@ export function resetDuoState(): void {
   if (levelTechHint) levelTechHint.style.display = '';
   const forfeitBtn = document.getElementById('duo-forfeit-btn');
   if (forfeitBtn) forfeitBtn.remove();
-  gs.duoLastEmojiSeen = '';
   const countdownOverlay = document.getElementById('duo-countdown-overlay');
   if (countdownOverlay) countdownOverlay.remove();
-  document.querySelectorAll('.duo-emoji-bubble, .duo-emoji-float').forEach((el) => el.remove());
   clearActiveRoomId();
   invalidateWaitingRoomsCache();
-  import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch(() => {});
+  import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch((e) => console.warn('[duo] refreshDuoLobbyRoom failed:', e));
 }
