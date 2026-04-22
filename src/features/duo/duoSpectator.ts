@@ -382,7 +382,7 @@ export function throwBomb(): void {
   // Randomly pick up to 5
   const selected: number[] = [];
   const pool = [...emptyCells];
-  while (selected.length < 1 && pool.length > 0) {
+  while (selected.length < 5 && pool.length > 0) {
     const randIdx = Math.floor(Math.random() * pool.length);
     selected.push(pool[randIdx]);
     pool.splice(randIdx, 1);

@@ -61,6 +61,8 @@ let _lastDuoCleanupMs = 0;
 let _snapshotRetryCount = 0;
 let _snapshotRetryTimeout: ReturnType<typeof setTimeout> | null = null;
 let _heartbeatConsecFailures = 0;
+let _heartbeatRetryTimeout: ReturnType<typeof setTimeout> | null = null;
+let _visibilityHandler: (() => void) | null = null;
 
 // Snapshot handler — set by duoGame.ts to break circular dependency
 let _snapshotHandler: ((d: DuoRoomData) => void) | null = null;
@@ -208,7 +210,10 @@ function startDuoRoomHeartbeat(): void {
       // Retry once quickly on transient failure (≤2 consecutive) so opponent
       // doesn't see a stale heartbeat during a brief network blip.
       if (_heartbeatConsecFailures <= 2) {
-        setTimeout(() => { void tick(); }, 3_000);
+        _heartbeatRetryTimeout = setTimeout(() => {
+          _heartbeatRetryTimeout = null;
+          void tick();
+        }, 3_000);
       }
     }
   };
@@ -223,7 +228,12 @@ export function stopDuoRoomHeartbeat(): void {
     clearInterval(_duoHeartbeatTimer);
     _duoHeartbeatTimer = null;
   }
+  if (_heartbeatRetryTimeout) {
+    clearTimeout(_heartbeatRetryTimeout);
+    _heartbeatRetryTimeout = null;
+  }
   _heartbeatConsecFailures = 0;
+  detachVisibilityHandler();
 }
 
 // ── Cleanup stale rooms ──────────────────────────────────────────────
@@ -423,6 +433,7 @@ export function subscribeDuoRoom(): void {
   _snapshotRetryCount = 0;
   _attachSnapshotListener();
   startDuoRoomHeartbeat();
+  attachVisibilityHandler();
 }
 
 function _attachSnapshotListener(): void {
@@ -484,12 +495,20 @@ async function recoverDuoOnForeground(): Promise<void> {
   }
 }
 
-if (typeof document !== 'undefined') {
-  document.addEventListener('visibilitychange', () => {
+function attachVisibilityHandler(): void {
+  if (_visibilityHandler || typeof document === 'undefined') return;
+  _visibilityHandler = () => {
     if (document.visibilityState !== 'visible') return;
     if (!_activeRoomId || !gs.duoRole) return;
     void recoverDuoOnForeground();
-  });
+  };
+  document.addEventListener('visibilitychange', _visibilityHandler);
+}
+
+function detachVisibilityHandler(): void {
+  if (!_visibilityHandler) return;
+  document.removeEventListener('visibilitychange', _visibilityHandler);
+  _visibilityHandler = null;
 }
 
 // ── Resume ───────────────────────────────────────────────────────────
@@ -557,7 +576,14 @@ export async function leaveDuoRoom(): Promise<void> {
   try {
     if (gs.duoRole === 'host') {
       bumpDuoMetric('roomWriteOps');
-      await duoRoomRef().update({ status: 'idle' });
+      await duoRoomRef().update({
+        status: 'idle',
+        countdownStartedAt: null,
+        startAt: null,
+        hostReady: false,
+        guestReady: false,
+        updatedAt: firebaseServerTimestamp(),
+      });
     } else {
       bumpDuoMetric('roomWriteOps');
       await duoRoomRef().update({

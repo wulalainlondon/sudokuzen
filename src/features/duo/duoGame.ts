@@ -36,6 +36,7 @@ let _duoOpponentOfflineNotified = false;
 let _lastSubmittedProgress = -1;
 let _autoForfeitStarted = false;
 let _gameStartedAtMs = 0;
+let _countdownBeepTimers: ReturnType<typeof setTimeout>[] = [];
 
 // Grace period after game start: don't flag opponent offline during this window.
 // Covers cases where heartbeat was briefly paused at the countdown→playing transition.
@@ -93,18 +94,6 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     gs.duoCountdownStartMs = null;
     _countdownLaunched = false;
 
-    // Host: if both ready, trigger countdown
-    if (gs.duoRole === 'host' && d.hostReady && d.guestReady && d.guestId && !_countdownLaunched) {
-      duoRoomRef()
-        .update({
-          status: 'countdown',
-          countdownStartedAt: getFirebaseFieldValue().serverTimestamp(),
-          updatedAt: getFirebaseFieldValue().serverTimestamp(),
-        })
-        .catch(() => {});
-      bumpDuoMetric('roomWriteOps');
-    }
-
     // Host: prune stale guest
     const guestHb = Number(d.guestHeartbeatAtMs || 0);
     if (
@@ -155,7 +144,8 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
 
   if (d.status === 'playing' && d.modeId === 'chessClock') {
     import('./duoChessClock').then((m) => m.handleChessClockSnapshot(d)).catch(() => {});
-    return; // chess clock 完全接管
+    handleDuoEmoji(d);
+    return;
   }
 
   if (d.status === 'playing') {
@@ -210,7 +200,6 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
 
     // Check if both finished — guard gs.isDuoMode to prevent stale snapshots
     // from triggering a result before the game has actually launched.
-    console.log('[duo] snap hT=', d.hostFinishTime, 'gT=', d.guestFinishTime, 'role=', gs.duoRole, 'resultShown=', _duoResultShown);
     if (d.hostFinishTime != null && d.guestFinishTime != null && gs.isDuoMode) {
       showDuoResult(d);
     }
@@ -361,13 +350,11 @@ export async function toggleDuoReady(): Promise<void> {
         [field]: newReady,
         updatedAt: getFirebaseFieldValue().serverTimestamp(),
       };
-      if (gs.duoRole === 'host') {
-        const hostReady = newReady;
-        const guestReady = d.guestReady;
-        if (hostReady && guestReady && d.guestId) {
-          update.status = 'countdown';
-          update.countdownStartedAt = getFirebaseFieldValue().serverTimestamp();
-        }
+      const hostReady = gs.duoRole === 'host' ? newReady : (d.hostReady ?? false);
+      const guestReady = gs.duoRole === 'guest' ? newReady : (d.guestReady ?? false);
+      if (hostReady && guestReady && d.guestId && d.status === 'waiting') {
+        update.status = 'countdown';
+        update.countdownStartedAt = getFirebaseFieldValue().serverTimestamp();
       }
       tx.update(duoRoomRef(), update);
     });
@@ -394,7 +381,11 @@ function playCountdownBeep(final = false): void {
     osc.start();
     const duration = final ? 0.3 : 0.15;
     osc.stop(ctx.currentTime + duration);
-    setTimeout(() => ctx.close().catch(() => {}), duration * 1000 + 200);
+    const beepTimer = setTimeout(() => {
+      ctx.close().catch(() => {});
+      _countdownBeepTimers = _countdownBeepTimers.filter((t) => t !== beepTimer);
+    }, duration * 1000 + 200);
+    _countdownBeepTimers.push(beepTimer);
   } catch {}
 }
 
@@ -557,7 +548,6 @@ export async function launchDuoGame(): Promise<void> {
 
   // Show duo progress bar and emoji bar
   const progressContainer = document.getElementById('duo-progress-container');
-  console.log('[duo] launchDuoGame: setting progressContainer display=flex, el=', !!progressContainer);
   if (progressContainer) progressContainer.style.display = 'flex';
   const emojiBar = document.getElementById('duo-emoji-bar');
   if (emojiBar) emojiBar.style.display = 'flex';
@@ -687,7 +677,6 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
   const timeField = gs.duoRole === 'host' ? 'hostFinishTime' : 'guestFinishTime';
   const starsField = gs.duoRole === 'host' ? 'hostStars' : 'guestStars';
   const progressField = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
-  console.log('[duo] submitDuoFinish START role=', gs.duoRole, 'time=', timeSec, 'fill=', gs.duoTotalToFill);
   try {
     bumpDuoMetric('roomWriteOps');
     await duoRoomRef().update({
@@ -696,7 +685,6 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
       [progressField]: gs.duoTotalToFill,
       updatedAt: getFirebaseFieldValue().serverTimestamp(),
     });
-    console.log('[duo] submitDuoFinish OK role=', gs.duoRole);
     // 進入觀戰模式（如果對手還未完成；用 != null 避免 finishTime=0 被判為 falsy）
     const oppDone = gs.duoRole === 'host'
       ? gs.duoRoomData?.guestFinishTime != null
@@ -815,7 +803,7 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     return `<div class="duo-result-card ${isWinner ? 'winner' : ''}">
       ${resultLabel}
       <div class="duo-result-crown">${isWinner ? '\u{1F451}' : ''}</div>
-      <div class="duo-result-alias">${alias || '--'}</div>
+      <div class="duo-result-alias">${escapeHtml(alias) || '--'}</div>
       ${timeDisplay}
       ${starsDisplay}
     </div>`;
@@ -986,6 +974,8 @@ export function resetDuoState(): void {
   _duoResultShown = false;
   _countdownLaunched = false;
   _duoFinishSubmitted = false;
+  _countdownBeepTimers.forEach((t) => clearTimeout(t));
+  _countdownBeepTimers = [];
   if (_duoResultRetryTimer) {
     clearTimeout(_duoResultRetryTimer);
     _duoResultRetryTimer = null;

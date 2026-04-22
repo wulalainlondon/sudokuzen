@@ -18,6 +18,7 @@ let _duoLobbyPollTimer: ReturnType<typeof setTimeout> | null = null;
 let _duoLobbyOpenedAtMs = 0;
 let _selectedTier = 'tier0';
 let _selectedMode = 'standard';
+let _roomListListenerBound = false;
 
 function duoLobbyEl(): HTMLElement | null {
   return document.getElementById('duo-lobby');
@@ -106,6 +107,35 @@ function renderModeRuleCard(): void {
 
 // ── Room list ────────────────────────────────────────────────────────
 
+// Bind a single delegated click listener on duo-room-list once.
+// All dynamic .duo-room-item buttons inside share this listener — no per-render binding.
+function bindRoomListDelegate(): void {
+  if (_roomListListenerBound) return;
+  const list = document.getElementById('duo-room-list');
+  if (!list) return;
+  _roomListListenerBound = true;
+  list.addEventListener('click', async (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.duo-room-item');
+    if (!btn || btn.disabled) return;
+    const roomId = btn.dataset.room;
+    if (!roomId) return;
+    btn.disabled = true;
+    try {
+      const { joinDuoRoom } = await import('./duoRoom');
+      const ok = await joinDuoRoom(roomId);
+      if (!ok) {
+        showFeedback(t('duo.noJoinableRoom'), 'error');
+        return;
+      }
+      closeDuoLobby();
+      const { openDuoRoomView } = await import('./duoRoomView');
+      openDuoRoomView();
+    } finally {
+      btn.disabled = false;
+    }
+  });
+}
+
 function renderRoomList(rooms: DuoRoomSummary[]): void {
   const list = document.getElementById('duo-room-list');
   if (!list) return;
@@ -129,27 +159,7 @@ function renderRoomList(rooms: DuoRoomSummary[]): void {
       </button>`;
     })
     .join('');
-  list.querySelectorAll('.duo-room-item').forEach((el) => {
-    el.addEventListener('click', async () => {
-      const btn = el as HTMLButtonElement;
-      const roomId = btn.dataset.room;
-      if (!roomId || btn.disabled) return;
-      btn.disabled = true;
-      try {
-        const { joinDuoRoom } = await import('./duoRoom');
-        const ok = await joinDuoRoom(roomId);
-        if (!ok) {
-          showFeedback(t('duo.noJoinableRoom'), 'error');
-          return;
-        }
-        closeDuoLobby();
-        const { openDuoRoomView } = await import('./duoRoomView');
-        openDuoRoomView();
-      } finally {
-        btn.disabled = false;
-      }
-    });
-  });
+  bindRoomListDelegate();
 }
 
 async function refreshRoomCard(): Promise<void> {
@@ -299,7 +309,9 @@ export async function joinDuoRoomFromLobby(): Promise<void> {
   const now = Date.now();
   const fresh = rooms.filter((r) => {
     const hb = r.hostHeartbeatAtMs || r.updatedAtMs;
-    return hb > 0 && now - hb < ROOM_FRESHNESS_MS;
+    return hb > 0 && now - hb < ROOM_FRESHNESS_MS
+      && r.tierId === _selectedTier
+      && r.modeId === _selectedMode;
   });
   const roomId = fresh[0]?.roomId || '';
   if (!roomId) {
