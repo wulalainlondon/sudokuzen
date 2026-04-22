@@ -761,8 +761,8 @@ export const duoJoinRoom = functions.https.onCall(
     if (!roomId) {
       throw new functions.https.HttpsError('invalid-argument', 'roomId is required.');
     }
-    if (!alias) {
-      throw new functions.https.HttpsError('invalid-argument', 'alias is required.');
+    if (typeof alias !== 'string' || alias.length < 1 || alias.length > 24 || /[<>&"']/.test(alias)) {
+      throw new functions.https.HttpsError('invalid-argument', 'Invalid alias.');
     }
 
     const uid = context.auth.uid;
