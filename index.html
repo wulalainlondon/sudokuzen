@@ -430,13 +430,6 @@
                 <div class="sl-decoder">強鏈：同一單位中某數字恰好出現兩次，互為消除伴侶</div>
             </div>
         </div>
-        <div class="duo-emoji-bar" id="duo-emoji-bar">
-            <button class="duo-emoji-btn" aria-label="發送加油表情" onclick="sendDuoEmoji('💪')">💪</button>
-            <button class="duo-emoji-btn" aria-label="發送驚嚇表情" onclick="sendDuoEmoji('😱')">😱</button>
-            <button class="duo-emoji-btn" aria-label="發送大笑表情" onclick="sendDuoEmoji('😂')">😂</button>
-            <button class="duo-emoji-btn" aria-label="發送愛心表情" onclick="sendDuoEmoji('💕')">💕</button>
-            <button class="duo-emoji-btn" aria-label="發送火焰表情" onclick="sendDuoEmoji('🔥')">🔥</button>
-        </div>
         <div class="controls">
     </div>
     </div>
@@ -494,7 +487,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.23-V1';
+        var INLINE_VER = '2026.04.23-V2';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);
