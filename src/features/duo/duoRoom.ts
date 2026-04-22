@@ -38,6 +38,7 @@ const WAITING_ROOMS_CACHE_MS = 5000;
 const WAITING_ROOMS_MIN_FETCH_GAP_MS = 1200;
 const DUO_HEARTBEAT_MS = 15_000;
 export const DUO_STALE_HEARTBEAT_MS = 60_000;
+const DUO_ROOM_COUNTDOWN_STALE_MS = 3 * 60_000;
 const DUO_ROOM_WAITING_TTL_MS = 15 * 60_000;
 const DUO_ROOM_FINISHED_RETENTION_MS = 6 * 60 * 60_000;
 const DUO_CLEANUP_INTERVAL_MS = 5 * 60_000;
@@ -214,6 +215,15 @@ function startDuoRoomHeartbeat(): void {
           _heartbeatRetryTimeout = null;
           void tick();
         }, 3_000);
+      } else {
+        // More than 2 consecutive failures — schedule a recovery attempt in 30s
+        if (_heartbeatRetryTimeout) {
+          clearTimeout(_heartbeatRetryTimeout);
+        }
+        _heartbeatRetryTimeout = setTimeout(() => {
+          _heartbeatRetryTimeout = null;
+          void tick();
+        }, 30_000);
       }
     }
   };
@@ -252,6 +262,33 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
   _lastDuoCleanupMs = now;
   localStorage.setItem(LS_CLEANUP_KEY, String(now));
   try {
+    bumpDuoMetric('roomReadOps');
+    const countdownSnap = await db
+      .collection(DUO_ROOMS_COLLECTION)
+      .where('status', '==', 'countdown')
+      .orderBy('updatedAt', 'asc')
+      .limit(30)
+      .get();
+    const countdownWrites: Promise<unknown>[] = [];
+    countdownSnap.forEach((doc: FirestoreDoc) => {
+      const d = (doc.data() ?? null) as DuoRoomData | null;
+      const updatedAtMs = d?.updatedAt?.toDate?.()?.getTime?.() ?? 0;
+      if (!d || !updatedAtMs || now - updatedAtMs < DUO_ROOM_COUNTDOWN_STALE_MS) return;
+      bumpDuoMetric('staleRoomCleanups');
+      bumpDuoMetric('roomWriteOps');
+      countdownWrites.push(
+        doc.ref.update({
+          status: 'waiting',
+          startAt: null,
+          countdownStartedAt: null,
+          hostReady: false,
+          guestReady: false,
+          updatedAt: firebaseServerTimestamp(),
+        }),
+      );
+    });
+    if (countdownWrites.length) await Promise.allSettled(countdownWrites);
+
     bumpDuoMetric('roomReadOps');
     const orderedSnap = await db
       .collection(DUO_ROOMS_COLLECTION)
