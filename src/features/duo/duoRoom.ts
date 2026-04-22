@@ -7,7 +7,7 @@ import { firebaseServerTimestamp, firebaseTimestampFromMillis, getAuthUid, callD
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
-import type { FirestoreDoc, FirestoreSnap, FirestoreTransaction } from '../../firebase/types';
+import type { FirestoreDoc, FirestoreSnap } from '../../firebase/types';
 import { bumpDuoMetric } from './duoMetrics';
 import { SK } from '../../storage/keys';
 import { loadDuoProfile } from './duoProfile';
@@ -393,12 +393,16 @@ function buildHostRoom(
 export async function createDuoRoom(tierId: string, modeId: string): Promise<string | null> {
   if (!gs.firebaseReady) return null;
   const { alias } = getPlayerIdentity();
-  const authUid = getAuthUid();
-  if (!authUid) return null;
-  const roomId = makeRoomId();
-  const puzzleSeed = Math.floor(Math.random() * 1_000_000);
+  if (!alias) return null;
   try {
-    await duoRoomRef(roomId).set(buildHostRoom(tierId, modeId, puzzleSeed, authUid, alias));
+    const result = await callDuoFunction<{ roomId: string }>('duoCreateRoom', {
+      tierId,
+      modeId,
+      alias,
+      wins: loadDuoProfile().wins,
+      titleDisplay: getEquippedTitleDisplay(),
+    });
+    const { roomId } = result;
     bumpDuoMetric('roomWriteOps');
     setActiveRoomId(roomId);
     gs.duoRole = 'host';
@@ -416,39 +420,15 @@ export async function createDuoRoom(tierId: string, modeId: string): Promise<str
 export async function joinDuoRoom(roomId: string): Promise<boolean> {
   if (!gs.firebaseReady || !roomId) return false;
   const { alias } = getPlayerIdentity();
-  const authUid = getAuthUid();
-  if (!authUid) return false;
   try {
-    await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
-      const doc = await tx.get(duoRoomRef(roomId));
-      if (!doc.exists) throw new Error('room_not_found');
-      const d = doc.data() as unknown as DuoRoomData;
-      if (d.status !== 'waiting') throw new Error('room_not_waiting');
-      if (d.hostId === authUid) {
-        gs.duoRole = 'host';
-        gs.duoMyReady = !!d.hostReady;
-        return;
-      }
-      if (d.guestId && d.guestId !== authUid) throw new Error('room_full');
-
-      const profile = loadDuoProfile();
-      tx.update(duoRoomRef(roomId), {
-        guestId: authUid,
-        guestAlias: alias,
-        guestTitle: getEquippedTitleDisplay(),
-        guestReady: false,
-        guestProgress: 0,
-        guestFinishTime: null,
-        guestStars: null,
-        guestDuoWins: profile.wins,
-        guestHeartbeatAtMs: Date.now(),
-        guestOnline: true,
-        updatedAt: firebaseServerTimestamp(),
-      });
-      gs.duoRole = 'guest';
-      gs.duoMyReady = false;
+    const result = await callDuoFunction<{ role: 'host' | 'guest'; hostReady: boolean }>('duoJoinRoom', {
+      roomId,
+      alias,
+      wins: loadDuoProfile().wins,
+      titleDisplay: getEquippedTitleDisplay(),
     });
-
+    gs.duoRole = result.role;
+    gs.duoMyReady = result.role === 'host' ? result.hostReady : false;
     setActiveRoomId(roomId);
     subscribeDuoRoom();
     return true;

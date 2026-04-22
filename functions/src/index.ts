@@ -683,6 +683,130 @@ export const duoCloseResult = functions.https.onCall(
   }
 );
 
+// ── duoCreateRoom ────────────────────────────────────────────────────
+
+interface CreateRoomRequest {
+  tierId: string;
+  modeId: string;
+  alias: string;
+  wins: number;
+  titleDisplay: string | null;
+}
+
+export const duoCreateRoom = functions.https.onCall(
+  async (data: CreateRoomRequest, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated.');
+    }
+    const { tierId, modeId, alias, wins, titleDisplay } = data;
+    if (!tierId || typeof tierId !== 'string') {
+      throw new functions.https.HttpsError('invalid-argument', 'tierId is required.');
+    }
+    if (!modeId || typeof modeId !== 'string') {
+      throw new functions.https.HttpsError('invalid-argument', 'modeId is required.');
+    }
+    if (
+      typeof alias !== 'string' ||
+      alias.length < 1 ||
+      alias.length > 24 ||
+      /[<>&"']/.test(alias)
+    ) {
+      throw new functions.https.HttpsError('invalid-argument', 'Invalid alias.');
+    }
+
+    const uid = context.auth.uid;
+    const FieldValue = admin.firestore.FieldValue;
+    const roomId = `r_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
+    const puzzleSeed = Math.floor(Math.random() * 1_000_000);
+
+    await db.collection(DUO_ROOMS).doc(roomId).set({
+      tierId, modeId, puzzleSeed,
+      levelId: 0,
+      status: 'waiting',
+      hostId: uid,
+      hostAlias: alias,
+      hostTitle: titleDisplay,
+      hostReady: false, hostProgress: 0, hostFinishTime: null, hostStars: null,
+      hostDuoWins: wins,
+      guestId: null, guestAlias: null, guestTitle: null,
+      guestReady: false, guestProgress: 0, guestFinishTime: null, guestStars: null,
+      guestDuoWins: null,
+      startAt: null, countdownStartedAt: null,
+      levelLocked: false,
+      hostHeartbeatAtMs: Date.now(),
+      guestHeartbeatAtMs: null,
+      hostOnline: true, guestOnline: false,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    return { roomId, puzzleSeed };
+  }
+);
+
+// ── duoJoinRoom ───────────────────────────────────────────────────────
+
+interface JoinRoomRequest {
+  roomId: string;
+  alias: string;
+  wins: number;
+  titleDisplay: string | null;
+}
+
+export const duoJoinRoom = functions.https.onCall(
+  async (data: JoinRoomRequest, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated.');
+    }
+    const { roomId, alias, wins, titleDisplay } = data;
+    if (!roomId) {
+      throw new functions.https.HttpsError('invalid-argument', 'roomId is required.');
+    }
+    if (!alias) {
+      throw new functions.https.HttpsError('invalid-argument', 'alias is required.');
+    }
+
+    const uid = context.auth.uid;
+    const FieldValue = admin.firestore.FieldValue;
+    const roomRef = db.collection(DUO_ROOMS).doc(roomId);
+
+    let role: 'host' | 'guest';
+    let hostReady: boolean;
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(roomRef);
+      if (!snap.exists) {
+        throw new functions.https.HttpsError('not-found', 'Room not found.');
+      }
+      const room = snap.data() as DuoRoomData;
+
+      if (room.status !== 'waiting') {
+        throw new functions.https.HttpsError('failed-precondition', 'room_not_waiting');
+      }
+
+      if (uid === room.hostId) {
+        role = 'host';
+        hostReady = !!room.hostReady;
+        return;
+      }
+
+      if (room.guestId && room.guestId !== uid) {
+        throw new functions.https.HttpsError('failed-precondition', 'room_full');
+      }
+
+      tx.update(roomRef, {
+        guestId: uid, guestAlias: alias, guestTitle: titleDisplay,
+        guestReady: false, guestProgress: 0, guestFinishTime: null, guestStars: null,
+        guestDuoWins: wins, guestHeartbeatAtMs: Date.now(), guestOnline: true,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      role = 'guest';
+      hostReady = !!room.hostReady;
+    });
+
+    return { role: role!, hostReady: hostReady! };
+  }
+);
+
 // ── Billing Protection ───────────────────────────────────────────────
 // Triggered by Pub/Sub budget alert → disables billing to stop all charges
 export const stopBillingOnBudgetAlert = functions.pubsub

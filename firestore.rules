@@ -46,9 +46,7 @@ service cloud.firestore {
             && (request.resource.data.specBombCells == null || request.resource.data.specBombCells is list);
       }
       allow read: if true;
-      allow create: if request.auth != null
-                    && request.resource.data.hostId == request.auth.uid
-                    && validDuoFields();
+      allow create: if false; // All room creation must go through Cloud Functions
       allow update: if request.auth != null
                     && (
                       request.auth.uid == resource.data.hostId
@@ -61,7 +59,8 @@ service cloud.firestore {
                          .affectedKeys()
                          .hasAny([
                            'hostFinishTime', 'guestFinishTime', 'hostStars', 'guestStars',
-                           'status', 'hostReady', 'guestReady', 'countdownStartedAt', 'startAt'
+                           'status', 'hostReady', 'guestReady', 'countdownStartedAt', 'startAt',
+                           'guestId', 'guestAlias', 'guestTitle', 'guestDuoWins'
                          ]);
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.hostId;
