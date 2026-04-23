@@ -111,6 +111,7 @@ export async function initAnonymousAuth(): Promise<string | null> {
       _authUid = cred.user?.uid ?? null;
     } catch {
       _authUid = null;
+      _authReady = null; // Reset so the next callDuoFunction can retry auth
     }
   })();
   await _authReady;
@@ -124,6 +125,8 @@ export function getAuthUid(): string | null {
 export async function callDuoFunction<T = unknown>(name: string, data: unknown): Promise<T> {
   const fb = await ensureFirebaseRuntime();
   if (!fb) throw new Error('Firebase not available');
+  // Ensure auth before any CF call; retry if initAnonymousAuth previously failed silently
+  if (!fb.auth().currentUser) await initAnonymousAuth();
   const fn = fb.functions().httpsCallable(name);
   const result = await fn(data);
   return result.data as T;

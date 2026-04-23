@@ -412,10 +412,11 @@
                     <div class="chain-map-type-row">
                         <button class="chain-map-type-btn active" id="chain-map-strong-btn" onclick="toggleMapLinkType('strong')">強鏈</button>
                         <button class="chain-map-type-btn" id="chain-map-weak-btn" onclick="toggleMapLinkType('weak')">弱鏈</button>
+                        <button class="chain-map-type-btn" id="chain-map-bivalue-btn" onclick="toggleMapBivalueLinks()">雙值格</button>
                     </div>
                     <div class="chain-map-stats" id="chain-map-stats">點擊數字查看鏈結（最多 3 個）</div>
                 </div>
-                <div class="sl-decoder">強鏈=實線 · 弱鏈=虛線 · 最多同時顯示 3 個數字</div>
+                <div class="sl-decoder">強鏈=實線 · 弱鏈=虛線 · 雙值格=綠圈橋接</div>
             </div>
             <!-- Strong Link Explorer panel -->
             <div class="sl-panel hidden" id="sl-panel">
@@ -487,7 +488,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.23-V10';
+        var INLINE_VER = '2026.04.23-V11';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);
