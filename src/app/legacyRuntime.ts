@@ -36,7 +36,7 @@ import {
   replayTogglePlay,
   replayToggleSpeed,
 } from '../features/replay';
-import { toggleDuoReady, sendDuoEmoji, closeDuoResult, surrenderDuo } from '../features/duo/duoGame';
+import { toggleDuoReady, closeDuoResult, surrenderDuo } from '../features/duo/duoGame';
 import {
   openDuoLobby,
   closeDuoLobby,
@@ -332,7 +332,6 @@ export function bootLegacyRuntime(appVersion: string): void {
     erase,
     undoAction,
     fillAllCandidates,
-    sendDuoEmoji,
     replayReset,
     replayStepBack,
     replayTogglePlay,
