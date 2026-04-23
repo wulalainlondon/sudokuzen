@@ -8,7 +8,6 @@ const DUO_STALE_HEARTBEAT_MS = 60_000;
 const DUO_ROOM_WAITING_TTL_MS = 15 * 60_000;       // waiting 房間 15 分鐘後清理
 const DUO_ROOM_FINISHED_RETENTION_MS = 6 * 60 * 60_000; // finished 房間 6 小時後刪除
 const DUO_ROOM_COUNTDOWN_STALE_MS = 3 * 60_000;    // countdown 超過 3 分鐘視為卡死
-const DUO_PLAYING_BOTH_OFFLINE_MS = 2 * 60_000;    // 雙方都離線超過 2 分鐘 → forfeit
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -383,43 +382,6 @@ export const duoWatchdog = functions.pubsub
       console.error('[watchdog] task4 failed:', e);
     }
 
-    // ── Task 5：強制結束雙方都離線的 playing 房間 ───────────────────
-    try {
-      const snap = await db.collection(DUO_ROOMS)
-        .where('status', '==', 'playing')
-        .limit(20)
-        .get();
-
-      const batch = db.batch();
-      let count = 0;
-      snap.docs.forEach((doc) => {
-        const room = doc.data() as DuoRoomData;
-        const hostHb = room.hostHeartbeatAtMs;
-        const guestHb = room.guestHeartbeatAtMs;
-        const hostOffline = hostHb && hostHb > 0 && now - hostHb > DUO_PLAYING_BOTH_OFFLINE_MS;
-        const guestOffline = guestHb && guestHb > 0 && now - guestHb > DUO_PLAYING_BOTH_OFFLINE_MS;
-
-        if (hostOffline && guestOffline) {
-          const update: Record<string, unknown> = {
-            updatedAt: FieldValue.serverTimestamp(),
-          };
-          if (room.hostFinishTime === null || room.hostFinishTime === undefined) {
-            update.hostFinishTime = 9999;
-            update.hostStars = 0;
-          }
-          if (room.guestFinishTime === null || room.guestFinishTime === undefined) {
-            update.guestFinishTime = 9999;
-            update.guestStars = 0;
-          }
-          batch.update(doc.ref, update);
-          count++;
-        }
-      });
-      if (count > 0) await batch.commit();
-      console.log(`[watchdog] task5 force-finished ${count} both-offline playing room(s)`);
-    } catch (e) {
-      console.error('[watchdog] task5 failed:', e);
-    }
   });
 
 // ── duoToggleReady ────────────────────────────────────────────────────
