@@ -10,7 +10,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: ['**/duo-live.spec.ts'],
+  testMatch: ['**/duo-live*.spec.ts'],
   fullyParallel: false,
   retries: 1,
   workers: 1,
