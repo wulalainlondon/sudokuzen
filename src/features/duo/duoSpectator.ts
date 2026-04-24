@@ -16,6 +16,7 @@ let _syncRafHandle: number | null = null;
 let _specVersion = 0;           // syncSpecBoardNow 版本計數器
 let _lastBombAt = 0;            // 上次見到的 specBombAt
 let _lastSyncMs = 0;            // 節流：上次 sync 的時間戳
+let _settlementShown = false;   // 樂觀 UI：對手剩 0 格時的過渡提示
 
 // ── Overlay CSS ──────────────────────────────────────────────────────
 
@@ -77,6 +78,20 @@ const SPEC_STYLE_CSS = `
   font-size: 1.2em;
   border-radius: 4px;
   z-index: 2;
+}
+#duo-spec-settlement {
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: var(--duo-accent, #4a9eff);
+  color: #fff;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 15px;
+  animation: settlementPulse 1.4s ease-in-out infinite;
+}
+@keyframes settlementPulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
 }
 #duo-being-watched-badge {
   position: absolute;
@@ -237,6 +252,18 @@ export function handleSpectatorSnapshot(d: DuoRoomData): void {
           countEl.classList.add('pulse');
         } else {
           countEl.classList.remove('pulse');
+        }
+      }
+
+      // 樂觀 UI：對手剩 0 格 → 立即顯示「正在結算…」，不等 finishTime snapshot
+      if (actualRemaining === 0 && !_settlementShown) {
+        _settlementShown = true;
+        const overlay = document.getElementById('duo-spec-overlay');
+        if (overlay && !document.getElementById('duo-spec-settlement')) {
+          const el = document.createElement('div');
+          el.id = 'duo-spec-settlement';
+          el.textContent = '對手已完成，正在結算…';
+          overlay.appendChild(el);
         }
       }
     } catch {
@@ -422,6 +449,7 @@ export function resetSpectatorState(): void {
   _lastBombAt = 0;
   _lastSyncMs = 0;
   _lastRenderedSpecBoard = null;
+  _settlementShown = false;
   if (_syncRafHandle != null) {
     cancelAnimationFrame(_syncRafHandle);
     _syncRafHandle = null;
