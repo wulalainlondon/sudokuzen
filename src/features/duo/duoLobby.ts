@@ -163,9 +163,8 @@ function renderRoomList(rooms: DuoRoomSummary[]): void {
 }
 
 async function refreshRoomCard(): Promise<void> {
-  const { listWaitingDuoRooms, getActiveDuoRoomId } = await import('./duoRoom');
+  const { listWaitingDuoRooms } = await import('./duoRoom');
   const rooms = await listWaitingDuoRooms(20);
-  const activeRoomId = getActiveDuoRoomId();
   const statusEl = document.getElementById('duo-room-status');
   if (statusEl) statusEl.textContent = '';
 renderRoomList(rooms);

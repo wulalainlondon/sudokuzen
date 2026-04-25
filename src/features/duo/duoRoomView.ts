@@ -1,10 +1,8 @@
 // Duo room view — independent full-screen room page shown after creating/joining a room.
 
 import { gs } from '../../game/state';
-import { showFeedback } from '../../ui/feedback';
-import { t } from '../../i18n/t';
 import { DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
-import { getActiveDuoRoomId, leaveDuoRoom } from './duoRoom';
+import { leaveDuoRoom } from './duoRoom';
 
 let _roomViewOpen = false;
 
@@ -43,7 +41,6 @@ export function openDuoRoomView(): void {
   _roomViewOpen = true;
 
   // Populate room info
-  const roomId = getActiveDuoRoomId();
   const roomData = gs.duoRoomData;
   const tierMode = document.getElementById('duo-room-tier-mode');
   if (tierMode && roomData) {
