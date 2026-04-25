@@ -39,7 +39,6 @@ export {
   updateDuoProgress,
   submitDuoFinish,
   showDuoResult,
-  sendDuoEmoji,
   surrenderDuo,
   closeDuoResult,
   resetDuoState,
@@ -62,7 +61,6 @@ export {
   closeDuoRoomView,
   isDuoRoomViewOpen,
   leaveDuoRoomFromView,
-  copyDuoRoomId,
 } from './duoRoomView';
 
 // Metrics

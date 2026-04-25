@@ -155,7 +155,6 @@
                         <span class="wild-enter-text" id="duo-create-btn-text">建立房間</span>
                         <span class="wild-enter-sub" id="duo-create-btn-sub">建立後會進入對戰準備區</span>
                     </button>
-                    <div class="wild-session-meta" id="duo-room-id-text"></div>
                 </div>
                 <div class="wild-session-card duo-lobby-card">
                     <div class="wild-session-head">
@@ -179,13 +178,7 @@
             </div>
             <div class="duo-room-body">
                 <div class="duo-room-id-card">
-                    <div class="duo-room-id-label">房間 ID</div>
-                    <div class="duo-room-id-row">
-                        <span class="duo-room-id-value" id="duo-room-id-value">--</span>
-                        <button class="duo-room-id-copy" id="duo-room-id-copy" onclick="copyDuoRoomId()">複製</button>
-                    </div>
                     <div class="duo-room-tier-mode" id="duo-room-tier-mode"></div>
-                    <div class="duo-room-id-hint" id="duo-room-id-hint">分享此 ID 邀請對手</div>
                 </div>
                 <div class="duo-room-slots-card">
                     <div class="duo-player-slots">
@@ -488,7 +481,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.25-V1';
+        var INLINE_VER = '2026.04.25-V2';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

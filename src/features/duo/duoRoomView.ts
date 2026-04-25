@@ -44,9 +44,6 @@ export function openDuoRoomView(): void {
 
   // Populate room info
   const roomId = getActiveDuoRoomId();
-  const roomIdValue = document.getElementById('duo-room-id-value');
-  if (roomIdValue) roomIdValue.textContent = roomId || '--';
-
   const roomData = gs.duoRoomData;
   const tierMode = document.getElementById('duo-room-tier-mode');
   if (tierMode && roomData) {
@@ -66,30 +63,6 @@ export function isDuoRoomViewOpen(): boolean {
   return _roomViewOpen;
 }
 
-// ── Copy Room ID ─────────────────────────────────────────────────────
-
-export function copyDuoRoomId(): void {
-  const roomId = getActiveDuoRoomId();
-  if (!roomId) return;
-  const copyBtn = document.getElementById('duo-room-id-copy');
-  navigator.clipboard
-    .writeText(roomId)
-    .then(() => {
-      showFeedback(t('duoRoom.copied'), 'success');
-      if (copyBtn) {
-        const origText = copyBtn.textContent;
-        copyBtn.textContent = '✓';
-        copyBtn.classList.add('copied');
-        setTimeout(() => {
-          copyBtn.textContent = origText;
-          copyBtn.classList.remove('copied');
-        }, 1500);
-      }
-    })
-    .catch(() => {
-      showFeedback(roomId, 'neutral');
-    });
-}
 
 // ── Leave room (back button) ────────────────────────────────────────
 

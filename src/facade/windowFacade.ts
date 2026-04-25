@@ -22,7 +22,6 @@ type LegacyFacade = Partial<
     | 'joinDuoRoomFromLobby'
     | 'refreshDuoLobbyRoom'
     | 'leaveDuoRoom'
-    | 'copyDuoRoomId'
   >
 > &
   Record<string, unknown>;

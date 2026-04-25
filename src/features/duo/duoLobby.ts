@@ -168,9 +168,7 @@ async function refreshRoomCard(): Promise<void> {
   const activeRoomId = getActiveDuoRoomId();
   const statusEl = document.getElementById('duo-room-status');
   if (statusEl) statusEl.textContent = '';
-  const roomIdEl = document.getElementById('duo-room-id-text');
-  if (roomIdEl) roomIdEl.textContent = activeRoomId ? `${t('duo.roomId')}: ${activeRoomId}` : '';
-  renderRoomList(rooms);
+renderRoomList(rooms);
 }
 
 // ── Polling ──────────────────────────────────────────────────────────

@@ -20,7 +20,6 @@ export interface SudokuWindow extends Window {
   joinDuoRoomFromLobby?: () => void;
   refreshDuoLobbyRoom?: () => void;
   leaveDuoRoom?: () => void;
-  copyDuoRoomId?: () => void;
   getDuoMetrics?: () => Record<string, number>;
   resetDuoMetrics?: () => void;
   // Firebase

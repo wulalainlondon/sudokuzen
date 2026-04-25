@@ -13,6 +13,13 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    storageState: {
+      cookies: [],
+      origins: [{
+        origin: 'http://localhost:5173',
+        localStorage: [{ name: 'sudoku_e2e_mode', value: '1' }],
+      }],
+    },
   },
   projects: [
     {

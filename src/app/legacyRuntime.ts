@@ -44,7 +44,7 @@ import {
   joinDuoRoomFromLobby,
   refreshDuoLobbyRoom,
 } from '../features/duo/duoLobby';
-import { leaveDuoRoomFromView, copyDuoRoomId } from '../features/duo/duoRoomView';
+import { leaveDuoRoomFromView } from '../features/duo/duoRoomView';
 import { openStatsModal, closeStatsModal } from '../features/stats';
 import {
   showLevelScreen,
@@ -87,6 +87,7 @@ import {
   closeChainMapPanel,
   toggleMapDigit,
   toggleMapLinkType,
+  toggleMapBivalueLinks,
 } from '../features/chainMapPanel';
 import { initBackHandler } from './navigation/navigationOrchestrator';
 import {
@@ -343,7 +344,6 @@ export function bootLegacyRuntime(appVersion: string): void {
     closeDuoResult,
     surrenderDuo,
     leaveDuoRoom: leaveDuoRoomFromView,
-    copyDuoRoomId,
     teachPrev,
     teachNext,
     hideTeachModal,
@@ -375,6 +375,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     closeChainMapPanel,
     toggleMapDigit,
     toggleMapLinkType,
+    toggleMapBivalueLinks,
   });
 
   const hostApi: HostBridgeApi = {

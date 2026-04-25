@@ -33,6 +33,7 @@ async function setAlias(page: Page, alias: string): Promise<void> {
   await page.evaluate((a) => {
     localStorage.setItem('sudoku_player_alias', a);
     localStorage.setItem('sudoku_player_id', `test_${a}`);
+    localStorage.setItem('sudoku_e2e_mode', '1');
   }, alias);
 }
 

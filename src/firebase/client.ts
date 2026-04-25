@@ -475,6 +475,7 @@ export async function syncAchievementsToCloud(achievements: AchievementMap): Pro
 
 export async function syncPlayerProgressToCloud(): Promise<void> {
   if (!gs.firebaseReady || !gs.db) return;
+  if (localStorage.getItem('sudoku_e2e_mode') === '1') return;
   // Block sync until hydrate finishes, to prevent overwriting cloud data with empty localStorage
   if (!_hydrateComplete) return;
   const { playerId, alias } = getPlayerIdentity();
@@ -547,6 +548,7 @@ export function installPlayerCloudSyncBridge(): void {
 
 export async function syncSaveToCloud(saveKey: string, payload: Record<string, unknown>): Promise<void> {
   if (!gs.firebaseReady || !gs.db) return;
+  if (localStorage.getItem('sudoku_e2e_mode') === '1') return;
   if (!SAVE_KEY_PATTERN.test(saveKey) || !isPlainObject(payload)) return;
   const { playerId, alias } = getPlayerIdentity();
   try {
@@ -767,6 +769,7 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
 
 export async function submitFirstClear(levelId: number, clearSec: number, clearStars: number): Promise<void> {
   if (!gs.firebaseReady) return;
+  if (localStorage.getItem('sudoku_e2e_mode') === '1') return;
   const { playerId, alias } = getPlayerIdentity();
   const levels = getAllLevels();
   const level = levels.find((l) => l.id === levelId) || gs.currentLevel || null;
