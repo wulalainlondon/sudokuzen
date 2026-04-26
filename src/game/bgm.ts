@@ -5,7 +5,7 @@ import { getAudioSettings } from './audioSettings';
 
 let _audio: HTMLAudioElement | null = null;
 let _currentTrack: BgmTrack | null = null;
-let _intendedTrack: BgmTrack | null = null;  // track requested, regardless of enabled state
+let _intendedTrack: BgmTrack | null = null; // track requested, regardless of enabled state
 let _fadeTimer: ReturnType<typeof setInterval> | null = null;
 
 const FADE_STEPS = 25;
@@ -36,21 +36,24 @@ export function playBgm(track: BgmTrack): void {
   _audio = audio;
   _currentTrack = track;
 
-  audio.play().then(() => {
-    let step = 0;
-    _fadeTimer = setInterval(() => {
-      step++;
-      if (_audio === audio) {
-        audio.volume = Math.min(targetVol, targetVol * (step / FADE_STEPS));
-      }
-      if (step >= FADE_STEPS) {
-        _clearFade();
-        if (_audio === audio) audio.volume = targetVol;
-      }
-    }, FADE_INTERVAL_MS);
-  }).catch(() => {
-    // Autoplay blocked — audio is stored; will play on next user gesture if needed
-  });
+  audio
+    .play()
+    .then(() => {
+      let step = 0;
+      _fadeTimer = setInterval(() => {
+        step++;
+        if (_audio === audio) {
+          audio.volume = Math.min(targetVol, targetVol * (step / FADE_STEPS));
+        }
+        if (step >= FADE_STEPS) {
+          _clearFade();
+          if (_audio === audio) audio.volume = targetVol;
+        }
+      }, FADE_INTERVAL_MS);
+    })
+    .catch(() => {
+      // Autoplay blocked — audio is stored; will play on next user gesture if needed
+    });
 }
 
 export function stopBgm(): void {

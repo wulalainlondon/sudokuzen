@@ -44,9 +44,7 @@ const EncounterTransition = lazy(() =>
 const FirstKillRevelation = lazy(() =>
   import('./wild/FirstKillRevelation').then((m) => ({ default: m.FirstKillRevelation })),
 );
-const SettingsModal = lazy(() =>
-  import('./settings/SettingsModal').then((m) => ({ default: m.SettingsModal })),
-);
+const SettingsModal = lazy(() => import('./settings/SettingsModal').then((m) => ({ default: m.SettingsModal })));
 
 export function AppShell(): ReactElement {
   const teachOpen = useTeachStore((s) => s.open);

@@ -78,9 +78,7 @@ function renderModeSelector(): void {
     if (!unlocked.has(mode.id)) continue;
     const pill = document.createElement('button');
     pill.className = `duo-mode-pill${mode.id === _selectedMode ? ' active' : ''}`;
-    pill.innerHTML = mode.beta
-      ? `${mode.label}<span class="duo-mode-beta">BETA</span>`
-      : mode.label;
+    pill.innerHTML = mode.beta ? `${mode.label}<span class="duo-mode-beta">BETA</span>` : mode.label;
     pill.onclick = () => {
       _selectedMode = mode.id;
       // Chess Clock 鎖定 Tier 0
@@ -167,7 +165,7 @@ async function refreshRoomCard(): Promise<void> {
   const rooms = await listWaitingDuoRooms(20);
   const statusEl = document.getElementById('duo-room-status');
   if (statusEl) statusEl.textContent = '';
-renderRoomList(rooms);
+  renderRoomList(rooms);
 }
 
 // ── Polling ──────────────────────────────────────────────────────────
@@ -306,9 +304,7 @@ export async function joinDuoRoomFromLobby(): Promise<void> {
   const now = Date.now();
   const fresh = rooms.filter((r) => {
     const hb = r.hostHeartbeatAtMs || r.updatedAtMs;
-    return hb > 0 && now - hb < ROOM_FRESHNESS_MS
-      && r.tierId === _selectedTier
-      && r.modeId === _selectedMode;
+    return hb > 0 && now - hb < ROOM_FRESHNESS_MS && r.tierId === _selectedTier && r.modeId === _selectedMode;
   });
   const roomId = fresh[0]?.roomId || '';
   if (!roomId) {

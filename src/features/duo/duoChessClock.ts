@@ -45,7 +45,7 @@ export async function launchChessClockGame(): Promise<void> {
 
   const initialBoard = gs.cellsData.map((c) => c.value);
 
-  const firstTurn: 'host' | 'guest' = (gs.duoRoomData!.puzzleSeed % 2 === 0) ? 'host' : 'guest';
+  const firstTurn: 'host' | 'guest' = gs.duoRoomData!.puzzleSeed % 2 === 0 ? 'host' : 'guest';
   gs.ccIsMyTurn = gs.duoRole === firstTurn;
   gs.ccTurnStartMs = Date.now();
   _chessClockActive = true;
@@ -158,7 +158,9 @@ export function onChessClockCorrect(_cellIdx: number): void {
     updateData['ccGuestTotalMs'] = gs.duoRole === 'host' ? gs.ccOppAccumMs : newMyAccum;
   }
 
-  duoRoomRef().update(updateData).catch(() => {});
+  duoRoomRef()
+    .update(updateData)
+    .catch((e) => console.warn('[chessClock] onChessClockCorrect update failed:', e));
 
   // 本地立即更新，不等 snapshot
   gs.ccMyAccumMs = newMyAccum;
@@ -188,7 +190,7 @@ export function onChessClockError(_cellIdx: number): void {
         ccCurrentCellIdx: null,
         updatedAt: firebaseServerTimestamp(),
       })
-      .catch(() => {});
+      .catch((e) => console.warn('[chessClock] forcedSwitch update failed:', e));
 
     gs.ccIsMyTurn = false;
     gs.ccMyAccumMs += deltaMs;
@@ -197,7 +199,7 @@ export function onChessClockError(_cellIdx: number): void {
   } else {
     duoRoomRef()
       .update({ ccCurrentCellErrors: gs.ccCurrentCellErrors })
-      .catch(() => {});
+      .catch((e) => console.warn('[chessClock] cellErrors update failed:', e));
   }
 }
 
@@ -263,7 +265,7 @@ function startChessClockUI(): void {
 function tickChessClockDisplay(): void {
   if (!_chessClockActive) return;
 
-  const elapsed = gs.ccIsMyTurn ? (Date.now() - gs.ccTurnStartMs) : 0;
+  const elapsed = gs.ccIsMyTurn ? Date.now() - gs.ccTurnStartMs : 0;
   const myMs = gs.ccMyAccumMs + elapsed;
   const oppMs = gs.ccOppAccumMs;
 
@@ -331,7 +333,7 @@ function showChessClockResult(d: DuoRoomData): void {
 
   const contentHtml = `
     <div class="cc-result">
-      <div class="cc-result-winner">${iWin ? t('duo.chessClock.resultWin') : (isDraw ? '' : t('duo.chessClock.resultLoss'))}</div>
+      <div class="cc-result-winner">${iWin ? t('duo.chessClock.resultWin') : isDraw ? '' : t('duo.chessClock.resultLoss')}</div>
       <div class="cc-result-times">
         <div>你：${fmtResult(myMs)}</div>
         <div>對手：${fmtResult(oppMs)}</div>
@@ -349,7 +351,7 @@ function showChessClockResult(d: DuoRoomData): void {
         levelId: d.levelId ?? null,
       });
     })
-    .catch(() => {});
+    .catch((e) => console.warn('[chessClock] bridgeOpenDuoResult failed:', e));
 }
 
 // ── 函式十：stopChessClockUI ─────────────────────────────────────────

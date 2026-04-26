@@ -365,9 +365,7 @@ export function handleInput(num: number): void {
     if (num !== solutionDigitAt(gs.selectedIdx)) {
       if (gs.isChessClockMode) {
         // Chess clock 自己處理錯誤邏輯，這裡只做視覺反饋
-        import('../features/duo/duoChessClock')
-          .then((m) => m.onChessClockError(gs.selectedIdx!))
-          .catch(() => {});
+        import('../features/duo/duoChessClock').then((m) => m.onChessClockError(gs.selectedIdx!)).catch(() => {});
         data.isError = true;
         addCellClasses(cellEl, 'error', 'wrong-preview');
         const originalValue = data.value;
@@ -475,9 +473,7 @@ export function handleInput(num: number): void {
     if (!policy.useSubmissionValidation) celebrateCompletedUnits(gs.selectedIdx, beforeState);
     if (gs.isDuoMode) callDuoProgress();
     if (gs.isChessClockMode) {
-      import('../features/duo/duoChessClock')
-        .then((m) => m.onChessClockCorrect(gs.selectedIdx!))
-        .catch(() => {});
+      import('../features/duo/duoChessClock').then((m) => m.onChessClockCorrect(gs.selectedIdx!)).catch(() => {});
     }
     checkWin();
   }

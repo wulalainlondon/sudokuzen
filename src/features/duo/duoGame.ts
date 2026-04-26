@@ -59,20 +59,30 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
 
   // 對手剛完成，我還在玩 → 開始被觀看（用 != null 避免 finishTime=0 被判為 falsy）
   if (myFinishTime == null && oppFinishTime != null) {
-    import('./duoSpectator').then((m) => m.startBeingWatched()).catch((e) => console.warn('[duo] startBeingWatched failed:', e));
+    import('./duoSpectator')
+      .then((m) => m.startBeingWatched())
+      .catch((e) => console.warn('[duo] startBeingWatched failed:', e));
   }
   // 炸彈處理（給正在被看的那方）
   if (myFinishTime == null && oppFinishTime != null && d.specBombAt) {
-    import('./duoSpectator').then((m) => m.handleBombSnapshot(d)).catch((e) => console.warn('[duo] handleBombSnapshot failed:', e));
+    import('./duoSpectator')
+      .then((m) => m.handleBombSnapshot(d))
+      .catch((e) => console.warn('[duo] handleBombSnapshot failed:', e));
   }
   // 我在觀戰 → 把 snapshot 轉給 spectator 模組
   if (myFinishTime != null && oppFinishTime == null) {
-    import('./duoSpectator').then((m) => m.handleSpectatorSnapshot(d)).catch((e) => console.warn('[duo] handleSpectatorSnapshot failed:', e));
+    import('./duoSpectator')
+      .then((m) => m.handleSpectatorSnapshot(d))
+      .catch((e) => console.warn('[duo] handleSpectatorSnapshot failed:', e));
   }
   // 雙方都完成 → 退出觀戰
   if (myFinishTime != null && oppFinishTime != null) {
-    import('./duoSpectator').then((m) => m.exitSpectatorMode()).catch((e) => console.warn('[duo] exitSpectatorMode failed:', e));
-    import('./duoSpectator').then((m) => m.stopBeingWatched()).catch((e) => console.warn('[duo] stopBeingWatched failed:', e));
+    import('./duoSpectator')
+      .then((m) => m.exitSpectatorMode())
+      .catch((e) => console.warn('[duo] exitSpectatorMode failed:', e));
+    import('./duoSpectator')
+      .then((m) => m.stopBeingWatched())
+      .catch((e) => console.warn('[duo] stopBeingWatched failed:', e));
   }
 
   import('./duoLobby')
@@ -144,7 +154,9 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
   }
 
   if (d.status === 'playing' && d.modeId === 'chessClock') {
-    import('./duoChessClock').then((m) => m.handleChessClockSnapshot(d)).catch((e) => console.warn('[duo] handleChessClockSnapshot failed:', e));
+    import('./duoChessClock')
+      .then((m) => m.handleChessClockSnapshot(d))
+      .catch((e) => console.warn('[duo] handleChessClockSnapshot failed:', e));
     return;
   }
 
@@ -365,10 +377,13 @@ function playCountdownBeep(final = false): void {
     osc.start();
     const duration = final ? 0.3 : 0.15;
     osc.stop(ctx.currentTime + duration);
-    const beepTimer = setTimeout(() => {
-      ctx.close().catch(() => {});
-      _countdownBeepTimers = _countdownBeepTimers.filter((t) => t !== beepTimer);
-    }, duration * 1000 + 200);
+    const beepTimer = setTimeout(
+      () => {
+        ctx.close().catch(() => {});
+        _countdownBeepTimers = _countdownBeepTimers.filter((t) => t !== beepTimer);
+      },
+      duration * 1000 + 200,
+    );
     _countdownBeepTimers.push(beepTimer);
   } catch {}
 }
@@ -500,7 +515,9 @@ export async function launchDuoGame(): Promise<void> {
 
   // Hide room view & lobby, start game
   emitNavigation({ type: 'hide-pre-level-modal' });
-  import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch((e) => console.warn('[duo] closeDuoRoomView failed:', e));
+  import('./duoRoomView')
+    .then((m) => m.closeDuoRoomView())
+    .catch((e) => console.warn('[duo] closeDuoRoomView failed:', e));
   import('./duoLobby').then((m) => m.closeDuoLobby()).catch((e) => console.warn('[duo] closeDuoLobby failed:', e));
   const levelScreen = document.getElementById('level-screen');
   if (levelScreen) levelScreen.style.display = 'none';
@@ -549,7 +566,9 @@ export function updateDuoProgress(): void {
   bumpDuoMetric('roomWriteOps');
 
   // 同步觀戰盤面（如果對手正在觀看）
-  import('./duoSpectator').then((m) => m.syncSpecBoardNow()).catch((e) => console.warn('[duo] syncSpecBoardNow import failed:', e));
+  import('./duoSpectator')
+    .then((m) => m.syncSpecBoardNow())
+    .catch((e) => console.warn('[duo] syncSpecBoardNow import failed:', e));
 }
 
 function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
@@ -621,11 +640,12 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
       progress: gs.duoTotalToFill,
     });
     // 進入觀戰模式（如果對手還未完成；用 != null 避免 finishTime=0 被判為 falsy）
-    const oppDone = gs.duoRole === 'host'
-      ? gs.duoRoomData?.guestFinishTime != null
-      : gs.duoRoomData?.hostFinishTime != null;
+    const oppDone =
+      gs.duoRole === 'host' ? gs.duoRoomData?.guestFinishTime != null : gs.duoRoomData?.hostFinishTime != null;
     if (!oppDone) {
-      import('./duoSpectator').then((m) => m.enterSpectatorMode(gs.duoRoomData!)).catch((e) => console.warn('[duo] enterSpectatorMode failed:', e));
+      import('./duoSpectator')
+        .then((m) => m.enterSpectatorMode(gs.duoRoomData!))
+        .catch((e) => console.warn('[duo] enterSpectatorMode failed:', e));
     }
   } catch (e) {
     const code = (e as { code?: string })?.code;
@@ -737,7 +757,9 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     const timeDisplay = forfeited
       ? `<div class="duo-result-time forfeit">${t('duoRuntime.resultForfeitTime')}</div>`
       : `<div class="duo-result-time">${formatSeconds(time)}</div>`;
-    const starsDisplay = forfeited ? '' : `<div class="duo-result-stars">${stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars) : ''}</div>`;
+    const starsDisplay = forfeited
+      ? ''
+      : `<div class="duo-result-stars">${stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars) : ''}</div>`;
     return `<div class="duo-result-card ${isWinner ? 'winner' : ''}">
       ${resultLabel}
       <div class="duo-result-crown">${isWinner ? '\u{1F451}' : ''}</div>
@@ -868,9 +890,15 @@ export function resetDuoState(): void {
   stopDuoRoomHeartbeat();
   // Always reset chess clock state — resetChessClockState() is idempotent when not active.
   // Guarding on gs.isChessClockMode risks leaving the RAF alive if the flag was never set.
-  import('./duoChessClock').then((m) => m.resetChessClockState()).catch((e) => console.warn('[duo] resetChessClockState failed:', e));
-  import('./duoSpectator').then((m) => m.resetSpectatorState()).catch((e) => console.warn('[duo] resetSpectatorState failed:', e));
-  import('./duoRoomView').then((m) => m.closeDuoRoomView()).catch((e) => console.warn('[duo] closeDuoRoomView (reset) failed:', e));
+  import('./duoChessClock')
+    .then((m) => m.resetChessClockState())
+    .catch((e) => console.warn('[duo] resetChessClockState failed:', e));
+  import('./duoSpectator')
+    .then((m) => m.resetSpectatorState())
+    .catch((e) => console.warn('[duo] resetSpectatorState failed:', e));
+  import('./duoRoomView')
+    .then((m) => m.closeDuoRoomView())
+    .catch((e) => console.warn('[duo] closeDuoRoomView (reset) failed:', e));
   const progressContainer = document.getElementById('duo-progress-container');
   if (progressContainer) progressContainer.style.display = 'none';
   const timerEl = document.getElementById('timer');
@@ -885,5 +913,7 @@ export function resetDuoState(): void {
   if (countdownOverlay) countdownOverlay.remove();
   clearActiveRoomId();
   invalidateWaitingRoomsCache();
-  import('./duoLobby').then((m) => m.refreshDuoLobbyRoom()).catch((e) => console.warn('[duo] refreshDuoLobbyRoom failed:', e));
+  import('./duoLobby')
+    .then((m) => m.refreshDuoLobbyRoom())
+    .catch((e) => console.warn('[duo] refreshDuoLobbyRoom failed:', e));
 }

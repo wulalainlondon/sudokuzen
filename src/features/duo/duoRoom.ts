@@ -3,7 +3,12 @@
 
 import { gs, type DuoRoomData } from '../../game/state';
 import { getPlayerIdentity } from '../../firebase/client';
-import { firebaseServerTimestamp, firebaseTimestampFromMillis, getAuthUid, callDuoFunction } from '../../firebase/runtime';
+import {
+  firebaseServerTimestamp,
+  firebaseTimestampFromMillis,
+  getAuthUid,
+  callDuoFunction,
+} from '../../firebase/runtime';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
@@ -424,7 +429,9 @@ function _attachSnapshotListener(): void {
       console.warn('duo snapshot error:', err);
       _snapshotRetryCount++;
       bumpDuoMetric('reconnects');
-      import('./duoLobby').then((m) => m.setDuoLobbyConnectionState('reconnecting')).catch((e) => console.warn('[duo] setConnState reconnecting failed:', e));
+      import('./duoLobby')
+        .then((m) => m.setDuoLobbyConnectionState('reconnecting'))
+        .catch((e) => console.warn('[duo] setConnState reconnecting failed:', e));
       if (_snapshotRetryCount <= MAX_SNAPSHOT_RETRIES) {
         showFeedback(t('duoRuntime.connectionRetry'), 'neutral');
         _snapshotRetryTimeout = setTimeout(
@@ -436,7 +443,9 @@ function _attachSnapshotListener(): void {
         );
       } else {
         showFeedback(t('duoRuntime.connectionFailed'), 'error');
-        import('./duoLobby').then((m) => m.setDuoLobbyConnectionState('failed')).catch((e) => console.warn('[duo] setConnState failed failed:', e));
+        import('./duoLobby')
+          .then((m) => m.setDuoLobbyConnectionState('failed'))
+          .catch((e) => console.warn('[duo] setConnState failed failed:', e));
         if (_resetHandler) _resetHandler();
       }
     },
