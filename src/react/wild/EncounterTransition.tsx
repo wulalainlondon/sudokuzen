@@ -109,7 +109,9 @@ export function EncounterTransition(): ReactElement {
     return cleanup;
   }, [active, reduced, dismiss, cleanup]);
 
-  const color = RARITY_COLORS[rarityTone || rarity] || RARITY_COLORS.common;
+  const color = isFirstEncounter
+    ? RARITY_COLORS.common
+    : RARITY_COLORS[rarityTone || rarity] || RARITY_COLORS.common;
   const modeChar = getModeChar(challengeMode);
   const showNonStandardMode = challengeMode !== 'standard';
 
@@ -213,7 +215,7 @@ export function EncounterTransition(): ReactElement {
                 },
               }}
             >
-              {techName}
+              {isFirstEncounter ? '???' : techName}
             </motion.div>
 
             {isResume && (
@@ -248,7 +250,7 @@ export function EncounterTransition(): ReactElement {
                 transition: { delay: PHASE1_END / 1000 + 0.2, duration: 0.4 },
               }}
             >
-              {techSubtitle}
+              {isFirstEncounter ? t('wild.unknownPattern') : techSubtitle}
             </motion.div>
 
             {/* Phase 3: Challenge mode stamp */}

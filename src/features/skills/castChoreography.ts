@@ -421,6 +421,80 @@ const hiddenSingleChoreography: CastChoreography = async (ctx) => {
   cleanupAll(gridEl);
 };
 
+// ── AIC Chain: "Inference Chain" (推理鏈) ─────────────────────────────
+
+const aicChoreography: CastChoreography = async (ctx) => {
+  const { gridEl, result, wait } = ctx;
+
+  if (!result.chainPath || result.chainPath.length < 2) {
+    return defaultChoreography(ctx);
+  }
+
+  const chainPath = result.chainPath;
+
+  // Phase 1: Draw chain segments sequentially (80ms stagger per segment)
+  const svg = createCastSVG(gridEl);
+  for (let i = 0; i < chainPath.length - 1; i++) {
+    const from = getCellCenter(gridEl, chainPath[i].cell);
+    const to = getCellCenter(gridEl, chainPath[i + 1].cell);
+    if (from && to) {
+      const isStrong = i % 2 === 0;
+      const cls = isStrong ? 'skill-line skill-line-aic-strong' : 'skill-line skill-line-aic-weak';
+      addSVGLine(svg, from.x, from.y, to.x, to.y, cls, i * 80);
+    }
+  }
+
+  // Phase 2: Wait for chain to fully appear + extra hold
+  const drawDuration = (chainPath.length - 2) * 80 + 200;
+  await wait(drawDuration + 400);
+
+  // Phase 3: Strike targets
+  recordTargets(ctx);
+  await strikeTargets(ctx, 60, 'skill-strike', 'skill-elim-digit');
+  await wait(600);
+
+  cleanupAll(gridEl);
+};
+
+// ── Chain Preview (pre-cast overlay) ────────────────────────────────
+
+export function showChainPreview(gridEl: HTMLElement, chainPath: { cell: number; digit: number }[]): void {
+  clearChainPreview();
+  if (chainPath.length < 2) return;
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.id = 'chain-preview-svg';
+  svg.setAttribute('class', 'skill-connection-svg');
+  const gr = gridEl.getBoundingClientRect();
+  svg.setAttribute('width', String(gr.width));
+  svg.setAttribute('height', String(gr.height));
+  gridEl.style.position = 'relative';
+
+  for (let i = 0; i < chainPath.length - 1; i++) {
+    const from = getCellCenter(gridEl, chainPath[i].cell);
+    const to = getCellCenter(gridEl, chainPath[i + 1].cell);
+    if (from && to) {
+      const isStrong = i % 2 === 0;
+      const cls = isStrong
+        ? 'skill-line skill-line-aic-strong skill-line-preview'
+        : 'skill-line skill-line-aic-weak skill-line-preview';
+      const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      l.setAttribute('x1', String(from.x));
+      l.setAttribute('y1', String(from.y));
+      l.setAttribute('x2', String(to.x));
+      l.setAttribute('y2', String(to.y));
+      l.setAttribute('class', cls);
+      svg.appendChild(l);
+    }
+  }
+
+  gridEl.appendChild(svg);
+}
+
+export function clearChainPreview(): void {
+  document.getElementById('chain-preview-svg')?.remove();
+}
+
 // ── Register all choreographies ──────────────────────────────────────
 
 registerChoreography('naked_single', nakedSingleChoreography);
@@ -429,3 +503,7 @@ registerChoreography('naked_pair', nakedPairChoreography);
 registerChoreography('naked_triple', nakedTripleChoreography);
 registerChoreography('hidden_pair', hiddenPairChoreography);
 registerChoreography('hidden_triple', hiddenTripleChoreography);
+registerChoreography('aic', aicChoreography);
+registerChoreography('aic_long_chain', aicChoreography);
+registerChoreography('grouped_aic_nice_loop', aicChoreography);
+registerChoreography('discontinuous_nice_loop', aicChoreography);

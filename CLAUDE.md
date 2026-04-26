@@ -23,3 +23,7 @@
 ## 完成條件
 
 - 複雜任務開始前確認：這個任務到什麼狀態算完成？
+
+## React 模式規範
+
+- Modal 開啟時需要同步 state，一律用 `useEffect(() => { if (!visible) return; ... }, [visible])`，禁止用 ref callback（inline ref function 每次 render 都是新物件，會導致無限 re-render）

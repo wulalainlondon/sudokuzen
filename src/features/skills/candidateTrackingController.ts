@@ -7,7 +7,7 @@ import { gs } from '../../game/state';
 import { evaluateAllSkills, getSkillById } from './skillRegistry';
 import type { SkillPreview } from './types';
 import { getUnitCells } from './types';
-import { getChoreography } from './castChoreography';
+import { getChoreography, showChainPreview, clearChainPreview } from './castChoreography';
 import { showFeedback } from '../../ui/feedback';
 import { updateCellDisplay } from '../../game/board';
 import { cellLabel } from '../../game/utils';
@@ -204,6 +204,7 @@ function checkForCompletion(): void {
   const ct = gs.candidateTracking;
   if (ct.nodes.length < 2) {
     _preview = null;
+    clearChainPreview();
     // Remove tracking-ready from all cells
     if (gs.gridEl) {
       Array.from(gs.gridEl.children).forEach((el) => el.classList.remove('tracking-ready'));
@@ -221,6 +222,13 @@ function checkForCompletion(): void {
       selectedCells.forEach((idx) => {
         (gs.gridEl!.children[idx] as HTMLElement)?.classList.add('tracking-ready');
       });
+      if (_preview.chainPath && _preview.chainPath.length >= 2) {
+        showChainPreview(gs.gridEl, _preview.chainPath);
+      } else {
+        clearChainPreview();
+      }
+    } else {
+      clearChainPreview();
     }
   }
 
@@ -367,6 +375,7 @@ export function exitCandidateTracking(): void {
   gs.candidateTracking = { active: false, digit: 0, nodes: [] };
   _preview = null;
   clearTrackingClasses();
+  clearChainPreview();
   hideTrackingPanel();
 }
 

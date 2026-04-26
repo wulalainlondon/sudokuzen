@@ -28,6 +28,26 @@ import { skyscraperSkill } from './skyscraper';
 import { twoStringKiteSkill } from './twoStringKite';
 import { emptyRectangleSkill } from './emptyRectangle';
 import { finnedXWingSkill } from './finnedXWing';
+import { finnedSwordfishSkill } from './finnedSwordfish';
+import { finnedJellyfishSkill } from './finnedJellyfish';
+import { xCycleSimpleColoringSkill } from './xCycleSimpleColoring';
+import { xyChainSkill } from './xyChain';
+import { aicSkill } from './aic';
+import { aicLongChainSkill } from './aicLongChain';
+import { aicMidChainSkill } from './aicMidChain';
+import { groupedAicNiceLoopSkill } from './groupedAicNiceLoop';
+import { discontinuousNiceLoopSkill } from './discontinuousNiceLoop';
+import { cellForcingChainSkill } from './cellForcingChain';
+import { regionForcingChainSkill } from './regionForcingChain';
+import { forcingChainNetSkill } from './forcingChainNet';
+import { alsXZSkill } from './alsXZ';
+import { alsXYSkill } from './alsXY';
+import { alsWWingSkill } from './alsWWing';
+import { alsChainSkill } from './alsChain';
+import { sueDeCoqSkill } from './sueDeCoq';
+import { templateSkill } from './template';
+import { deathBlossomSkill } from './deathBlossom';
+import { exocetSkill } from './exocet';
 import { bugPlusOneSkill } from './bugPlusOne';
 import type { SkillPreview } from './types';
 import { getChoreography } from './castChoreography';
@@ -58,7 +78,35 @@ registerSkill(skyscraperSkill);
 registerSkill(twoStringKiteSkill);
 registerSkill(emptyRectangleSkill);
 registerSkill(finnedXWingSkill);
+registerSkill(finnedSwordfishSkill);
+registerSkill(finnedJellyfishSkill);
 registerSkill(bugPlusOneSkill);
+
+// Lv3 — Tier 2-3 chain techniques
+registerSkill(xCycleSimpleColoringSkill);
+registerSkill(xyChainSkill);
+registerSkill(aicSkill);
+registerSkill(aicMidChainSkill);
+registerSkill(aicLongChainSkill);
+registerSkill(groupedAicNiceLoopSkill);
+registerSkill(discontinuousNiceLoopSkill);
+
+// Lv4 — Tier 3-4 forcing chains
+registerSkill(cellForcingChainSkill);
+registerSkill(regionForcingChainSkill);
+registerSkill(forcingChainNetSkill);
+
+// Lv5 — Tier 4 ALS techniques
+registerSkill(alsXZSkill);
+registerSkill(alsXYSkill);
+registerSkill(alsWWingSkill);
+registerSkill(alsChainSkill);
+
+// Lv6 — Tier 4 ultimate techniques
+registerSkill(sueDeCoqSkill);
+registerSkill(templateSkill);
+registerSkill(deathBlossomSkill);
+registerSkill(exocetSkill);
 
 // ── State ────────────────────────────────────────────────────────────
 

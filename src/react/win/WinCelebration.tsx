@@ -257,8 +257,7 @@ export function WinCelebration(): ReactElement {
   }, [visible, mode, leveledUp]);
 
   const confettiCount = mode === 'wild' && leveledUp ? 35 : 22;
-  const displayName =
-    mode === 'wild' && firstKill ? t('win.firstKill', { name: firstKill, sub: firstKillSub ?? '' }) : levelName;
+  const displayName = levelName;
 
   const bg = 'radial-gradient(circle at top, rgba(9, 132, 227, 0.16), var(--bg-color) 60%)';
 
@@ -286,15 +285,61 @@ export function WinCelebration(): ReactElement {
           </div>
         )}
         {mode === 'wild' && firstKill && (
-          <div className="win-mentor-note">
-            <div className="win-first-kill-label">
-              {t('win.newTechDiscovered')} · {firstKill}
-              {firstKillSub ? ` · ${firstKillSub}` : ''}
+          <div
+            className="win-mentor-note"
+            style={{
+              borderTop: '1px solid rgba(255,255,255,0.12)',
+              marginTop: '8px',
+              paddingTop: '16px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '11px',
+                letterSpacing: '3px',
+                color: 'rgba(255,255,255,0.45)',
+                fontWeight: 400,
+                marginBottom: '10px',
+              }}
+            >
+              ⬡ {t('wild.firstDiscovery')}
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: '8px',
+                justifyContent: 'center',
+                marginBottom: '12px',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '22px',
+                  fontWeight: 700,
+                  color: 'var(--star-color)',
+                  letterSpacing: '2px',
+                }}
+              >
+                {firstKill}
+              </span>
+              {firstKillSub && (
+                <span
+                  style={{
+                    fontSize: '13px',
+                    color: 'rgba(255,255,255,0.5)',
+                    letterSpacing: '1px',
+                    fontWeight: 300,
+                  }}
+                >
+                  {firstKillSub}
+                </span>
+              )}
             </div>
             <div className="win-mentor-note-title">{t('win.mentorNoteTitle')}</div>
             {mentorNote && <div className="win-mentor-note-text">{mentorNote}</div>}
             <button className="back-btn win-library-btn" onClick={handleGoToLibrary}>
-              {t('win.goToLibrary')}
+              {t('wild.viewInBestiary')} →
             </button>
           </div>
         )}
