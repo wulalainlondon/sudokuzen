@@ -628,7 +628,14 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
       import('./duoSpectator').then((m) => m.enterSpectatorMode(gs.duoRoomData!)).catch((e) => console.warn('[duo] enterSpectatorMode failed:', e));
     }
   } catch (e) {
-    console.warn('[duo] submitDuoFinish FAILED:', e);
+    const code = (e as { code?: string })?.code;
+    if (code === 'functions/failed-precondition') {
+      // duoSetPlaying not yet complete — reset flag and retry in 1s
+      _duoFinishSubmitted = false;
+      setTimeout(() => submitDuoFinish(timeSec, stars), 1000);
+    } else {
+      console.warn('[duo] submitDuoFinish FAILED:', e);
+    }
   }
 }
 
