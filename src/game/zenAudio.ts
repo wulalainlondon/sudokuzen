@@ -22,7 +22,6 @@ function getLongNoiseBuffer(ctx: AudioContext, seconds: number): AudioBuffer {
   return buf;
 }
 
-
 // ── File-based playback ──────────────────────────────────────────────────────
 
 function playFile(src: string, volume = 0.6): void {

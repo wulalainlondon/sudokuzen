@@ -38,9 +38,9 @@ export interface DuoMode {
   maxErrors: number;
   allowNotes: boolean;
   blindReview: boolean;
-  isChessClock?: boolean;      // true = 象棋鐘模式，遊戲邏輯完全不同
-  lockedToTierId?: string;     // 若有值，Lobby 強制鎖定到此 tier
-  beta?: boolean;              // true = 顯示 BETA 標籤
+  isChessClock?: boolean; // true = 象棋鐘模式，遊戲邏輯完全不同
+  lockedToTierId?: string; // 若有值，Lobby 強制鎖定到此 tier
+  beta?: boolean; // true = 顯示 BETA 標籤
 }
 
 export const DUO_MODES: DuoMode[] = [

@@ -106,10 +106,6 @@ export interface DuoRoomData {
   startAt: { toMillis?: () => number; seconds?: number } | null;
   countdownStartedAt: { toMillis?: () => number; seconds?: number } | null;
   updatedAt: { toDate?: () => Date } | null;
-  hostEmoji?: string | null;
-  hostEmojiTs?: number | null;
-  guestEmoji?: string | null;
-  guestEmojiTs?: number | null;
   hostDuoWins?: number;
   guestDuoWins?: number;
   levelLocked?: boolean;
@@ -129,10 +125,10 @@ export interface DuoRoomData {
   ccHostTotalMs?: number | null;
   ccGuestTotalMs?: number | null;
   // ── Spectator / Bomb fields ────────────────────────────────────────
-  specBoardState?: string | null;    // JSON array of 81 numbers - 還在玩的那方的盤面
-  specBoardVersion?: number | null;  // 版本號，防止重複渲染
-  specBombAt?: number | null;        // 炸彈觸發時間戳 (epoch ms)
-  specBombCells?: number[] | null;   // 被炸的 5 個 cell index
+  specBoardState?: string | null; // JSON array of 81 numbers - 還在玩的那方的盤面
+  specBoardVersion?: number | null; // 版本號，防止重複渲染
+  specBombAt?: number | null; // 炸彈觸發時間戳 (epoch ms)
+  specBombCells?: number[] | null; // 被炸的 5 個 cell index
 }
 
 export interface CandidateTrackingNode {
@@ -236,8 +232,6 @@ export const gs = {
   duoLastErrorCell: -1,
   duoLastErrorTime: 0,
   duoSameCellStreak: 0,
-  duoEmojiCooldown: 0,
-  duoLastEmojiSeen: '',
   duoOpponentNotified: false,
 
   // ── Chess Clock mode state ─────────────────────────────────────────

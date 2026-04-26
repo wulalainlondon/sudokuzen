@@ -60,7 +60,6 @@ export function isDuoRoomViewOpen(): boolean {
   return _roomViewOpen;
 }
 
-
 // ── Leave room (back button) ────────────────────────────────────────
 
 export async function leaveDuoRoomFromView(): Promise<void> {

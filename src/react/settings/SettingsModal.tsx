@@ -44,13 +44,7 @@ function VolumeSlider({
   );
 }
 
-function ToggleButton({
-  enabled,
-  onToggle,
-}: {
-  enabled: boolean;
-  onToggle: () => void;
-}): ReactElement {
+function ToggleButton({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }): ReactElement {
   return (
     <button
       onClick={onToggle}
@@ -124,19 +118,22 @@ export function SettingsModal(): ReactElement {
   const [settings, setSettings] = useState<AudioSettings>(() => getAudioSettings());
   const [isDark, setIsDark] = useState(() => getDocumentTheme() === 'dark');
 
-  const apply = useCallback((patch: Partial<AudioSettings>) => {
-    const next = { ...settings, ...patch };
-    setSettings(next);
-    saveAudioSettings(patch);
+  const apply = useCallback(
+    (patch: Partial<AudioSettings>) => {
+      const next = { ...settings, ...patch };
+      setSettings(next);
+      saveAudioSettings(patch);
 
-    // Live BGM updates
-    if (patch.bgmVolume !== undefined || patch.bgmEnabled !== undefined) {
-      void import('../../game/bgm').then(({ applyBgmVolume, applyBgmEnabled }) => {
-        if (patch.bgmEnabled !== undefined) applyBgmEnabled(next.bgmEnabled);
-        if (patch.bgmVolume !== undefined) applyBgmVolume(next.bgmVolume);
-      });
-    }
-  }, [settings]);
+      // Live BGM updates
+      if (patch.bgmVolume !== undefined || patch.bgmEnabled !== undefined) {
+        void import('../../game/bgm').then(({ applyBgmVolume, applyBgmEnabled }) => {
+          if (patch.bgmEnabled !== undefined) applyBgmEnabled(next.bgmEnabled);
+          if (patch.bgmVolume !== undefined) applyBgmVolume(next.bgmVolume);
+        });
+      }
+    },
+    [settings],
+  );
 
   const toggleTheme = useCallback(() => {
     const next = isDark ? 'light' : 'dark';
@@ -153,29 +150,21 @@ export function SettingsModal(): ReactElement {
   }, [visible]);
 
   return (
-    <ZenOverlay
-      visible={visible}
-      onClose={close}
-      id="settings-modal"
-      backdropCloseDelayMs={120}
-    >
-      <div
-        className="stats-panel"
-        style={{ maxWidth: 340, width: '90vw' }}
-      >
+    <ZenOverlay visible={visible} onClose={close} id="settings-modal" backdropCloseDelayMs={120}>
+      <div className="stats-panel" style={{ maxWidth: 340, width: '90vw' }}>
         <h2 style={{ marginBottom: 4 }}>設定</h2>
 
         {/* 主題 */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '14px 0',
-          borderBottom: '1px solid var(--cell-border)',
-        }}>
-          <span style={{ fontWeight: 600, fontSize: '1rem' }}>
-            {isDark ? '🌙 暗色模式' : '☀️ 亮色模式'}
-          </span>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 0',
+            borderBottom: '1px solid var(--cell-border)',
+          }}
+        >
+          <span style={{ fontWeight: 600, fontSize: '1rem' }}>{isDark ? '🌙 暗色模式' : '☀️ 亮色模式'}</span>
           <ToggleButton enabled={isDark} onToggle={toggleTheme} />
         </div>
 
@@ -195,11 +184,7 @@ export function SettingsModal(): ReactElement {
           onVolume={(v) => apply({ bgmVolume: v })}
         />
 
-        <button
-          className="resume-btn"
-          onClick={close}
-          style={{ marginTop: 20 }}
-        >
+        <button className="resume-btn" onClick={close} style={{ marginTop: 20 }}>
           關閉
         </button>
       </div>

@@ -80,7 +80,6 @@ function connectToRoom(node: AudioNode, ctx: AudioContext): void {
   if (gs._reverbNode) node.connect(gs._reverbNode);
 }
 
-
 // ── File-based playback (replaces synthesis when files are present) ──────────
 
 function playFile(src: string, baseVolume = 0.6): void {

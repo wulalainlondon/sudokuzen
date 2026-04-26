@@ -8,15 +8,15 @@ import { updateCellDisplay } from '../../game/board';
 
 // ── Module-level state ───────────────────────────────────────────────
 
-let _spectatorActive = false;   // 我正在觀戰（我已完成，對手還在）
-let _beingWatched = false;      // 我還在玩，對手已完成在看我
-let _bombUsed = false;          // 本局炸彈已用過
+let _spectatorActive = false; // 我正在觀戰（我已完成，對手還在）
+let _beingWatched = false; // 我還在玩，對手已完成在看我
+let _bombUsed = false; // 本局炸彈已用過
 let _lastSpecBoardVersion = -1; // 上次渲染的版本
 let _syncRafHandle: number | null = null;
-let _specVersion = 0;           // syncSpecBoardNow 版本計數器
-let _lastBombAt = 0;            // 上次見到的 specBombAt
-let _lastSyncMs = 0;            // 節流：上次 sync 的時間戳
-let _settlementShown = false;   // 樂觀 UI：對手剩 0 格時的過渡提示
+let _specVersion = 0; // syncSpecBoardNow 版本計數器
+let _lastBombAt = 0; // 上次見到的 specBombAt
+let _lastSyncMs = 0; // 節流：上次 sync 的時間戳
+let _settlementShown = false; // 樂觀 UI：對手剩 0 格時的過渡提示
 
 // ── Overlay CSS ──────────────────────────────────────────────────────
 
@@ -229,10 +229,7 @@ export function handleSpectatorSnapshot(d: DuoRoomData): void {
   if (!_spectatorActive) return;
 
   // Deduplicate by version
-  if (
-    d.specBoardVersion != null &&
-    d.specBoardVersion === _lastSpecBoardVersion
-  ) {
+  if (d.specBoardVersion != null && d.specBoardVersion === _lastSpecBoardVersion) {
     return;
   }
   _lastSpecBoardVersion = d.specBoardVersion ?? -1;

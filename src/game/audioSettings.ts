@@ -4,9 +4,9 @@ import { SK, readJson, writeJson } from '../storage/keys';
 
 export interface AudioSettings {
   sfxEnabled: boolean;
-  sfxVolume: number;  // 0–1
+  sfxVolume: number; // 0–1
   bgmEnabled: boolean;
-  bgmVolume: number;  // 0–1
+  bgmVolume: number; // 0–1
 }
 
 const DEFAULTS: AudioSettings = {

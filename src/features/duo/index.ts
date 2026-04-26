@@ -56,12 +56,7 @@ export {
 } from './duoLobby';
 
 // Room View
-export {
-  openDuoRoomView,
-  closeDuoRoomView,
-  isDuoRoomViewOpen,
-  leaveDuoRoomFromView,
-} from './duoRoomView';
+export { openDuoRoomView, closeDuoRoomView, isDuoRoomViewOpen, leaveDuoRoomFromView } from './duoRoomView';
 
 // Metrics
 export { getDuoMetrics, resetDuoMetrics, bumpDuoMetric } from './duoMetrics';
