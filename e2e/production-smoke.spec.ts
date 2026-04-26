@@ -18,10 +18,9 @@ test.describe('production-smoke', () => {
 
   test('page loads and renders level screen with stage map nodes', async ({ page }) => {
     // Stage map nodes are populated dynamically by levels.ts
-    await page.waitForFunction(
-      () => document.querySelectorAll('#stage-map .stage-node').length > 0,
-      { timeout: 10_000 },
-    );
+    await page.waitForFunction(() => document.querySelectorAll('#stage-map .stage-node').length > 0, {
+      timeout: 10_000,
+    });
     const nodes = page.locator('#stage-map .stage-node');
     await expect(nodes.first()).toBeVisible();
   });
@@ -57,10 +56,7 @@ test.describe('production-smoke', () => {
     await expect(overlay).toBeVisible({ timeout: 5_000 });
 
     // Cards are rendered dynamically
-    await page.waitForFunction(
-      () => document.querySelectorAll('.library-card').length > 0,
-      { timeout: 8_000 },
-    );
+    await page.waitForFunction(() => document.querySelectorAll('.library-card').length > 0, { timeout: 8_000 });
     const cards = page.locator('.library-card');
     await expect(cards.first()).toBeVisible();
   });
@@ -84,12 +80,13 @@ test.describe('production-smoke', () => {
 
   test('duo lobby opens and shows room UI', async ({ page }) => {
     await page.click('#duo-entry-btn');
-    await expect(page.locator('#duo-lobby')).toBeVisible({ timeout: 5_000 });
+    // Firebase anonymous auth may take >5s in CI — use a generous timeout
+    await expect(page.locator('#duo-lobby')).toBeVisible({ timeout: 25_000 });
   });
 
   test('duo lobby closes', async ({ page }) => {
     await page.click('#duo-entry-btn');
-    await expect(page.locator('#duo-lobby')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('#duo-lobby')).toBeVisible({ timeout: 25_000 });
 
     await page.locator('#duo-back-btn').click();
     await expect(page.locator('#duo-lobby')).toBeHidden({ timeout: 3_000 });
@@ -112,28 +109,23 @@ test.describe('production-smoke', () => {
   // ── Tier navigation ───────────────────────────────────────────────────
 
   test('clicking stage node opens tier view with levels', async ({ page }) => {
-    await page.waitForFunction(
-      () => document.querySelectorAll('#stage-map .stage-node').length > 0,
-      { timeout: 10_000 },
-    );
+    await page.waitForFunction(() => document.querySelectorAll('#stage-map .stage-node').length > 0, {
+      timeout: 10_000,
+    });
 
     // Click first unlocked node
     const unlocked = page.locator('#stage-map .stage-node:not(.locked)').first();
     await unlocked.click();
 
     await expect(page.locator('#tier-view')).toBeVisible({ timeout: 5_000 });
-    await page.waitForFunction(
-      () => document.querySelectorAll('.level-item').length > 0,
-      { timeout: 8_000 },
-    );
+    await page.waitForFunction(() => document.querySelectorAll('.level-item').length > 0, { timeout: 8_000 });
     await expect(page.locator('.level-item').first()).toBeVisible();
   });
 
   test('back button from tier view returns to stage map', async ({ page }) => {
-    await page.waitForFunction(
-      () => document.querySelectorAll('#stage-map .stage-node').length > 0,
-      { timeout: 10_000 },
-    );
+    await page.waitForFunction(() => document.querySelectorAll('#stage-map .stage-node').length > 0, {
+      timeout: 10_000,
+    });
 
     const unlocked = page.locator('#stage-map .stage-node:not(.locked)').first();
     await unlocked.click();
