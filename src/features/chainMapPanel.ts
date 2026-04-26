@@ -1,7 +1,8 @@
-// Chain Map Panel — V3 Phase 2A
+// Chain Map Panel — V3 Phase 2B
 // SVG overlay on #grid showing strong/weak link network for selected digits.
-// Digit filter chips [1-9] (max 3 simultaneous) + link type toggles.
+// Digit filter chips [1-9] (max 3 simultaneous) + link type toggles + bivalue toggle.
 // Uses percentage-based viewBox (0-100) so SVG auto-scales with grid — no ResizeObserver needed.
+// Phase 2B: "雙值格" toggle draws cross-digit strong links (bivalue cell bridges for AIC).
 
 import { gs } from '../game/state';
 import { SK } from '../storage/keys';
@@ -16,6 +17,7 @@ let _svgEl: SVGSVGElement | null = null;
 let _selectedDigits = new Set<number>();
 let _showStrong = true;
 let _showWeak = false;
+let _showBivalue = false;
 
 const MAX_SIMULTANEOUS_DIGITS = 3;
 
@@ -54,6 +56,7 @@ export function openChainMapPanel(): void {
     gs.chainTracePanelOpen = false;
     gs.chainTraceNodes = [];
     document.getElementById('chain-trace-panel')?.classList.add('hidden');
+    document.getElementById('chain-trace-svg')?.remove();
     clearGridClasses(
       ['chain-node', 'chain-valid-strong', 'chain-valid-weak', 'chain-elim'],
       ['chain-node-digit', 'chain-valid-digit', 'chain-elim-digit'],
@@ -64,6 +67,7 @@ export function openChainMapPanel(): void {
   _selectedDigits = new Set();
   _showStrong = true;
   _showWeak = false;
+  _showBivalue = false;
   _mapGraph = null; // fresh graph on open
 
   document.getElementById('numpad')?.classList.add('hidden');
@@ -139,6 +143,13 @@ export function toggleMapLinkType(type: 'strong' | 'weak'): void {
   syncStats();
 }
 
+export function toggleMapBivalueLinks(): void {
+  _showBivalue = !_showBivalue;
+  syncLinkTypeButtons();
+  redrawLinks();
+  syncStats();
+}
+
 // ── Link Drawing ──────────────────────────────────────────────────────
 
 function redrawLinks(): void {
@@ -180,6 +191,23 @@ function redrawLinks(): void {
       });
     });
   }
+
+  // Bivalue cross-digit strong links: same cell, different digits, both selected
+  if (_showBivalue) {
+    const bivalueSeen = new Set<number>();
+    graph.strong.forEach((targets, nodeA) => {
+      const { cell: cA, digit: dA } = decodeNode(nodeA);
+      if (!_selectedDigits.has(dA)) return;
+      targets.forEach((nodeB) => {
+        const { cell: cB, digit: dB } = decodeNode(nodeB);
+        if (cB !== cA) return; // same cell only
+        if (!_selectedDigits.has(dB)) return;
+        if (bivalueSeen.has(cA)) return;
+        bivalueSeen.add(cA);
+        drawBivalueMarker(cA);
+      });
+    });
+  }
 }
 
 function drawLine(cA: number, cB: number, type: 'strong' | 'weak'): void {
@@ -206,6 +234,22 @@ function drawLine(cA: number, cB: number, type: 'strong' | 'weak'): void {
   _svgEl.appendChild(line);
 }
 
+function drawBivalueMarker(cell: number): void {
+  if (!_svgEl) return;
+  const { x, y } = cellPct(cell);
+  // Outer ring: dashed green circle indicating bivalue bridge
+  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circle.setAttribute('cx', x.toFixed(2));
+  circle.setAttribute('cy', y.toFixed(2));
+  circle.setAttribute('r', '4.2');
+  circle.setAttribute('fill', 'none');
+  circle.setAttribute('stroke', '#10b981');
+  circle.setAttribute('stroke-width', '1.5');
+  circle.setAttribute('stroke-dasharray', '2.5 1.5');
+  circle.setAttribute('opacity', '0.85');
+  _svgEl.appendChild(circle);
+}
+
 // ── UI Sync ───────────────────────────────────────────────────────────
 
 function syncChipStates(): void {
@@ -218,6 +262,7 @@ function syncChipStates(): void {
 function syncLinkTypeButtons(): void {
   document.getElementById('chain-map-strong-btn')?.classList.toggle('active', _showStrong);
   document.getElementById('chain-map-weak-btn')?.classList.toggle('active', _showWeak);
+  document.getElementById('chain-map-bivalue-btn')?.classList.toggle('active', _showBivalue);
 }
 
 function syncStats(): void {
@@ -260,8 +305,24 @@ function syncStats(): void {
       });
     });
   }
+  let bc = 0;
+  if (_showBivalue) {
+    const bvSeen = new Set<number>();
+    graph.strong.forEach((targets, nodeA) => {
+      const { cell: cA, digit: dA } = decodeNode(nodeA);
+      if (!_selectedDigits.has(dA)) return;
+      targets.forEach((nodeB) => {
+        const { cell: cB, digit: dB } = decodeNode(nodeB);
+        if (cB !== cA || !_selectedDigits.has(dB) || bvSeen.has(cA)) return;
+        bvSeen.add(cA);
+        bc++;
+      });
+    });
+  }
+
   const parts = [`強鏈 ${sc} 條`];
   if (_showWeak) parts.push(`弱鏈 ${wc} 條`);
+  if (_showBivalue) parts.push(`雙值格 ${bc} 個`);
   el.textContent = `數字 [${[...Array.from(_selectedDigits)].join(' ')}] · ` + parts.join(' · ');
 }
 
