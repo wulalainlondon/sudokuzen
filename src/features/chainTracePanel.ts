@@ -1,10 +1,10 @@
-// Chain Trace Panel — V3 Phase 1
-// Text-based chain building + rule validation (Mode 3A).
-// No SVG overlay yet — that's Phase 2.
+// Chain Trace Panel — V3 Phase 2
+// Text-based chain building + rule validation (Mode 3A) + SVG overlay on grid.
 //
 // Interaction: tap a note-digit on grid → adds (cell, digit) node to chain.
 // Chain alternates strong → weak → strong links (validated via buildLinkGraph).
 // Mode 3A: verify button confirms alternation correctness, no eliminations shown.
+// Phase 2: SVG overlay draws strong (solid blue) / weak (dashed purple) lines between nodes.
 
 import { gs } from '../game/state';
 import { SK } from '../storage/keys';
@@ -17,6 +17,7 @@ import { findAIC } from '../solver/helpers/chains';
 
 let _graph: LinkGraph | null = null;
 let _chainVerified = false; // true after Mode 3A passes; gates reveal button
+let _traceSvgEl: SVGSVGElement | null = null;
 
 function getGraph(): LinkGraph {
   if (!_graph && gs.cellsData.length > 0) {
@@ -28,6 +29,82 @@ function getGraph(): LinkGraph {
 
 function invalidateGraph(): void {
   _graph = null;
+}
+
+// ── SVG Overlay ───────────────────────────────────────────────────────
+
+function cellPct(idx: number): { x: number; y: number } {
+  return {
+    x: (((idx % 9) + 0.5) / 9) * 100,
+    y: ((Math.floor(idx / 9) + 0.5) / 9) * 100,
+  };
+}
+
+function ensureTraceSvgOverlay(): void {
+  const gridEl = gs.gridEl;
+  if (!gridEl) return;
+  removeTraceSvgOverlay();
+  gridEl.style.position = 'relative';
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.id = 'chain-trace-svg';
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.style.cssText =
+    'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:visible';
+  gridEl.appendChild(svg);
+  _traceSvgEl = svg;
+}
+
+function removeTraceSvgOverlay(): void {
+  document.getElementById('chain-trace-svg')?.remove();
+  _traceSvgEl = null;
+}
+
+function redrawTraceOverlay(): void {
+  if (!_traceSvgEl) return;
+  _traceSvgEl.innerHTML = '';
+  const nodes = gs.chainTraceNodes;
+  if (nodes.length < 2) return;
+
+  for (let i = 0; i < nodes.length - 1; i++) {
+    const nA = nodes[i];
+    const nB = nodes[i + 1];
+    const isStrong = i % 2 === 0;
+    const stroke = isStrong ? 'var(--accent-strong, #0984E3)' : '#a78bfa';
+    const width = isStrong ? '2' : '1.5';
+    const opacity = isStrong ? '0.8' : '0.65';
+
+    if (nA.cell === nB.cell) {
+      // Same-cell bivalue bridge: draw a small loop arc above the cell
+      const { x, y } = cellPct(nA.cell);
+      const r = 3.5;
+      const arc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      arc.setAttribute(
+        'd',
+        `M ${(x - r).toFixed(2)} ${y.toFixed(2)} A ${r} ${r} 0 1 1 ${(x + r).toFixed(2)} ${y.toFixed(2)}`,
+      );
+      arc.setAttribute('fill', 'none');
+      arc.setAttribute('stroke', stroke);
+      arc.setAttribute('stroke-width', width);
+      arc.setAttribute('opacity', opacity);
+      arc.setAttribute('stroke-linecap', 'round');
+      _traceSvgEl.appendChild(arc);
+    } else {
+      const a = cellPct(nA.cell);
+      const b = cellPct(nB.cell);
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', a.x.toFixed(2));
+      line.setAttribute('y1', a.y.toFixed(2));
+      line.setAttribute('x2', b.x.toFixed(2));
+      line.setAttribute('y2', b.y.toFixed(2));
+      line.setAttribute('stroke', stroke);
+      line.setAttribute('stroke-width', width);
+      line.setAttribute('opacity', opacity);
+      line.setAttribute('stroke-linecap', 'round');
+      if (!isStrong) line.setAttribute('stroke-dasharray', '3 2.5');
+      _traceSvgEl.appendChild(line);
+    }
+  }
 }
 
 // ── Settings ──────────────────────────────────────────────────────────
@@ -64,6 +141,7 @@ export function openChainTracePanel(): void {
   document.getElementById('chain-trace-panel')?.classList.remove('hidden');
 
   resetPanelUI();
+  ensureTraceSvgOverlay();
 }
 
 export function closeChainTracePanel(): void {
@@ -74,6 +152,7 @@ export function closeChainTracePanel(): void {
   document.getElementById('numpad')?.classList.remove('hidden');
   document.getElementById('chain-trace-panel')?.classList.add('hidden');
   clearChainHighlights();
+  removeTraceSvgOverlay();
 }
 
 // ── Chain Building ────────────────────────────────────────────────────
@@ -129,12 +208,14 @@ export function undoChainTrace(): void {
   _chainVerified = false;
   hideRevealRow();
   if (nodes.length === 0) {
+    clearChainHighlights();
+    redrawTraceOverlay();
     resetPanelUI();
   } else {
     const nextExpectStrong = nodes.length % 2 === 1;
     setInstruction(`已撤回 — 繼續選節點（${nextExpectStrong ? '強鏈' : '弱鏈'}）`);
     renderChainText();
-    highlightValidNextNodes();
+    highlightValidNextNodes(); // calls redrawTraceOverlay at end
     syncVerifyButton();
   }
 }
@@ -144,6 +225,7 @@ export function clearChainTrace(): void {
   _chainVerified = false;
   invalidateGraph();
   clearChainHighlights();
+  redrawTraceOverlay();
   resetPanelUI();
   hideRevealRow();
 }
@@ -221,7 +303,8 @@ export function revealChainResult(): void {
   }
 
   if (first.digit !== last.digit) {
-    // Multi-digit AIC: for now show an informational note
+    // Multi-digit AIC: show informational note
+    redrawTraceOverlay();
     setInstruction('✓ 合法 AIC — 多數字消除預覽將在後續版本完整支援');
     syncStats('提示：雙值格橋接的 AIC 消除涉及兩個不同數字');
     return;
@@ -250,6 +333,8 @@ export function revealChainResult(): void {
   const elimLabels = elims.map((cell) => cellLabel(cell)).join('、');
   setInstruction(`消除目標：數字 ${digit} 可從以下格移除`);
   syncStats(`${elimLabels}（共 ${elims.length} 個）`);
+
+  redrawTraceOverlay();
 
   // C: Dual-track comparison — run solver AIC after a short defer to avoid blocking UI
   const playerLen = nodes.length;
@@ -330,6 +415,8 @@ function highlightValidNextNodes(): void {
       cellEl.querySelector(`.note-num:nth-child(${d})`)?.classList.add('chain-valid-digit');
     });
   });
+
+  redrawTraceOverlay();
 }
 
 export function clearChainHighlights(): void {

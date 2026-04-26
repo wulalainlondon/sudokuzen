@@ -9,9 +9,11 @@ coverage/
 .DS_Store
 .firebase/
 playwright-report/
+playwright-report-live/
 test-results/
+test-results-live/
+test-results.json
 
 reports/
-playwright-report-live/
 .claude/
 討論結果/

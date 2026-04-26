@@ -8847,3 +8847,27 @@ body.library-open {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
+
+/* ── AIC Chain path visualization ── */
+
+.skill-line-aic-strong {
+  stroke: #0984E3;
+  stroke-width: 2;
+  opacity: 0;
+  animation: skillLineAppear 0.2s ease-out forwards;
+}
+.skill-line-aic-weak {
+  stroke: #a78bfa;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+  opacity: 0;
+  animation: skillLineAppear 0.2s ease-out forwards;
+}
+.skill-line-preview {
+  animation: none;
+  opacity: 0.55;
+}
+@keyframes skillLineAppear {
+  from { opacity: 0; }
+  to   { opacity: 0.8; }
+}

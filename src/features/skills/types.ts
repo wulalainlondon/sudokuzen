@@ -16,6 +16,9 @@ export interface SkillPreview {
   digits?: number[];
   unitLabel?: string;
   sweepDirection: 'outward' | 'inward';
+  // Ordered node sequence for AIC-type skills.
+  // Link between chainPath[i] and chainPath[i+1] is STRONG when i is even, WEAK when i is odd.
+  chainPath?: { cell: number; digit: number }[];
 }
 
 export interface SkillDetector {

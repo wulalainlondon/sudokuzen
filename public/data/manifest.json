@@ -1,6 +1,6 @@
 {
-  "version": "a6789252d645",
-  "generatedAt": "2026-04-15T14:16:39.736Z",
+  "version": "0de4e839cc3b",
+  "generatedAt": "2026-04-26T05:11:55.671Z",
   "totalLevels": 9437,
   "shards": {
     "normal": {
@@ -73,6 +73,11 @@
       "count": 300,
       "size": 144135
     },
+    "duo-T00": {
+      "file": "duo-T00.json",
+      "count": 300,
+      "size": 142743
+    },
     "duo-T01": {
       "file": "duo-T01.json",
       "count": 200,
@@ -132,11 +137,6 @@
       "file": "duo-T12.json",
       "count": 200,
       "size": 137819
-    },
-    "duo-T00": {
-      "file": "duo-T00.json",
-      "count": 300,
-      "size": 142743
     }
   }
 }
