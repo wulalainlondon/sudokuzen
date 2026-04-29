@@ -26,7 +26,8 @@ function getLongNoiseBuffer(ctx: AudioContext, seconds: number): AudioBuffer {
 
 function playFile(src: string, volume = 0.6): void {
   try {
-    const audio = new Audio(src);
+    const resolved = src.startsWith('/') ? import.meta.env.BASE_URL + src.slice(1) : src;
+    const audio = new Audio(resolved);
     audio.volume = volume;
     audio.play().catch(() => {});
   } catch {
