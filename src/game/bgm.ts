@@ -12,8 +12,8 @@ const FADE_STEPS = 25;
 const FADE_INTERVAL_MS = 40; // ~1 second total fade
 
 const TRACKS = {
-  wild: '/sounds/bgm/two_hands_one_board.mp3',
-  duo: '/sounds/bgm/thunder_at_the_gates.mp3',
+  wild: `${import.meta.env.BASE_URL}sounds/bgm/two_hands_one_board.mp3`,
+  duo: `${import.meta.env.BASE_URL}sounds/bgm/thunder_at_the_gates.mp3`,
 } as const;
 
 export type BgmTrack = keyof typeof TRACKS;

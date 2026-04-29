@@ -86,7 +86,8 @@ function playFile(src: string, baseVolume = 0.6): void {
   try {
     const { sfxEnabled, sfxVolume } = getAudioSettings();
     if (!sfxEnabled) return;
-    const audio = new Audio(src);
+    const resolved = src.startsWith('/') ? import.meta.env.BASE_URL + src.slice(1) : src;
+    const audio = new Audio(resolved);
     audio.volume = Math.min(1, baseVolume * sfxVolume);
     audio.play().catch(() => {});
   } catch {
