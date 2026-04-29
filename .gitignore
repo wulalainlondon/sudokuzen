@@ -17,3 +17,11 @@ test-results.json
 reports/
 .claude/
 討論結果/
+
+# Firebase CLI debug logs
+firebase-debug.log
+firebase-debug.*.log
+
+# Local-only large media / build artifacts (not deployed via Pages)
+public/teach/videos/
+scripts/hyperframes/
