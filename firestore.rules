@@ -40,10 +40,10 @@ service cloud.firestore {
             && (request.resource.data.tierId == null || request.resource.data.tierId is string)
             && (request.resource.data.modeId == null || request.resource.data.modeId is string)
             && (request.resource.data.puzzleSeed == null || request.resource.data.puzzleSeed is int)
-            && (request.resource.data.specBoardState == null || request.resource.data.specBoardState is string)
-            && (request.resource.data.specBoardVersion == null || request.resource.data.specBoardVersion is int)
-            && (request.resource.data.specBombAt == null || request.resource.data.specBombAt is int)
-            && (request.resource.data.specBombCells == null || request.resource.data.specBombCells is list);
+            && (request.resource.data.get('specBoardState', null) == null || request.resource.data.specBoardState is string)
+            && (request.resource.data.get('specBoardVersion', null) == null || request.resource.data.specBoardVersion is int)
+            && (request.resource.data.get('specBombAt', null) == null || request.resource.data.specBombAt is int)
+            && (request.resource.data.get('specBombCells', null) == null || request.resource.data.specBombCells is list);
       }
       allow read: if true;
       allow create: if false; // All room creation must go through Cloud Functions
