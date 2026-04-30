@@ -7,7 +7,7 @@ import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview, cellsSeeEachOther } from './types';
-import { tryALS, isRestrictedCommon } from './alsHelper';
+import { tryALS } from './alsHelper';
 
 const META = {
   id: 'death_blossom',
@@ -59,8 +59,6 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
       // Check which pivot digits can use this ALS (restricted common between pivot and ALS)
       for (const d of pivotNotes) {
         if (!als.digits.has(d)) continue;
-        // Pivot sees all ALS cells with d? Actually: pivot alone forms a 1-cell "ALS" for checking restricted common
-        const pivotCell = [pivot];
         // Check: pivot and ALS d-cells see each other
         const alsXCells = als.cells.filter((c) => cells[c]?.notes.includes(d));
         if (alsXCells.every((c) => cellsSeeEachOther(pivot, c))) {

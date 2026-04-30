@@ -122,7 +122,7 @@ export function playZenStrike(pitch = 880): void {
 // ── 5. Bronze bowl strike ────────────────────────────────────────────
 
 export function playZenComplete(peakGain = 0.04): void {
-  playFile('/sounds/zen_complete.ogg', 0.7);
+  playFile('/sounds/zen_complete.ogg', Math.min(1, Math.max(0, (peakGain / 0.04) * 0.7)));
 }
 
 // ── 6. Bronze bowl + wind chime cascade ──────────────────────────────

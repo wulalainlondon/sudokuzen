@@ -2,7 +2,7 @@ import type { CellData } from '../../game/state';
 import type { SkillDetector, SkillPreview, LitCandidate } from './types';
 import { t } from '../../i18n/t';
 import { makeEmptyPreview } from './types';
-import { propagateAssignment, intersectSets, encodeToTargets, decodeFC } from './forcingHelper';
+import { propagateAssignment, intersectSets, encodeToTargets } from './forcingHelper';
 
 const META = {
   id: 'cell_forcing_chain',

@@ -71,8 +71,7 @@ function evaluate(selectedCells: number[], cells: CellData[]): SkillPreview {
           const t2 = others[ti2];
 
           // Targets must be in DIFFERENT rows/cols from the base cells
-          const baseRow1 = getRow(b1),
-            baseRow2 = getRow(b2);
+          const baseRow1 = getRow(b1);
           const baseCol1 = getCol(b1),
             baseCol2 = getCol(b2);
           const t1Row = getRow(t1),
