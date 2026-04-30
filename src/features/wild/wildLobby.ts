@@ -580,12 +580,11 @@ export function renderWildLobby(): void {
 
         if (entry.kills > 0) {
           const modesCleared = entry.modesCleared || [];
-          const allModes = ['standard', 'blind', 'ironman', 'noNotes'];
+          const allModes = ['standard', 'blind', 'ironman'];
           const modeLabels: Record<string, string> = {
             standard: t('wildLobby.modeBadgeStandard'),
             blind: t('wildLobby.modeBadgeBlind'),
             ironman: t('wildLobby.modeBadgeIronman'),
-            noNotes: t('wildLobby.modeBadgeNoNotes'),
           };
           const badgesHtml = allModes
             .map((m) => {

@@ -40,7 +40,6 @@ export function updateTimerUI(): void {
       ironman: t('timer.modeIronman'),
       blind: t('timer.modeBlind'),
       timed: t('timer.modeTimed'),
-      noNotes: t('timer.modeNoNotes'),
       gauntlet: t('timer.modeGauntlet'),
     };
     const mode = gs.wildChallengeMode

@@ -8,7 +8,7 @@ export interface EncounterTransitionState {
   techName: string;
   techSubtitle: string;
   rarity: string; // 'common' | 'rare' | 'legendary' | 'mythic'
-  challengeMode: string; // 'standard' | 'ironman' | 'blind' | 'timed' | 'noNotes' | 'gauntlet'
+  challengeMode: string; // 'standard' | 'ironman' | 'blind' | 'timed' | 'gauntlet'
   isBoss: boolean;
   isFirstEncounter: boolean;
   rarityTone: string;

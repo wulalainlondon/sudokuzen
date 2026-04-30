@@ -637,7 +637,7 @@ export function pauseGame(): void {
           <div class="challenge-rule-card">
             <div class="challenge-rule-name">${config.displayName} · ${config.subtitle}</div>
             <div class="challenge-rule-desc">${config.description}</div>
-            <div class="challenge-rule-detail">${t('wild.challengeExp', { mult: String(config.expMultiplier) })}${config.maxErrors === 1 ? ' · ' + t('wild.challengeOneLife') : config.maxErrors === 81 ? ' · ' + t('wild.challengeNoCheck') : ' · ' + t('wild.challengeLives', { n: String(config.maxErrors) })}${config.notesDisabled ? ' · ' + t('wild.challengeNoNotes') : ''}${config.timerCountdown ? ' · ' + t('wild.challengeTimer', { sec: String(config.timerCountdown) }) : ''}</div>
+            <div class="challenge-rule-detail">${t('wild.challengeExp', { mult: String(config.expMultiplier) })}${config.maxErrors === 1 ? ' · ' + t('wild.challengeOneLife') : config.maxErrors === 81 ? ' · ' + t('wild.challengeNoCheck') : ' · ' + t('wild.challengeLives', { n: String(config.maxErrors) })}${config.timerCountdown ? ' · ' + t('wild.challengeTimer', { sec: String(config.timerCountdown) }) : ''}</div>
           </div>`;
         })
         .catch(() => {});

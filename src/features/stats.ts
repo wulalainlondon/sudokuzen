@@ -60,10 +60,9 @@ const ACHIEVEMENT_DEFS = [
   { id: 'ghost_win', icon: '👻' },
   { id: 'replay_10', icon: '🎬' },
 
-  // ── Wild challenge modes (5) ───────────────────────────────────
+  // ── Wild challenge modes (4) ───────────────────────────────────
   { id: 'mode_blind_first', icon: '🙈' },
   { id: 'mode_ironman_first', icon: '🛡️' },
-  { id: 'mode_nonotes_first', icon: '🧘' },
   { id: 'mode_all_one_tech', icon: '👑' },
   { id: 'mode_blind_10', icon: '🔮' },
 ] as const;
@@ -742,11 +741,10 @@ export function checkAllAchievements(): void {
   const bestiary = (wildRaw.bestiary ?? {}) as Record<string, Record<string, unknown>>;
   const bEntries = Object.values(bestiary);
   let hasBlind = false,
-    hasIronman = false,
-    hasNoNotes = false;
+    hasIronman = false;
   let blindTechCount = 0,
     anyAllModes = false;
-  const requiredModes = ['standard', 'blind', 'ironman', 'noNotes'];
+  const requiredModes = ['standard', 'blind', 'ironman'];
   for (const be of bEntries) {
     if (!be?.kills) continue;
     const mc = Array.isArray(be.modesCleared) ? (be.modesCleared as string[]) : [];
@@ -755,12 +753,10 @@ export function checkAllAchievements(): void {
       blindTechCount++;
     }
     if (mc.includes('ironman')) hasIronman = true;
-    if (mc.includes('noNotes')) hasNoNotes = true;
     if (requiredModes.every((m) => mc.includes(m))) anyAllModes = true;
   }
   if (hasBlind) unlockAchievement('mode_blind_first');
   if (hasIronman) unlockAchievement('mode_ironman_first');
-  if (hasNoNotes) unlockAchievement('mode_nonotes_first');
   if (anyAllModes) unlockAchievement('mode_all_one_tech');
   if (blindTechCount >= 10) unlockAchievement('mode_blind_10');
 

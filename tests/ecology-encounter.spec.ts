@@ -117,11 +117,20 @@ describe('selectSessionEncounter', () => {
 
 describe('selectChallengeMode', () => {
   it('returns one of the valid challenge modes', () => {
-    const validModes = ['standard', 'ironman', 'blind', 'timed', 'noNotes', 'gauntlet'];
+    const validModes = ['standard', 'ironman', 'blind', 'timed', 'gauntlet'];
     const profile = makeProfile({ iqLevel: 30 });
     for (let i = 0; i < 50; i++) {
       const mode = selectChallengeMode(0, profile);
       expect(validModes).toContain(mode);
+    }
+  });
+
+  it('never selects no-notes mode for world encounters', () => {
+    const profile = makeProfile({ iqLevel: 80 });
+    for (let tier = 0; tier <= 4; tier++) {
+      for (let i = 0; i < 200; i++) {
+        expect(selectChallengeMode(tier, profile)).not.toBe('noNotes');
+      }
     }
   });
 

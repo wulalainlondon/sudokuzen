@@ -135,8 +135,8 @@ describe('checkAllAchievements', () => {
 });
 
 describe('ACHIEVEMENTS', () => {
-  it('has correct count (36 achievements)', () => {
-    expect(ACHIEVEMENTS.length).toBe(36);
+  it('has correct count (35 achievements)', () => {
+    expect(ACHIEVEMENTS.length).toBe(35);
   });
 
   it('each achievement has unique id', () => {

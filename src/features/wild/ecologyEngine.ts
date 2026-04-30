@@ -197,11 +197,11 @@ function tieredPick(pool: TechniqueMeta[], iqLevel: number): TechniqueMeta {
 
 /** Per-tier mode weights. P3: Enable timed mode at T1+ for variety. */
 const MODE_WEIGHTS: Record<number, Record<ChallengeMode, number>> = {
-  0: { standard: 0.8, ironman: 0.05, blind: 0.08, timed: 0.02, noNotes: 0.05, gauntlet: 0 },
-  1: { standard: 0.6, ironman: 0.1, blind: 0.1, timed: 0.08, noNotes: 0.12, gauntlet: 0 },
-  2: { standard: 0.48, ironman: 0.14, blind: 0.12, timed: 0.1, noNotes: 0.16, gauntlet: 0 },
-  3: { standard: 0.4, ironman: 0.17, blind: 0.13, timed: 0.12, noNotes: 0.18, gauntlet: 0 },
-  4: { standard: 0.35, ironman: 0.2, blind: 0.14, timed: 0.12, noNotes: 0.19, gauntlet: 0 },
+  0: { standard: 0.85, ironman: 0.05, blind: 0.08, timed: 0.02, gauntlet: 0 },
+  1: { standard: 0.72, ironman: 0.1, blind: 0.1, timed: 0.08, gauntlet: 0 },
+  2: { standard: 0.64, ironman: 0.14, blind: 0.12, timed: 0.1, gauntlet: 0 },
+  3: { standard: 0.58, ironman: 0.17, blind: 0.13, timed: 0.12, gauntlet: 0 },
+  4: { standard: 0.54, ironman: 0.2, blind: 0.14, timed: 0.12, gauntlet: 0 },
 };
 
 export function selectChallengeMode(tier: number, _profile: WildProfile): ChallengeMode {

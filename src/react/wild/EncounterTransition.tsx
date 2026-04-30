@@ -23,7 +23,6 @@ function getModeChar(mode: string): string {
     standard: t('encounter.modeStamp.standard'),
     blind: t('encounter.modeStamp.blind'),
     ironman: t('encounter.modeStamp.ironman'),
-    noNotes: t('encounter.modeStamp.noNotes'),
     timed: t('miscRuntime.timedBadge'),
     gauntlet: t('miscRuntime.gauntletBadge'),
   };

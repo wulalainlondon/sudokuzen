@@ -15,12 +15,11 @@ const RARITY_LABEL: Record<Rarity, string> = {
   mythic: t('wild.rarityMythic'),
 };
 
-const ALL_MODES = ['standard', 'blind', 'ironman', 'noNotes'] as const;
+const ALL_MODES = ['standard', 'blind', 'ironman'] as const;
 const MODE_LABELS: Record<(typeof ALL_MODES)[number], string> = {
   standard: t('wildLobby.modeBadgeStandard'),
   blind: t('wildLobby.modeBadgeBlind'),
   ironman: t('wildLobby.modeBadgeIronman'),
-  noNotes: t('wildLobby.modeBadgeNoNotes'),
 };
 
 const PHASES: Array<{ name: string; minGate: number; keys: string[] }> = [

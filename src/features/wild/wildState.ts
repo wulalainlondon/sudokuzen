@@ -6,7 +6,7 @@ import type { Rarity } from './techniqueMeta';
 
 // ── Challenge Modes ──────────────────────────────────────────────────
 
-export type ChallengeMode = 'standard' | 'ironman' | 'blind' | 'timed' | 'noNotes' | 'gauntlet';
+export type ChallengeMode = 'standard' | 'ironman' | 'blind' | 'timed' | 'gauntlet';
 
 export interface ChallengeModeConfig {
   mode: ChallengeMode;
@@ -16,7 +16,6 @@ export interface ChallengeModeConfig {
   expMultiplier: number;
   maxErrors: number; // 1 for ironman (first error = game over), 3 for standard, 81 for blind
   timerCountdown?: number; // base seconds for timed mode
-  notesDisabled?: boolean;
   consecutiveCount?: number;
 }
 
@@ -54,15 +53,6 @@ export const CHALLENGE_CONFIGS: Record<ChallengeMode, ChallengeModeConfig> = {
     maxErrors: 3,
     timerCountdown: 300,
   },
-  noNotes: {
-    mode: 'noNotes',
-    displayName: t('challenge.noNotesName'),
-    subtitle: 'No Notes',
-    description: t('challenge.noNotesDesc'),
-    expMultiplier: 1.8,
-    maxErrors: 3,
-    notesDisabled: true,
-  },
   gauntlet: {
     mode: 'gauntlet',
     displayName: t('challenge.gauntletName'),
@@ -73,6 +63,11 @@ export const CHALLENGE_CONFIGS: Record<ChallengeMode, ChallengeModeConfig> = {
     consecutiveCount: 5,
   },
 };
+
+export function normalizeWildChallengeMode(mode: unknown): ChallengeMode {
+  if (mode === 'ironman' || mode === 'blind' || mode === 'timed' || mode === 'gauntlet') return mode;
+  return 'standard';
+}
 
 // ── Session (修行輪) ────────────────────────────────────────────────
 

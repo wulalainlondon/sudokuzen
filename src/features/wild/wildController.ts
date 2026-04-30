@@ -9,13 +9,13 @@ import {
   loadWildProfile,
   saveWildProfile,
   CHALLENGE_CONFIGS,
+  normalizeWildChallengeMode,
   saveWildEncounter,
   loadWildSave,
   clearWildSave,
   type WildProfile,
   type WildEncounter,
   type WildSaveData,
-  type ChallengeMode,
 } from './wildState';
 import { selectEncounter, selectSessionEncounter, tickCooldowns, setEscapeCooldown } from './ecologyEngine';
 import { getTechniqueMeta, getAutoCastKeys } from './techniqueMeta';
@@ -116,8 +116,9 @@ export async function resumeWildEncounter(): Promise<void> {
   applyRarityTint(_encounter.rarity);
 
   // Build a LevelData for the game core
-  const config = CHALLENGE_CONFIGS[save.challengeMode];
-  const modeLabel = save.challengeMode !== 'standard' ? ` [${config.displayName}]` : '';
+  const challengeMode = normalizeWildChallengeMode(save.challengeMode);
+  const config = CHALLENGE_CONFIGS[challengeMode];
+  const modeLabel = challengeMode !== 'standard' ? ` [${config.displayName}]` : '';
   const wildLevel: LevelData = {
     id: save.levelData.id,
     stars: 0,
@@ -156,14 +157,14 @@ export async function resumeWildEncounter(): Promise<void> {
   localStorage.removeItem(saveKey);
 
   // Apply challenge mode settings AFTER initGame
-  gs.wildChallengeMode = save.challengeMode as ChallengeMode;
+  gs.wildChallengeMode = challengeMode;
   gs.maxErrors = config.maxErrors;
-  gs.wildBlindMode = save.challengeMode === 'blind';
-  gs.wildNotesDisabled = !!config.notesDisabled;
+  gs.wildBlindMode = challengeMode === 'blind';
+  gs.wildNotesDisabled = false;
   updateLivesUI();
 
   // For timed mode: start countdown with remaining time
-  if (save.challengeMode === 'timed' && config.timerCountdown) {
+  if (challengeMode === 'timed' && config.timerCountdown) {
     if (gs.timerInterval) {
       clearInterval(gs.timerInterval);
       gs.timerInterval = null;
@@ -305,7 +306,6 @@ export async function startWildEncounter(): Promise<void> {
       gs.maxErrors = config.maxErrors;
       gs.wildBlindMode = false;
       gs.wildNotesDisabled = false;
-
       const { updateLivesUI } = await import('../../game/core');
       updateLivesUI();
 
@@ -475,8 +475,7 @@ export async function startWildEncounter(): Promise<void> {
   gs.wildChallengeMode = mode;
   gs.maxErrors = config.maxErrors;
   gs.wildBlindMode = mode === 'blind';
-  gs.wildNotesDisabled = !!config.notesDisabled;
-
+  gs.wildNotesDisabled = false;
   // Update lives UI after maxErrors change
   const { updateLivesUI } = await import('../../game/core');
   updateLivesUI();
