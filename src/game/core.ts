@@ -25,6 +25,8 @@ import {
   getDocumentTheme,
   setNoteToggleActive,
   setContinuousFillToggleActive,
+  setContinuousFillVisible,
+  setEraseVisible,
   setNumpadContinuousState,
   addCellClasses,
   removeCellClasses,
@@ -182,6 +184,24 @@ function updateGameHeaderByMode(isWild: boolean): void {
   });
 }
 
+function isContinuousFillVisible(): boolean {
+  return localStorage.getItem(SK.CONTINUOUS_FILL_VISIBLE) === '1';
+}
+
+function isEraseVisible(): boolean {
+  return localStorage.getItem(SK.ERASE_VISIBLE) === '1';
+}
+
+function applyAssistToolsPreference(): void {
+  const continuousVisible = isContinuousFillVisible();
+  setContinuousFillVisible(continuousVisible);
+  setEraseVisible(isEraseVisible());
+  if (!continuousVisible && gs.continuousFillDigit !== null) {
+    gs.continuousFillDigit = null;
+    updateContinuousFillUI();
+  }
+}
+
 export function initGame(
   levelId = 1,
   forceReset = false,
@@ -206,6 +226,7 @@ export function initGame(
   });
   updateGameHeaderByMode(isWild);
   setLevelTechniqueHint(gs.currentLevel.maxTechnique, gs.currentLevel.techTier);
+  applyAssistToolsPreference();
 
   gs.isGhostMode = playWithGhost;
   gs.ghostHistory = gs.isGhostMode && ghostData ? ghostData : [];
@@ -693,6 +714,26 @@ export function pauseGame(): void {
       gs.constraintMapEnabled = cmapCheckbox.checked;
       localStorage.setItem(SK.CONSTRAINT_MAP_ENABLED, cmapCheckbox.checked ? '1' : '0');
       import('../features/skills/candidateTrackingController').then((m) => m.refreshConstraintMap()).catch(() => {});
+    };
+  }
+
+  const continuousFillVisibleCheckbox = document.getElementById(
+    'continuous-fill-visible-checkbox',
+  ) as HTMLInputElement | null;
+  if (continuousFillVisibleCheckbox) {
+    continuousFillVisibleCheckbox.checked = isContinuousFillVisible();
+    continuousFillVisibleCheckbox.onchange = () => {
+      localStorage.setItem(SK.CONTINUOUS_FILL_VISIBLE, continuousFillVisibleCheckbox.checked ? '1' : '0');
+      applyAssistToolsPreference();
+    };
+  }
+
+  const eraseVisibleCheckbox = document.getElementById('erase-visible-checkbox') as HTMLInputElement | null;
+  if (eraseVisibleCheckbox) {
+    eraseVisibleCheckbox.checked = isEraseVisible();
+    eraseVisibleCheckbox.onchange = () => {
+      localStorage.setItem(SK.ERASE_VISIBLE, eraseVisibleCheckbox.checked ? '1' : '0');
+      applyAssistToolsPreference();
     };
   }
 

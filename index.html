@@ -258,6 +258,14 @@
                 <input type="checkbox" id="constraint-map-checkbox">
                 <span>候選密度圖</span>
             </label>
+            <label class="pause-toggle" id="pause-continuous-fill-toggle">
+                <input type="checkbox" id="continuous-fill-visible-checkbox">
+                <span>顯示連續填入</span>
+            </label>
+            <label class="pause-toggle" id="pause-erase-toggle">
+                <input type="checkbox" id="erase-visible-checkbox">
+                <span>顯示橡皮擦</span>
+            </label>
             <button class="resume-btn" id="pause-resume-btn" onclick="resumeGame()">繼續遊戲</button>
             <button class="back-btn back-btn-light" onclick="openSettingsModal()">⚙️ 設定</button>
             <button class="back-btn back-btn-light" id="pause-leave-btn" onclick="showLevelScreen(true)">放棄關卡</button>
@@ -317,7 +325,7 @@
                             <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg>
                     </button>
-                    <button class="mini-btn" onclick="erase()" aria-label="Erase">
+                    <button class="mini-btn" id="erase-btn" onclick="erase()" aria-label="Erase">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M3 6h18" />
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -481,7 +489,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.04.26-V6';
+        var INLINE_VER = '2026.04.30-V1';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

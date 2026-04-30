@@ -102,6 +102,14 @@ export function setContinuousFillToggleActive(active: boolean): void {
   document.getElementById('continuous-fill-toggle')?.classList.toggle('active', active);
 }
 
+export function setContinuousFillVisible(visible: boolean): void {
+  document.getElementById('continuous-fill-toggle')?.classList.toggle('hidden', !visible);
+}
+
+export function setEraseVisible(visible: boolean): void {
+  document.getElementById('erase-btn')?.classList.toggle('hidden', !visible);
+}
+
 export function setNumpadContinuousState(buttons: HTMLButtonElement[], activeDigit: number | null): void {
   buttons.forEach((b, i) => {
     b.classList.toggle('continuous-active', activeDigit === i + 1);

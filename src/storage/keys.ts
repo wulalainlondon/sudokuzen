@@ -32,6 +32,8 @@ export const SK = {
   CHAIN_MAP_PANEL: 'sudoku_chain_map_panel',
   CTM_ENABLED: 'sudoku_ctm_enabled',
   CONSTRAINT_MAP_ENABLED: 'ctm_constraint_map',
+  CONTINUOUS_FILL_VISIBLE: 'sudoku_continuous_fill_visible',
+  ERASE_VISIBLE: 'sudoku_erase_visible',
   DUO_METRICS: 'sudoku_duo_metrics_v1',
   DUO_ACTIVE_ROOM_ID: 'sudoku_duo_active_room_id',
   PRACTICE_PHASE_TEACH_SEEN: 'sudoku_practice_phase_teach_seen_v1',
