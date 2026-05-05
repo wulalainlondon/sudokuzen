@@ -7,9 +7,11 @@ let _audio: HTMLAudioElement | null = null;
 let _currentTrack: BgmTrack | null = null;
 let _intendedTrack: BgmTrack | null = null; // track requested, regardless of enabled state
 let _fadeTimer: ReturnType<typeof setInterval> | null = null;
+let _loopListener: (() => void) | null = null;
 
 const FADE_STEPS = 25;
 const FADE_INTERVAL_MS = 40; // ~1 second total fade
+const LOOP_CROSSFADE_SECONDS = 0.15;
 
 const TRACKS = {
   wild: `${import.meta.env.BASE_URL}sounds/bgm/two_hands_one_board.mp3`,
@@ -30,11 +32,11 @@ export function playBgm(track: BgmTrack): void {
   _stopImmediate();
 
   const targetVol = bgmVolume;
-  const audio = new Audio(TRACKS[track]);
-  audio.loop = true;
+  const audio = _createTrackAudio(track);
   audio.volume = 0;
   _audio = audio;
   _currentTrack = track;
+  _bindManualLoop(audio, track);
 
   audio
     .play()
@@ -72,6 +74,7 @@ export function stopBgm(): void {
       audio.pause();
       audio.src = '';
       if (_audio === audio) {
+        _unbindManualLoop(audio);
         _audio = null;
         _currentTrack = null;
       }
@@ -102,9 +105,76 @@ function _clearFade(): void {
 
 function _stopImmediate(): void {
   if (_audio) {
+    _unbindManualLoop(_audio);
     _audio.pause();
     _audio.src = '';
     _audio = null;
     _currentTrack = null;
   }
+}
+
+function _createTrackAudio(track: BgmTrack): HTMLAudioElement {
+  const audio = new Audio(TRACKS[track]);
+  audio.loop = false; // handled by manual crossfade loop
+  audio.preload = 'auto';
+  return audio;
+}
+
+function _bindManualLoop(audio: HTMLAudioElement, track: BgmTrack): void {
+  _unbindManualLoop(audio);
+  const onTimeUpdate = () => _maybeCrossfadeLoop(audio, track);
+  audio.addEventListener('timeupdate', onTimeUpdate);
+  _loopListener = onTimeUpdate;
+}
+
+function _unbindManualLoop(audio: HTMLAudioElement): void {
+  if (_loopListener) {
+    audio.removeEventListener('timeupdate', _loopListener);
+    _loopListener = null;
+  }
+}
+
+function _maybeCrossfadeLoop(audio: HTMLAudioElement, track: BgmTrack): void {
+  if (_audio !== audio) return;
+  if (!_currentTrack || _currentTrack !== track) return;
+  if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+
+  const remaining = audio.duration - audio.currentTime;
+  if (remaining > LOOP_CROSSFADE_SECONDS) return;
+
+  _unbindManualLoop(audio);
+
+  const { bgmEnabled, bgmVolume } = getAudioSettings();
+  if (!bgmEnabled) return;
+
+  const next = _createTrackAudio(track);
+  next.volume = 0;
+  _audio = next;
+  _bindManualLoop(next, track);
+
+  next
+    .play()
+    .then(() => {
+      const startVol = audio.volume;
+      const targetVol = Math.max(0, Math.min(1, bgmVolume));
+      let step = 0;
+      const total = Math.max(2, Math.round((LOOP_CROSSFADE_SECONDS * 1000) / FADE_INTERVAL_MS));
+      const timer = setInterval(() => {
+        step++;
+        const t = step / total;
+        next.volume = targetVol * Math.min(1, t);
+        audio.volume = startVol * Math.max(0, 1 - t);
+        if (step >= total) {
+          clearInterval(timer);
+          next.volume = targetVol;
+          audio.pause();
+          audio.src = '';
+        }
+      }, FADE_INTERVAL_MS);
+    })
+    .catch(() => {
+      // If next track cannot start, keep current playing; rebind loop probe.
+      if (_audio === next) _audio = audio;
+      _bindManualLoop(audio, track);
+    });
 }
