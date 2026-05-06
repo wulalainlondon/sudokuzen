@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -433,6 +433,8 @@ export const duoSetPlaying = functions.https.onCall(async (data: SetPlayingReque
         status: 'playing',
         hostProgress: 0,
         guestProgress: 0,
+        specBoardState: null,
+        specBoardVersion: null,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     } else {
