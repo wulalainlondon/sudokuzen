@@ -45,6 +45,21 @@ jobs:
       - name: Prepare Dist
         run: node scripts/prepare-pages-dist.mjs
 
+      - name: Install Functions Dependencies
+        run: npm ci
+        working-directory: functions
+
+      - name: Deploy Firestore Rules and Cloud Functions
+        env:
+          FIREBASE_SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SA_JSON" > /tmp/sa.json
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json npx firebase-tools deploy \
+            --only firestore:rules,functions \
+            --project sudokuzen-f2aa3 \
+            --non-interactive
+          rm -f /tmp/sa.json
+
       - name: Deploy to Firebase Hosting Preview Channel
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
