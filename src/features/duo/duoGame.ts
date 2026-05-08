@@ -37,11 +37,15 @@ let _duoOpponentOfflineNotified = false;
 let _lastSubmittedProgress = -1;
 let _autoForfeitStarted = false;
 let _gameStartedAtMs = 0;
+let _oppStaleSince = 0;
 let _countdownBeepTimers: ReturnType<typeof setTimeout>[] = [];
 
-// Grace period after game start: don't flag opponent offline during this window.
-// Covers cases where heartbeat was briefly paused at the countdown→playing transition.
-const GAME_START_GRACE_MS = 60_000;
+// Grace period longer than DUO_STALE_HEARTBEAT_MS (60s) so the stale check has margin
+// after grace ends. Background-tab throttling stretches setInterval to 60s+, which
+// would otherwise fire the offline toast at exactly the grace boundary.
+const GAME_START_GRACE_MS = 90_000;
+// Opponent must remain stale for this long before showing the offline toast.
+const STALE_CONFIRM_MS = 20_000;
 
 // ── Register with duoRoom ────────────────────────────────────────────
 
@@ -173,19 +177,22 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
       const oppHeartbeat = gs.duoRole === 'host' ? Number(d.guestHeartbeatAtMs || 0) : Number(d.hostHeartbeatAtMs || 0);
       const oppOnline = gs.duoRole === 'host' ? d.guestOnline : d.hostOnline;
       const isOppStale = (oppHeartbeat > 0 && now - oppHeartbeat > DUO_STALE_HEARTBEAT_MS) || oppOnline === false;
-      // Don't flag during the grace period right after game start — heartbeats may
-      // be momentarily stale during the countdown→playing transition.
       const inGracePeriod = _gameStartedAtMs > 0 && now - _gameStartedAtMs < GAME_START_GRACE_MS;
 
       if (isOppStale && !inGracePeriod) {
-        if (!_duoOpponentOfflineNotified) {
+        // Require sustained staleness before notifying — avoids false alarms from
+        // background-tab throttling (browser stretches setInterval to 60s+).
+        if (_oppStaleSince === 0) _oppStaleSince = now;
+        if (now - _oppStaleSince >= STALE_CONFIRM_MS && !_duoOpponentOfflineNotified) {
           _duoOpponentOfflineNotified = true;
           showFeedback(t('duoRuntime.opponentOffline'), 'error');
         }
-      } else if (!isOppStale && _duoOpponentOfflineNotified) {
-        // Opponent's heartbeat recovered — retract the offline flag so that
-        // auto-forfeit doesn't fire if we finish later in the same game.
-        _duoOpponentOfflineNotified = false;
+      } else {
+        _oppStaleSince = 0;
+        if (!isOppStale && _duoOpponentOfflineNotified) {
+          // Opponent's heartbeat recovered — retract so auto-forfeit doesn't misfire.
+          _duoOpponentOfflineNotified = false;
+        }
       }
     }
 
@@ -480,6 +487,7 @@ export async function launchDuoGame(): Promise<void> {
   // previous round cause autoForfeitOpponent() to fire immediately in game 2.
   _duoFinishSubmitted = false;
   _duoOpponentOfflineNotified = false;
+  _oppStaleSince = 0;
   _autoForfeitStarted = false;
   _duoResultShown = false;
   gs.duoOpponentNotified = false;
@@ -857,6 +865,7 @@ export function resetDuoState(): void {
     _duoResultRetryTimer = null;
   }
   _duoOpponentOfflineNotified = false;
+  _oppStaleSince = 0;
   _autoForfeitStarted = false;
   _lastSubmittedProgress = -1;
   _gameStartedAtMs = 0;
