@@ -2,6 +2,7 @@
 // Bridges legacy duo.ts result flows into React-managed UI.
 
 import { create } from 'zustand';
+import type { MoveRecord } from '../../game/state';
 
 export interface DuoResultState {
   visible: boolean;
@@ -13,8 +14,23 @@ export interface DuoResultState {
   isDraw: boolean;
   /** The level ID of the duo match (for "play again") */
   levelId: number | null;
+  hostMoves: MoveRecord[];
+  guestMoves: MoveRecord[];
+  hostAlias: string;
+  guestAlias: string;
+  puzzle: number[];
 
-  open: (payload: { contentHtml: string; iWon: boolean; isDraw: boolean; levelId: number | null }) => void;
+  open: (payload: {
+    contentHtml: string;
+    iWon: boolean;
+    isDraw: boolean;
+    levelId: number | null;
+    hostMoves: MoveRecord[];
+    guestMoves: MoveRecord[];
+    hostAlias: string;
+    guestAlias: string;
+    puzzle: number[];
+  }) => void;
   close: () => void;
 }
 
@@ -24,6 +40,11 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
   iWon: false,
   isDraw: false,
   levelId: null,
+  hostMoves: [],
+  guestMoves: [],
+  hostAlias: '',
+  guestAlias: '',
+  puzzle: [],
 
   open: (payload) =>
     set({
@@ -32,6 +53,11 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
       iWon: payload.iWon,
       isDraw: payload.isDraw,
       levelId: payload.levelId,
+      hostMoves: payload.hostMoves,
+      guestMoves: payload.guestMoves,
+      hostAlias: payload.hostAlias,
+      guestAlias: payload.guestAlias,
+      puzzle: payload.puzzle,
     }),
 
   close: () => set({ visible: false }),

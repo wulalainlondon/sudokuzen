@@ -19,6 +19,7 @@ import { useStatsStore } from './stats/statsStore';
 import { usePreLevelStore } from './prelevel/preLevelStore';
 import { useReplayStore } from './replay/replayStore';
 import { useDuoResultStore } from './duoresult/duoResultStore';
+import { useDuoReviewStore } from './duoreview/duoReviewStore';
 import { useAchievementToastStore } from './toast/achievementToastStore';
 import { useLibraryStore } from './library/libraryStore';
 import { useMentorStore } from './mentor/mentorStore';
@@ -45,6 +46,7 @@ const FirstKillRevelation = lazy(() =>
   import('./wild/FirstKillRevelation').then((m) => ({ default: m.FirstKillRevelation })),
 );
 const SettingsModal = lazy(() => import('./settings/SettingsModal').then((m) => ({ default: m.SettingsModal })));
+const DuoReviewScreen = lazy(() => import('./duoreview/DuoReviewScreen').then((m) => ({ default: m.DuoReviewScreen })));
 
 export function AppShell(): ReactElement {
   const teachOpen = useTeachStore((s) => s.open);
@@ -54,6 +56,7 @@ export function AppShell(): ReactElement {
   const preLevelVisible = usePreLevelStore((s) => s.visible);
   const replayVisible = useReplayStore((s) => s.visible);
   const duoResultVisible = useDuoResultStore((s) => s.visible);
+  const duoReviewVisible = useDuoReviewStore((s) => s.visible);
   const toastVisible = useAchievementToastStore((s) => s.visible);
   const libraryVisible = useLibraryStore((s) => s.visible);
   const mentorVisible = useMentorStore((s) => s.visible);
@@ -71,6 +74,7 @@ export function AppShell(): ReactElement {
         {preLevelVisible ? <PreLevelModal /> : null}
         {replayVisible ? <ReplayModal /> : null}
         {duoResultVisible ? <DuoResultModal /> : null}
+        {duoReviewVisible ? <DuoReviewScreen /> : null}
         {toastVisible ? <AchievementToast /> : null}
         {libraryVisible ? <LibraryOverlay /> : null}
         {mentorVisible ? <MentorOverlay /> : null}
