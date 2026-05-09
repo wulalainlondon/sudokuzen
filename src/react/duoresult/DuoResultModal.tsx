@@ -40,7 +40,8 @@ function ConfettiLayer({ count, colors }: { count: number; colors: string[] }): 
 }
 
 export function DuoResultModal(): ReactElement {
-  const { visible, contentHtml, iWon, isDraw } = useDuoResultStore();
+  const { visible, contentHtml, iWon, isDraw, hostMoves, guestMoves, hostAlias, guestAlias, puzzle } =
+    useDuoResultStore();
   const safeContentHtml = useMemo(() => sanitizeHtml(contentHtml), [contentHtml]);
 
   const handlePlayAgain = useCallback(() => {
@@ -55,6 +56,16 @@ export function DuoResultModal(): ReactElement {
   const handleBack = useCallback(() => {
     import('../../features/duo/duoGame').then((m) => m.closeDuoResult()).catch(() => {});
   }, []);
+
+  const handleReview = useCallback(() => {
+    const hasData = hostMoves.length > 0 || guestMoves.length > 0;
+    if (!hasData) return;
+    import('../duoreview/duoReviewBridge')
+      .then(({ bridgeOpenDuoReview }) => {
+        bridgeOpenDuoReview({ hostMoves, guestMoves, hostAlias, guestAlias, puzzle });
+      })
+      .catch(() => {});
+  }, [hostMoves, guestMoves, hostAlias, guestAlias, puzzle]);
 
   const showConfetti = iWon || isDraw;
   const confettiCount = iWon ? 30 : 25;
@@ -73,6 +84,15 @@ export function DuoResultModal(): ReactElement {
         <button className="resume-btn" onClick={handlePlayAgain}>
           {t('duo.playAgain')}
         </button>
+        {(hostMoves.length > 0 || guestMoves.length > 0) && (
+          <button
+            className="back-btn"
+            style={{ border: '1px solid rgba(167,139,250,0.5)', fontSize: '0.85rem', color: '#a78bfa', marginTop: 4 }}
+            onClick={handleReview}
+          >
+            {t('duo.reviewReplay')}
+          </button>
+        )}
         <button
           className="back-btn"
           style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }}

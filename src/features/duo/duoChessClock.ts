@@ -349,6 +349,11 @@ function showChessClockResult(d: DuoRoomData): void {
         iWon: iWin,
         isDraw,
         levelId: d.levelId ?? null,
+        hostMoves: [],
+        guestMoves: [],
+        hostAlias: d.hostAlias || '',
+        guestAlias: d.guestAlias || '',
+        puzzle: [],
       });
     })
     .catch((e) => console.warn('[chessClock] bridgeOpenDuoResult failed:', e));

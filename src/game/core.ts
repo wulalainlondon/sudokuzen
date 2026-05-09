@@ -91,6 +91,9 @@ async function callDuoProgress() {
     console.warn('lazy import duo failed:', e);
   }
 }
+function callRecordDuoMove(cell: number, val: number, ok: boolean) {
+  import('../features/duo/duoGame').then((m) => m.recordDuoMove(cell, val, ok)).catch(() => {});
+}
 async function callCloseReplay() {
   try {
     const m = await import('../features/replay');
@@ -454,6 +457,7 @@ export function handleInput(num: number): void {
         gs.selectedIdx,
         num,
       );
+      if (gs.isDuoMode) callRecordDuoMove(gs.selectedIdx!, num, false);
       setTimeout(() => {
         data.isError = false;
         removeCellClasses(cellEl, 'error', 'wrong-preview');
@@ -492,7 +496,10 @@ export function handleInput(num: number): void {
       updateGhostProgressUI();
     }
     if (!policy.useSubmissionValidation) celebrateCompletedUnits(gs.selectedIdx, beforeState);
-    if (gs.isDuoMode) callDuoProgress();
+    if (gs.isDuoMode) {
+      callRecordDuoMove(gs.selectedIdx!, num, true);
+      callDuoProgress();
+    }
     if (gs.isChessClockMode) {
       import('../features/duo/duoChessClock').then((m) => m.onChessClockCorrect(gs.selectedIdx!)).catch(() => {});
     }
@@ -532,6 +539,7 @@ export function erase(): void {
     updateCellDisplay(gs.gridEl!.children[gs.selectedIdx] as HTMLElement, gs.cellsData[gs.selectedIdx]);
     if (oldVal !== 0 || oldNotes.length) {
       recordAction('erase', t('miscRuntime.eraseLog', { cell: cellLabel(gs.selectedIdx) }), gs.selectedIdx, 0);
+      if (gs.isDuoMode && oldVal !== 0) callRecordDuoMove(gs.selectedIdx!, 0, false);
       playEraseSound();
       if (navigator.vibrate) navigator.vibrate(5);
     }

@@ -11,6 +11,15 @@ const DUO_ROOM_COUNTDOWN_STALE_MS = 3 * 60_000; // countdown 超過 3 分鐘視�
 
 // ── Types ────────────────────────────────────────────────────────────
 
+interface MoveRecord {
+  t: number; // relative ms from startAt
+  cell: number; // 0-80
+  val: number; // 1-9, or 0 for erase
+  ok: boolean; // client-reported correctness (used only for replay colouring)
+}
+
+const MAX_MOVES_PER_PLAYER = 2000;
+
 interface DuoRoomData {
   status: 'idle' | 'waiting' | 'countdown' | 'playing' | 'finished';
   hostId: string;
@@ -32,6 +41,8 @@ interface DuoRoomData {
   countdownStartedAt: admin.firestore.Timestamp | null;
   startAt: admin.firestore.Timestamp | null;
   updatedAt: admin.firestore.Timestamp | null;
+  hostMoves?: MoveRecord[] | null;
+  guestMoves?: MoveRecord[] | null;
 }
 
 // ── duoSubmitFinish ──────────────────────────────────────────────────
@@ -41,6 +52,7 @@ interface SubmitFinishRequest {
   timeSec: number;
   stars: number;
   progress: number;
+  moves?: MoveRecord[];
 }
 
 export const duoSubmitFinish = functions.https.onCall(async (data: SubmitFinishRequest, context) => {
@@ -48,10 +60,28 @@ export const duoSubmitFinish = functions.https.onCall(async (data: SubmitFinishR
     throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated to submit finish.');
   }
 
-  const { roomId, timeSec, stars, progress } = data;
+  const { roomId, timeSec, stars, progress, moves } = data;
   if (!roomId || typeof timeSec !== 'number' || typeof stars !== 'number' || typeof progress !== 'number') {
     throw new functions.https.HttpsError('invalid-argument', 'roomId, timeSec, stars, and progress are required.');
   }
+
+  const sanitizedMoves: MoveRecord[] = Array.isArray(moves)
+    ? moves
+        .slice(0, MAX_MOVES_PER_PLAYER)
+        .filter(
+          (m) =>
+            typeof m.t === 'number' &&
+            m.t >= 0 &&
+            m.t < 86_400_000 &&
+            typeof m.cell === 'number' &&
+            m.cell >= 0 &&
+            m.cell <= 80 &&
+            typeof m.val === 'number' &&
+            m.val >= 0 &&
+            m.val <= 9 &&
+            typeof m.ok === 'boolean',
+        )
+    : [];
 
   const uid = context.auth.uid;
   const roomRef = db.collection(DUO_ROOMS).doc(roomId);
@@ -89,11 +119,13 @@ export const duoSubmitFinish = functions.https.onCall(async (data: SubmitFinishR
 
     const starsField = role === 'host' ? 'hostStars' : 'guestStars';
     const progressField = role === 'host' ? 'hostProgress' : 'guestProgress';
+    const movesField = role === 'host' ? 'hostMoves' : 'guestMoves';
 
     tx.update(roomRef, {
       [finishTimeField]: timeSec,
       [starsField]: stars,
       [progressField]: progress,
+      [movesField]: sanitizedMoves,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   });
@@ -164,10 +196,12 @@ export const duoAutoForfeitOpponent = functions.https.onCall(async (data: AutoFo
 
     const opponentFinishTimeField = role === 'host' ? 'guestFinishTime' : 'hostFinishTime';
     const opponentStarsField = role === 'host' ? 'guestStars' : 'hostStars';
+    const opponentMovesField = role === 'host' ? 'guestMoves' : 'hostMoves';
 
     tx.update(roomRef, {
       [opponentFinishTimeField]: 9999,
       [opponentStarsField]: 0,
+      [opponentMovesField]: [],
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   });
@@ -179,6 +213,7 @@ export const duoAutoForfeitOpponent = functions.https.onCall(async (data: AutoFo
 
 interface SurrenderRequest {
   roomId: string;
+  moves?: MoveRecord[];
 }
 
 export const duoSurrender = functions.https.onCall(async (data: SurrenderRequest, context) => {
@@ -186,10 +221,28 @@ export const duoSurrender = functions.https.onCall(async (data: SurrenderRequest
     throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated to surrender.');
   }
 
-  const { roomId } = data;
+  const { roomId, moves } = data;
   if (!roomId) {
     throw new functions.https.HttpsError('invalid-argument', 'roomId is required.');
   }
+
+  const sanitizedMoves: MoveRecord[] = Array.isArray(moves)
+    ? moves
+        .slice(0, MAX_MOVES_PER_PLAYER)
+        .filter(
+          (m) =>
+            typeof m.t === 'number' &&
+            m.t >= 0 &&
+            m.t < 86_400_000 &&
+            typeof m.cell === 'number' &&
+            m.cell >= 0 &&
+            m.cell <= 80 &&
+            typeof m.val === 'number' &&
+            m.val >= 0 &&
+            m.val <= 9 &&
+            typeof m.ok === 'boolean',
+        )
+    : [];
 
   const uid = context.auth.uid;
   const roomRef = db.collection(DUO_ROOMS).doc(roomId);
@@ -218,10 +271,12 @@ export const duoSurrender = functions.https.onCall(async (data: SurrenderRequest
   }
 
   const starsField = role === 'host' ? 'hostStars' : 'guestStars';
+  const movesField = role === 'host' ? 'hostMoves' : 'guestMoves';
 
   await roomRef.update({
     [finishTimeField]: 9999,
     [starsField]: 0,
+    [movesField]: sanitizedMoves,
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   });
 

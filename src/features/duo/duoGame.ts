@@ -1,7 +1,7 @@
 // Duo game logic — countdown, progress, result
 // Extracted from duo.ts, adapted for tier/mode system.
 
-import { gs, type DuoRoomData } from '../../game/state';
+import { gs, type DuoRoomData, type MoveRecord } from '../../game/state';
 import { formatSeconds } from '../../game/utils';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
@@ -27,6 +27,8 @@ import { escapeHtml } from '../../shared/html/escape';
 import { callDuoFunction } from '../../firebase/runtime';
 
 // ── Module-level guards ──────────────────────────────────────────────
+
+let _localMoves: MoveRecord[] = [];
 
 let _countdownLaunched = false;
 let _countdownRafCancelled = false;
@@ -490,6 +492,7 @@ export async function launchDuoGame(): Promise<void> {
   _oppStaleSince = 0;
   _autoForfeitStarted = false;
   _duoResultShown = false;
+  _localMoves = [];
   gs.duoOpponentNotified = false;
   _gameStartedAtMs = Date.now();
 
@@ -632,6 +635,13 @@ function showDuoOpponentFinished(alias: string, timeSec: number, stars: number |
   }
 }
 
+// ── Move Recorder ────────────────────────────────────────────────────
+
+export function recordDuoMove(cell: number, val: number, ok: boolean): void {
+  if (!gs.isDuoMode || !_gameStartedAtMs) return;
+  _localMoves.push({ t: Date.now() - _gameStartedAtMs, cell, val, ok });
+}
+
 // ── Submit Finish ────────────────────────────────────────────────────
 
 export async function submitDuoFinish(timeSec: number, stars: number): Promise<void> {
@@ -646,6 +656,7 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
       timeSec,
       stars,
       progress: gs.duoTotalToFill,
+      moves: _localMoves,
     });
     // 進入觀戰模式（如果對手還未完成；用 != null 避免 finishTime=0 被判為 falsy）
     const oppDone =
@@ -817,9 +828,20 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25]);
   }
 
+  const puzzle = gs.currentLevel?.puzzle ?? [];
   import('../../react/duoresult/duoResultBridge')
     .then(({ bridgeOpenDuoResult }) => {
-      bridgeOpenDuoResult({ contentHtml, iWon, isDraw, levelId: d.levelId ?? null });
+      bridgeOpenDuoResult({
+        contentHtml,
+        iWon,
+        isDraw,
+        levelId: d.levelId ?? null,
+        hostMoves: d.hostMoves ?? [],
+        guestMoves: d.guestMoves ?? [],
+        hostAlias: d.hostAlias || '',
+        guestAlias: d.guestAlias || '',
+        puzzle,
+      });
     })
     .catch((e) => console.warn('[duo] bridgeOpenDuoResult failed:', e));
 }
@@ -827,8 +849,15 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
 // ── Surrender ────────────────────────────────────────────────────────
 
 export async function surrenderDuo(): Promise<void> {
-  if (!gs.isDuoMode) return;
-  await submitDuoFinish(9999, 0);
+  if (!gs.isDuoMode || _duoFinishSubmitted) return;
+  _duoFinishSubmitted = true;
+  const roomId = getActiveDuoRoomId();
+  if (roomId && gs.firebaseReady) {
+    await callDuoFunction('duoSurrender', { roomId, moves: _localMoves }).catch((e) => {
+      console.warn('[duo] duoSurrender failed:', e);
+      _duoFinishSubmitted = false;
+    });
+  }
   showFeedback(t('duo.surrender'), 'success');
 }
 
@@ -838,6 +867,9 @@ export async function closeDuoResult(): Promise<void> {
   import('../../react/duoresult/duoResultBridge')
     .then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult())
     .catch((e) => console.warn('[duo] bridgeCloseDuoResult failed:', e));
+  import('../../react/duoreview/duoReviewBridge')
+    .then(({ bridgeCloseDuoReview }) => bridgeCloseDuoReview())
+    .catch(() => {});
   const roomId = getActiveDuoRoomId();
   if (gs.firebaseReady && roomId) {
     await callDuoFunction('duoCloseResult', { roomId }).catch(() => {});
@@ -868,6 +900,7 @@ export function resetDuoState(): void {
   _oppStaleSince = 0;
   _autoForfeitStarted = false;
   _lastSubmittedProgress = -1;
+  _localMoves = [];
   _gameStartedAtMs = 0;
   gs.duoPenaltySeconds = 0;
   gs.duoCooldownUntil = 0;

@@ -83,6 +83,13 @@ export interface AchievementToastItem {
   name: string;
 }
 
+export interface MoveRecord {
+  t: number; // relative ms from startAt
+  cell: number; // 0-80
+  val: number; // 1-9, or 0 for erase
+  ok: boolean; // client-reported correctness (for replay colouring only)
+}
+
 export interface DuoRoomData {
   levelId: number;
   tierId: string;
@@ -129,6 +136,9 @@ export interface DuoRoomData {
   specBoardVersion?: number | null; // 版本號，防止重複渲染
   specBombAt?: number | null; // 炸彈觸發時間戳 (epoch ms)
   specBombCells?: number[] | null; // 被炸的 5 個 cell index
+  // ── Replay fields ─────────────────────────────────────────────────
+  hostMoves?: MoveRecord[] | null;
+  guestMoves?: MoveRecord[] | null;
 }
 
 export interface CandidateTrackingNode {
