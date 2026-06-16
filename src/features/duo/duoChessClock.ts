@@ -72,23 +72,23 @@ export async function launchChessClockGame(): Promise<void> {
     } else {
       try {
         await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
-        const doc = await tx.get(duoRoomRef());
-        if (!doc.exists) return;
-        const d = doc.data() as unknown as DuoRoomData;
-        // 避免重複初始化
-        if (d.ccBoardVersion != null && d.ccBoardVersion !== 0) return;
-        tx.update(duoRoomRef(), {
-          ccActiveTurn: firstTurn,
-          ccTurnStartedAt: firebaseServerTimestamp(),
-          ccHostAccumMs: 0,
-          ccGuestAccumMs: 0,
-          ccCurrentCellErrors: 0,
-          ccCurrentCellIdx: null,
-          ccBoardState: JSON.stringify(initialBoard),
-          ccBoardVersion: 1,
-          ccHostTotalMs: null,
-          ccGuestTotalMs: null,
-        });
+          const doc = await tx.get(duoRoomRef());
+          if (!doc.exists) return;
+          const d = doc.data() as unknown as DuoRoomData;
+          // 避免重複初始化
+          if (d.ccBoardVersion != null && d.ccBoardVersion !== 0) return;
+          tx.update(duoRoomRef(), {
+            ccActiveTurn: firstTurn,
+            ccTurnStartedAt: firebaseServerTimestamp(),
+            ccHostAccumMs: 0,
+            ccGuestAccumMs: 0,
+            ccCurrentCellErrors: 0,
+            ccCurrentCellIdx: null,
+            ccBoardState: JSON.stringify(initialBoard),
+            ccBoardVersion: 1,
+            ccHostTotalMs: null,
+            ccGuestTotalMs: null,
+          });
         });
       } catch (e) {
         console.warn('[chessClock] launchChessClockGame transaction failed:', e);
