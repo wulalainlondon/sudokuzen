@@ -108,9 +108,7 @@ export function EncounterTransition(): ReactElement {
     return cleanup;
   }, [active, reduced, dismiss, cleanup]);
 
-  const color = isFirstEncounter
-    ? RARITY_COLORS.common
-    : RARITY_COLORS[rarityTone || rarity] || RARITY_COLORS.common;
+  const color = isFirstEncounter ? RARITY_COLORS.common : RARITY_COLORS[rarityTone || rarity] || RARITY_COLORS.common;
   const modeChar = getModeChar(challengeMode);
   const showNonStandardMode = challengeMode !== 'standard';
 

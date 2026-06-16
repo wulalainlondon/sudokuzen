@@ -49,8 +49,7 @@ function ensureTraceSvgOverlay(): void {
   svg.id = 'chain-trace-svg';
   svg.setAttribute('viewBox', '0 0 100 100');
   svg.setAttribute('preserveAspectRatio', 'none');
-  svg.style.cssText =
-    'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:visible';
+  svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:visible';
   gridEl.appendChild(svg);
   _traceSvgEl = svg;
 }
