@@ -7,8 +7,13 @@ interface FirestoreNamespace {
   Timestamp: { fromMillis(ms: number): unknown };
 }
 
+interface FirebaseUser {
+  uid: string;
+  getIdToken(forceRefresh?: boolean): Promise<string>;
+}
+
 interface FirebaseAuth {
-  currentUser: { uid: string } | null;
+  currentUser: FirebaseUser | null;
   signInAnonymously(): Promise<{ user: { uid: string } | null }>;
   onAuthStateChanged(cb: (user: { uid: string } | null) => void): () => void;
 }
@@ -120,6 +125,20 @@ export async function initAnonymousAuth(): Promise<string | null> {
 
 export function getAuthUid(): string | null {
   return _authUid;
+}
+
+// 取得 Firebase ID token（Cloudflare Worker 端驗身分用）。確保已匿名登入後回 token。
+export async function getFirebaseIdToken(): Promise<string | null> {
+  const fb = await ensureFirebaseRuntime();
+  if (!fb) return null;
+  if (!fb.auth().currentUser) await initAnonymousAuth();
+  const user = fb.auth().currentUser;
+  if (!user) return null;
+  try {
+    return await user.getIdToken();
+  } catch {
+    return null;
+  }
 }
 
 export async function callDuoFunction<T = unknown>(name: string, data: unknown): Promise<T> {

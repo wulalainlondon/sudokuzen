@@ -7,6 +7,8 @@ import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { firebaseServerTimestamp } from '../../firebase/runtime';
 import type { FirestoreTransaction } from '../../firebase/types';
+import { isDuoWsEnabled } from './duoTransport';
+import type { CcFields } from './duoWsProtocol';
 
 // ── Module-level state ───────────────────────────────────────────────
 
@@ -51,10 +53,25 @@ export async function launchChessClockGame(): Promise<void> {
   _chessClockActive = true;
   _finishSubmitted = false;
 
-  // 只有 host 寫入初始 Firestore 狀態
+  // 只有 host 寫入初始狀態
   if (gs.duoRole === 'host') {
-    try {
-      await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
+    if (isDuoWsEnabled()) {
+      const { duoWsCc } = await import('./duoSocket');
+      duoWsCc({
+        ccActiveTurn: firstTurn,
+        ccTurnStartedAt: Date.now(),
+        ccHostAccumMs: 0,
+        ccGuestAccumMs: 0,
+        ccCurrentCellErrors: 0,
+        ccCurrentCellIdx: null,
+        ccBoardState: JSON.stringify(initialBoard),
+        ccBoardVersion: 1,
+        ccHostTotalMs: null,
+        ccGuestTotalMs: null,
+      });
+    } else {
+      try {
+        await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
         const doc = await tx.get(duoRoomRef());
         if (!doc.exists) return;
         const d = doc.data() as unknown as DuoRoomData;
@@ -72,9 +89,10 @@ export async function launchChessClockGame(): Promise<void> {
           ccHostTotalMs: null,
           ccGuestTotalMs: null,
         });
-      });
-    } catch (e) {
-      console.warn('[chessClock] launchChessClockGame transaction failed:', e);
+        });
+      } catch (e) {
+        console.warn('[chessClock] launchChessClockGame transaction failed:', e);
+      }
     }
   }
 
@@ -140,6 +158,28 @@ export function onChessClockCorrect(_cellIdx: number): void {
   const myAccumField = gs.duoRole === 'host' ? 'ccHostAccumMs' : 'ccGuestAccumMs';
   const oppRole: 'host' | 'guest' = gs.duoRole === 'host' ? 'guest' : 'host';
 
+  if (isDuoWsEnabled()) {
+    const ccUpdate: Partial<CcFields> = {
+      ccBoardState: JSON.stringify(newBoard),
+      ccBoardVersion: gs.ccBoardVersion + 1,
+      ccActiveTurn: oppRole,
+      ccTurnStartedAt: Date.now(),
+      ccCurrentCellErrors: 0,
+      ccCurrentCellIdx: null,
+    };
+    if (gs.duoRole === 'host') ccUpdate.ccHostAccumMs = newMyAccum;
+    else ccUpdate.ccGuestAccumMs = newMyAccum;
+    if (isComplete && !_finishSubmitted) {
+      _finishSubmitted = true;
+      ccUpdate.ccHostTotalMs = gs.duoRole === 'host' ? newMyAccum : gs.ccOppAccumMs;
+      ccUpdate.ccGuestTotalMs = gs.duoRole === 'host' ? gs.ccOppAccumMs : newMyAccum;
+    }
+    void import('./duoSocket').then((m) => m.duoWsCc(ccUpdate));
+    gs.ccMyAccumMs = newMyAccum;
+    gs.ccBoardVersion += 1;
+    return;
+  }
+
   const updateData: Record<string, unknown> = {
     ccBoardState: JSON.stringify(newBoard),
     ccBoardVersion: gs.ccBoardVersion + 1,
@@ -181,21 +221,35 @@ export function onChessClockError(_cellIdx: number): void {
     const myAccumField = gs.duoRole === 'host' ? 'ccHostAccumMs' : 'ccGuestAccumMs';
     const oppRole: 'host' | 'guest' = gs.duoRole === 'host' ? 'guest' : 'host';
 
-    duoRoomRef()
-      .update({
+    if (isDuoWsEnabled()) {
+      const ccUpdate: Partial<CcFields> = {
         ccActiveTurn: oppRole,
-        ccTurnStartedAt: firebaseServerTimestamp(),
-        [myAccumField]: gs.ccMyAccumMs + deltaMs,
+        ccTurnStartedAt: Date.now(),
         ccCurrentCellErrors: 0,
         ccCurrentCellIdx: null,
-        updatedAt: firebaseServerTimestamp(),
-      })
-      .catch((e) => console.warn('[chessClock] forcedSwitch update failed:', e));
+      };
+      if (gs.duoRole === 'host') ccUpdate.ccHostAccumMs = gs.ccMyAccumMs + deltaMs;
+      else ccUpdate.ccGuestAccumMs = gs.ccMyAccumMs + deltaMs;
+      void import('./duoSocket').then((m) => m.duoWsCc(ccUpdate));
+    } else {
+      duoRoomRef()
+        .update({
+          ccActiveTurn: oppRole,
+          ccTurnStartedAt: firebaseServerTimestamp(),
+          [myAccumField]: gs.ccMyAccumMs + deltaMs,
+          ccCurrentCellErrors: 0,
+          ccCurrentCellIdx: null,
+          updatedAt: firebaseServerTimestamp(),
+        })
+        .catch((e) => console.warn('[chessClock] forcedSwitch update failed:', e));
+    }
 
     gs.ccIsMyTurn = false;
     gs.ccMyAccumMs += deltaMs;
     gs.ccCurrentCellErrors = 0;
     renderTurnBanner();
+  } else if (isDuoWsEnabled()) {
+    void import('./duoSocket').then((m) => m.duoWsCc({ ccCurrentCellErrors: gs.ccCurrentCellErrors }));
   } else {
     duoRoomRef()
       .update({ ccCurrentCellErrors: gs.ccCurrentCellErrors })

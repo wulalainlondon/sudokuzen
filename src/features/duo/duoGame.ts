@@ -25,12 +25,16 @@ import { loadDuoProfile, recordDuoMatch, checkNewUnlocks, type DuoProfile } from
 import type { SudokuWindow } from '../../facade/windowTypes';
 import { escapeHtml } from '../../shared/html/escape';
 import { callDuoFunction } from '../../firebase/runtime';
+import { isDuoWsEnabled } from './duoTransport';
 
 // ── Module-level guards ──────────────────────────────────────────────
 
 let _localMoves: MoveRecord[] = [];
 
 let _countdownLaunched = false;
+// WS 模式：本地倒數 timer 一旦進入 GO 序列就設為 true，讓「playing snapshot」
+// 知道 launch 已在途、不要搶先觸發（避免 GO! 動畫被切斷）。Firebase 路徑不使用。
+let _launchScheduled = false;
 let _countdownRafCancelled = false;
 let _countdownRafHandle: number | null = null;
 let _duoFinishSubmitted = false;
@@ -98,6 +102,11 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     })
     .catch((e) => console.warn('[duo] duoLobby sync failed:', e));
 
+  // WS 大廳麵包屑：host 房一旦有人加入或進入倒數，即從大廳下架（只在開局前檢查）
+  if (isDuoWsEnabled() && gs.duoRole === 'host' && (d.status === 'waiting' || d.status === 'countdown')) {
+    import('./duoLobbyMirror').then((m) => m.syncWsLobbyRoom(d)).catch(() => {});
+  }
+
   if (d.status === 'waiting' || d.status === 'countdown') {
     const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
     const isInGame = gameContainer && gameContainer.style.display !== 'none' && !gs.isDuoMode;
@@ -114,6 +123,7 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     // Host: prune stale guest
     const guestHb = Number(d.guestHeartbeatAtMs || 0);
     if (
+      !isDuoWsEnabled() && // WS 模式：presence/沒收由 DO 處理，不寫 Firestore
       gs.duoRole === 'host' &&
       d.guestId &&
       guestHb > 0 &&
@@ -167,7 +177,17 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
   }
 
   if (d.status === 'playing') {
-    gs.duoRoundLaunched = true;
+    if (isDuoWsEnabled()) {
+      // WS：DO alarm 獨立把 status 轉 playing，與本地倒數 timer 是兩個觸發源。
+      // 若本地 timer 尚未進入 GO 序列（snapshot 搶先到，或重連直接進 playing），
+      // 由 snapshot 負責 launch；否則讓 GO 序列跑完由 timer launch。兩者互斥。
+      if (!gs.isDuoMode && !_launchScheduled) {
+        gs.duoRoundLaunched = true;
+        void launchDuoGame();
+      }
+    } else {
+      gs.duoRoundLaunched = true;
+    }
     const oppProgress = gs.duoRole === 'host' ? d.guestProgress : d.hostProgress;
     const oppAlias =
       gs.duoRole === 'host' ? d.guestAlias || t('duoRuntime.opponent') : d.hostAlias || t('duoRuntime.opponent');
@@ -203,7 +223,8 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     //   A) We finished first, then opponent disconnects → offline flag just set above → forfeit now
     //   B) Opponent disconnected first, we finish later → _duoFinishSubmitted becomes true →
     //      next snapshot hits here with both flags true → forfeit now
-    if (_duoFinishSubmitted && _duoOpponentOfflineNotified) {
+    if (!isDuoWsEnabled() && _duoFinishSubmitted && _duoOpponentOfflineNotified) {
+      // WS 模式：斷線沒收由 DO 寬限期 alarm 處理，client 不呼叫 CF
       const oppFinishCheck = gs.duoRole === 'host' ? d.guestFinishTime : d.hostFinishTime;
       if (oppFinishCheck == null) {
         void autoForfeitOpponent();
@@ -357,6 +378,16 @@ export function updateDuoRoomUI(d: DuoRoomData): void {
 // ── Ready Toggle ─────────────────────────────────────────────────────
 
 export async function toggleDuoReady(): Promise<void> {
+  // Cloudflare WebSocket 路徑（feature flag）
+  if (isDuoWsEnabled()) {
+    if (!gs.duoRole) return;
+    const newReady = !gs.duoMyReady;
+    const { duoWsReady } = await import('./duoSocket');
+    duoWsReady(newReady);
+    gs.duoMyReady = newReady;
+    return;
+  }
+
   if (!gs.firebaseReady || !gs.duoRole) return;
   const roomId = getActiveDuoRoomId();
   if (!roomId) return;
@@ -461,6 +492,7 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
     gs.duoCountdownTimer = null;
     if (gs.duoRoundLaunched) return;
     gs.duoRoundLaunched = true;
+    _launchScheduled = true; // GO 序列開始：WS 的 playing snapshot 不要搶先 launch
     if (overlay)
       overlay.innerHTML = `<div class="duo-countdown-display go">GO!</div><div class="duo-countdown-flash"></div>`;
     area!.innerHTML = `<div class="duo-countdown-display go">GO!</div>`;
@@ -546,11 +578,14 @@ export async function launchDuoGame(): Promise<void> {
   if (levelTechHint) levelTechHint.style.display = 'none';
 
   // Update room status to playing via Cloud Function — only host resets progress.
-  try {
-    await callDuoFunction('duoSetPlaying', { roomId: getActiveDuoRoomId()! });
-  } catch (e) {
-    console.warn('duoSetPlaying failed:', e);
-    showFeedback(t('duoRuntime.roomSyncFailed'), 'error');
+  // WebSocket 路徑：DO alarm 在 startAt 自動轉 playing，client 不需呼叫。
+  if (!isDuoWsEnabled()) {
+    try {
+      await callDuoFunction('duoSetPlaying', { roomId: getActiveDuoRoomId()! });
+    } catch (e) {
+      console.warn('duoSetPlaying failed:', e);
+      showFeedback(t('duoRuntime.roomSyncFailed'), 'error');
+    }
   }
 
   // Chess Clock 模式：由 duoChessClock 接管後續邏輯
@@ -563,13 +598,20 @@ export async function launchDuoGame(): Promise<void> {
 // ── Progress ─────────────────────────────────────────────────────────
 
 export function updateDuoProgress(): void {
-  if (!gs.isDuoMode || !gs.firebaseReady) return;
+  if (!gs.isDuoMode) return;
+  if (!isDuoWsEnabled() && !gs.firebaseReady) return;
   const now = Date.now();
   if (now - gs.duoProgressThrottle < 1000) return;
   gs.duoProgressThrottle = now;
   const filled = gs.cellsData.filter((c) => !c.fixed && c.value !== 0).length;
   if (filled === _lastSubmittedProgress) return;
   _lastSubmittedProgress = filled;
+
+  if (isDuoWsEnabled()) {
+    void import('./duoSocket').then((m) => m.duoWsProgress(filled));
+    return; // 觀戰盤面同步是 Phase 4
+  }
+
   const field = gs.duoRole === 'host' ? 'hostProgress' : 'guestProgress';
   duoRoomRef()
     .update({ [field]: filled, updatedAt: getFirebaseFieldValue().serverTimestamp() })
@@ -645,9 +687,17 @@ export function recordDuoMove(cell: number, val: number, ok: boolean): void {
 // ── Submit Finish ────────────────────────────────────────────────────
 
 export async function submitDuoFinish(timeSec: number, stars: number): Promise<void> {
-  if (!gs.isDuoMode || !gs.firebaseReady) return;
+  if (!gs.isDuoMode) return;
+  if (!isDuoWsEnabled() && !gs.firebaseReady) return;
   if (_duoFinishSubmitted) return;
   _duoFinishSubmitted = true;
+
+  if (isDuoWsEnabled()) {
+    const { duoWsFinish } = await import('./duoSocket');
+    duoWsFinish(timeSec, stars, _localMoves);
+    return;
+  }
+
   const roomId = getActiveDuoRoomId();
   if (!roomId) return;
   try {
@@ -851,6 +901,14 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
 export async function surrenderDuo(): Promise<void> {
   if (!gs.isDuoMode || _duoFinishSubmitted) return;
   _duoFinishSubmitted = true;
+
+  if (isDuoWsEnabled()) {
+    const { duoWsSurrender } = await import('./duoSocket');
+    duoWsSurrender(_localMoves);
+    showFeedback(t('duo.surrender'), 'success');
+    return;
+  }
+
   const roomId = getActiveDuoRoomId();
   if (roomId && gs.firebaseReady) {
     await callDuoFunction('duoSurrender', { roomId, moves: _localMoves }).catch((e) => {
@@ -871,7 +929,10 @@ export async function closeDuoResult(): Promise<void> {
     .then(({ bridgeCloseDuoReview }) => bridgeCloseDuoReview())
     .catch(() => {});
   const roomId = getActiveDuoRoomId();
-  if (gs.firebaseReady && roomId) {
+  if (isDuoWsEnabled()) {
+    const { duoWsCloseResult } = await import('./duoSocket');
+    duoWsCloseResult();
+  } else if (gs.firebaseReady && roomId) {
     await callDuoFunction('duoCloseResult', { roomId }).catch(() => {});
   }
   resetDuoState();
@@ -889,7 +950,12 @@ export function resetDuoState(): void {
   }
   _duoResultShown = false;
   _countdownLaunched = false;
+  _launchScheduled = false;
   _duoFinishSubmitted = false;
+  if (isDuoWsEnabled()) {
+    void import('./duoSocket').then((m) => m.duoWsDisconnect());
+    void import('./duoLobbyMirror').then((m) => m.unpublishWsLobbyRoom());
+  }
   _countdownBeepTimers.forEach((t) => clearTimeout(t));
   _countdownBeepTimers = [];
   if (_duoResultRetryTimer) {

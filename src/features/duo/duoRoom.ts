@@ -16,6 +16,7 @@ import type { FirestoreDoc, FirestoreSnap } from '../../firebase/types';
 import { bumpDuoMetric } from './duoMetrics';
 import { SK } from '../../storage/keys';
 import { loadDuoProfile } from './duoProfile';
+import { isDuoWsEnabled } from './duoTransport';
 
 export function getFirebaseFieldValue() {
   return { serverTimestamp: firebaseServerTimestamp };
@@ -118,6 +119,12 @@ function docToSummary(roomId: string, d: DuoRoomData): DuoRoomSummary {
 // ── List rooms ───────────────────────────────────────────────────────
 
 export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } = {}): Promise<DuoRoomSummary[]> {
+  // Cloudflare WebSocket 路徑（feature flag）：房間記錄在獨立的 duo_ws_rooms，
+  // 不與舊 Firebase 玩家查的 duo_rooms 混淆。
+  if (isDuoWsEnabled()) {
+    const { listWaitingWsRooms } = await import('./duoLobbyMirror');
+    return listWaitingWsRooms(limit);
+  }
   if (!gs.firebaseReady || !gs.db) return [];
   const db = gs.db;
   const force = !!opts.force;
@@ -351,9 +358,24 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
 // ── Create room ──────────────────────────────────────────────────────
 
 export async function createDuoRoom(tierId: string, modeId: string): Promise<string | null> {
-  if (!gs.firebaseReady) return null;
   const { alias } = getPlayerIdentity();
   if (!alias) return null;
+
+  // Cloudflare WebSocket 路徑（feature flag）
+  if (isDuoWsEnabled()) {
+    const { duoWsCreateRoom } = await import('./duoSocket');
+    const roomId = await duoWsCreateRoom(tierId, modeId);
+    if (!roomId) return null;
+    setActiveRoomId(roomId);
+    gs.duoRole = 'host';
+    gs.duoMyReady = false;
+    // 寫一筆大廳麵包屑，讓 WS 房能被其他玩家在大廳發現
+    const { publishWsLobbyRoom } = await import('./duoLobbyMirror');
+    void publishWsLobbyRoom(roomId, tierId, modeId);
+    return roomId;
+  }
+
+  if (!gs.firebaseReady) return null;
   try {
     const result = await callDuoFunction<{ roomId: string }>('duoCreateRoom', {
       tierId,
@@ -378,8 +400,21 @@ export async function createDuoRoom(tierId: string, modeId: string): Promise<str
 // ── Join room ────────────────────────────────────────────────────────
 
 export async function joinDuoRoom(roomId: string): Promise<boolean> {
-  if (!gs.firebaseReady || !roomId) return false;
+  if (!roomId) return false;
   const { alias } = getPlayerIdentity();
+
+  // Cloudflare WebSocket 路徑（feature flag）
+  if (isDuoWsEnabled()) {
+    const { duoWsJoinRoom } = await import('./duoSocket');
+    const ok = await duoWsJoinRoom(roomId);
+    if (!ok) return false;
+    gs.duoRole = 'guest';
+    gs.duoMyReady = false;
+    setActiveRoomId(roomId);
+    return true;
+  }
+
+  if (!gs.firebaseReady) return false;
   try {
     const result = await callDuoFunction<{ role: 'host' | 'guest'; hostReady: boolean }>('duoJoinRoom', {
       roomId,
@@ -551,6 +586,19 @@ export async function resumeDuoRoomIfAny(): Promise<boolean> {
 
 export async function leaveDuoRoom(): Promise<void> {
   const roomId = _activeRoomId;
+
+  // Cloudflare WebSocket 路徑（feature flag）
+  if (isDuoWsEnabled()) {
+    const { unpublishWsLobbyRoom } = await import('./duoLobbyMirror');
+    unpublishWsLobbyRoom();
+    if (gs.duoRole) {
+      const { duoWsLeave } = await import('./duoSocket');
+      duoWsLeave();
+    }
+    if (_resetHandler) _resetHandler();
+    return;
+  }
+
   if (!gs.firebaseReady || !gs.duoRole || !roomId) {
     if (_resetHandler) _resetHandler();
     return;

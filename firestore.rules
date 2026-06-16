@@ -68,6 +68,35 @@ service cloud.firestore {
                     && request.auth.uid == resource.data.hostId;
     }
 
+    // Duo WebSocket lobby breadcrumbs (Cloudflare Durable Objects transport).
+    // The DO holds authoritative game state; these docs only make WS rooms
+    // discoverable in the existing lobby. Self-managed by the host client.
+    // Old Firebase clients query duo_rooms and never touch this collection.
+    match /duo_ws_rooms/{roomId} {
+      function validWsLobby() {
+        return request.resource.data.roomId == roomId
+            && request.resource.data.hostId is string
+            && request.resource.data.hostOwnerUid is string
+            && validAlias(request.resource.data.hostAlias)
+            && request.resource.data.tierId is string
+            && request.resource.data.modeId is string
+            && request.resource.data.status == 'waiting'
+            && request.resource.data.transport == 'ws'
+            && request.resource.data.hostHeartbeatAtMs is number;
+      }
+      allow read: if true;
+      // Only the owner (matching auth uid) may create/touch their own breadcrumb.
+      allow create, update: if request.auth != null
+                            && request.auth.uid == request.resource.data.hostOwnerUid
+                            && validWsLobby();
+      // Owner may remove anytime; others only a clearly-dead breadcrumb (>2min no touch).
+      allow delete: if request.auth != null
+                    && (
+                      request.auth.uid == resource.data.hostOwnerUid
+                      || resource.data.hostHeartbeatAtMs < request.time.toMillis() - 120000
+                    );
+    }
+
     // Lightweight online presence.
     match /presence/{playerId} {
       allow read: if true;

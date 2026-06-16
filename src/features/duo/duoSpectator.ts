@@ -4,6 +4,7 @@
 import { gs, type DuoRoomData } from '../../game/state';
 import { duoRoomRef, getActiveDuoRoomId } from './duoRoom';
 import { firebaseServerTimestamp, callDuoFunction } from '../../firebase/runtime';
+import { isDuoWsEnabled } from './duoTransport';
 import { updateCellDisplay } from '../../game/board';
 
 // ── Module-level state ───────────────────────────────────────────────
@@ -330,6 +331,11 @@ export function syncSpecBoardNow(): void {
     const board = gs.cellsData.map((c) => c.value);
     _specVersion++;
 
+    if (isDuoWsEnabled()) {
+      void import('./duoSocket').then((m) => m.duoWsSpecBoard(JSON.stringify(board), _specVersion));
+      return;
+    }
+
     duoRoomRef()
       .update({
         specBoardState: JSON.stringify(board),
@@ -376,6 +382,11 @@ export function throwBomb(): void {
   }
 
   if (selected.length === 0) return;
+
+  if (isDuoWsEnabled()) {
+    void import('./duoSocket').then((m) => m.duoWsBomb(selected));
+    return;
+  }
 
   callDuoFunction('duoThrowBomb', {
     roomId: getActiveDuoRoomId()!,
