@@ -1,0 +1,19 @@
+{
+  "name": "duo-party",
+  "private": true,
+  "type": "module",
+  "description": "Phase 0 spike: Cloudflare Durable Objects (partyserver) latency probe for Duo realtime migration",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "latency": "node src/latency-test.mjs"
+  },
+  "dependencies": {
+    "partyserver": "latest"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "latest",
+    "ws": "latest",
+    "wrangler": "latest"
+  }
+}

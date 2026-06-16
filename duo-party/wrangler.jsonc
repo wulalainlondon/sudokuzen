@@ -1,0 +1,23 @@
+{
+  // Phase 0 spike — 最小 Durable Object，量台灣 → 邊緣 WebSocket 延遲
+  "name": "duo-party",
+  "main": "src/server.ts",
+  "compatibility_date": "2025-05-01",
+
+  // GameRoom = 一房一物件。partyserver 的 routePartykitRequest 會把
+  // URL 的 party 段 "game-room" 對應到這個 PascalCase binding "GameRoom"
+  "durable_objects": {
+    "bindings": [{ "name": "GameRoom", "class_name": "GameRoom" }]
+  },
+
+  // 免費方案只能用 SQLite-backed DO
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GameRoom"] }],
+
+  // Firebase 身分驗證（prod 強制開）。本機測試以 `--var AUTH_REQUIRED:false` 覆寫跳過。
+  "vars": {
+    "PROJECT_ID": "sudokuzen-f2aa3",
+    "AUTH_REQUIRED": "true"
+  },
+
+  "observability": { "enabled": true }
+}
