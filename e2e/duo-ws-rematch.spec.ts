@@ -1,18 +1,24 @@
 import { test, expect, type Page, type Browser, type BrowserContext } from '@playwright/test';
 
 /**
- * E2E: WS Duo — 人類步調完整一場 + 再來一輪
+ * E2E: WS Duo — 真人步調完整兩場（每場 ≥ 3 分鐘）+ 再來一輪
  *
  * 目的：
- *  1) 用接近真人的步調打完一整場（等倒數 overlay 消失才開始填、逐格有延遲），
- *     驗證「對局開始後棋盤偶發不可點」的 bug 已修（launchDuoGame 兜底移除
- *     #duo-countdown-overlay）。
+ *  1) 用真人步調（雙方並發、逐格數秒）打完一整場，每場 ≥ 3 分鐘，
+ *     驗證「對局開始後棋盤偶發不可點」已修、且長時對局全程穩定。
  *  2) 結算後點「再來一局」→ 回大廳 → 再完整打第二場，確認 rematch loop 能走完。
+ *  3) round 1 內含 32s 思考停頓探針，驗證 R1 心跳不誤殺 idle 玩家。
  *
- * 跑在本機 dev server（含本地原始碼修正）+ 線上 Cloudflare worker + 正式 Firestore。
+ * 預設打本機 dev server（playwright.config.ts，baseURL=localhost:5173，goto('/')）。
+ * 設 E2E_APP_URL=https://wulalainlondon.github.io/sudokuzen/ 可改打線上 production。
+ * 後端一律走線上 Cloudflare worker + 正式 Firestore。
  */
 
-const SUITE_TIMEOUT = 300_000;
+const SUITE_TIMEOUT = 900_000;
+// 單場對局目標時長：host 依空格數動態配速使整場 ≈ 此值（assertion 門檻 180s）。
+const MATCH_MIN_MS = 190_000;
+// 導向目標：預設相對 '/'（本機 dev root）；E2E_APP_URL 可覆寫為線上絕對網址。
+const APP_URL = process.env.E2E_APP_URL ?? '/';
 
 async function waitForBoot(page: Page): Promise<void> {
   await page.waitForFunction(
@@ -105,9 +111,11 @@ async function waitForPlayableBoard(page: Page): Promise<void> {
   await page.waitForFunction(() => document.getElementById('duo-countdown-overlay') === null, { timeout: 10_000 });
 }
 
-// 人類步調填盤：逐格點選 + 輸入數字，每格間隔小延遲（不瞬間 solve）。
-async function solveBoardHumanPace(page: Page): Promise<void> {
-  const data = await page.evaluate(() => {
+// 解出當前盤面，回傳謎面（0=空格）與完整解答。
+async function computeSolvePlan(
+  page: Page,
+): Promise<{ puzzle: number[]; solution: number[]; solved: boolean; cellCount: number }> {
+  return await page.evaluate(() => {
     function solveSudoku(b: number[]): boolean {
       const empty = b.indexOf(0);
       if (empty === -1) return true;
@@ -144,16 +152,63 @@ async function solveBoardHumanPace(page: Page): Promise<void> {
     const solved = solveSudoku(solution);
     return { puzzle, solution, solved, cellCount: cells.length };
   });
+}
 
+// 真人步調填盤：依 targetTotalMs 與空格數動態配速（每格數秒），整場約 targetTotalMs。
+// guest 端用 extraPerCellMs 放慢、並 stopOnResult：對局一旦結算（對手獲勝）就停手，
+// 避免對著結算遮罩硬點。
+async function fillBoardPaced(
+  page: Page,
+  opts: { targetTotalMs: number; extraPerCellMs?: number; stopOnResult?: boolean },
+): Promise<void> {
+  const data = await computeSolvePlan(page);
   if (!data.solved || data.cellCount !== 81) {
-    throw new Error(`solveBoard: cellCount=${data.cellCount} solved=${data.solved}`);
+    throw new Error(`fillBoard: cellCount=${data.cellCount} solved=${data.solved}`);
   }
-  for (let i = 0; i < 81; i++) {
-    if (data.puzzle[i] === 0) {
-      await page.locator(`.cell[data-idx="${i}"]`).click();
-      await page.keyboard.press(String(data.solution[i]));
-      await page.waitForTimeout(40); // 人類步調：逐格小停頓
+  const empties: number[] = [];
+  for (let i = 0; i < 81; i++) if (data.puzzle[i] === 0) empties.push(i);
+  const perCellMs = Math.ceil(opts.targetTotalMs / Math.max(empties.length, 1)) + (opts.extraPerCellMs ?? 0);
+  for (const i of empties) {
+    if (opts.stopOnResult) {
+      const ended = await page.evaluate(() => document.getElementById('duo-result-modal') !== null);
+      if (ended) return;
     }
+    try {
+      await page.locator(`.cell[data-idx="${i}"]`).click({ timeout: 8000 });
+      await page.keyboard.press(String(data.solution[i]));
+    } catch {
+      if (opts.stopOnResult) return; // 對局已結束、棋盤不可互動 → 收手
+      throw new Error(`fillBoard: 第 ${i} 格無法操作`);
+    }
+    await page.waitForTimeout(perCellMs);
+  }
+}
+
+// 真人步調探針：對局中雙方同時「停下來想」一段時間（故意 > 25s 離線門檻），
+// 期間不做任何操作。client 每 10s 的 ping 應持續刷新 server 端 lastSeen，
+// 因此對手端不該看到離線、也不該誤觸沒收結算。驗證 R1 心跳在真人思考停頓下
+// 不會誤殺對手。
+async function idleThinkProbe(hostPage: Page, guestPage: Page, idleMs: number): Promise<void> {
+  await Promise.all([hostPage.waitForTimeout(idleMs), guestPage.waitForTimeout(idleMs)]);
+
+  // 雙向斷言：兩邊都不該把對手標記為離線，且都還在對局中（沒被誤判沒收結算）。
+  for (const [page, who] of [
+    [hostPage, 'host'],
+    [guestPage, 'guest'],
+  ] as const) {
+    const state = await page.evaluate(() => {
+      const dot = document.getElementById('duo-progress-opp-conn');
+      return {
+        offline: !!dot?.classList.contains('offline'),
+        uncertain: !!dot?.classList.contains('uncertain'),
+        resultModal: document.getElementById('duo-result-modal') !== null,
+        boardCells: document.querySelectorAll('.cell[data-idx]').length,
+      };
+    });
+    expect(state.offline, `${who} 端不該在思考停頓後把對手標為離線`).toBe(false);
+    expect(state.resultModal, `${who} 端不該因思考停頓被誤觸結算`).toBe(false);
+    expect(state.boardCells, `${who} 端棋盤應仍在對局中`).toBe(81);
+    if (state.uncertain) console.warn(`[rematch] ⚠ ${who} 端對手連線燈為 uncertain（非離線，但值得留意）`);
   }
 }
 
@@ -177,7 +232,13 @@ async function clickPlayAgain(page: Page): Promise<void> {
 }
 
 // 打完整一場（從大廳到雙方結算）。host 先完成確保有明確勝負。
-async function playFullMatch(hostPage: Page, guestPage: Page, hostAlias: string, round: number): Promise<void> {
+async function playFullMatch(
+  hostPage: Page,
+  guestPage: Page,
+  hostAlias: string,
+  round: number,
+  opts: { idleProbeMs?: number } = {},
+): Promise<void> {
   await openLobby(hostPage);
   await openLobby(guestPage);
 
@@ -191,13 +252,26 @@ async function playFullMatch(hostPage: Page, guestPage: Page, hostAlias: string,
 
   await Promise.all([waitForPlayableBoard(hostPage), waitForPlayableBoard(guestPage)]);
   console.log(`[rematch] round ${round}: 棋盤可玩（overlay 已消失）`);
+  const matchStart = Date.now();
 
-  await solveBoardHumanPace(hostPage);
-  await hostPage.waitForTimeout(800);
-  await solveBoardHumanPace(guestPage);
+  if (opts.idleProbeMs) {
+    console.log(`[rematch] round ${round}: 思考停頓探針 ${opts.idleProbeMs}ms（> 25s 離線門檻）`);
+    await idleThinkProbe(hostPage, guestPage, opts.idleProbeMs);
+    console.log(`[rematch] round ${round}: 停頓後雙方仍在線、未誤觸沒收 ✓`);
+  }
+
+  // 雙方並發真人慢速填盤：host 配速到 ~MATCH_MIN_MS 解完獲勝；guest 較慢、
+  // 對局結算即停。整場 ≈ host 解題時長（≥ 3 分鐘）。
+  console.log(`[rematch] round ${round}: 開始真人步調填盤（目標單場 ≈ ${Math.round(MATCH_MIN_MS / 1000)}s）`);
+  await Promise.all([
+    fillBoardPaced(hostPage, { targetTotalMs: MATCH_MIN_MS }),
+    fillBoardPaced(guestPage, { targetTotalMs: MATCH_MIN_MS, extraPerCellMs: 2500, stopOnResult: true }),
+  ]);
 
   await Promise.all([waitForResultModal(hostPage), waitForResultModal(guestPage)]);
-  console.log(`[rematch] round ${round}: 雙方結算完成`);
+  const matchMs = Date.now() - matchStart;
+  console.log(`[rematch] round ${round}: 雙方結算完成，對局歷時 ${Math.round(matchMs / 1000)}s`);
+  expect(matchMs, `round ${round} 對局時長應 ≥ 3 分鐘`).toBeGreaterThanOrEqual(180_000);
 }
 
 test.describe('duo-ws-rematch', () => {
@@ -216,8 +290,8 @@ test.describe('duo-ws-rematch', () => {
       const guestPage = await guestCtx.newPage();
 
       await Promise.all([
-        hostPage.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 }),
-        guestPage.goto('/', { waitUntil: 'domcontentloaded', timeout: 60_000 }),
+        hostPage.goto(APP_URL, { waitUntil: 'domcontentloaded', timeout: 60_000 }),
+        guestPage.goto(APP_URL, { waitUntil: 'domcontentloaded', timeout: 60_000 }),
       ]);
       await Promise.all([waitForBoot(hostPage), waitForBoot(guestPage)]);
 
@@ -229,8 +303,8 @@ test.describe('duo-ws-rematch', () => {
       ]);
       await Promise.all([waitForBoot(hostPage), waitForBoot(guestPage)]);
 
-      // ── 第一場 ──
-      await playFullMatch(hostPage, guestPage, hostAlias, 1);
+      // ── 第一場（含真人思考停頓探針：32s idle 驗證心跳不誤殺）──
+      await playFullMatch(hostPage, guestPage, hostAlias, 1, { idleProbeMs: 32_000 });
 
       // ── 再來一局：雙方點 → 回大廳 ──
       await clickPlayAgain(hostPage);

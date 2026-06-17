@@ -137,6 +137,80 @@ export function playErrorFeedback(): void {
   playFile('/sounds/error.ogg', 0.6);
 }
 
+// ── Duo real-time event cues — synthesized tones (no asset files) ────
+// 對手 / 賽況轉折的即時聽覺回饋。走既有 room graph（含 reverb），並尊重 sfx 設定。
+
+interface CueNote {
+  freq: number;
+  start: number; // 相對起始秒
+  dur: number; // 持續秒
+  type?: OscillatorType;
+}
+
+function playCue(notes: CueNote[], baseVolume: number): void {
+  try {
+    const { sfxEnabled, sfxVolume } = getAudioSettings();
+    if (!sfxEnabled) return;
+    const ctx = getCtx();
+    if (!ctx) return;
+    ensureGraph(ctx);
+    const vol = Math.min(0.5, baseVolume * sfxVolume);
+    for (const n of notes) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = n.type ?? 'sine';
+      osc.frequency.value = n.freq;
+      const t0 = ctx.currentTime + n.start;
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + n.dur);
+      osc.connect(gain);
+      connectToRoom(gain, ctx);
+      osc.start(t0);
+      osc.stop(t0 + n.dur + 0.03);
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Opponent finished the puzzle — rising two-note attention alert. */
+export function playOpponentFinishedCue(): void {
+  playCue(
+    [
+      { freq: 587, start: 0, dur: 0.16, type: 'triangle' },
+      { freq: 880, start: 0.12, dur: 0.22, type: 'triangle' },
+    ],
+    0.5,
+  );
+}
+
+/** Opponent is closing in (soft) or just overtook you (strong) — tension cue. */
+export function playOpponentThreatCue(strong: boolean): void {
+  if (strong) {
+    playCue(
+      [
+        { freq: 440, start: 0, dur: 0.1, type: 'sawtooth' },
+        { freq: 392, start: 0.09, dur: 0.16, type: 'sawtooth' },
+      ],
+      0.32,
+    );
+  } else {
+    playCue([{ freq: 523, start: 0, dur: 0.1, type: 'triangle' }], 0.22);
+  }
+}
+
+/** You lost the duo — somber descending cue. */
+export function playDefeatCue(): void {
+  playCue(
+    [
+      { freq: 330, start: 0, dur: 0.22, type: 'sine' },
+      { freq: 220, start: 0.18, dur: 0.34, type: 'sine' },
+    ],
+    0.4,
+  );
+}
+
 // ── Shared helpers (used by zenAudio.ts) ─────────────────────────────
 
 export { getCtx, ensureGraph, connectToRoom, getNoiseBuffer };

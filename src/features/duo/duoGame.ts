@@ -26,6 +26,7 @@ import type { SudokuWindow } from '../../facade/windowTypes';
 import { escapeHtml } from '../../shared/html/escape';
 import { callDuoFunction } from '../../firebase/runtime';
 import { isDuoWsEnabled } from './duoTransport';
+import { playOpponentFinishedCue, playOpponentThreatCue, playDefeatCue } from '../../game/audio';
 
 // ── Module-level guards ──────────────────────────────────────────────
 
@@ -45,6 +46,10 @@ let _autoForfeitStarted = false;
 let _gameStartedAtMs = 0;
 let _oppStaleSince = 0;
 let _countdownBeepTimers: ReturnType<typeof setTimeout>[] = [];
+// 上一次快照時「我方領先對手的格數」（filled - oppProgress），用來偵測反超/逼近的轉折。
+let _prevDuoLead: number | null = null;
+// 上一次快照的對手格數，用來確認威脅提示只在「對手真的前進」時觸發（而非我方擦除導致 lead 下降）。
+let _prevOppProgress: number | null = null;
 
 // Grace period longer than DUO_STALE_HEARTBEAT_MS (60s) so the stale check has margin
 // after grace ends. Background-tab throttling stretches setInterval to 60s+, which
@@ -191,7 +196,8 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     const oppProgress = gs.duoRole === 'host' ? d.guestProgress : d.hostProgress;
     const oppAlias =
       gs.duoRole === 'host' ? d.guestAlias || t('duoRuntime.opponent') : d.hostAlias || t('duoRuntime.opponent');
-    updateDuoProgressUI(oppAlias, oppProgress || 0);
+    const oppFinishedNow = (gs.duoRole === 'host' ? d.guestFinishTime : d.hostFinishTime) != null;
+    updateDuoProgressUI(oppAlias, oppProgress || 0, oppFinishedNow);
 
     // Detect opponent disconnect
     {
@@ -217,7 +223,14 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
           // Opponent's heartbeat recovered — retract so auto-forfeit doesn't misfire.
           _duoOpponentOfflineNotified = false;
         }
-        if (!isOppStale) setOppConnIndicator('online');
+        if (!isOppStale) {
+          setOppConnIndicator('online');
+        } else if (inGracePeriod && oppOnline === false) {
+          // P2b：開局 90s 寬限內，server 權威判定對手離線（非本地心跳推測）→
+          // 至少給橙燈，消除「開局就掉線卻一路顯示在線」的盲區。toast / 自動沒收
+          // 仍受 !inGracePeriod 守衛，不會在寬限內誤觸。
+          setOppConnIndicator('uncertain');
+        }
       }
     }
 
@@ -536,6 +549,8 @@ export async function launchDuoGame(): Promise<void> {
   _duoFinishSubmitted = false;
   _duoOpponentOfflineNotified = false;
   _oppStaleSince = 0;
+  _prevDuoLead = null;
+  _prevOppProgress = null;
   _autoForfeitStarted = false;
   _duoResultShown = false;
   _localMoves = [];
@@ -639,7 +654,7 @@ export function updateDuoProgress(): void {
     .catch((e) => console.warn('[duo] syncSpecBoardNow import failed:', e));
 }
 
-function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
+function updateDuoProgressUI(oppAlias: string, oppProgress: number, oppFinished = false): void {
   const oppFill = document.getElementById('duo-progress-fill-opp');
   const oppPct = document.getElementById('duo-progress-opp-pct');
   const oppLabel = document.getElementById('duo-progress-opp-label');
@@ -650,10 +665,10 @@ function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
   if (oppLabel) oppLabel.textContent = oppAlias;
 
   // Update self progress
+  const filled = gs.cellsData.filter((c) => !c.fixed && c.value !== 0).length;
   const selfFill = document.getElementById('duo-progress-fill-self');
   const selfPct = document.getElementById('duo-progress-self-pct');
   if (selfFill) {
-    const filled = gs.cellsData.filter((c) => !c.fixed && c.value !== 0).length;
     const myPct = gs.duoTotalToFill > 0 ? Math.min(100, Math.round((filled / gs.duoTotalToFill) * 100)) : 0;
     selfFill.style.width = `${myPct}%`;
     if (selfPct) selfPct.textContent = `${myPct}%`;
@@ -665,6 +680,42 @@ function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
       selfFill.classList.remove('trailing');
     }
   }
+
+  // P1a：以格數比較偵測「對手反超 / 逼近」轉折 → 閃自己的進度列 + 輕音效。
+  // 只在對局進行中（雙方皆未完成）才提示，避免結算前後誤觸。
+  const total = gs.duoTotalToFill;
+  const iAmDone = total > 0 && filled >= total;
+  if (!gs.duoOpponentNotified && !oppFinished && !iAmDone) {
+    const lead = filled - oppProgress;
+    // 只在「對手真的前進」時評估威脅 → 避免我方擦除讓 lead 下降誤判反超，
+    // 也避免對手完成瞬間（oppProgress 停滯）與完成音效疊放。
+    const oppAdvanced = _prevOppProgress !== null && oppProgress > _prevOppProgress;
+    if (_prevDuoLead !== null && oppAdvanced) {
+      const overtaken = _prevDuoLead >= 0 && lead < 0; // 對手剛從落後/平手變成領先
+      const tightened = !overtaken && Math.abs(_prevDuoLead) > 1 && Math.abs(lead) <= 1; // 差距縮到 ±1 格
+      if (overtaken) {
+        flashDuoSelfRow('threat-strong');
+        playOpponentThreatCue(true);
+      } else if (tightened) {
+        flashDuoSelfRow('threat-soft');
+        playOpponentThreatCue(false);
+      }
+    }
+    _prevDuoLead = lead;
+    _prevOppProgress = oppProgress;
+  } else {
+    _prevDuoLead = null;
+    _prevOppProgress = null;
+  }
+}
+
+// 閃一下自己的進度列以提示賽況轉折（reflow 重啟動畫，可重複觸發）。
+function flashDuoSelfRow(cls: 'threat-strong' | 'threat-soft'): void {
+  const row = document.getElementById('duo-progress-fill-self')?.closest('.duo-progress-row') as HTMLElement | null;
+  if (!row) return;
+  row.classList.remove('threat-strong', 'threat-soft');
+  void row.offsetWidth; // 強制 reflow，讓同名動畫能重新播放
+  row.classList.add(cls);
 }
 
 // 對手連線狀態燈：online(綠)/uncertain(橙脈衝)/offline(紅)
@@ -683,6 +734,7 @@ function showDuoOpponentFinished(alias: string, timeSec: number, stars: number |
   const starsStr = stars ? ' ' + '\u2605'.repeat(stars) : '';
   showFeedback(t('duoRuntime.opponentFinished', { alias, time: formatSeconds(timeSec), stars: starsStr }), 'error');
   if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 50]);
+  playOpponentFinishedCue(); // P1b：對手完成的標誌性音效（過去只有震動）
 
   const existing = document.getElementById('duo-forfeit-btn');
   if (!existing) {
@@ -899,6 +951,10 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
   } else if (isDraw) {
     if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25]);
+  } else {
+    // P2a：落敗也給回饋（低沉音 + 輕震動），不再被靜默冷處理
+    if (navigator.vibrate) navigator.vibrate([80, 50, 140]);
+    playDefeatCue();
   }
 
   const puzzle = gs.currentLevel?.puzzle ?? [];
@@ -987,6 +1043,8 @@ export function resetDuoState(): void {
   }
   _duoOpponentOfflineNotified = false;
   _oppStaleSince = 0;
+  _prevDuoLead = null;
+  _prevOppProgress = null;
   _autoForfeitStarted = false;
   _lastSubmittedProgress = -1;
   _localMoves = [];
