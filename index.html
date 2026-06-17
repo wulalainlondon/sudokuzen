@@ -299,6 +299,7 @@
             </div>
             <div class="duo-progress-container" id="duo-progress-container">
                 <div class="duo-progress-row">
+                    <span class="duo-conn-dot" id="duo-progress-opp-conn"></span>
                     <span class="duo-progress-label" id="duo-progress-opp-label">對手</span>
                     <div class="duo-progress-bar-wrap"><div class="duo-progress-fill opp" id="duo-progress-fill-opp"></div></div>
                     <span class="duo-progress-pct" id="duo-progress-opp-pct">0%</span>
@@ -489,7 +490,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.06.17-V1';
+        var INLINE_VER = '2026.06.17-V2';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

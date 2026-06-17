@@ -6,14 +6,16 @@ import { t } from '../../i18n/t';
 import { escapeHtml } from '../../shared/html/escape';
 import { DUO_TIERS, DUO_MODES, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import { loadDuoProfile, getUnlockedTiers, getUnlockedModes } from './duoProfile';
-import { DUO_STALE_HEARTBEAT_MS, type DuoRoomSummary } from './duoRoom';
+import { type DuoRoomSummary } from './duoRoom';
 import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
 
 type ConnState = 'connected' | 'reconnecting' | 'failed';
 const LOBBY_POLL_FAST_MS = 6_000;
 const LOBBY_POLL_SLOW_MS = 25_000;
 const LOBBY_POLL_FAST_WINDOW_MS = 15_000;
-const ROOM_FRESHNESS_MS = DUO_STALE_HEARTBEAT_MS * 2; // ~90s — hide rooms with no recent heartbeat
+// WS 路徑專用：與 DO 關房寬限（host 斷線 ~30s 後關房）對齊，壓縮「看得到點不進」窗口。
+// 搭配 WS_LOBBY_TOUCH_MS=15s，健康 host 的 heartbeat 最舊也只 ~15s，不會被誤隱藏。
+const ROOM_FRESHNESS_MS = 45_000;
 let _duoLobbyPollTimer: ReturnType<typeof setTimeout> | null = null;
 let _duoLobbyOpenedAtMs = 0;
 let _selectedTier = 'tier0';
@@ -122,7 +124,11 @@ function bindRoomListDelegate(): void {
       const { joinDuoRoom } = await import('./duoRoom');
       const ok = await joinDuoRoom(roomId);
       if (!ok) {
+        // 房間已關閉/不可加入（殘留麵包屑）：移除這個死 row 並重整，
+        // 避免玩家對著鬼房反覆點。
+        btn.remove();
         showFeedback(t('duo.noJoinableRoom'), 'error');
+        void refreshRoomCard();
         return;
       }
       closeDuoLobby();

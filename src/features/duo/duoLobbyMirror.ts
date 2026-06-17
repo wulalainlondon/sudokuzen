@@ -11,8 +11,10 @@ import type { FirestoreDoc, FirestoreSnap } from '../../firebase/types';
 import type { DuoRoomSummary } from './duoRoom';
 
 const WS_LOBBY_COLLECTION = 'duo_ws_rooms';
-const WS_LOBBY_TOUCH_MS = 30_000;
-// 不可逆刪除的門檻——與「顯示過期」（duoLobby 的 ROOM_FRESHNESS_MS ~90s）刻意脫鉤：
+// 15s touch：搭配 duoLobby 的 ROOM_FRESHNESS_MS=45s，健康 host 的 heartbeat 最舊只 ~15s，
+// 既不會被誤隱藏，又讓死房的麵包屑更快過了 45s 顯示門檻而隱藏。
+const WS_LOBBY_TOUCH_MS = 15_000;
+// 不可逆刪除的門檻——與「顯示過期」（ROOM_FRESHNESS_MS 45s）刻意脫鉤：
 // 顯示過期只是大廳隱藏（host 一旦恢復 touch 就會重新出現），真正 delete 留給確定
 // 死亡的殘檔（>3 分鐘無 touch），避免短暫網路抖動造成房間被誤刪後再也回不來。
 const WS_LOBBY_DEAD_MS = 180_000;

@@ -36,7 +36,9 @@ class Client {
       this.msgs.push(m);
       this.waiters = this.waiters.filter((w) => (w.pred(m) ? (w.resolve(m), false) : true));
     });
-    this.ws.on('close', () => { this.closed = true; });
+    this.ws.on('close', () => {
+      this.closed = true;
+    });
   }
   open() {
     return new Promise((res, rej) => {
@@ -44,7 +46,9 @@ class Client {
       this.ws.on('error', rej);
     });
   }
-  send(obj) { this.ws.send(JSON.stringify(obj)); }
+  send(obj) {
+    this.ws.send(JSON.stringify(obj));
+  }
   waitFor(pred, ms = 6000) {
     const hit = this.msgs.find(pred);
     if (hit) return Promise.resolve(hit);
@@ -66,9 +70,15 @@ class Client {
       }, ms);
     });
   }
-  last(type) { return [...this.msgs].reverse().find((m) => m.type === type); }
-  countType(type) { return this.msgs.filter((m) => m.type === type).length; }
-  close() { this.ws.close(); }
+  last(type) {
+    return [...this.msgs].reverse().find((m) => m.type === type);
+  }
+  countType(type) {
+    return this.msgs.filter((m) => m.type === type).length;
+  }
+  close() {
+    this.ws.close();
+  }
 }
 
 const stateIs = (status) => (m) => m.type === 'roomState' && m.state.status === status;
@@ -102,8 +112,13 @@ async function scenarioA() {
   // 等 host 收到 guest=null 的 roomState
   let released = null;
   try {
-    released = await host.waitFor((m) => m.type === 'roomState' && m.state.guest === null && m.state.status === 'waiting', 4000);
-  } catch (e) { /* timeout */ }
+    released = await host.waitFor(
+      (m) => m.type === 'roomState' && m.state.guest === null && m.state.status === 'waiting',
+      4000,
+    );
+  } catch (e) {
+    /* timeout */
+  }
   check('guest 斷線後 host 看到座位釋出 (guest=null)', !!released, '4 秒內未收到釋出廣播');
   check('狀態退回 waiting', released?.state.status === 'waiting');
   host.close();
@@ -134,7 +149,8 @@ async function scenarioB() {
   check('5 秒內無 started 事件 (alarm 已取消)', started === null, '殘留 alarm 把房間硬推進 playing');
   const finalState = host.last('roomState').state.status;
   check('最終 status 仍為 waiting', finalState === 'waiting', `實際=${finalState}`);
-  host.close(); guest.close();
+  host.close();
+  guest.close();
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -152,7 +168,9 @@ async function scenarioC() {
   const err = await third.waitFor((m) => m.type === 'error', 4000);
   check('第三人收到 error', err?.type === 'error');
   check('error code = room_full', err?.code === 'room_full', `實際=${err?.code}`);
-  host.close(); guest.close(); third.close();
+  host.close();
+  guest.close();
+  third.close();
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -175,7 +193,8 @@ async function scenarioD() {
   check('房間未被推進 countdown', noCd === null);
   const st = host.last('roomState').state.status;
   check('房間仍 waiting', st === 'waiting', `實際=${st}`);
-  host.close(); rogue.close();
+  host.close();
+  rogue.close();
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -204,7 +223,8 @@ async function scenarioF() {
   host.send({ type: 'leave' });
   const finGuest = await guest.waitFor(stateIs('finished'), 4000).catch(() => null);
   check('guest 收到 finished 廣播', finGuest?.state.status === 'finished', 'guest 未收到房間結束通知');
-  host.close(); guest.close();
+  host.close();
+  guest.close();
 }
 
 // 場景 f2：waiting 階段（無 guest）host leave → finished
@@ -245,7 +265,8 @@ async function scenarioG() {
   check('guest ready 被清空', back.state.guest?.ready === false, `實際=${back.state.guest?.ready}`);
   const started = await host.expectNone((m) => m.type === 'started', 5000);
   check('5 秒內無 started (alarm 已取消)', started === null);
-  host.close(); guest.close();
+  host.close();
+  guest.close();
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -287,16 +308,24 @@ async function concernReadySpam() {
 
   // 在倒數中狂送 ready=true
   await sleep(800);
-  for (let i = 0; i < 5; i++) { host.send({ type: 'ready', ready: true }); guest.send({ type: 'ready', ready: true }); }
+  for (let i = 0; i < 5; i++) {
+    host.send({ type: 'ready', ready: true });
+    guest.send({ type: 'ready', ready: true });
+  }
   await sleep(500);
   const latest = host.last('roomState');
-  check('startAt 未因重複 ready 漂移', latest.state.startAt === firstStartAt, `first=${firstStartAt} latest=${latest.state.startAt}`);
+  check(
+    'startAt 未因重複 ready 漂移',
+    latest.state.startAt === firstStartAt,
+    `first=${firstStartAt} latest=${latest.state.startAt}`,
+  );
 
   // 確認最終確實在原定 startAt 附近開賽
   const started = await host.waitFor((m) => m.type === 'started', 6000);
   const drift = Math.abs(started.startAt - firstStartAt);
   check('實際開賽時間貼近原定 startAt (±500ms)', drift < 500, `drift=${drift}ms`);
-  host.close(); guest.close();
+  host.close();
+  guest.close();
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -309,15 +338,20 @@ async function concernYouField() {
   await guest.waitFor((m) => m.type === 'roomState' && m.state.guest?.id === 'g1');
   await host.waitFor((m) => m.type === 'roomState' && m.state.guest?.id === 'g1');
 
-  // 觸發一次廣播讓雙方都拿到最新 roomState
-  host.send({ type: 'ready', ready: true });
-  await sleep(400);
-  host.send({ type: 'ready', ready: false });
-  await sleep(400);
-
-  check('host 端 you=host', host.last('roomState').you === 'host', `實際=${host.last('roomState').you}`);
-  check('guest 端 you=guest', guest.last('roomState').you === 'guest', `實際=${guest.last('roomState').you}`);
-  host.close(); guest.close();
+  // you 只隨 create/join/hello 的 direct roomState 送（廣播一律 you=null，單次序列化）。
+  // 故驗證「曾收到 you===role 的 direct roomState」，而非最後一筆廣播。
+  check(
+    'host 端曾收到 you=host',
+    host.msgs.some((m) => m.type === 'roomState' && m.you === 'host'),
+    `last=${host.last('roomState')?.you}`,
+  );
+  check(
+    'guest 端曾收到 you=guest',
+    guest.msgs.some((m) => m.type === 'roomState' && m.you === 'guest'),
+    `last=${guest.last('roomState')?.you}`,
+  );
+  host.close();
+  guest.close();
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -344,9 +378,12 @@ async function concernReconnect() {
   // 關鍵：第一條 guest 連線此時若斷線會發生什麼？
   guest.close();
   // releaseGuest 會把座位清掉 → 但 guest2 自以為應該還在房裡（其實它沒有 role）
-  const afterClose = await host.waitFor((m) => m.type === 'roomState' && m.state.guest === null, 4000).catch(() => null);
+  const afterClose = await host
+    .waitFor((m) => m.type === 'roomState' && m.state.guest === null, 4000)
+    .catch(() => null);
   check('原 guest 斷線後座位釋出', !!afterClose, '座位未釋出');
-  host.close(); guest2.close();
+  host.close();
+  guest2.close();
 }
 
 async function main() {
@@ -372,4 +409,7 @@ async function main() {
   process.exit(failed ? 1 : 0);
 }
 
-main().catch((e) => { console.error('測試錯誤:', e.message, e.stack); process.exit(1); });
+main().catch((e) => {
+  console.error('測試錯誤:', e.message, e.stack);
+  process.exit(1);
+});

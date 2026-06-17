@@ -36,6 +36,7 @@
   --toast-bg: rgba(45, 52, 54, 0.92);
   --toast-success: rgba(61, 153, 112, 0.92);
   --toast-error: rgba(214, 48, 49, 0.92);
+  --duo-conn-warn: #e0a020;
   --duo-accent: var(--accent-strong);
   --duo-ready: var(--accent-strong);
   --duo-surface: color-mix(in srgb, var(--accent-strong) 4%, var(--surface-1));
@@ -131,6 +132,7 @@
   --toast-bg: rgba(30, 34, 40, 0.94);
   --toast-success: rgba(94, 189, 138, 0.92);
   --toast-error: rgba(255, 138, 128, 0.92);
+  --duo-conn-warn: #f5c451;
   --duo-accent: var(--accent-strong);
   --duo-ready: var(--accent-strong);
   --duo-surface: color-mix(in srgb, var(--accent-strong) 6%, var(--surface-1));
@@ -6754,6 +6756,9 @@ header h1 {
 }
 .duo-progress-fill.opp {
   background: var(--duo-accent);
+  /* 對手進度約每秒更新一次（且僅在格數變化時），用 ~1s linear 讓進度連續滑動，
+     而非 0.5s ease-out 的「動一下、停一下」。本地 self 仍維持基底的即時感。 */
+  transition: width 1s linear;
 }
 .duo-progress-fill.self {
   background: var(--success-color);
@@ -6776,6 +6781,23 @@ header h1 {
   font-variant-numeric: tabular-nums;
   color: var(--text-sub);
   font-size: 0.68rem;
+}
+
+/* 對手連線狀態燈：綠=連線、橙脈衝=不穩、紅=確認離線 */
+.duo-conn-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--success-color);
+  transition: background 0.3s ease;
+}
+.duo-conn-dot.uncertain {
+  background: var(--duo-conn-warn);
+  animation: trailingPulse 1.2s ease-in-out infinite;
+}
+.duo-conn-dot.offline {
+  background: var(--error-color);
 }
 
 /* Duo result overlay */

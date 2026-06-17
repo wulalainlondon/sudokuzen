@@ -172,6 +172,7 @@ export class GameRoom extends Server<Env> {
     };
     this.hostLastSeenAt = now;
     conn.setState({ role: 'host', playerId: msg.player.id, ownerUid: uid });
+    this.sendStateTo(conn); // direct：帶 you 讓 client 認領 host 角色
     await this.commit();
   }
 
@@ -186,7 +187,13 @@ export class GameRoom extends Server<Env> {
     this.room.guest = makeSlot(msg.player);
     this.room.guestOwnerUid = uid;
     this.guestLastSeenAt = Date.now();
+    // guest 加入 → 取消 host 斷線時設的關房計時，避免房在 guest 加入後被 alarm 關掉。
+    if (this.room.closeRoomAt != null) {
+      this.room.closeRoomAt = null;
+      await this.rescheduleAlarm();
+    }
     conn.setState({ role: 'guest', playerId: msg.player.id, ownerUid: uid });
+    this.sendStateTo(conn); // direct：帶 you 讓 client 認領 guest 角色
     await this.commit();
   }
 
@@ -209,6 +216,7 @@ export class GameRoom extends Server<Env> {
       this.room.forfeitGuestAt = null;
     }
     await this.rescheduleAlarm();
+    this.sendStateTo(conn); // direct：帶 you 讓重連的 client 確認座位認領成功
     await this.commit();
   }
 
@@ -577,8 +585,11 @@ export class GameRoom extends Server<Env> {
     this.broadcastState();
   }
 
+  // 廣播 roomState：單次序列化、不帶 per-conn you（client 自記 gs.duoRole）。
+  // 角色由 create/join/hello 的 direct sendStateTo 帶 you 給該連線即可，省下逐連線重複序列化。
   private broadcastState(): void {
-    for (const conn of this.getConnections<ConnState>()) this.sendStateTo(conn);
+    if (!this.room) return;
+    this.broadcast(JSON.stringify({ type: 'roomState', you: null, state: toPublic(this.room) } satisfies ServerMsg));
   }
 
   private sendStateTo(conn: Connection<ConnState>): void {

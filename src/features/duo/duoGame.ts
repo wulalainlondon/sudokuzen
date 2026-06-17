@@ -209,12 +209,15 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
           _duoOpponentOfflineNotified = true;
           showFeedback(t('duoRuntime.opponentOffline'), 'error');
         }
+        // 狀態燈：一偵測到不穩立刻轉橙（玩家不再乾等猜測），確認離線才轉紅。
+        setOppConnIndicator(_duoOpponentOfflineNotified ? 'offline' : 'uncertain');
       } else {
         _oppStaleSince = 0;
         if (!isOppStale && _duoOpponentOfflineNotified) {
           // Opponent's heartbeat recovered — retract so auto-forfeit doesn't misfire.
           _duoOpponentOfflineNotified = false;
         }
+        if (!isOppStale) setOppConnIndicator('online');
       }
     }
 
@@ -570,6 +573,7 @@ export async function launchDuoGame(): Promise<void> {
   // Show duo progress bar
   const progressContainer = document.getElementById('duo-progress-container');
   if (progressContainer) progressContainer.style.display = 'flex';
+  setOppConnIndicator('online'); // 每局開始狀態燈歸零（綠）
   const timerEl = document.getElementById('timer');
   if (timerEl) timerEl.style.display = 'none';
   const quitBtn = document.getElementById('quit-btn');
@@ -650,6 +654,14 @@ function updateDuoProgressUI(oppAlias: string, oppProgress: number): void {
       selfFill.classList.remove('trailing');
     }
   }
+}
+
+// 對手連線狀態燈：online(綠)/uncertain(橙脈衝)/offline(紅)
+function setOppConnIndicator(state: 'online' | 'uncertain' | 'offline'): void {
+  const dot = document.getElementById('duo-progress-opp-conn');
+  if (!dot) return;
+  dot.classList.toggle('uncertain', state === 'uncertain');
+  dot.classList.toggle('offline', state === 'offline');
 }
 
 // ── Opponent finished ────────────────────────────────────────────────

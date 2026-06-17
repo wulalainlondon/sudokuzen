@@ -170,7 +170,11 @@ function pump(raw: string): void {
   }
 
   if (msg.type === 'roomState') {
-    if (msg.you) gs.duoRole = msg.you; // server-authoritative
+    // 刻意只在 you 為 truthy 時更新角色：廣播一律送 you=null（單次序列化），
+    // 角色只由 create/join/hello 的 direct sendStateTo（帶 you）設定。
+    // ⚠️ 勿改成 `gs.duoRole = msg.you ?? gs.duoRole` 之類——對局中的 you=null 廣播
+    // 會把角色清空，導致下面 `if (gs.duoRole)` 為假、整盤停止更新。
+    if (msg.you) gs.duoRole = msg.you; // server-authoritative（見上方註解）
     const d = mapToDuoRoomData(msg.state);
     gs.duoRoomData = d;
     if (gs.duoRole) handleDuoSnapshot(d);
