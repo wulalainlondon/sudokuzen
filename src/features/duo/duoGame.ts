@@ -513,6 +513,17 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
 
 export async function launchDuoGame(): Promise<void> {
   if (!gs.duoRoomData) return;
+  // 兜底移除倒數 overlay：WS 模式下 DO 的 playing snapshot 可能搶在本地 GO 序列前
+  // launch（網路時序競態）。此時 GO 序列的 setTimeout 會因 gs.duoRoundLaunched 提早 return，
+  // 漏掉移除全螢幕 overlay(position:fixed/inset:0/z-index:500)，蓋住棋盤導致格子不可點。
+  // 不論哪條路徑 launch，這裡都確保 overlay 被清掉、倒數 RAF 停止。
+  _countdownRafCancelled = true;
+  if (_countdownRafHandle !== null) {
+    cancelAnimationFrame(_countdownRafHandle);
+    _countdownRafHandle = null;
+  }
+  const leftoverCountdownOverlay = document.getElementById('duo-countdown-overlay');
+  if (leftoverCountdownOverlay) leftoverCountdownOverlay.remove();
   gs.isDuoMode = true;
   gs.continuousFillDigit = null;
   gs.duoProgressThrottle = 0;
