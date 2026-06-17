@@ -18,6 +18,10 @@ type ConnState = { role: Role; playerId: string; ownerUid: string };
 
 const COUNTDOWN_MS = 4000; // 3-2-1-GO
 const FORFEIT_TIME = 9999;
+// 應用層心跳：playing 階段超過 PRESENCE_STALE_MS 沒收到任何訊息 → 判定靜默斷線。
+// 偵測由 alarm 每 PRESENCE_CHECK_MS 輪詢一次。client 端每 10s 送一次 ping。
+const PRESENCE_STALE_MS = 25_000;
+const PRESENCE_CHECK_MS = 10_000;
 
 // 內部狀態：含對外不廣播的 alarm deadline。
 interface RoomState extends PublicRoomState {
@@ -26,6 +30,8 @@ interface RoomState extends PublicRoomState {
   forfeitHostAt: number | null;
   forfeitGuestAt: number | null;
   closeRoomAt: number | null;
+  // playing 期間的 presence 輪詢截止（每次檢查後續期；null = 未輪詢）
+  presenceCheckAt: number | null;
   // 權威身分（驗證後綁定，不對外廣播）—— 重連認領座位時須相符
   hostOwnerUid: string | null;
   guestOwnerUid: string | null;
@@ -39,6 +45,10 @@ interface RoomState extends PublicRoomState {
  */
 export class GameRoom extends Server<Env> {
   private room: RoomState | null = null;
+  // 每座位最後收到訊息的時間（epoch ms，記憶體內；不持久化以免每次 ping 都寫 storage）。
+  // 冷啟動時以 onStart 的當下時間重置，給雙方一個完整心跳週期再判定，避免誤殺。
+  private hostLastSeenAt = 0;
+  private guestLastSeenAt = 0;
 
   private graceMs(key: 'FORFEIT_GRACE_MS' | 'WAITING_CLOSE_GRACE_MS', def: number): number {
     const v = Number(this.env[key]);
@@ -47,6 +57,15 @@ export class GameRoom extends Server<Env> {
 
   async onStart(): Promise<void> {
     this.room = (await this.ctx.storage.get<RoomState>('room')) ?? null;
+    const now = Date.now();
+    if (this.room?.host) this.hostLastSeenAt = now;
+    if (this.room?.guest) this.guestLastSeenAt = now;
+    // 對局進行中卻沒有 presence 排程（部署前就在 playing 的舊房，或未持久化的 reload）
+    // → 補設一次，確保靜默斷線偵測在 reload 後仍會運作。lastSeen 上面剛重置為 now，不會誤殺。
+    if (this.room?.status === 'playing' && this.room.presenceCheckAt == null) {
+      this.room.presenceCheckAt = now + PRESENCE_CHECK_MS;
+      await this.rescheduleAlarm();
+    }
   }
 
   onConnect(connection: Connection<ConnState>): void {
@@ -62,7 +81,13 @@ export class GameRoom extends Server<Env> {
       return this.err(connection, 'bad_json', 'Invalid message');
     }
 
+    // 任何已綁定座位的訊息都刷新 lastSeen；若該座位先前被 presence 輪詢誤判離線
+    // （連線其實沒死、只是短暫卡頓），收到訊息即恢復 online 並取消沒收。
+    await this.touchPresence(connection);
+
     switch (msg.type) {
+      case 'ping':
+        return; // 心跳：lastSeen 已於 touchPresence 更新，無其他副作用
       case 'create':
         return this.handleCreate(connection, msg);
       case 'join':
@@ -141,9 +166,11 @@ export class GameRoom extends Server<Env> {
       forfeitHostAt: null,
       forfeitGuestAt: null,
       closeRoomAt: null,
+      presenceCheckAt: null,
       hostOwnerUid: uid,
       guestOwnerUid: null,
     };
+    this.hostLastSeenAt = now;
     conn.setState({ role: 'host', playerId: msg.player.id, ownerUid: uid });
     await this.commit();
   }
@@ -158,6 +185,7 @@ export class GameRoom extends Server<Env> {
 
     this.room.guest = makeSlot(msg.player);
     this.room.guestOwnerUid = uid;
+    this.guestLastSeenAt = Date.now();
     conn.setState({ role: 'guest', playerId: msg.player.id, ownerUid: uid });
     await this.commit();
   }
@@ -173,9 +201,11 @@ export class GameRoom extends Server<Env> {
     slot.online = true;
     conn.setState({ role: msg.role, playerId: msg.player.id, ownerUid: uid });
     if (msg.role === 'host') {
+      this.hostLastSeenAt = Date.now();
       this.room.forfeitHostAt = null;
       this.room.closeRoomAt = null;
     } else {
+      this.guestLastSeenAt = Date.now();
       this.room.forfeitGuestAt = null;
     }
     await this.rescheduleAlarm();
@@ -337,9 +367,47 @@ export class GameRoom extends Server<Env> {
     await this.commit();
   }
 
+  // ── presence：心跳 / 靜默斷線偵測 ───────────────────────────
+
+  // 刷新座位 lastSeen；若該座位先前被誤判離線則恢復 online 並取消沒收計時。
+  private async touchPresence(conn: Connection<ConnState>): Promise<void> {
+    const role = conn.state?.role;
+    if (!this.room || !role) return;
+    const now = Date.now();
+    if (role === 'host') this.hostLastSeenAt = now;
+    else this.guestLastSeenAt = now;
+
+    const slot = role === 'host' ? this.room.host : this.room.guest;
+    // 僅在 playing 中、座位存在、先前被判離線、且尚未完成時才恢復。
+    if (!slot || slot.online || slot.finishTime != null || this.room.status !== 'playing') return;
+    slot.online = true;
+    if (role === 'host') this.room.forfeitHostAt = null;
+    else this.room.forfeitGuestAt = null;
+    await this.rescheduleAlarm();
+    await this.commit(); // 廣播恢復，讓對手看到對方回來了
+  }
+
+  // playing 中檢查單一座位是否靜默斷線（超過 PRESENCE_STALE_MS 沒訊息）。
+  // 判定離線則啟動沒收寬限（與 onClose 相同機制）。回傳是否新偵測到離線。
+  private checkSlotStale(role: Role, now: number): boolean {
+    if (!this.room || this.room.status !== 'playing') return false;
+    const slot = role === 'host' ? this.room.host : this.room.guest;
+    if (!slot || !slot.online || slot.finishTime != null) return false;
+    const lastSeen = role === 'host' ? this.hostLastSeenAt : this.guestLastSeenAt;
+    if (lastSeen <= 0 || now - lastSeen <= PRESENCE_STALE_MS) return false;
+    slot.online = false;
+    const grace = this.graceMs('FORFEIT_GRACE_MS', 30_000);
+    if (role === 'host') {
+      if (this.room.forfeitHostAt == null) this.room.forfeitHostAt = now + grace;
+    } else {
+      if (this.room.forfeitGuestAt == null) this.room.forfeitGuestAt = now + grace;
+    }
+    return true;
+  }
+
   // ── presence：連線中斷 ─────────────────────────────────────
 
-  onClose(connection: Connection<ConnState>): void {
+  async onClose(connection: Connection<ConnState>): Promise<void> {
     const role = connection.state?.role;
     if (!this.room || !role) return;
     const slot = role === 'host' ? this.room.host : this.room.guest;
@@ -356,7 +424,7 @@ export class GameRoom extends Server<Env> {
       }
     } else if (this.room.status === 'waiting' || this.room.status === 'countdown') {
       if (role === 'guest') {
-        void this.releaseGuest();
+        await this.releaseGuest();
         return;
       }
       // host 斷線：若在倒數中，先取消倒數，否則殘留的 countdownEndAt 會在稍後
@@ -370,7 +438,7 @@ export class GameRoom extends Server<Env> {
       // host 在等待期間斷線 → 寬限期後關房（取代 Watchdog 清卡死房）
       this.room.closeRoomAt = now + this.graceMs('WAITING_CLOSE_GRACE_MS', 30_000);
     }
-    void this.afterPresenceChange();
+    await this.afterPresenceChange();
   }
 
   private async afterPresenceChange(): Promise<void> {
@@ -420,6 +488,7 @@ export class GameRoom extends Server<Env> {
       this.room.forfeitHostAt,
       this.room.forfeitGuestAt,
       this.room.closeRoomAt,
+      this.room.presenceCheckAt,
     ].filter((x): x is number => x != null);
     if (deadlines.length === 0) {
       await this.ctx.storage.deleteAlarm();
@@ -433,21 +502,42 @@ export class GameRoom extends Server<Env> {
     if (!this.room) return;
     const now = Date.now();
     let started = false;
+    let changed = false; // 有需要廣播的狀態變更
 
     if (this.room.countdownEndAt != null && now >= this.room.countdownEndAt && this.room.status === 'countdown') {
       this.room.status = 'playing';
       this.room.startAt = now;
       this.room.countdownEndAt = null;
+      this.room.presenceCheckAt = now + PRESENCE_CHECK_MS; // 開賽後開始 presence 輪詢
       started = true;
+      changed = true;
     } else if (this.room.countdownEndAt != null && now >= this.room.countdownEndAt) {
       this.room.countdownEndAt = null; // 狀態已離開 countdown，清掉殘留 deadline
+      changed = true;
     }
+
+    // presence 輪詢：playing 中偵測靜默斷線；非 playing 則停止輪詢
+    if (this.room.presenceCheckAt != null && now >= this.room.presenceCheckAt) {
+      if (this.room.status === 'playing') {
+        const hostStale = this.checkSlotStale('host', now);
+        const guestStale = this.checkSlotStale('guest', now);
+        // 健康輪詢只在記憶體續期；presenceCheckAt 不需持久化（reload 由 onStart 補設）。
+        // 故無狀態變更時不寫 storage 也不廣播，僅靠下面 rescheduleAlarm 續期 alarm。
+        this.room.presenceCheckAt = now + PRESENCE_CHECK_MS;
+        if (hostStale || guestStale) changed = true;
+      } else {
+        this.room.presenceCheckAt = null;
+        changed = true;
+      }
+    }
+
     if (this.room.forfeitHostAt != null && now >= this.room.forfeitHostAt) {
       this.room.forfeitHostAt = null;
       if (this.room.host && this.room.host.finishTime == null) {
         this.room.host.finishTime = FORFEIT_TIME;
         this.room.host.stars = 0;
       }
+      changed = true;
     }
     if (this.room.forfeitGuestAt != null && now >= this.room.forfeitGuestAt) {
       this.room.forfeitGuestAt = null;
@@ -455,28 +545,35 @@ export class GameRoom extends Server<Env> {
         this.room.guest.finishTime = FORFEIT_TIME;
         this.room.guest.stars = 0;
       }
+      changed = true;
     }
     if (this.room.closeRoomAt != null && now >= this.room.closeRoomAt) {
       this.room.closeRoomAt = null;
       if (this.room.status === 'waiting' || this.room.status === 'countdown') {
         this.room.status = 'finished';
       }
+      changed = true;
     }
 
     await this.rescheduleAlarm();
     if (started) {
       this.broadcast(JSON.stringify({ type: 'started', startAt: this.room.startAt! } satisfies ServerMsg));
     }
-    await this.commit();
+    if (changed) await this.commit();
+    // 健康輪詢（無 changed）：alarm 已由 rescheduleAlarm 續期，不寫 storage、不廣播。
   }
 
   // ── helpers ────────────────────────────────────────────────
 
+  // 寫入 storage（不廣播）。
+  private async persist(): Promise<void> {
+    if (!this.room) return;
+    this.room.updatedAt = Date.now();
+    await this.ctx.storage.put('room', this.room);
+  }
+
   private async commit(): Promise<void> {
-    if (this.room) {
-      this.room.updatedAt = Date.now();
-      await this.ctx.storage.put('room', this.room);
-    }
+    await this.persist();
     this.broadcastState();
   }
 

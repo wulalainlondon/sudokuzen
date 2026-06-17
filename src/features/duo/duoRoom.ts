@@ -257,6 +257,9 @@ export function stopDuoRoomHeartbeat(): void {
 // ── Cleanup stale rooms ──────────────────────────────────────────────
 
 export async function cleanupStaleDuoRooms(force = false): Promise<void> {
+  // WS 模式不再使用 duo_rooms collection（Phase 6-5 已移除其 rules），
+  // 跳過避免每次 lobby poll 打到 permission-denied 的浪費讀取。
+  if (isDuoWsEnabled()) return;
   if (!gs.firebaseReady || !gs.db) return;
   const db = gs.db;
   const now = Date.now();

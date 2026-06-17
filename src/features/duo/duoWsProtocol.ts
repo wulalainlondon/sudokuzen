@@ -48,7 +48,8 @@ export type ClientMsg =
   | { type: 'cc'; update: Partial<CcFields> }
   | { type: 'abort' }
   | { type: 'leave' }
-  | { type: 'closeResult' };
+  | { type: 'closeResult' }
+  | { type: 'ping' }; // 應用層心跳：更新座位 lastSeen，供 server alarm 偵測靜默斷線
 
 export type RoomStatus = 'waiting' | 'countdown' | 'playing' | 'finished';
 

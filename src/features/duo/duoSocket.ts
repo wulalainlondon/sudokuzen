@@ -15,15 +15,70 @@ import { getEquippedTitleDisplay } from '../titles';
 import { loadDuoProfile } from './duoProfile';
 import { handleDuoSnapshot } from './duoGame';
 import { getDuoWsHost } from './duoTransport';
+import { showFeedback } from '../../ui/feedback';
+import { t } from '../../i18n/t';
 import type { ClientMsg, ServerMsg, PublicRoomState, PlayerInfo, MoveRecord, CcFields } from './duoWsProtocol';
 
 const PARTY = 'game-room';
 const WS_OPEN = 1;
+const MAX_RECLAIM_ATTEMPTS = 4;
+const OUTBOX_MAX = 100;
+// 應用層心跳：每 10s 送一次 ping，讓 server 能偵測靜默斷線（沒電/隧道）。
+const PING_INTERVAL_MS = 10_000;
 
 let _socket: PartySocket | null = null;
 let _roomId: string | null = null;
 // 重連認領：create/join 成功後設定，partysocket 自動重連時用 hello 接管原座位
 let _reconnectMsg: ClientMsg | null = null;
+// 重連期間未送出的訊息，認領成功後依序補送（避免本地落子遺失）
+let _outbox: ClientMsg[] = [];
+// 連續認領逾時次數，超過上限視為連線失敗
+let _reclaimAttempts = 0;
+// 「重連中」掛太久（純斷網不回）的牆鐘上限計時器；超過則升級為 failed，避免無限轉圈
+let _reconnFailTimer: ReturnType<typeof setTimeout> | null = null;
+// 略長於 server 30s 沒收寬限期：超過此時間仍未連回，視為連線失敗
+const RECONNECT_FAIL_MS = 45_000;
+
+function clearReconnFailTimer(): void {
+  if (_reconnFailTimer !== null) {
+    clearTimeout(_reconnFailTimer);
+    _reconnFailTimer = null;
+  }
+}
+
+// 心跳：socket OPEN 時每 10s 送一次 ping。ping 不進 outbox（補送過期心跳無意義）。
+let _pingTimer: ReturnType<typeof setInterval> | null = null;
+
+function startPing(): void {
+  if (_pingTimer !== null) return;
+  _pingTimer = setInterval(() => {
+    if (_socket && _socket.readyState === WS_OPEN) {
+      _socket.send(JSON.stringify({ type: 'ping' }));
+    }
+  }, PING_INTERVAL_MS);
+}
+
+function stopPing(): void {
+  if (_pingTimer !== null) {
+    clearInterval(_pingTimer);
+    _pingTimer = null;
+  }
+}
+
+function notifyConn(state: 'connected' | 'reconnecting' | 'failed'): void {
+  if (state === 'reconnecting') {
+    if (_reconnFailTimer === null) {
+      _reconnFailTimer = setTimeout(() => {
+        _reconnFailTimer = null;
+        notifyConn('failed');
+        showFeedback(t('duoRuntime.connectionFailed'), 'error');
+      }, RECONNECT_FAIL_MS);
+    }
+  } else {
+    clearReconnFailTimer();
+  }
+  import('./duoLobby').then((m) => m.setDuoLobbyConnectionState(state)).catch(() => {});
+}
 
 interface Waiter {
   pred: (m: ServerMsg) => boolean;
@@ -164,32 +219,106 @@ function connect(roomId: string): PartySocket {
   // 自動重連後（每次 open）重送 hello 認領座位（帶新 token，舊的可能已過期）。
   // 初次 open 時 _reconnectMsg 尚為 null。
   _socket.addEventListener('open', () => {
-    void resendHello();
+    void onSocketOpen();
   });
+  // 斷線 → 顯示重連中。partysocket 會自動重連。
+  // 只掛 close：partysocket 的 error 必先觸發一次 close（_handleError→_disconnect→_handleClose），
+  // 額外掛 error 會造成重複觸發，故省略。
+  _socket.addEventListener('close', onSocketClose);
+  startPing();
   return _socket;
 }
 
-async function resendHello(): Promise<void> {
-  if (!_reconnectMsg || _reconnectMsg.type !== 'hello') return;
+// 重連後認領座位並等待伺服器 ack：成功才算連上；失敗（座位已被回收）= 終局，
+// 逾時則重試，超過上限視為連線失敗。避免認領沒回應時 client 卡在死局。
+async function onSocketOpen(): Promise<void> {
+  if (!_reconnectMsg || _reconnectMsg.type !== 'hello') {
+    notifyConn('connected');
+    return;
+  }
+  const r = await reclaimSeat();
+  if (r === 'ok') {
+    _reclaimAttempts = 0;
+    notifyConn('connected');
+    flushOutbox();
+    return;
+  }
+  if (r === 'failed') {
+    // 座位已不再屬於你（已被沒收/回收）→ 無法重連
+    notifyConn('failed');
+    showFeedback(t('duoRuntime.connectionFailed'), 'error');
+    return;
+  }
+  // 逾時：再試，超過上限才放棄
+  _reclaimAttempts++;
+  if (_reclaimAttempts >= MAX_RECLAIM_ATTEMPTS) {
+    notifyConn('failed');
+    showFeedback(t('duoRuntime.connectionFailed'), 'error');
+    return;
+  }
+  notifyConn('reconnecting');
+  try {
+    _socket?.reconnect();
+  } catch {
+    /* noop */
+  }
+}
+
+function onSocketClose(): void {
+  // 尚未建立可重連的房（create/join 前）或已主動關閉 → 不顯示重連中
+  if (!_reconnectMsg) return;
+  notifyConn('reconnecting');
+}
+
+async function reclaimSeat(): Promise<'ok' | 'failed' | 'timeout'> {
+  if (!_reconnectMsg || _reconnectMsg.type !== 'hello') return 'ok';
+  const role = _reconnectMsg.role;
   const idToken = (await getFirebaseIdToken()) ?? undefined;
   send({ ..._reconnectMsg, idToken });
+  try {
+    const res = await waitFor(
+      (m) => (m.type === 'roomState' && m.you === role) || (m.type === 'error' && m.code === 'reclaim_failed'),
+      6000,
+    );
+    return res.type === 'error' ? 'failed' : 'ok';
+  } catch {
+    return 'timeout';
+  }
 }
 
 function send(msg: ClientMsg): void {
-  _socket?.send(JSON.stringify(msg));
+  if (_socket && _socket.readyState === WS_OPEN) {
+    _socket.send(JSON.stringify(msg));
+    return;
+  }
+  // 重連期間先暫存，認領成功後依序補送
+  _outbox.push(msg);
+  if (_outbox.length > OUTBOX_MAX) _outbox.shift();
+}
+
+function flushOutbox(): void {
+  if (!_socket || _socket.readyState !== WS_OPEN) return;
+  const pending = _outbox.splice(0);
+  for (const m of pending) _socket.send(JSON.stringify(m));
 }
 
 function closeSocket(): void {
-  if (_socket) {
+  // 先清重連狀態，避免 _socket.close() 同步觸發的 close 事件鑽過 onSocketClose 守衛、誤閃「重連中」
+  _reconnectMsg = null;
+  _outbox = [];
+  _reclaimAttempts = 0;
+  clearReconnFailTimer();
+  stopPing();
+  const sock = _socket;
+  _socket = null;
+  _roomId = null;
+  if (sock) {
     try {
-      _socket.close();
+      sock.close();
     } catch {
       /* noop */
     }
   }
-  _socket = null;
-  _roomId = null;
-  _reconnectMsg = null;
   for (const w of _waiters.splice(0)) {
     clearTimeout(w.timer);
     w.reject(new Error('duoWs: closed'));
