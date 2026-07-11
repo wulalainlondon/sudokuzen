@@ -42,6 +42,7 @@ function isGameActivelyPlaying(): boolean {
 
 export function enforceAppVersion(appVersion: string): Promise<boolean> {
   if (!import.meta.env.PROD) return Promise.resolve(false);
+  if (isNativeApp()) return Promise.resolve(false);
   const stored = localStorage.getItem(SK.APP_VERSION);
   if (stored === appVersion) return Promise.resolve(false);
 
