@@ -1,4 +1,5 @@
 // Duo game logic — countdown, progress, result
+import { vibrate } from '../../platform/haptics';
 // Extracted from duo.ts, adapted for tier/mode system.
 
 import { gs, type DuoRoomData, type MoveRecord } from '../../game/state';
@@ -488,7 +489,7 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
         area!.innerHTML = `<div class="duo-countdown-display">${remaining}</div>`;
         lastShown = remaining;
         playCountdownBeep();
-        if (navigator.vibrate) navigator.vibrate(50);
+        vibrate(50);
       }
       _countdownRafHandle = requestAnimationFrame(updateCountdownUI);
     } else {
@@ -513,7 +514,7 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
       overlay.innerHTML = `<div class="duo-countdown-display go">GO!</div><div class="duo-countdown-flash"></div>`;
     area!.innerHTML = `<div class="duo-countdown-display go">GO!</div>`;
     playCountdownBeep(true);
-    if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 100]);
+    vibrate([50, 30, 50, 30, 100]);
     setTimeout(() => {
       const ovl = document.getElementById('duo-countdown-overlay');
       if (ovl) ovl.remove();
@@ -733,7 +734,7 @@ function showDuoOpponentFinished(alias: string, timeSec: number, stars: number |
   gs.duoOpponentNotified = true;
   const starsStr = stars ? ' ' + '\u2605'.repeat(stars) : '';
   showFeedback(t('duoRuntime.opponentFinished', { alias, time: formatSeconds(timeSec), stars: starsStr }), 'error');
-  if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 50]);
+  vibrate([50, 30, 50, 30, 50]);
   playOpponentFinishedCue(); // P1b：對手完成的標誌性音效（過去只有震動）
 
   const existing = document.getElementById('duo-forfeit-btn');
@@ -948,12 +949,12 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   if (forfeitBtn) forfeitBtn.remove();
 
   if (iWon) {
-    if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
+    vibrate([25, 45, 25, 45, 25, 70, 50]);
   } else if (isDraw) {
-    if (navigator.vibrate) navigator.vibrate([25, 45, 25, 45, 25]);
+    vibrate([25, 45, 25, 45, 25]);
   } else {
     // P2a：落敗也給回饋（低沉音 + 輕震動），不再被靜默冷處理
-    if (navigator.vibrate) navigator.vibrate([80, 50, 140]);
+    vibrate([80, 50, 140]);
     playDefeatCue();
   }
 

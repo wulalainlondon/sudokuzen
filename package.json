@@ -46,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.4.1",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.58.2",
@@ -69,7 +70,9 @@
   },
   "dependencies": {
     "@capacitor/core": "^8.4.1",
+    "@capacitor/haptics": "^8.0.2",
     "@capacitor/ios": "^8.4.1",
+    "@capacitor/splash-screen": "^8.0.1",
     "firebase": "^12.11.0",
     "framer-motion": "^12.38.0",
     "gsap": "^3.14.2",

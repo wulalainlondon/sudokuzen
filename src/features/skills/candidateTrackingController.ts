@@ -1,4 +1,5 @@
 // Candidate Tracking Mode (CTM)
+import { vibrate } from '../../platform/haptics';
 // Activated by long-pressing a numpad digit (300ms) in Wild mode.
 // Lets players manually select candidate cells and build link chains;
 // fires evaluateAllSkills() on each change to detect valid patterns.
@@ -252,7 +253,7 @@ export function enterCandidateTracking(digit: number): void {
     ?.querySelectorAll<HTMLElement>('.ctm-intro-pulse')
     .forEach((el) => el.classList.remove('ctm-intro-pulse'));
 
-  if (navigator.vibrate) navigator.vibrate(15);
+  vibrate(15);
   refreshTrackingHighlights();
   showTrackingPanel();
 }
@@ -290,7 +291,7 @@ export function tapCellInTracking(cellIdx: number): void {
     ct.nodes.push({ cellIdx, linkType: isStrong ? 'strong' : 'weak' });
   }
 
-  if (navigator.vibrate) navigator.vibrate(8);
+  vibrate(8);
   refreshTrackingHighlights();
   checkForCompletion();
 }

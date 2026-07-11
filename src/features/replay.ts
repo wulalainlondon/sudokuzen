@@ -1,6 +1,7 @@
 // Replay engine — visual replay board + text replay list
 
 import { gs, type ActionRecord, type ReplayCellState } from '../game/state';
+import { vibrate } from '../platform/haptics';
 import { formatSeconds } from '../game/utils';
 import { getAllLevels } from '../data/dataRegistry';
 import { detectTechnique } from '../solver/techniqueDetector';
@@ -649,9 +650,7 @@ function showReplayScore(): void {
         }
       })
       .catch(() => {});
-    if (navigator.vibrate) {
-      navigator.vibrate(score.grade === 'S' ? [20, 40, 20, 40, 20, 60, 40] : [15, 30, 15]);
-    }
+    vibrate(score.grade === 'S' ? [20, 40, 20, 40, 20, 60, 40] : [15, 30, 15]);
   }, gradeDelay);
 
   // Play tick sound for each row appearance

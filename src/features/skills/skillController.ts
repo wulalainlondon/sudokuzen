@@ -1,4 +1,5 @@
 // Skill mode controller — cell-based selection + numpad↔panel swap.
+import { vibrate } from '../../platform/haptics';
 // Long-press a cell to enter skill mode. System auto-detects patterns.
 
 import { gs } from '../../game/state';
@@ -299,7 +300,7 @@ export function tryQuickCast(cellIdx: number): boolean {
   skill.preview = preview;
 
   // Skip panel — go straight to cast
-  if (navigator.vibrate) navigator.vibrate(10);
+  vibrate(10);
   doQuickCast();
   return true;
 }

@@ -2,6 +2,7 @@
 // Renders differently for normal / practice / wild modes.
 
 import { useCallback, useEffect, useMemo, useRef, type ReactElement } from 'react';
+import { vibrate } from '../../platform/haptics';
 import { useWinStore, type WinMode } from './winStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
@@ -247,11 +248,9 @@ export function WinCelebration(): ReactElement {
 
   useEffect(() => {
     if (visible && !prevVisibleRef.current) {
-      if (navigator.vibrate) {
-        if (mode === 'wild' && leveledUp) navigator.vibrate([25, 45, 25, 45, 25, 45, 25, 70, 50]);
-        else if (mode === 'practice') navigator.vibrate([25, 45, 25]);
-        else navigator.vibrate([25, 45, 25, 45, 25, 70, 50]);
-      }
+      if (mode === 'wild' && leveledUp) vibrate([25, 45, 25, 45, 25, 45, 25, 70, 50]);
+      else if (mode === 'practice') vibrate([25, 45, 25]);
+      else vibrate([25, 45, 25, 45, 25, 70, 50]);
     }
     prevVisibleRef.current = visible;
   }, [visible, mode, leveledUp]);

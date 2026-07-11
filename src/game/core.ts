@@ -1,4 +1,5 @@
 // Core game logic — init, input, pause/resume, UI helpers
+import { vibrate } from '../platform/haptics';
 // Win detection lives in winDetection.ts, persistence in persistence.ts.
 // Skill mode logic lives in features/skills/skillController.ts.
 
@@ -342,7 +343,7 @@ export function handleInput(num: number): void {
       data.notes,
     );
     playNoteToggleSound();
-    if (navigator.vibrate) navigator.vibrate(5);
+    vibrate(5);
   } else {
     if (policy.useSubmissionValidation) {
       // Push to undo stack before changing
@@ -398,7 +399,7 @@ export function handleInput(num: number): void {
         data.notes = [];
         updateCellDisplay(cellEl, data);
         playErrorFeedback();
-        if (navigator.vibrate) navigator.vibrate([35, 20, 25]);
+        vibrate([35, 20, 25]);
         setTimeout(() => {
           data.isError = false;
           removeCellClasses(cellEl, 'error', 'wrong-preview');
@@ -450,7 +451,7 @@ export function handleInput(num: number): void {
       }
 
       playErrorFeedback();
-      if (navigator.vibrate) navigator.vibrate([35, 20, 25]);
+      vibrate([35, 20, 25]);
       recordAction(
         'mistake',
         t('miscRuntime.mistakeLog', { cell: cellLabel(gs.selectedIdx), digit: String(num) }),
@@ -489,7 +490,7 @@ export function handleInput(num: number): void {
     // Auto-clear this digit from peer cells' notes
     eliminateNoteFromPeers(gs.selectedIdx, num);
     playFillSound();
-    if (navigator.vibrate) navigator.vibrate(12);
+    vibrate(12);
 
     if (gs.isGhostMode) {
       recalculatePlayerFilledCount();
@@ -526,7 +527,7 @@ export function undoAction(): void {
   recordAction('undo', t('miscRuntime.undoLog', { cell: cellLabel(action.idx) }), action.idx, action.prevValue);
   saveGameStatus();
   updateNumpadState();
-  if (navigator.vibrate) navigator.vibrate(5);
+  vibrate(5);
 }
 
 export function erase(): void {
@@ -541,7 +542,7 @@ export function erase(): void {
       recordAction('erase', t('miscRuntime.eraseLog', { cell: cellLabel(gs.selectedIdx) }), gs.selectedIdx, 0);
       if (gs.isDuoMode && oldVal !== 0) callRecordDuoMove(gs.selectedIdx!, 0, false);
       playEraseSound();
-      if (navigator.vibrate) navigator.vibrate(5);
+      vibrate(5);
     }
     saveGameStatus();
     updateNumpadState();

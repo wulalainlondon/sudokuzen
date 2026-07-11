@@ -1,4 +1,5 @@
 // Win detection, game over, and win celebrations — extracted from core.ts
+import { vibrate } from '../platform/haptics';
 
 import { gs } from './state';
 import { getModePolicy } from './modePolicy';
@@ -425,5 +426,5 @@ export function celebrateCompletedUnits(idx: number, beforeState: { row: boolean
   if (justBox) parts.push(t('feedback.unitBox'));
   showFeedback(t('feedback.unitComplete', { parts: parts.join(' + ') }), 'success');
   import('./audio').then(({ playUnitCompleteSound }) => playUnitCompleteSound()).catch(() => {});
-  if (navigator.vibrate) navigator.vibrate([8, 20, 8, 20, 8]);
+  vibrate([8, 20, 8, 20, 8]);
 }
