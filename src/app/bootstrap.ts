@@ -24,6 +24,7 @@ import {
   refreshDuoLobbyRoom,
 } from '../features/duo/duoLobby';
 import { getDuoMetrics, resetDuoMetrics } from '../features/duo/duoMetrics';
+import { isNativeApp } from '../platform/nativeApp';
 
 declare global {
   interface Window {
@@ -36,6 +37,8 @@ declare global {
 
 export function bootstrapApp(): void {
   try {
+    if (isNativeApp()) document.documentElement.classList.add('native-app');
+
     runStorageMigrations([createTeachSelectionMigration(), createLegacySaveSanitizationMigration()]);
 
     window.__pwaRuntime = {

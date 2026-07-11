@@ -8922,3 +8922,17 @@ body.library-open {
   from { opacity: 0; }
   to   { opacity: 0.8; }
 }
+
+/* ============ Native app shell (Capacitor) ============ */
+/* Suppress web-feel gestures: text selection & long-press callout.
+   Text inputs keep selection so alias/room-code entry still works. */
+html.native-app {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+html.native-app input,
+html.native-app textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}

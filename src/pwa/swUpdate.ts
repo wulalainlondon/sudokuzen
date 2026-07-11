@@ -1,4 +1,5 @@
 import { SK } from '../storage/keys';
+import { isNativeApp } from '../platform/nativeApp';
 
 const RELOAD_GUARD_KEY = 'sudoku_reload_guard_ts';
 const RELOAD_GUARD_MS = 15000;
@@ -78,6 +79,7 @@ export function enforceAppVersion(appVersion: string): Promise<boolean> {
 
 export function registerServiceWorkerUpdateFlow(): void {
   if (!import.meta.env.PROD) return;
+  if (isNativeApp()) return;
   if (!('serviceWorker' in navigator)) return;
 
   let refreshing = false;

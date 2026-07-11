@@ -96,11 +96,13 @@ import {
   notifyHostBootReady,
   type HostBridgeApi,
 } from '../platform/hostBridge';
+import { isNativeApp } from '../platform/nativeApp';
 
 export function bootLegacyRuntime(appVersion: string): void {
   gs.appVersion = appVersion;
 
-  if (import.meta.env.PROD) {
+  // Native shell ships assets in the binary — version-enforced reload is web-only.
+  if (import.meta.env.PROD && !isNativeApp()) {
     const storedVersion = localStorage.getItem(SK.APP_VERSION);
     if (storedVersion !== appVersion) {
       void window.__pwaRuntime.enforceAppVersion(appVersion);
