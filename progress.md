@@ -131,3 +131,5 @@ TODO / handoff (current):
 - GitHub Pages `2026.07.26-V3` 已發布；live HTML、Service Worker 與首頁版本徽章均讀回 V3。
 - live 真實點擊驗證發現鎖定入口使用 `aria-disabled=true`，Playwright／輔助操作無法啟動鎖定說明；已改為保持按鈕可操作並用 `aria-description` 說明門檻。
 - 新增 journey 回歸測試，確認四個鎖定入口皆可點且仍保留鎖定 class／門檻描述；本機實點後顯示 4 秒紅色「修行 Lv.3 開啟對決」提示，無 console/page error。
+- V4 live 首載壓力測試定位到版本更新清快取期間 `feedbackToast` 尚未初始化，點擊雖進入鎖定判斷但提示被靜默丟棄。
+- `showFeedback()` 現在會按需建立提示元件；新增 early-tap 回歸測試。本機模擬首次 PWA 更新後立即點對決，已目視確認紅色門檻提示正常且無錯誤。

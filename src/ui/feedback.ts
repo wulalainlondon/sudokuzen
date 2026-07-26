@@ -2,17 +2,31 @@
 
 import { gs } from '../game/state';
 
+function ensureFeedbackToast(): HTMLDivElement {
+  const existing = gs.feedbackToast ?? (document.getElementById('feedback-toast') as HTMLDivElement | null);
+  if (existing) {
+    gs.feedbackToast = existing;
+    return existing;
+  }
+
+  const toast = document.createElement('div');
+  toast.id = 'feedback-toast';
+  document.body.appendChild(toast);
+  gs.feedbackToast = toast;
+  return toast;
+}
+
 export function showFeedback(msg: string, tone: 'neutral' | 'success' | 'error' = 'neutral', durationMs = 900): void {
-  if (!gs.feedbackToast) return;
+  const toast = ensureFeedbackToast();
   clearTimeout(gs.feedbackTimer!);
-  gs.feedbackToast.textContent = msg;
-  gs.feedbackToast.classList.remove('success', 'error');
-  if (tone === 'success') gs.feedbackToast.classList.add('success');
-  if (tone === 'error') gs.feedbackToast.classList.add('error');
-  gs.feedbackToast.classList.add('show');
+  toast.textContent = msg;
+  toast.classList.remove('success', 'error');
+  if (tone === 'success') toast.classList.add('success');
+  if (tone === 'error') toast.classList.add('error');
+  toast.classList.add('show');
   gs.feedbackTimer = setTimeout(
     () => {
-      gs.feedbackToast!.classList.remove('show');
+      toast.classList.remove('show');
     },
     Math.max(900, durationMs),
   );
