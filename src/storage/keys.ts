@@ -3,6 +3,7 @@
 
 export const SK = {
   PLAYER_ID: 'sudoku_player_id',
+  LEGACY_PLAYER_ID: 'sudoku_legacy_player_id',
   PLAYER_ALIAS: 'sudoku_player_alias',
   SPEEDRUN: 'sudoku_speedrun',
   THEME: 'sudoku_theme',
@@ -36,6 +37,7 @@ export const SK = {
   ERASE_VISIBLE: 'sudoku_erase_visible',
   DUO_METRICS: 'sudoku_duo_metrics_v1',
   DUO_ACTIVE_ROOM_ID: 'sudoku_duo_active_room_id',
+  DUO_ACTIVE_ROLE: 'sudoku_duo_active_role',
   PRACTICE_PHASE_TEACH_SEEN: 'sudoku_practice_phase_teach_seen_v1',
   LEARNING_LOOP_METRICS: 'sudoku_learning_loop_metrics_v1',
   SFX_ENABLED: 'sudoku_sfx_enabled',

@@ -25,6 +25,7 @@ import {
 } from '../features/duo/duoLobby';
 import { getDuoMetrics, resetDuoMetrics } from '../features/duo/duoMetrics';
 import { isNativeApp } from '../platform/nativeApp';
+import { syncJourneyHome } from '../features/journey';
 
 declare global {
   interface Window {
@@ -58,6 +59,10 @@ export function bootstrapApp(): void {
     });
     void whenFirebaseReady().then((ready) => {
       if (!ready) return;
+      // Auth binding may have just marked this install as a pre-journey PWA
+      // upgrade. Refresh the entry gates immediately so returning players do
+      // not need to reload before their previously available modes reopen.
+      syncJourneyHome();
       // IMPORTANT: hydrate MUST complete before bridge activates.
       // Otherwise the bridge pushes empty localStorage to cloud,
       // overwriting the remote profile.

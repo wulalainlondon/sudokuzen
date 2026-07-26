@@ -16,6 +16,7 @@ import {
   playZenSessionComplete,
 } from '../../game/zenAudio';
 import { t } from '../../i18n/t';
+import { canOpenJourneyMode, getJourneyLockMessage } from '../journey';
 import { usePracticeTreeStore } from '../../react/practice/practiceTreeStore';
 import { emitNavigation } from '../../app/navigation/navigationBus';
 import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
@@ -255,6 +256,10 @@ function setPracticeViewActive(active: boolean): void {
 // ── Open / Close / Render ─────────────────────────────────────────────
 
 export async function openPracticeLobby(): Promise<void> {
+  if (!canOpenJourneyMode('practice')) {
+    showFeedback(getJourneyLockMessage('practice'), 'error');
+    return;
+  }
   if (!_practiceData) {
     _practiceData = await getPracticeLevels();
   }

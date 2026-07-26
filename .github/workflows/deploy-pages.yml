@@ -53,11 +53,16 @@ jobs:
 
       - name: Verify Build Output
         run: |
-          BUNDLE=$(ls dist/assets/index-*.js 2>/dev/null | head -1)
+          ENTRY=$(grep -oE 'src="/sudokuzen/assets/index-[^"]+\.js"' dist/index.html | head -1 | cut -d'"' -f2)
+          BUNDLE="dist/${ENTRY#/sudokuzen/}"
+          if [ -z "$ENTRY" ] || [ ! -f "$BUNDLE" ]; then
+            echo "ERROR: Could not resolve the main JavaScript entry from dist/index.html"
+            exit 1
+          fi
           SIZE=$(wc -c < "$BUNDLE")
           echo "Bundle: $BUNDLE ($SIZE bytes)"
           if [ "$SIZE" -lt 100000 ]; then
-            echo "ERROR: Bundle too small ($SIZE bytes), expected 400KB+"
+            echo "ERROR: Main bundle too small ($SIZE bytes), expected at least 100KB"
             exit 1
           fi
           echo "Bundle size OK"

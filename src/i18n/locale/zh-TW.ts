@@ -53,6 +53,23 @@ export const zhTW = {
     unlockGeneric: '境界尚未達成，暫時無法挑戰。',
   },
 
+  journey: {
+    chapter: {
+      prologue: '序章 · 初心試煉',
+      practice: '第一章 · 證明第一式',
+      world: '第二章 · 下山見世',
+      duo: '第三章 · 與人論道',
+    },
+    practiceLock: '完成初心 {needed} 關後開啟修行（目前 {cleared}/{needed}）',
+    worldLock: '完成 {needed} 個技巧驗證後開啟世界（修行 Lv.{level}/{needed}）',
+    duoLock: '修行 Lv.{needed} 開啟對決（目前 Lv.{level}）',
+    prologueProgress: '初心 {cleared}/{needed} · 下一步：開啟修行',
+    practiceProgress: '修行 Lv.{level}/{needed} · 學習＋3題修行＋實戰',
+    worldProgress: '修行 Lv.{level}/{needed} · 下一步：開啟對決',
+    duoProgress: '三大篇章已開啟 · 繼續驗證更多技巧',
+    duoEntrySub: '即時對決 · 以技會友',
+  },
+
   // ── Practice mode ───────────────────────────────────────────────────
   practice: {
     entryMain: '修行',
@@ -347,6 +364,7 @@ export const zhTW = {
     surrender: '認輸',
     resultTitle: '💑 雙人對決結果',
     playAgain: '再來一局',
+    connecting: '正在連接對戰大廳...',
     connectionLost: '連線中斷，嘗試重新連接...',
     connectionFailed: '連線失敗',
     connectionError: '連線異常，請重試',

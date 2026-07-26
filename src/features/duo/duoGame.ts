@@ -6,6 +6,7 @@ import { gs, type DuoRoomData, type MoveRecord } from '../../game/state';
 import { formatSeconds } from '../../game/utils';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
+import { publicPlayerAlias } from '../../platform/publicAlias';
 import { emitNavigation } from '../../app/navigation/navigationBus';
 import { bumpDuoMetric } from './duoMetrics';
 import {
@@ -68,6 +69,11 @@ setResetHandler(resetDuoState);
 
 export function handleDuoSnapshot(d: DuoRoomData): void {
   if (!d || !gs.duoRole) return;
+  d = {
+    ...d,
+    hostAlias: publicPlayerAlias(d.hostId, d.hostAlias || ''),
+    guestAlias: d.guestId ? publicPlayerAlias(d.guestId, d.guestAlias || '') : null,
+  };
 
   // ── 觀戰模式分發 ──────────────────────────────────────────────────
   const myFinishTime = gs.duoRole === 'host' ? d.hostFinishTime : d.guestFinishTime;

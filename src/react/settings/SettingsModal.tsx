@@ -117,6 +117,7 @@ export function SettingsModal(): ReactElement {
   const { visible, close } = useSettingsStore();
   const [settings, setSettings] = useState<AudioSettings>(() => getAudioSettings());
   const [isDark, setIsDark] = useState(() => getDocumentTheme() === 'dark');
+  const [deleting, setDeleting] = useState(false);
 
   const apply = useCallback(
     (patch: Partial<AudioSettings>) => {
@@ -141,6 +142,18 @@ export function SettingsModal(): ReactElement {
     setDocumentTheme(next);
     localStorage.setItem(SK.THEME, next);
   }, [isDark]);
+
+  const deleteData = useCallback(async () => {
+    if (!window.confirm('確定刪除所有裝置與雲端進度？此動作無法復原。')) return;
+    setDeleting(true);
+    try {
+      const { deletePlayerData } = await import('../../firebase/client');
+      await deletePlayerData();
+    } catch {
+      window.alert('刪除失敗，請確認網路後再試一次。');
+      setDeleting(false);
+    }
+  }, []);
 
   // Sync state when modal opens
   useEffect(() => {
@@ -183,6 +196,45 @@ export function SettingsModal(): ReactElement {
           onToggle={() => apply({ bgmEnabled: !settings.bgmEnabled })}
           onVolume={(v) => apply({ bgmVolume: v })}
         />
+
+        <div
+          style={{
+            paddingTop: 16,
+            display: 'flex',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            gap: 16,
+            fontSize: '0.88rem',
+          }}
+        >
+          <a href="./privacy.html" target="_blank" rel="noreferrer">
+            隱私權政策
+          </a>
+          <a href="./support.html" target="_blank" rel="noreferrer">
+            支援
+          </a>
+          <a href="./credits.html" target="_blank" rel="noreferrer">
+            內容授權
+          </a>
+        </div>
+
+        <button
+          type="button"
+          disabled={deleting}
+          onClick={() => void deleteData()}
+          style={{
+            width: '100%',
+            marginTop: 16,
+            padding: 10,
+            borderRadius: 10,
+            border: '1px solid #b42318',
+            color: '#b42318',
+            background: 'transparent',
+            cursor: deleting ? 'wait' : 'pointer',
+          }}
+        >
+          {deleting ? '正在刪除…' : '刪除所有玩家資料'}
+        </button>
 
         <button className="resume-btn" onClick={close} style={{ marginTop: 20 }}>
           關閉

@@ -59,6 +59,23 @@ export const ja: Widen<Locale> = {
     unlockGeneric: '境界に未到達のため、まだ挑戦できません。',
   },
 
+  journey: {
+    chapter: {
+      prologue: '序章・初心の試練',
+      practice: '第一章・最初の技を証明',
+      world: '第二章・世界へ',
+      duo: '第三章・技を競う',
+    },
+    practiceLock: '初心を{needed}問クリアで修行解放（{cleared}/{needed}）',
+    worldLock: '{needed}技を証明すると世界解放（修行Lv.{level}/{needed}）',
+    duoLock: '修行Lv.{needed}で対戦解放（現在Lv.{level}）',
+    prologueProgress: '初心 {cleared}/{needed}・次は修行',
+    practiceProgress: '修行Lv.{level}/{needed}・学習＋3問＋実戦',
+    worldProgress: '修行Lv.{level}/{needed}・次は対戦',
+    duoProgress: '三章すべて解放済み・さらに技を証明しよう',
+    duoEntrySub: 'リアルタイム対戦・技を競う',
+  },
+
   // ── Practice mode ───────────────────────────────────────────────────
   practice: {
     entryMain: '修行',
@@ -332,6 +349,7 @@ export const ja: Widen<Locale> = {
     surrender: '降参',
     resultTitle: '💑 デュオバトル結果',
     playAgain: 'もう一戦',
+    connecting: 'Duo ロビーに接続中...',
     connectionLost: '接続が切断されました。再接続中...',
     connectionFailed: '接続失敗',
     connectionError: '接続エラー、再試行してください',

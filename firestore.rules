@@ -10,11 +10,16 @@ service cloud.firestore {
 
     match /level_first_clears/{levelId}/players/{playerId} {
       allow read: if true;
-      allow create: if request.resource.data.playerId == playerId
+      allow create: if request.auth != null
+                    && playerId == 'p_' + request.auth.uid
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.playerId == playerId
                     && request.resource.data.firstTimeSec is int
                     && request.resource.data.firstStars is int
                     && validAlias(request.resource.data.alias);
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if request.auth != null
+                    && resource.data.ownerUid == request.auth.uid;
     }
 
     // Duo WebSocket lobby breadcrumbs (Cloudflare Durable Objects transport).
@@ -35,9 +40,13 @@ service cloud.firestore {
       }
       allow read: if true;
       // Only the owner (matching auth uid) may create/touch their own breadcrumb.
-      allow create, update: if request.auth != null
-                            && request.auth.uid == request.resource.data.hostOwnerUid
-                            && validWsLobby();
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.hostOwnerUid
+                    && validWsLobby();
+      allow update: if request.auth != null
+                    && resource.data.hostOwnerUid == request.auth.uid
+                    && request.auth.uid == request.resource.data.hostOwnerUid
+                    && validWsLobby();
       // Owner may remove anytime; others only a clearly-dead breadcrumb (>2min no touch).
       allow delete: if request.auth != null
                     && (
@@ -49,43 +58,56 @@ service cloud.firestore {
     // Lightweight online presence.
     match /presence/{playerId} {
       allow read: if true;
-      allow create, update: if request.resource.data.playerId is string
+      allow create, update: if request.auth != null
+                            && playerId == 'p_' + request.auth.uid
+                            && request.resource.data.ownerUid == request.auth.uid
+                            && request.resource.data.playerId is string
                             && request.resource.data.playerId == playerId;
-      allow delete: if true;
+      allow delete: if request.auth != null
+                    && resource.data.ownerUid == request.auth.uid;
     }
 
     // Player profile (achievements cloud sync)
     match /player_profiles/{playerId} {
-      allow get: if true;
+      allow get: if request.auth != null
+                 && playerId == 'p_' + request.auth.uid;
       allow list: if false;
-      allow create, update: if request.resource.data.playerId == playerId
+      allow create: if request.auth != null
+                    && playerId == 'p_' + request.auth.uid
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.playerId == playerId
+                    && validAlias(request.resource.data.alias)
+                    && request.resource.data.achievements is map
+                    && request.resource.data.achievements.size() <= 200;
+      allow update: if request.auth != null
+                    && resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.playerId == playerId
                             && validAlias(request.resource.data.alias)
                             && request.resource.data.achievements is map
                             && request.resource.data.achievements.size() <= 200;
-      allow delete: if false;
+      allow delete: if request.auth != null
+                    && resource.data.ownerUid == request.auth.uid;
 
       match /game_saves/{saveKey} {
-        allow get, list: if true;
-        allow create, update: if request.resource.data.playerId == playerId
+        allow get, list: if request.auth != null
+                         && get(/databases/$(database)/documents/player_profiles/$(playerId)).data.ownerUid
+                            == request.auth.uid;
+        allow create, update: if request.auth != null
+                              && get(/databases/$(database)/documents/player_profiles/$(playerId)).data.ownerUid
+                                 == request.auth.uid
+                              && request.resource.data.ownerUid == request.auth.uid
+                              && request.resource.data.playerId == playerId
                               && request.resource.data.key is string
                               && request.resource.data.key == saveKey
                               && request.resource.data.payload is map;
-        allow delete: if resource.data.playerId == playerId;
+        allow delete: if request.auth != null
+                      && resource.data.ownerUid == request.auth.uid;
       }
     }
 
     match /alias_player_index/{aliasKey} {
-      allow get: if true;
-      allow list: if false;
-      allow create, update: if request.resource.data.aliasKey is string
-                            && request.resource.data.aliasKey == aliasKey
-                            && request.resource.data.aliasDisplay is string
-                            && request.resource.data.aliasDisplay.size() >= 1
-                            && request.resource.data.aliasDisplay.size() <= 24
-                            && request.resource.data.playerId is string
-                            && request.resource.data.playerId.size() >= 8
-                            && request.resource.data.playerId.size() <= 64;
-      allow delete: if false;
+      allow read, write: if false;
     }
 
     match /{document=**} {

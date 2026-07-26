@@ -1,5 +1,7 @@
 Original prompt: 幫我用這個檢查我的關卡 是否都是唯一解
 
+Current prompt (2026-07-24): 以 PM 角度選定真實賣點，在不改整體內容下重排功能解鎖章節，並依目前 iOS 送審要求把專案推到可提交 App Store 的狀態；目前不做營利。
+
 - 已讀取並套用 develop-web-game skill，先檢查現有驗證工具。
 - 發現專案已有 `verify_levels.js`，可直接檢查每個關卡是 0/1/多解。
 - 執行 `node verify_levels.js`：230/230 都是唯一解（0 多解、0 無解）。
@@ -71,3 +73,58 @@ TODO / handoff:
 - 已嘗試用 Playwright 本地截圖驗證（output/level-size-check/shot-0.png）；在沙箱需提權才能啟動瀏覽器。
 - 二次修正（卡片尺寸）：改用 `syncLevelCardSize()` 以每張卡片實際寬度回寫高度（`height = width`），並在 `renderLevelGrid()` 後與 `resize` 時同步，避免 CSS row 百分比在不同容器高度下失準。
 - Playwright 實測（414x896, 混合已通關資料）結果：禪/虛空分頁 `level-item` 皆為 `w==h`（約 65.19/65.20px，差異為子像素四捨五入）。
+
+- 產品主軸定為「每一招都能被證明的數獨修行」：一般關卡 → 技巧修行 → 世界試煉 → 雙人道場。
+- 已新增全域章節閘門：一般 3 關解鎖修行；完成教學、3 次定向練習與實戰證明後累計修行 Lv.；Lv.1 解鎖世界、Lv.3 解鎖雙人；既有玩家進度保留。
+- 已加入 iOS PrivacyInfo、隱私／支援頁、App 內資料刪除入口、Firebase ownerUid 權限與刪除 Function，並移除不安全的暱稱找回資料路徑。
+- 已為已結束 Duo Durable Object 房間加入 24 小時自動刪除。
+- `npm run ios:prepare` 已成功：production build、Capacitor sync、隱私與 icon 檢查皆通過。
+- `npm run check` 已完整通過：39 files / 287 tests，TypeScript、ESLint、Prettier 全部成功。
+- unsigned archive 已成功；iPhone 17 Pro Max / iOS 26.4.1 simulator build、安裝與啟動成功。
+- 原生首次啟動曾發現 normal shard 與 React takeover race，已在 shard ready 後 refresh，模擬器目視確認 27 境界節點正常出現。
+- Firebase Hosting、Firestore rules、Functions 已部署；隱私頁、支援頁、旅程首頁 live smoke 成功。
+- live 刪除測試發現 collection-group index 缺口，已部署 `players.ownerUid` index，等待 READY 後重測。
+
+TODO / handoff (current):
+- Cloudflare `wrangler` 登入已過期；需重新登入後部署 Duo 24h TTL。
+- 實機 smoke 尚未執行；模擬器已通過。
+- App Store Connect、Apple Distribution signing、法定賣方名稱與送審仍需帳號持有人完成。
+
+- Release QA 收斂：Firestore Duo lobby 禁止 update takeover；Duo `abort`/`closeResult` 要求已認領座位；雙方結束後即排程 24h 刪除。
+- iOS 不再呈現玩家自填暱稱，改為本機固定產生的公開名稱；web 版仍保留原功能，避免把 UGC 審核與檢舉機制帶入首版。
+- 舊版 `sudoku_duo_records` 亦列入回鍋玩家解鎖承接；單純閱讀教學不會跳過三次練習＋實戰證明。
+- `npm run check:release` 已涵蓋主程式、Functions 與 Duo Worker；主程式目前 39 files / 288 tests。
+- `players.ownerUid` collection-group index 已 READY；正式環境帳號建立 → callable 刪除 → token 失效的端到端測試成功。
+- 5 張 App Store 6.9 吋截圖已重產並目視檢查：1320×2868、無 alpha。
+- Firebase Hosting、Firestore rules/indexes、Functions 已再次正式部署至 `https://sudokuzen-f2aa3.web.app`。
+- 最新 unsigned Release archive 再次成功，`build/SudokuZen.xcarchive` 可供本機檢查；仍不能取代 Apple Distribution 簽章。
+- Release bundle 技術債已收斂：Vite 依 locale、solver、skills、world、duo 分 chunk，最大自有首包由約 967 KB 降至約 341 KB。
+- `npm run build:firebase` 原本的 600 KB chunk gate 已由失敗轉為通過；拆包後技巧圖鑑、世界與棋盤商店畫面重新載入成功，未出現 console/page error。
+- 拆包版已部署 Firebase Hosting，live 等待初次版本 reload 完成後可開啟 40 張技巧卡；iOS 亦重新 sync/archive 成功。
+- 3 個未被 asset catalog 指派的舊 Splash PNG 已移至 `build/unused-splash-assets/` 備份，Xcode archive 不再出現 Splash children 警告。
+- 新增 `npm run ios:archive:app-store`：要求 `APPLE_TEAM_ID`、檢查 Apple Distribution identity，再建立 signed archive；缺少兩種憑證條件時皆已驗證會提前拒絕。
+- 2026-07-24 最終 completion audit：章節門檻原始碼／測試、商店欄位長度、PrivacyInfo、1024 icon、5 張 1320×2868 截圖、archive bundle ID/version/內嵌 privacy 均有直接證據。
+- 最終重跑 `npm run check:release`（39 files / 288 tests）與 `npm run build:firebase`（所有 chunk <600 KB）成功，最新 dist 再次部署，首頁／privacy／support／data manifest 均 HTTP 200。
+- 未完成項有權限層直接證據：Wrangler token expired；環境無 CF token；Keychain 無 Apple Distribution；無 provisioning profiles、APPLE_TEAM_ID、signed App Store archive。需帳號持有人登入後續作業。
+- 依 Apple 官方 App Store Connect KB 整理 `docs/app-store/full-submission-runbook-zh-TW.md`，涵蓋建檔、2026 SDK／年齡分級要求、隱私、價格與地區、DSA、出口合規、輔助使用標示、上傳、送審與發布。
+- Release verifier 現在要求 Xcode 26／iOS 26 SDK，並確認 App、Capacitor、Cordova 的 PrivacyInfo 都被帶入 archive；本機 Xcode 26.4.1／SDK 26.4 驗證通過。
+- 發現最高難度 40 題源自 Gordon Royle minimum Sudoku collection（CC BY 2.5）；已新增公開 `credits.html`、App 設定入口與送審說明，明列來源、改作與授權。
+- 最新 Hosting 已部署；`https://sudokuzen-f2aa3.web.app/credits.html` 與 support 內授權連結皆 live 驗證成功。
+
+- 2026-07-24 App Store Connect：建立 `SudokuZen 數獨修行`（Apple ID 6794248919），繁中 metadata、5 張 6.9 吋截圖、4+ 年齡分級、免費價格、175 地區、Manual Release 與 App Privacy 均已設定。
+- build 1 雖為 `VALID`，但 completion audit 直接在 IPA 發現 `firebase-config.js` 為 264-byte 空白範本，因此作廢且不得送審。
+- 根因為 `prepare-pages-dist.mjs` 在 Vite 複製 `public/firebase-config.js` 後，又以 root placeholder 覆寫；已改為優先採用 `public/` 的 runtime config，並在 iOS verifier 加入必要 Firebase 欄位 gate。
+- 透過 Firebase CLI 安全取得 Web App SDK config，實值只存在 gitignored runtime artifact；重建並重新部署 Hosting，live config 已確認包含必要欄位。
+- 新增 `duo-party/src/prod-smoke.mjs`，正式環境通過 Firebase Anonymous Auth、host create、guest join、playing、host finish、finished；測試匿名帳號均自動刪除。
+- build 2 已以 Apple Distribution `YuDi Huang (UPWLTJL6S2)` 匯出並上傳；SHA-256 `6cbdefe213aa382bf3b831d4105ead35e7cba7d7a0f3d011d41f6ea28695d2a2`，IPA 內已驗證 Firebase config、三份 PrivacyInfo、Bundle ID `com.wulala.sudokuzen`、`1.0 (2)` 與 `get-task-allow=false`。
+- App Store Connect 已將 build 2 處理為 `VALID`，並成功 attach 到 iOS 1.0 後 read-back 為 build 2。
+- 使用者已明確授權沿用 Lucky 3 的 App Review 聯絡資料；已安全寫入 SudokuZen，未將實值存入專案文件。
+- App Store Connect 已建立版本 1.0（build 2）的送審草稿；最終 API 稽核通過：app、submission 均為 `READY_FOR_REVIEW`，build 2 為 `VALID`。
+- 2026-07-24 21:02（Asia/Taipei）取得最後即時確認並正式送出 App Review；App Store Connect UI 與 API 均讀回版本／submission 為 `WAITING_FOR_REVIEW`，build 2 維持 `VALID`。
+- 本機 KB 已補上「經明確授權後沿用既有 App Review contact」的安全流程與 Lucky 3 → SudokuZen 驗證紀錄；依 KB 原有安全規則，不保存個人聯絡實值。
+
+- 2026-07-26 PWA 雙人對戰修復：舊玩家身分承接與旅程解鎖相容、對戰入口連線狀態／逾時／錯誤提示、WebSocket 房間角色續接均已完成。
+- PWA 顯示版本更新為 `2026.07.26-V2`；Firebase Hosting live smoke 已通過。
+- 發現舊玩家安裝來源為 GitHub Pages，該站仍停在 `2026.06.17-V4`；準備將修復推送至 `main` 觸發 Pages 發布。
+- 修正 Pages workflow：由 `dist/index.html` 解析真正的主 JavaScript entry，避免拆包後誤抓 8 KB 次要 chunk 導致 CI 假失敗。
+- 發布前重跑 `npm run check:release`：42 files / 296 tests、Functions、Duo Worker dry-run 全部通過；GitHub Pages build 與 smoke test 讀回 `v2026.07.26-V2`。

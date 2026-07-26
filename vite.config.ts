@@ -38,9 +38,26 @@ export default defineConfig({
         warn(warning);
       },
       output: {
-        manualChunks: {
-          // Heavy vendor libs — cached independently, rarely change
-          'vendor-react': ['react', 'react-dom'],
+        manualChunks(id) {
+          // Keep stable libraries and the largest feature domains independently
+          // cacheable. These boundaries only affect delivery; runtime behavior
+          // and the chapter rollout remain unchanged.
+          if (id.includes('/node_modules/react/') || id.includes('/node_modules/react-dom/')) {
+            return 'vendor-react';
+          }
+          if (id.includes('/src/i18n/locale/')) return 'locale-data';
+          if (id.includes('/src/solver/')) return 'solver';
+          if (
+            id.includes('/src/features/skills/') ||
+            id.endsWith('/src/features/chainMapPanel.ts') ||
+            id.endsWith('/src/features/chainTracePanel.ts') ||
+            id.endsWith('/src/features/strongLinkPanel.ts')
+          ) {
+            return 'feature-skills';
+          }
+          if (id.includes('/src/features/duo/')) return 'feature-duo';
+          if (id.includes('/src/features/wild/')) return 'feature-world';
+          return undefined;
         },
       },
     },

@@ -8,6 +8,7 @@ import { escapeHtml } from '../../shared/html/escape';
 import { showFeedback } from '../../ui/feedback';
 import { subscribeOnlineCount } from '../../firebase/client';
 import { t } from '../../i18n/t';
+import { canOpenJourneyMode, getJourneyLockMessage } from '../journey';
 import { getEquippedTitleDisplay } from '../titles';
 import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
 import { bridgeSetWildLobbyViewModel, bridgeSetWildLobbyVisible } from '../../react/wild/wildLobbyBridge';
@@ -696,6 +697,10 @@ function setWorldViewActive(active: boolean): void {
 }
 
 export function openWildLobby(): void {
+  if (!canOpenJourneyMode('world')) {
+    showFeedback(getJourneyLockMessage('world'), 'error');
+    return;
+  }
   saveScroll('stage-map');
   renderWildLobby();
   setWorldViewActive(true);

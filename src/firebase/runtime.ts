@@ -99,6 +99,10 @@ export function firebaseTimestampFromMillis(ms: number): unknown {
 }
 
 export async function initAnonymousAuth(): Promise<string | null> {
+  if (import.meta.env.MODE === 'test') {
+    _authUid = 'test-owner';
+    return _authUid;
+  }
   const fb = await ensureFirebaseRuntime();
   if (!fb) return null;
   if (_authReady) {

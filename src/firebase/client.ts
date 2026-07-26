@@ -9,9 +9,16 @@ import { t } from '../i18n/t';
 import { getEquippedTitleDisplay } from '../features/titles';
 import type { FirestoreDoc, FirestoreTransaction } from './types';
 import type { SudokuWindow } from '../facade/windowTypes';
-import { ensureFirebaseRuntime, firebaseServerTimestamp, initAnonymousAuth } from './runtime';
+import {
+  callDuoFunction,
+  ensureFirebaseRuntime,
+  firebaseServerTimestamp,
+  getAuthUid,
+  initAnonymousAuth,
+} from './runtime';
 import { escapeHtml } from '../shared/html/escape';
 import { sanitizeReplayHistory } from '../shared/records/levelRecords';
+import { publicPlayerAlias } from '../platform/publicAlias';
 
 let _firebaseInitPromise: Promise<boolean> | null = null;
 
@@ -30,6 +37,7 @@ interface SpeedRecord {
 type GenericRecordMap = Record<string, ClassicRecord | SpeedRecord>;
 
 interface LeaderboardRow {
+  playerId: string;
   alias: string;
   title?: string;
   firstTimeSec: number;
@@ -37,13 +45,17 @@ interface LeaderboardRow {
 }
 const SAVE_KEY_PATTERN = /^sudoku_(speed_)?save_(\d+)$/;
 const PROFILE_SAVE_SUBCOLLECTION = 'game_saves';
-const ALIAS_INDEX_COLLECTION = 'alias_player_index';
 const PROGRESS_SYNC_DEBOUNCE_MS = 1200;
 const SAVE_SYNC_DEBOUNCE_MS = 800;
 const PROFILE_SYNC_KEYS: Set<string> = new Set([
   SK.RECORDS,
   SK.SPEED_RECORDS,
   SK.PRACTICE_RECORDS,
+  SK.TEACH_READ,
+  SK.PRACTICE_DONE,
+  SK.TECHNIQUES_USED,
+  SK.WILD_PROFILE,
+  SK.DUO_RECORDS,
   SK.ACHIEVEMENTS,
   SK.LAST_LEVEL,
   SK.SPEEDRUN,
@@ -99,12 +111,13 @@ function sameAchievementMaps(a: AchievementMap, b: AchievementMap): boolean {
 function normalizeLeaderboardRow(raw: unknown): LeaderboardRow | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
   const obj = raw as Record<string, unknown>;
-  const alias = normalizeAlias(obj.alias);
+  const playerId = typeof obj.playerId === 'string' ? obj.playerId : '';
+  const alias = publicPlayerAlias(playerId, normalizeAlias(obj.alias));
   if (!alias) return null;
   const firstTimeSec = Math.max(0, toInt(obj.firstTimeSec));
   const firstStars = Math.min(3, Math.max(0, toInt(obj.firstStars)));
   const title = typeof obj.title === 'string' ? normalizeAlias(obj.title) : undefined;
-  return { alias, title, firstTimeSec, firstStars };
+  return { playerId, alias, title, firstTimeSec, firstStars };
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -225,45 +238,6 @@ function getLocalSavePayload(saveKey: string): Record<string, unknown> | null {
   }
 }
 
-function aliasKeyOf(alias: string): string {
-  return normalizeAlias(alias).trim().toLowerCase();
-}
-
-async function upsertAliasIndex(playerId: string, alias: string): Promise<void> {
-  if (!gs.firebaseReady || !gs.db) return;
-  const aliasKey = aliasKeyOf(alias);
-  if (!aliasKey) return;
-  try {
-    await gs.db!.collection(ALIAS_INDEX_COLLECTION).doc(aliasKey).set(
-      {
-        aliasKey,
-        aliasDisplay: alias,
-        playerId,
-        updatedAt: firebaseServerTimestamp(),
-      },
-      { merge: true },
-    );
-  } catch (e) {
-    console.warn('upsert alias index failed:', e);
-  }
-}
-
-async function findPlayerIdByAlias(alias: string): Promise<string | null> {
-  if (!gs.firebaseReady || !gs.db) return null;
-  const aliasKey = aliasKeyOf(alias);
-  if (!aliasKey) return null;
-  try {
-    const doc = await gs.db!.collection(ALIAS_INDEX_COLLECTION).doc(aliasKey).get();
-    if (!doc.exists) return null;
-    const data = doc.data() || {};
-    const playerId = typeof data.playerId === 'string' ? data.playerId : null;
-    return playerId;
-  } catch (e) {
-    console.warn('find playerId by alias failed:', e);
-    return null;
-  }
-}
-
 function isProfileSyncKey(key: string): boolean {
   return PROFILE_SYNC_KEYS.has(key);
 }
@@ -279,9 +253,12 @@ let _presenceHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
 
 async function _setPresenceDoc(): Promise<void> {
   if (!gs.firebaseReady || !gs.db || !_presenceDocId) return;
+  const ownerUid = getAuthUid() || (await initAnonymousAuth());
+  if (!ownerUid) return;
   try {
     await gs.db!.collection(PRESENCE_COLLECTION).doc(_presenceDocId).set({
       playerId: _presenceDocId,
+      ownerUid,
       timestamp: firebaseServerTimestamp(),
     });
   } catch (e) {
@@ -367,7 +344,9 @@ export async function initFirebase(): Promise<boolean> {
       if (!firebase.apps.length) firebase.initializeApp(win.SUDOKU_FIREBASE_CONFIG);
       gs.db = firebase.firestore();
       gs.firebaseReady = true;
-      void initAnonymousAuth();
+      const ownerUid = await initAnonymousAuth();
+      if (!ownerUid) return false;
+      bindPlayerIdentityToAuth(ownerUid);
       return true;
     } catch (e) {
       console.warn('Firebase init failed:', e);
@@ -376,6 +355,24 @@ export async function initFirebase(): Promise<boolean> {
   })();
 
   return _firebaseInitPromise;
+}
+
+/**
+ * Move pre-UID PWA identities onto the authenticated document namespace.
+ *
+ * Keeping LEGACY_PLAYER_ID is intentional: besides account deletion cleanup,
+ * it is the durable upgrade marker used to grandfather players who had access
+ * to every mode before the journey gates were introduced. A brand-new install
+ * has no existing player ID and therefore does not receive this marker.
+ */
+export function bindPlayerIdentityToAuth(ownerUid: string): string {
+  const playerId = `p_${ownerUid}`;
+  const existingPlayerId = localStorage.getItem(SK.PLAYER_ID);
+  if (existingPlayerId && existingPlayerId !== playerId) {
+    localStorage.setItem(SK.LEGACY_PLAYER_ID, existingPlayerId);
+  }
+  localStorage.setItem(SK.PLAYER_ID, playerId);
+  return playerId;
 }
 
 export function whenFirebaseReady(): Promise<boolean> {
@@ -387,6 +384,11 @@ export function whenFirebaseReady(): Promise<boolean> {
 
 export function getPlayerIdentity(): { playerId: string; alias: string } {
   let playerId = localStorage.getItem(SK.PLAYER_ID);
+  const ownerUid = getAuthUid();
+  if (ownerUid && import.meta.env.MODE !== 'test') {
+    playerId = `p_${ownerUid}`;
+    localStorage.setItem(SK.PLAYER_ID, playerId);
+  }
   if (!playerId) {
     playerId = `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
     localStorage.setItem(SK.PLAYER_ID, playerId);
@@ -399,6 +401,7 @@ export function getPlayerIdentity(): { playerId: string; alias: string } {
   alias = normalizeAlias(alias);
   if (alias.length < ALIAS_MIN_LEN)
     alias = t('miscRuntime.defaultAlias', { code: String(Math.floor(Math.random() * 9000) + 1000) });
+  alias = publicPlayerAlias(playerId, alias);
   localStorage.setItem(SK.PLAYER_ALIAS, alias);
   return { playerId, alias };
 }
@@ -417,18 +420,14 @@ export function saveAlias(): void {
   localStorage.setItem(SK.PLAYER_ALIAS, alias);
   if (gs.aliasInputEl) gs.aliasInputEl.value = alias;
   showFeedback(t('alias.updated', { alias }));
-  const { playerId } = getPlayerIdentity();
-  void upsertAliasIndex(playerId, alias);
-  // Always re-hydrate on alias change — the new alias may map to a different playerId with existing records
-  _hydrateComplete = false;
-  void hydratePlayerProfileFromCloud().then(() => {
-    scheduleProgressSync();
-  });
+  scheduleProgressSync(50);
 }
 
 export async function mergeCloudAchievements(localAchievements: AchievementMap): Promise<AchievementMap | null> {
   if (!gs.firebaseReady || !gs.db) return null;
   const { playerId, alias } = getPlayerIdentity();
+  const ownerUid = getAuthUid() || (await initAnonymousAuth());
+  if (!ownerUid) return null;
   const docRef = gs.db!.collection('player_profiles').doc(playerId);
 
   try {
@@ -439,6 +438,7 @@ export async function mergeCloudAchievements(localAchievements: AchievementMap):
       await docRef.set(
         {
           playerId,
+          ownerUid,
           alias,
           achievements: merged,
           achievementsUpdatedAt: firebaseServerTimestamp(),
@@ -456,12 +456,15 @@ export async function mergeCloudAchievements(localAchievements: AchievementMap):
 export async function syncAchievementsToCloud(achievements: AchievementMap): Promise<void> {
   if (!gs.firebaseReady || !gs.db) return;
   const { playerId, alias } = getPlayerIdentity();
+  const ownerUid = getAuthUid() || (await initAnonymousAuth());
+  if (!ownerUid) return;
   const sanitized = sanitizeAchievementMap(achievements);
   const docRef = gs.db!.collection('player_profiles').doc(playerId);
   try {
     await docRef.set(
       {
         playerId,
+        ownerUid,
         alias,
         achievements: sanitized,
         achievementsUpdatedAt: firebaseServerTimestamp(),
@@ -479,24 +482,37 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
   // Block sync until hydrate finishes, to prevent overwriting cloud data with empty localStorage
   if (!_hydrateComplete) return;
   const { playerId, alias } = getPlayerIdentity();
+  const ownerUid = getAuthUid() || (await initAnonymousAuth());
+  if (!ownerUid) return;
   const records = normalizeRecordMap(readJson<Record<string, unknown>>(SK.RECORDS, {}), 'classic');
   const speedRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.SPEED_RECORDS, {}), 'speed');
+  const practiceRecords = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
   const achievements = sanitizeAchievementMap(readJson<AchievementMap>(SK.ACHIEVEMENTS, {}));
+  const journey = {
+    teachRead: readJson<Record<string, boolean>>(SK.TEACH_READ, {}),
+    practiceDone: readJson<Record<string, boolean>>(SK.PRACTICE_DONE, {}),
+    techniquesUsed: readJson<string[]>(SK.TECHNIQUES_USED, []),
+    wildProfile: readJson<Record<string, unknown>>(SK.WILD_PROFILE, {}),
+    duoRecords: readJson<Record<string, unknown>>(SK.DUO_RECORDS, {}),
+    duoProfile: readJson<Record<string, unknown>>('sudoku_duo_profile_v2', {}),
+  };
   const settings = readLocalSettings();
   try {
     await gs.db!.collection('player_profiles').doc(playerId).set(
       {
         playerId,
+        ownerUid,
         alias,
         records,
         speedRecords,
+        practiceRecords,
         achievements,
+        journey,
         settings,
         progressUpdatedAt: firebaseServerTimestamp(),
       },
       { merge: true },
     );
-    await upsertAliasIndex(playerId, alias);
   } catch (e) {
     console.warn('sync player progress failed:', e);
   }
@@ -551,11 +567,14 @@ export async function syncSaveToCloud(saveKey: string, payload: Record<string, u
   if (localStorage.getItem('sudoku_e2e_mode') === '1') return;
   if (!SAVE_KEY_PATTERN.test(saveKey) || !isPlainObject(payload)) return;
   const { playerId, alias } = getPlayerIdentity();
+  const ownerUid = getAuthUid() || (await initAnonymousAuth());
+  if (!ownerUid) return;
   try {
     await gs.db!.collection('player_profiles').doc(playerId).collection(PROFILE_SAVE_SUBCOLLECTION).doc(saveKey).set(
       {
         key: saveKey,
         playerId,
+        ownerUid,
         alias,
         payload,
         updatedAt: firebaseServerTimestamp(),
@@ -605,28 +624,12 @@ export async function deleteSaveFromCloud(saveKey: string): Promise<void> {
 
 export async function hydratePlayerProfileFromCloud(): Promise<void> {
   if (!gs.firebaseReady || !gs.db) return;
-  const identity = getPlayerIdentity();
-  let playerId = identity.playerId;
-  const alias = identity.alias;
-  let docRef = gs.db!.collection('player_profiles').doc(playerId);
+  const { playerId } = getPlayerIdentity();
+  const ownerUid = getAuthUid() || (await initAnonymousAuth());
+  if (!ownerUid) return;
+  const docRef = gs.db!.collection('player_profiles').doc(playerId);
   try {
-    let doc = await docRef.get();
-    if (!doc.exists) {
-      const mappedPlayerId = await findPlayerIdByAlias(alias);
-      if (mappedPlayerId && mappedPlayerId !== playerId) {
-        const mappedRef = gs.db!.collection('player_profiles').doc(mappedPlayerId);
-        const mappedDoc = await mappedRef.get();
-        if (mappedDoc.exists) {
-          playerId = mappedPlayerId;
-          docRef = mappedRef;
-          doc = mappedDoc;
-          localStorage.setItem(SK.PLAYER_ID, mappedPlayerId);
-          localStorage.setItem(SK.PLAYER_ALIAS, alias);
-          if (gs.aliasInputEl) gs.aliasInputEl.value = alias;
-          showFeedback(t('alias.cloudRestore', { alias }));
-        }
-      }
-    }
+    const doc = await docRef.get();
     if (!doc.exists) {
       scheduleProgressSync(50);
       return;
@@ -650,6 +653,21 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
     if (!sameAchievementMaps(localAchievements, mergedAchievements)) writeJson(SK.ACHIEVEMENTS, mergedAchievements);
 
     applyRemoteSettingsIfMissing(data.settings);
+    if (isPlainObject(data.practiceRecords) && localStorage.getItem(SK.PRACTICE_RECORDS) === null) {
+      writeJson(SK.PRACTICE_RECORDS, data.practiceRecords);
+    }
+    const journey = isPlainObject(data.journey) ? data.journey : {};
+    const journeyKeys: Array<[string, unknown]> = [
+      [SK.TEACH_READ, journey.teachRead],
+      [SK.PRACTICE_DONE, journey.practiceDone],
+      [SK.TECHNIQUES_USED, journey.techniquesUsed],
+      [SK.WILD_PROFILE, journey.wildProfile],
+      [SK.DUO_RECORDS, journey.duoRecords],
+      ['sudoku_duo_profile_v2', journey.duoProfile],
+    ];
+    for (const [key, value] of journeyKeys) {
+      if (value != null && localStorage.getItem(key) === null) writeJson(key, value);
+    }
 
     const saveSnap = await docRef.collection(PROFILE_SAVE_SUBCOLLECTION).get();
     saveSnap.docs.forEach((saveDoc: FirestoreDoc) => {
@@ -662,7 +680,6 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
     });
 
     scheduleProgressSync(80);
-    await upsertAliasIndex(playerId, alias);
     for (const key of Object.keys(localStorage)) {
       if (!SAVE_KEY_PATTERN.test(key)) continue;
       const payload = getLocalSavePayload(key);
@@ -673,6 +690,14 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
   } finally {
     _hydrateComplete = true;
   }
+}
+
+export async function deletePlayerData(): Promise<void> {
+  const { playerId, alias } = getPlayerIdentity();
+  const legacyPlayerId = localStorage.getItem(SK.LEGACY_PLAYER_ID);
+  await callDuoFunction('deletePlayerData', { playerId, alias, legacyPlayerId });
+  localStorage.clear();
+  window.location.reload();
 }
 
 // ── Leaderboard ─────────────────────────────────────────────────────
@@ -771,6 +796,8 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
   if (!gs.firebaseReady) return;
   if (localStorage.getItem('sudoku_e2e_mode') === '1') return;
   const { playerId, alias } = getPlayerIdentity();
+  const ownerUid = getAuthUid() || (await initAnonymousAuth());
+  if (!ownerUid) return;
   const levels = getAllLevels();
   const level = levels.find((l) => l.id === levelId) || gs.currentLevel || null;
   const levelVersion = gs.appVersion || 'legacy-unknown';
@@ -795,6 +822,7 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
       const title = getEquippedTitleDisplay();
       tx.set(docRef, {
         playerId,
+        ownerUid,
         alias,
         title,
         firstTimeSec: clearSec,

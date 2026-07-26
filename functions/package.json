@@ -6,7 +6,7 @@
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
-    "lint": "eslint --ext .ts ."
+    "lint": "eslint src"
   },
   "engines": {
     "node": "22"

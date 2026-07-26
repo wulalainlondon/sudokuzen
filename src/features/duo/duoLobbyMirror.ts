@@ -9,6 +9,7 @@ import { getPlayerIdentity } from '../../firebase/client';
 import { firebaseServerTimestamp, getAuthUid } from '../../firebase/runtime';
 import type { FirestoreDoc, FirestoreSnap } from '../../firebase/types';
 import type { DuoRoomSummary } from './duoRoom';
+import { publicPlayerAlias } from '../../platform/publicAlias';
 
 const WS_LOBBY_COLLECTION = 'duo_ws_rooms';
 // 15s touch：搭配 duoLobby 的 ROOM_FRESHNESS_MS=45s，健康 host 的 heartbeat 最舊只 ~15s，
@@ -126,7 +127,7 @@ export async function listWaitingWsRooms(limit = 20): Promise<DuoRoomSummary[]> 
         modeId: typeof d.modeId === 'string' ? d.modeId : '',
         status: 'waiting',
         hostId: d.hostId,
-        hostAlias: typeof d.hostAlias === 'string' ? d.hostAlias : '--',
+        hostAlias: publicPlayerAlias(d.hostId, typeof d.hostAlias === 'string' ? d.hostAlias : '--'),
         guestAlias: null,
         updatedAtMs: ts?.toDate?.()?.getTime?.() ?? hb,
         hostHeartbeatAtMs: hb,

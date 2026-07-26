@@ -63,6 +63,23 @@ export const de: Widen<Locale> = {
     unlockGeneric: 'Sph\u00E4re noch nicht erreicht. Vorerst gesperrt.',
   },
 
+  journey: {
+    chapter: {
+      prologue: 'Prolog \u00B7 Erste Pr\u00FCfung',
+      practice: 'Kapitel I \u00B7 Erste Technik beweisen',
+      world: 'Kapitel II \u00B7 Die Welt betreten',
+      duo: 'Kapitel III \u00B7 K\u00F6nnen messen',
+    },
+    practiceLock: '{needed} Anf\u00E4nger-R\u00E4tsel l\u00F6sen, um Training freizuschalten ({cleared}/{needed})',
+    worldLock: '{needed} Technik beweisen, um die Welt freizuschalten (Training Lv.{level}/{needed})',
+    duoLock: 'Duo wird auf Training Lv.{needed} freigeschaltet (aktuell Lv.{level})',
+    prologueProgress: 'Anf\u00E4nger {cleared}/{needed} \u00B7 N\u00E4chster Schritt: Training',
+    practiceProgress: 'Training Lv.{level}/{needed} \u00B7 Lernen + 3 \u00DCbungen + Praxisbeweis',
+    worldProgress: 'Training Lv.{level}/{needed} \u00B7 N\u00E4chster Schritt: Duo',
+    duoProgress: 'Alle drei Kapitel freigeschaltet \u00B7 Weitere Techniken beweisen',
+    duoEntrySub: 'Live-Duelle \u00B7 K\u00F6nnen messen',
+  },
+
   // ── Practice mode ───────────────────────────────────────────────────
   practice: {
     entryMain: 'Training',
@@ -338,6 +355,7 @@ export const de: Widen<Locale> = {
     surrender: 'Aufgeben',
     resultTitle: '\uD83D\uDC91 Duo-Ergebnis',
     playAgain: 'Nochmal spielen',
+    connecting: 'Verbindung zur Duo-Lobby...',
     connectionLost: 'Verbindung verloren, Neuverbindung...',
     connectionFailed: 'Verbindung fehlgeschlagen',
     connectionError: 'Verbindungsfehler, bitte erneut versuchen',

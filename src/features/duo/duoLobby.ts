@@ -8,11 +8,13 @@ import { DUO_TIERS, DUO_MODES, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import { loadDuoProfile, getUnlockedTiers, getUnlockedModes } from './duoProfile';
 import { type DuoRoomSummary } from './duoRoom';
 import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
+import { canOpenJourneyMode, getJourneyLockMessage } from '../journey';
 
-type ConnState = 'connected' | 'reconnecting' | 'failed';
+type ConnState = 'connecting' | 'connected' | 'reconnecting' | 'failed';
 const LOBBY_POLL_FAST_MS = 6_000;
 const LOBBY_POLL_SLOW_MS = 25_000;
 const LOBBY_POLL_FAST_WINDOW_MS = 15_000;
+const LOBBY_ENTRY_TIMEOUT_MS = 12_000;
 // WS 路徑專用：與 DO 關房寬限（host 斷線 ~30s 後關房）對齊，壓縮「看得到點不進」窗口。
 // 搭配 WS_LOBBY_TOUCH_MS=15s，健康 host 的 heartbeat 最舊也只 ~15s，不會被誤隱藏。
 const ROOM_FRESHNESS_MS = 45_000;
@@ -21,6 +23,32 @@ let _duoLobbyOpenedAtMs = 0;
 let _selectedTier = 'tier0';
 let _selectedMode = 'standard';
 let _roomListListenerBound = false;
+let _openDuoLobbyPromise: Promise<void> | null = null;
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('duo lobby entry timed out')), timeoutMs);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
+function setDuoEntryBusy(busy: boolean): void {
+  for (const id of ['duo-entry-btn', 'duo-journey-entry-btn']) {
+    const button = document.getElementById(id) as HTMLButtonElement | null;
+    if (!button) continue;
+    button.disabled = busy;
+    button.setAttribute('aria-busy', String(busy));
+  }
+}
 
 function duoLobbyEl(): HTMLElement | null {
   return document.getElementById('duo-lobby');
@@ -228,28 +256,23 @@ function hydrateLabels(): void {
 
 // ── Public API ───────────────────────────────────────────────────────
 
-export async function openDuoLobby(): Promise<void> {
-  const { whenFirebaseReady } = await import('../../firebase/client');
-  const ready = await whenFirebaseReady();
-  if (!ready) {
-    showFeedback(t('duo.networkRequired'), 'error');
-    return;
+export function openDuoLobby(): Promise<void> {
+  if (!canOpenJourneyMode('duo')) {
+    showFeedback(getJourneyLockMessage('duo'), 'error', 4_000);
+    return Promise.resolve();
   }
-  // Wait for anonymous auth so authUid is available before any room operations
-  const { initAnonymousAuth } = await import('../../firebase/runtime');
-  await initAnonymousAuth();
-  setDuoLobbyConnectionState('connected');
+
+  if (_openDuoLobbyPromise) return _openDuoLobbyPromise;
+  _openDuoLobbyPromise = openDuoLobbyInternal().finally(() => {
+    setDuoEntryBusy(false);
+    _openDuoLobbyPromise = null;
+  });
+  return _openDuoLobbyPromise;
+}
+
+async function openDuoLobbyInternal(): Promise<void> {
+  setDuoEntryBusy(true);
   saveScroll('stage-map');
-  const { resumeDuoRoomIfAny, cleanupStaleDuoRooms, getActiveDuoRoomId } = await import('./duoRoom');
-  void cleanupStaleDuoRooms();
-  const resumed = await resumeDuoRoomIfAny();
-  // If we have an active room, go straight to room view
-  if (resumed && getActiveDuoRoomId()) {
-    const { openDuoRoomView } = await import('./duoRoomView');
-    openDuoRoomView();
-    return;
-  }
-  // Ensure level-screen is visible (may have been hidden when a game was active)
   const levelScreen = document.getElementById('level-screen');
   if (levelScreen) levelScreen.style.display = 'flex';
   const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
@@ -259,8 +282,37 @@ export async function openDuoLobby(): Promise<void> {
   renderModeSelector();
   renderModeRuleCard();
   setDuoViewActive(true);
-  startLobbyPolling();
-  await refreshRoomCard();
+  setDuoLobbyConnectionState('connecting');
+
+  try {
+    const { whenFirebaseReady } = await import('../../firebase/client');
+    const ready = await withTimeout(whenFirebaseReady(), LOBBY_ENTRY_TIMEOUT_MS);
+    if (!ready) throw new Error('Firebase unavailable');
+
+    // Wait for anonymous auth so authUid is available before any room operations.
+    const { initAnonymousAuth } = await import('../../firebase/runtime');
+    const authUid = await withTimeout(initAnonymousAuth(), LOBBY_ENTRY_TIMEOUT_MS);
+    if (!authUid) throw new Error('Anonymous auth unavailable');
+
+    const { resumeDuoRoomIfAny, cleanupStaleDuoRooms, getActiveDuoRoomId } = await import('./duoRoom');
+    void cleanupStaleDuoRooms();
+    const resumed = await withTimeout(resumeDuoRoomIfAny(), LOBBY_ENTRY_TIMEOUT_MS);
+    if (resumed && getActiveDuoRoomId()) {
+      const { openDuoRoomView } = await import('./duoRoomView');
+      openDuoRoomView();
+      return;
+    }
+
+    setDuoLobbyConnectionState('connected');
+    startLobbyPolling();
+    await refreshRoomCard();
+  } catch (error) {
+    console.warn('openDuoLobby failed:', error);
+    stopLobbyPolling();
+    setDuoLobbyConnectionState('failed');
+    setDuoViewActive(false);
+    showFeedback(t('duo.networkRequired'), 'error', 4_000);
+  }
 }
 
 export function closeDuoLobby(): void {
@@ -348,7 +400,12 @@ export function setDuoLobbyConnectionState(state: ConnState): void {
       continue;
     }
     el.style.display = '';
-    el.textContent = state === 'reconnecting' ? t('duo.connectionLost') : t('duo.connectionFailed');
+    el.textContent =
+      state === 'connecting'
+        ? t('duo.connecting')
+        : state === 'reconnecting'
+          ? t('duo.connectionLost')
+          : t('duo.connectionFailed');
   }
 }
 

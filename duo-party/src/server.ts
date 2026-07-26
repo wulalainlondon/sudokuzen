@@ -22,6 +22,7 @@ const FORFEIT_TIME = 9999;
 // 偵測由 alarm 每 PRESENCE_CHECK_MS 輪詢一次。client 端每 10s 送一次 ping。
 const PRESENCE_STALE_MS = 25_000;
 const PRESENCE_CHECK_MS = 10_000;
+const FINISHED_ROOM_TTL_MS = 24 * 60 * 60 * 1000;
 
 // 內部狀態：含對外不廣播的 alarm deadline。
 interface RoomState extends PublicRoomState {
@@ -30,6 +31,7 @@ interface RoomState extends PublicRoomState {
   forfeitHostAt: number | null;
   forfeitGuestAt: number | null;
   closeRoomAt: number | null;
+  deleteRoomAt: number | null;
   // playing 期間的 presence 輪詢截止（每次檢查後續期；null = 未輪詢）
   presenceCheckAt: number | null;
   // 權威身分（驗證後綁定，不對外廣播）—— 重連認領座位時須相符
@@ -64,6 +66,11 @@ export class GameRoom extends Server<Env> {
     // → 補設一次，確保靜默斷線偵測在 reload 後仍會運作。lastSeen 上面剛重置為 now，不會誤殺。
     if (this.room?.status === 'playing' && this.room.presenceCheckAt == null) {
       this.room.presenceCheckAt = now + PRESENCE_CHECK_MS;
+      await this.rescheduleAlarm();
+    }
+    if (this.room?.status === 'finished' && this.room.deleteRoomAt == null) {
+      this.room.deleteRoomAt = now + FINISHED_ROOM_TTL_MS;
+      await this.persist();
       await this.rescheduleAlarm();
     }
   }
@@ -109,11 +116,11 @@ export class GameRoom extends Server<Env> {
       case 'cc':
         return this.handleCc(connection, msg);
       case 'abort':
-        return this.handleAbort();
+        return this.handleAbort(connection);
       case 'leave':
         return this.handleLeave(connection);
       case 'closeResult':
-        return this.handleCloseResult();
+        return this.handleCloseResult(connection);
       default:
         return this.err(connection, 'unknown_type', 'Unknown message type');
     }
@@ -166,6 +173,7 @@ export class GameRoom extends Server<Env> {
       forfeitHostAt: null,
       forfeitGuestAt: null,
       closeRoomAt: null,
+      deleteRoomAt: null,
       presenceCheckAt: null,
       hostOwnerUid: uid,
       guestOwnerUid: null,
@@ -264,6 +272,10 @@ export class GameRoom extends Server<Env> {
     // 完成的人不會被沒收
     if (role === 'host') this.room.forfeitHostAt = null;
     else this.room.forfeitGuestAt = null;
+    if (this.room.host?.finishTime != null && this.room.guest?.finishTime != null) {
+      this.room.status = 'finished';
+      this.room.presenceCheckAt = null;
+    }
     await this.rescheduleAlarm();
     await this.commit();
   }
@@ -281,6 +293,10 @@ export class GameRoom extends Server<Env> {
     slot.moves = sanitizeMoves(msg.moves);
     if (role === 'host') this.room.forfeitHostAt = null;
     else this.room.forfeitGuestAt = null;
+    if (this.room.host?.finishTime != null && this.room.guest?.finishTime != null) {
+      this.room.status = 'finished';
+      this.room.presenceCheckAt = null;
+    }
     await this.rescheduleAlarm();
     await this.commit();
   }
@@ -349,8 +365,8 @@ export class GameRoom extends Server<Env> {
     await this.commit();
   }
 
-  private async handleAbort(): Promise<void> {
-    if (!this.room) return;
+  private async handleAbort(conn: Connection<ConnState>): Promise<void> {
+    if (!this.room || !conn.state?.role) return;
     if (this.room.status === 'countdown') await this.cancelCountdown();
     if (this.room.host) this.room.host.ready = false;
     if (this.room.guest) this.room.guest.ready = false;
@@ -369,8 +385,8 @@ export class GameRoom extends Server<Env> {
     conn.close();
   }
 
-  private async handleCloseResult(): Promise<void> {
-    if (!this.room) return;
+  private async handleCloseResult(conn: Connection<ConnState>): Promise<void> {
+    if (!this.room || !conn.state?.role) return;
     this.room.status = 'finished';
     await this.commit();
   }
@@ -496,6 +512,7 @@ export class GameRoom extends Server<Env> {
       this.room.forfeitHostAt,
       this.room.forfeitGuestAt,
       this.room.closeRoomAt,
+      this.room.deleteRoomAt,
       this.room.presenceCheckAt,
     ].filter((x): x is number => x != null);
     if (deadlines.length === 0) {
@@ -509,6 +526,11 @@ export class GameRoom extends Server<Env> {
     if (!this.room) this.room = (await this.ctx.storage.get<RoomState>('room')) ?? null;
     if (!this.room) return;
     const now = Date.now();
+    if (this.room.deleteRoomAt != null && now >= this.room.deleteRoomAt) {
+      await this.ctx.storage.deleteAll();
+      this.room = null;
+      return;
+    }
     let started = false;
     let changed = false; // 有需要廣播的狀態變更
 
@@ -576,12 +598,17 @@ export class GameRoom extends Server<Env> {
   // 寫入 storage（不廣播）。
   private async persist(): Promise<void> {
     if (!this.room) return;
-    this.room.updatedAt = Date.now();
+    const now = Date.now();
+    this.room.updatedAt = now;
+    if (this.room.status === 'finished' && this.room.deleteRoomAt == null) {
+      this.room.deleteRoomAt = now + FINISHED_ROOM_TTL_MS;
+    }
     await this.ctx.storage.put('room', this.room);
   }
 
   private async commit(): Promise<void> {
     await this.persist();
+    await this.rescheduleAlarm();
     this.broadcastState();
   }
 

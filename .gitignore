@@ -4,6 +4,8 @@ public/firebase-config.js
 public/firebase-config.local.js
 node_modules/
 dist/
+build/
+output/
 .vitest/
 coverage/
 .DS_Store
@@ -25,3 +27,8 @@ firebase-debug.*.log
 # Local-only large media / build artifacts (not deployed via Pages)
 public/teach/videos/
 scripts/hyperframes/
+
+# Android release signing and generated bundles
+android/app/*.keystore
+android/app/*.jks
+android/app/build/

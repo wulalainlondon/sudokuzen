@@ -48,6 +48,7 @@ import { leaveDuoRoomFromView } from '../features/duo/duoRoomView';
 import { openStatsModal, closeStatsModal } from '../features/stats';
 import {
   showLevelScreen,
+  renderStageMap,
   backToStageMap,
   toggleSpeedrunMode,
   startPoolRandom,
@@ -303,7 +304,17 @@ export function bootLegacyRuntime(appVersion: string): void {
     showLevelScreen();
   };
   window.setTimeout(bootLevelScreen, 1200);
-  preloadMode('normal').then(bootLevelScreen).catch(bootLevelScreen);
+  preloadMode('normal')
+    .then(() => {
+      if (levelScreenBooted) {
+        // Capacitor may need several seconds to serve the first large shard.
+        // The timeout paints the shell quickly; refresh again when data arrives.
+        renderStageMap();
+      } else {
+        bootLevelScreen();
+      }
+    })
+    .catch(bootLevelScreen);
 
   // 15b. Bind window facade for onclick="" handlers in HTML
   bindLegacyFacade({

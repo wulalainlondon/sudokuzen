@@ -28,8 +28,7 @@ async function playNative(pattern: number | number[]): Promise<void> {
     let offset = 0;
     for (let i = 0; i < segments.length; i += 2) {
       const duration = segments[i];
-      const style =
-        duration <= 8 ? ImpactStyle.Light : duration <= 25 ? ImpactStyle.Medium : ImpactStyle.Heavy;
+      const style = duration <= 8 ? ImpactStyle.Light : duration <= 25 ? ImpactStyle.Medium : ImpactStyle.Heavy;
       if (offset === 0) void Haptics.impact({ style });
       else setTimeout(() => void Haptics.impact({ style }), offset);
       offset += duration + (segments[i + 1] ?? 0);

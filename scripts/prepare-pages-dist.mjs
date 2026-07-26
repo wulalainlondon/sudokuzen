@@ -14,7 +14,6 @@ const requiredFiles = [
   // mid_pool.js removed — merged into levels-data.json
   // techniques.js removed — teach data now lazy-loads via public/teach/*.json shards
   // Level data now lazy-loads via public/data/*.json shards (Vite copies public/ automatically)
-  'firebase-config.js',
   'sw.js',
   'style.css',
 ];
@@ -28,6 +27,19 @@ for (const rel of requiredFiles) {
   }
   fs.copyFileSync(src, dest);
 }
+
+// CI and local release tooling generate the runtime Firebase config under public/.
+// Prefer it over the root placeholder so prepare-pages-dist does not overwrite a
+// valid Vite-copied production config with an intentionally credential-free stub.
+const firebaseConfigCandidates = [
+  path.join(root, 'public', 'firebase-config.js'),
+  path.join(root, 'firebase-config.js'),
+];
+const firebaseConfigSource = firebaseConfigCandidates.find((candidate) => fs.existsSync(candidate));
+if (!firebaseConfigSource) {
+  throw new Error('firebase-config.js is missing');
+}
+fs.copyFileSync(firebaseConfigSource, path.join(distDir, 'firebase-config.js'));
 
 // Keep an optional local override script path to avoid runtime 404.
 const localConfig = path.join(root, 'firebase-config.local.js');

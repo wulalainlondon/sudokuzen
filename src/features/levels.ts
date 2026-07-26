@@ -18,6 +18,7 @@ import { toClassicLevelRecord, toSpeedLevelRecord, getReplayHistory } from '../s
 import { requestRefresh } from '../app/ui/refreshBus';
 import { openPreLevel, closePreLevel } from '../app/ui/uiOrchestrator';
 import type { SudokuWindow } from '../facade/windowTypes';
+import { syncJourneyHome } from './journey';
 
 // Re-export tier system symbols so existing imports from './levels' keep working
 export {
@@ -101,6 +102,7 @@ export function updateResumeBanner(): void {
 export function renderStageMap(): void {
   const map = document.getElementById('stage-map');
   if (!map) return;
+  syncJourneyHome();
 
   // React takeover path: keep legacy callers, but let React own rendering.
   if (document.body?.dataset.reactNormalStageMap === '1') {

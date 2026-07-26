@@ -3,6 +3,7 @@
 
 import { gs, type DuoRoomData } from '../../game/state';
 import { getPlayerIdentity } from '../../firebase/client';
+import { publicPlayerAlias } from '../../platform/publicAlias';
 import {
   firebaseServerTimestamp,
   firebaseTimestampFromMillis,
@@ -14,9 +15,15 @@ import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
 import type { FirestoreDoc, FirestoreSnap } from '../../firebase/types';
 import { bumpDuoMetric } from './duoMetrics';
-import { SK } from '../../storage/keys';
 import { loadDuoProfile } from './duoProfile';
 import { isDuoWsEnabled } from './duoTransport';
+import {
+  clearStoredDuoSession,
+  readStoredDuoRole,
+  readStoredDuoRoomId,
+  storeDuoRole,
+  storeDuoRoomId,
+} from './duoSession';
 
 export function getFirebaseFieldValue() {
   return { serverTimestamp: firebaseServerTimestamp };
@@ -52,13 +59,7 @@ const MAX_SNAPSHOT_RETRIES = 5;
 
 // ── Module state ─────────────────────────────────────────────────────
 
-let _activeRoomId: string | null = (() => {
-  try {
-    return localStorage.getItem(SK.DUO_ACTIVE_ROOM_ID);
-  } catch {
-    return null;
-  }
-})();
+let _activeRoomId: string | null = readStoredDuoRoomId();
 let _waitingRoomsCache: { rows: DuoRoomSummary[]; ts: number; limit: number } | null = null;
 let _waitingRoomsInFlight: Promise<DuoRoomSummary[]> | null = null;
 let _lastWaitingRoomsFetchMs = 0;
@@ -87,8 +88,13 @@ export function setResetHandler(fn: () => void): void {
 
 function setActiveRoomId(roomId: string | null): void {
   _activeRoomId = roomId;
-  if (roomId) localStorage.setItem(SK.DUO_ACTIVE_ROOM_ID, roomId);
-  else localStorage.removeItem(SK.DUO_ACTIVE_ROOM_ID);
+  if (roomId) storeDuoRoomId(roomId);
+  else clearStoredDuoSession();
+}
+
+function setActiveDuoRole(role: 'host' | 'guest'): void {
+  gs.duoRole = role;
+  storeDuoRole(role);
 }
 
 export function getActiveDuoRoomId(): string | null {
@@ -109,8 +115,8 @@ function docToSummary(roomId: string, d: DuoRoomData): DuoRoomSummary {
     modeId: d.modeId || '',
     status: d.status,
     hostId: d.hostId,
-    hostAlias: d.hostAlias || '--',
-    guestAlias: d.guestAlias || null,
+    hostAlias: publicPlayerAlias(d.hostId, d.hostAlias || '--'),
+    guestAlias: d.guestId ? publicPlayerAlias(d.guestId, d.guestAlias || '') : null,
     updatedAtMs,
     hostHeartbeatAtMs: d.hostHeartbeatAtMs ?? 0,
   };
@@ -370,7 +376,7 @@ export async function createDuoRoom(tierId: string, modeId: string): Promise<str
     const roomId = await duoWsCreateRoom(tierId, modeId);
     if (!roomId) return null;
     setActiveRoomId(roomId);
-    gs.duoRole = 'host';
+    setActiveDuoRole('host');
     gs.duoMyReady = false;
     // 寫一筆大廳麵包屑，讓 WS 房能被其他玩家在大廳發現
     const { publishWsLobbyRoom } = await import('./duoLobbyMirror');
@@ -390,7 +396,7 @@ export async function createDuoRoom(tierId: string, modeId: string): Promise<str
     const { roomId } = result;
     bumpDuoMetric('roomWriteOps');
     setActiveRoomId(roomId);
-    gs.duoRole = 'host';
+    setActiveDuoRole('host');
     gs.duoMyReady = false;
     subscribeDuoRoom();
     return roomId;
@@ -411,7 +417,7 @@ export async function joinDuoRoom(roomId: string): Promise<boolean> {
     const { duoWsJoinRoom } = await import('./duoSocket');
     const ok = await duoWsJoinRoom(roomId);
     if (!ok) return false;
-    gs.duoRole = 'guest';
+    setActiveDuoRole('guest');
     gs.duoMyReady = false;
     setActiveRoomId(roomId);
     return true;
@@ -425,7 +431,7 @@ export async function joinDuoRoom(roomId: string): Promise<boolean> {
       wins: loadDuoProfile().wins,
       titleDisplay: getEquippedTitleDisplay(),
     });
-    gs.duoRole = result.role;
+    setActiveDuoRole(result.role);
     gs.duoMyReady = result.role === 'host' ? result.hostReady : false;
     setActiveRoomId(roomId);
     subscribeDuoRoom();
@@ -534,6 +540,22 @@ function detachVisibilityHandler(): void {
 
 export async function resumeDuoRoomIfAny(): Promise<boolean> {
   if (!gs.firebaseReady || !_activeRoomId) return false;
+  if (isDuoWsEnabled()) {
+    const storedRole = readStoredDuoRole();
+    if (!storedRole) {
+      setActiveRoomId(null);
+      return false;
+    }
+    const { duoWsResumeRoom } = await import('./duoSocket');
+    const resumed = await duoWsResumeRoom(_activeRoomId, storedRole);
+    if (!resumed) {
+      setActiveRoomId(null);
+      gs.duoRole = null;
+      return false;
+    }
+    gs.duoRole = storedRole;
+    return true;
+  }
   const authUid = getAuthUid();
   if (!authUid) return false;
   try {

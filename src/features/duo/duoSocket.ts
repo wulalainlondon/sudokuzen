@@ -17,7 +17,7 @@ import { handleDuoSnapshot } from './duoGame';
 import { getDuoWsHost } from './duoTransport';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
-import type { ClientMsg, ServerMsg, PublicRoomState, PlayerInfo, MoveRecord, CcFields } from './duoWsProtocol';
+import type { ClientMsg, ServerMsg, PublicRoomState, PlayerInfo, MoveRecord, CcFields, Role } from './duoWsProtocol';
 
 const PARTY = 'game-room';
 const WS_OPEN = 1;
@@ -372,6 +372,30 @@ export async function duoWsJoinRoom(roomId: string): Promise<boolean> {
     return true;
   } catch (e) {
     console.warn('[duoWs] joinRoom failed:', e);
+    closeSocket();
+    return false;
+  }
+}
+
+export async function duoWsResumeRoom(roomId: string, role: Role): Promise<boolean> {
+  const socket = connect(roomId);
+  try {
+    await waitOpen(socket);
+    const idToken = (await getFirebaseIdToken()) ?? undefined;
+    const hello: ClientMsg = { type: 'hello', player: playerInfo(), role, idToken };
+    send(hello);
+    const res = await waitFor(
+      (m) => (m.type === 'roomState' && m.you === role) || (m.type === 'error' && m.code === 'reclaim_failed'),
+      8_000,
+    );
+    if (res.type === 'error') {
+      closeSocket();
+      return false;
+    }
+    _reconnectMsg = { type: 'hello', player: playerInfo(), role };
+    return true;
+  } catch (e) {
+    console.warn('[duoWs] resumeRoom failed:', e);
     closeSocket();
     return false;
   }

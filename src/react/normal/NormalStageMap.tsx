@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 import { gs } from '../../game/state';
-import { getAllLevels } from '../../data/dataRegistry';
+import { getAllLevels, preloadMode } from '../../data/dataRegistry';
 import { SK, readJson } from '../../storage/keys';
 import { enterTier, getDifficultyTiers, getRealmUnlockState, getTierUnlockMessage } from '../../features/levels';
 import { showFeedback } from '../../ui/feedback';
@@ -70,6 +70,11 @@ export function NormalStageMap(): ReactElement | null {
 
     const onRefresh = () => setRevision((v) => v + 1);
     window.addEventListener('normal-stage-map-refresh', onRefresh);
+    // The first React render can beat the async normal shard on a native
+    // WebView. Refresh once the cache is definitely warm.
+    void preloadMode('normal')
+      .then(onRefresh)
+      .catch(() => {});
 
     return () => {
       window.removeEventListener('normal-stage-map-refresh', onRefresh);

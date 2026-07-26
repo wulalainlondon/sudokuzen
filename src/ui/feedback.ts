@@ -2,7 +2,7 @@
 
 import { gs } from '../game/state';
 
-export function showFeedback(msg: string, tone: 'neutral' | 'success' | 'error' = 'neutral'): void {
+export function showFeedback(msg: string, tone: 'neutral' | 'success' | 'error' = 'neutral', durationMs = 900): void {
   if (!gs.feedbackToast) return;
   clearTimeout(gs.feedbackTimer!);
   gs.feedbackToast.textContent = msg;
@@ -10,9 +10,12 @@ export function showFeedback(msg: string, tone: 'neutral' | 'success' | 'error' 
   if (tone === 'success') gs.feedbackToast.classList.add('success');
   if (tone === 'error') gs.feedbackToast.classList.add('error');
   gs.feedbackToast.classList.add('show');
-  gs.feedbackTimer = setTimeout(() => {
-    gs.feedbackToast!.classList.remove('show');
-  }, 900);
+  gs.feedbackTimer = setTimeout(
+    () => {
+      gs.feedbackToast!.classList.remove('show');
+    },
+    Math.max(900, durationMs),
+  );
 }
 
 export function markErrorArea(idx: number): void {

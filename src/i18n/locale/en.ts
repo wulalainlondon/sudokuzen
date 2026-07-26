@@ -68,6 +68,23 @@ export const en: Widen<Locale> = {
     unlockGeneric: 'Tier not yet reached. Locked for now.',
   },
 
+  journey: {
+    chapter: {
+      prologue: 'Prologue · First Trial',
+      practice: 'Chapter I · Prove the First Technique',
+      world: 'Chapter II · Enter the World',
+      duo: 'Chapter III · Test Your Skill',
+    },
+    practiceLock: 'Clear {needed} Beginner puzzles to unlock Practice ({cleared}/{needed})',
+    worldLock: 'Verify {needed} technique to unlock World (Training Lv.{level}/{needed})',
+    duoLock: 'Duo unlocks at Training Lv.{needed} (currently Lv.{level})',
+    prologueProgress: 'Beginner {cleared}/{needed} · Next: unlock Practice',
+    practiceProgress: 'Training Lv.{level}/{needed} · Learn + 3 practices + field proof',
+    worldProgress: 'Training Lv.{level}/{needed} · Next: unlock Duo',
+    duoProgress: 'All three chapters unlocked · Keep proving techniques',
+    duoEntrySub: 'Live matches · Test your skill',
+  },
+
   // ── Practice mode ───────────────────────────────────────────────────
   practice: {
     entryMain: 'Practice',
@@ -346,6 +363,7 @@ export const en: Widen<Locale> = {
     surrender: 'Forfeit',
     resultTitle: '\uD83D\uDC91 Duo Result',
     playAgain: 'Play Again',
+    connecting: 'Connecting to Duo Lobby...',
     connectionLost: 'Connection lost, reconnecting...',
     connectionFailed: 'Connection failed',
     connectionError: 'Connection error, please retry',
