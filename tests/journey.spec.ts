@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getJourneyState, getJourneyLockMessage, JOURNEY_GATES } from '../src/features/journey';
+import { getJourneyState, getJourneyLockMessage, JOURNEY_GATES, syncJourneyHome } from '../src/features/journey';
 import { SK } from '../src/storage/keys';
 
 function buildPracticeRecords(techniques: string[]): Record<string, unknown> {
@@ -110,5 +110,23 @@ describe('journey rollout policy', () => {
     expect(getJourneyLockMessage('practice')).toContain('0/3');
     expect(getJourneyLockMessage('world')).toContain('Lv.0/1');
     expect(getJourneyLockMessage('duo')).toContain('Lv.0');
+  });
+
+  it('keeps locked journey entries actionable so a tap can explain the gate', () => {
+    document.body.innerHTML = `
+      <button id="practice-entry-btn"><span data-journey-sub></span></button>
+      <button id="world-entry-btn"><span data-journey-sub></span></button>
+      <button id="duo-journey-entry-btn"><span data-journey-sub></span></button>
+      <button id="duo-entry-btn"></button>
+    `;
+
+    syncJourneyHome();
+
+    for (const id of ['practice-entry-btn', 'world-entry-btn', 'duo-journey-entry-btn', 'duo-entry-btn']) {
+      const button = document.getElementById(id);
+      expect(button?.classList.contains('journey-locked')).toBe(true);
+      expect(button?.hasAttribute('aria-disabled')).toBe(false);
+      expect(button?.getAttribute('aria-description')).toBeTruthy();
+    }
   });
 });

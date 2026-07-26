@@ -128,3 +128,6 @@ TODO / handoff (current):
 - 發現舊玩家安裝來源為 GitHub Pages，該站仍停在 `2026.06.17-V4`；準備將修復推送至 `main` 觸發 Pages 發布。
 - 修正 Pages workflow：由 `dist/index.html` 解析真正的主 JavaScript entry，避免拆包後誤抓 8 KB 次要 chunk 導致 CI 假失敗。
 - 發布前重跑 `npm run check:release`：42 files / 296 tests、Functions、Duo Worker dry-run 全部通過；GitHub Pages build 與 smoke test 讀回 `v2026.07.26-V2`。
+- GitHub Pages `2026.07.26-V3` 已發布；live HTML、Service Worker 與首頁版本徽章均讀回 V3。
+- live 真實點擊驗證發現鎖定入口使用 `aria-disabled=true`，Playwright／輔助操作無法啟動鎖定說明；已改為保持按鈕可操作並用 `aria-description` 說明門檻。
+- 新增 journey 回歸測試，確認四個鎖定入口皆可點且仍保留鎖定 class／門檻描述；本機實點後顯示 4 秒紅色「修行 Lv.3 開啟對決」提示，無 console/page error。

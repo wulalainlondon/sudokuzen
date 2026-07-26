@@ -191,7 +191,9 @@ export function getJourneyLockMessage(mode: JourneyMode, state = getJourneyState
 function setEntryState(button: HTMLElement | null, unlocked: boolean, unlockedSub: string, lockedSub: string): void {
   if (!button) return;
   button.classList.toggle('journey-locked', !unlocked);
-  button.setAttribute('aria-disabled', String(!unlocked));
+  button.removeAttribute('aria-disabled');
+  if (unlocked) button.removeAttribute('aria-description');
+  else button.setAttribute('aria-description', lockedSub);
   button.title = unlocked ? unlockedSub : lockedSub;
   const sub = button.querySelector<HTMLElement>('[data-journey-sub]');
   if (sub) sub.textContent = unlocked ? unlockedSub : `🔒 ${lockedSub}`;
@@ -245,7 +247,10 @@ export function syncJourneyHome(): void {
   const duoShortcut = document.getElementById('duo-entry-btn');
   if (duoShortcut) {
     duoShortcut.classList.toggle('journey-locked', !state.duoUnlocked);
-    duoShortcut.setAttribute('aria-disabled', String(!state.duoUnlocked));
-    duoShortcut.title = state.duoUnlocked ? t('journey.duoEntrySub') : getJourneyLockMessage('duo', state);
+    const lockMessage = getJourneyLockMessage('duo', state);
+    duoShortcut.removeAttribute('aria-disabled');
+    if (state.duoUnlocked) duoShortcut.removeAttribute('aria-description');
+    else duoShortcut.setAttribute('aria-description', lockMessage);
+    duoShortcut.title = state.duoUnlocked ? t('journey.duoEntrySub') : lockMessage;
   }
 }
