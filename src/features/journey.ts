@@ -2,6 +2,7 @@ import { t } from '../i18n/t';
 import { SK, readJson } from '../storage/keys';
 import { getAllLevels } from '../data/dataRegistry';
 import { toClassicLevelRecord } from '../shared/records/levelRecords';
+import { isNativeApp } from '../platform/nativeApp';
 
 export type JourneyMode = 'practice' | 'world' | 'duo';
 
@@ -35,6 +36,12 @@ function countTruthyRecords(value: Record<string, unknown>): number {
 
 function isE2EMode(): boolean {
   return localStorage.getItem('sudoku_e2e_mode') === '1';
+}
+
+function isInstalledPwa(): boolean {
+  if (isNativeApp()) return false;
+  const iosNavigator = navigator as Navigator & { standalone?: boolean };
+  return window.matchMedia?.('(display-mode: standalone)').matches === true || iosNavigator.standalone === true;
 }
 
 const TEACH_MODULE_TECHNIQUES: ReadonlyArray<readonly [string, string]> = [
@@ -103,6 +110,10 @@ export function getJourneyState(): JourneyState {
   // migration records the previous PWA identity in LEGACY_PLAYER_ID, giving us
   // a durable, device-local upgrade marker without weakening Firestore rules.
   const legacyPwaPlayer = Boolean(localStorage.getItem(SK.LEGACY_PLAYER_ID));
+  // Installed web PWAs used the pre-journey rules where every mode was directly
+  // accessible. Detect the runtime itself as a fallback because browser storage
+  // cleanup or the UID migration can remove the older local identity marker.
+  const installedPwa = isInstalledPwa();
   const e2e = isE2EMode();
 
   const studiedTechniques = new Set(
@@ -131,6 +142,7 @@ export function getJourneyState(): JourneyState {
   // the chapter rollout from taking access away from returning players.
   const practiceUnlocked =
     e2e ||
+    installedPwa ||
     legacyPwaPlayer ||
     normalClears >= JOURNEY_GATES.practiceNormalClears ||
     practiceClears > 0 ||
@@ -138,12 +150,14 @@ export function getJourneyState(): JourneyState {
     duoPlays > 0;
   const worldUnlocked =
     e2e ||
+    installedPwa ||
     legacyPwaPlayer ||
     verifiedLevel >= JOURNEY_GATES.worldVerifiedTechniques ||
     worldEncounters > 0 ||
     worldLevel > 1 ||
     duoPlays > 0;
-  const duoUnlocked = e2e || legacyPwaPlayer || verifiedLevel >= JOURNEY_GATES.duoVerifiedTechniques || duoPlays > 0;
+  const duoUnlocked =
+    e2e || installedPwa || legacyPwaPlayer || verifiedLevel >= JOURNEY_GATES.duoVerifiedTechniques || duoPlays > 0;
   const currentChapter = duoUnlocked ? 'duo' : worldUnlocked ? 'world' : practiceUnlocked ? 'practice' : 'prologue';
 
   return {

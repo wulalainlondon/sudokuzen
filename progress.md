@@ -133,3 +133,5 @@ TODO / handoff (current):
 - 新增 journey 回歸測試，確認四個鎖定入口皆可點且仍保留鎖定 class／門檻描述；本機實點後顯示 4 秒紅色「修行 Lv.3 開啟對決」提示，無 console/page error。
 - V4 live 首載壓力測試定位到版本更新清快取期間 `feedbackToast` 尚未初始化，點擊雖進入鎖定判斷但提示被靜默丟棄。
 - `showFeedback()` 現在會按需建立提示元件；新增 early-tap 回歸測試。本機模擬首次 PWA 更新後立即點對決，已目視確認紅色門檻提示正常且無錯誤。
+- 2026-07-26 對戰入口緊急修復：不再只靠 `LEGACY_PLAYER_ID` 判定舊 PWA；standalone 安裝版 PWA 一律沿用舊規則，修行／世界／對戰直接開放，Capacitor iOS 原生版仍保留旅程門檻。
+- 新增 journey 單元測試（standalone PWA 解鎖、native 不繞過）與 `e2e/pwa-duo-entry.spec.ts`；standalone 無任何舊儲存標記時，實點已成功進入「Duo 對戰大廳」，畫面與連線中狀態均目視確認。

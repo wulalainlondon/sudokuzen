@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { getJourneyState, getJourneyLockMessage, JOURNEY_GATES, syncJourneyHome } from '../src/features/journey';
 import { SK } from '../src/storage/keys';
 
@@ -17,6 +17,11 @@ function buildPracticeRecords(techniques: string[]): Record<string, unknown> {
 describe('journey rollout policy', () => {
   beforeEach(() => {
     localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    delete (window as Window & { Capacitor?: unknown }).Capacitor;
   });
 
   it('starts in the prologue with later modes visibly gated', () => {
@@ -104,6 +109,35 @@ describe('journey rollout policy', () => {
     expect(state.worldUnlocked).toBe(true);
     expect(state.duoUnlocked).toBe(true);
     expect(state.currentChapter).toBe('duo');
+  });
+
+  it('keeps every mode open in an installed PWA even when its legacy identity marker is missing', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query === '(display-mode: standalone)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+
+    const state = getJourneyState();
+    expect(state.normalClears).toBe(0);
+    expect(state.practiceUnlocked).toBe(true);
+    expect(state.worldUnlocked).toBe(true);
+    expect(state.duoUnlocked).toBe(true);
+    expect(state.currentChapter).toBe('duo');
+  });
+
+  it('does not bypass journey gates inside the native iOS app', () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: true }));
+    (window as Window & { Capacitor?: { isNativePlatform: () => boolean } }).Capacitor = {
+      isNativePlatform: () => true,
+    };
+
+    expect(getJourneyState().duoUnlocked).toBe(false);
   });
 
   it('explains the next gate with current progress', () => {
