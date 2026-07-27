@@ -13,6 +13,7 @@ import {
   getUnlockedTiers,
   getUnlockedModes,
   checkNewUnlocks,
+  markDuoRoomResultRecorded,
   type DuoProfile,
 } from '../src/features/duo/duoProfile';
 
@@ -86,6 +87,28 @@ describe('duo profile & match recording', () => {
     expect(p.playCount).toEqual({});
   });
 
+  it('normalizes a partial or corrupt legacy profile', () => {
+    localStorage.setItem(
+      'sudoku_duo_profile_v2',
+      JSON.stringify({
+        wins: '4',
+        losses: -2,
+        playCount: { 'tier0-standard': '3', broken: 'nope' },
+        rivals: { Alice: { wins: 2 } },
+      }),
+    );
+    const p = loadDuoProfile();
+    expect(p).toEqual({
+      playCount: { 'tier0-standard': 3, broken: 0 },
+      wins: 4,
+      losses: 0,
+      draws: 0,
+      currentStreak: 0,
+      bestStreak: 0,
+      rivals: { Alice: { wins: 2, losses: 0 } },
+    });
+  });
+
   it('tracks play count per tier-mode', () => {
     let p = emptyProfile();
     p = recordDuoMatch(p, 'tierI', 'standard', 'win', 'Bob');
@@ -93,6 +116,12 @@ describe('duo profile & match recording', () => {
     p = recordDuoMatch(p, 'tierI', 'noNotes', 'win', 'Bob');
     expect(p.playCount['tierI-standard']).toBe(2);
     expect(p.playCount['tierI-noNotes']).toBe(1);
+  });
+
+  it('records each round once while allowing rematches in the same room', () => {
+    expect(markDuoRoomResultRecorded('room-1:seed-1')).toBe(true);
+    expect(markDuoRoomResultRecorded('room-1:seed-1')).toBe(false);
+    expect(markDuoRoomResultRecorded('room-1:seed-2')).toBe(true);
   });
 });
 

@@ -24,6 +24,7 @@ describe('saveGameStatus / loadGameStatus', () => {
   beforeEach(() => {
     localStorage.clear();
     gs.isSpeedrunMode = false;
+    gs.isDuoMode = false;
     gs.currentLevel = makeLevelData(42);
     gs.cellsData = gs.currentLevel.puzzle.map((val: number) => ({
       value: val,
@@ -81,12 +82,20 @@ describe('saveGameStatus / loadGameStatus', () => {
     saveGameStatus();
     expect(localStorage.getItem(SK.LAST_LEVEL)).toBe('42');
   });
+
+  it('does not pollute the single-player save while playing Duo', () => {
+    gs.isDuoMode = true;
+    saveGameStatus();
+    expect(localStorage.getItem(SK.save(42, false))).toBeNull();
+    expect(localStorage.getItem(SK.LAST_LEVEL)).toBeNull();
+  });
 });
 
 describe('clearGameStatus', () => {
   beforeEach(() => {
     localStorage.clear();
     gs.isSpeedrunMode = false;
+    gs.isDuoMode = false;
     gs.currentLevel = makeLevelData(42);
     gs.seconds = 100;
     gs.errors = 0;

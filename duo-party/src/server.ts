@@ -117,6 +117,8 @@ export class GameRoom extends Server<Env> {
         return this.handleCc(connection, msg);
       case 'abort':
         return this.handleAbort(connection);
+      case 'rematch':
+        return this.handleRematch(connection);
       case 'leave':
         return this.handleLeave(connection);
       case 'closeResult':
@@ -373,6 +375,38 @@ export class GameRoom extends Server<Env> {
     await this.commit();
   }
 
+  private async handleRematch(conn: Connection<ConnState>): Promise<void> {
+    if (!this.room || !conn.state?.role) return;
+    if (this.room.status !== 'finished' || !this.room.host || !this.room.guest) {
+      return this.err(conn, 'bad_state', 'Rematch is only available after a completed match');
+    }
+    const resetSlot = (slot: PlayerSlot): void => {
+      slot.ready = false;
+      slot.progress = 0;
+      slot.finishTime = null;
+      slot.stars = null;
+      slot.moves = null;
+    };
+    resetSlot(this.room.host);
+    resetSlot(this.room.guest);
+    this.room.status = 'waiting';
+    this.room.puzzleSeed = Math.floor(Math.random() * 1_000_000_000);
+    this.room.countdownStartedAt = null;
+    this.room.startAt = null;
+    this.room.specBoardState = null;
+    this.room.specBoardVersion = null;
+    this.room.specBombAt = null;
+    this.room.specBombCells = null;
+    this.room.cc = null;
+    this.room.countdownEndAt = null;
+    this.room.forfeitHostAt = null;
+    this.room.forfeitGuestAt = null;
+    this.room.closeRoomAt = null;
+    this.room.deleteRoomAt = null;
+    this.room.presenceCheckAt = null;
+    await this.commit();
+  }
+
   private async handleLeave(conn: Connection<ConnState>): Promise<void> {
     if (!this.room) return;
     const role = conn.state?.role;
@@ -535,11 +569,21 @@ export class GameRoom extends Server<Env> {
     let changed = false; // 有需要廣播的狀態變更
 
     if (this.room.countdownEndAt != null && now >= this.room.countdownEndAt && this.room.status === 'countdown') {
-      this.room.status = 'playing';
-      this.room.startAt = now;
+      const canStart =
+        !!this.room.host?.ready &&
+        !!this.room.guest?.ready &&
+        this.room.host.online !== false &&
+        this.room.guest.online !== false;
+      this.room.status = canStart ? 'playing' : 'waiting';
+      this.room.startAt = canStart ? now : null;
+      if (!canStart) {
+        if (this.room.host) this.room.host.ready = false;
+        if (this.room.guest) this.room.guest.ready = false;
+        this.room.countdownStartedAt = null;
+      }
       this.room.countdownEndAt = null;
-      this.room.presenceCheckAt = now + PRESENCE_CHECK_MS; // 開賽後開始 presence 輪詢
-      started = true;
+      this.room.presenceCheckAt = canStart ? now + PRESENCE_CHECK_MS : null;
+      started = canStart;
       changed = true;
     } else if (this.room.countdownEndAt != null && now >= this.room.countdownEndAt) {
       this.room.countdownEndAt = null; // 狀態已離開 countdown，清掉殘留 deadline

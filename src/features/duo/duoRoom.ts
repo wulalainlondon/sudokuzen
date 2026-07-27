@@ -539,7 +539,7 @@ function detachVisibilityHandler(): void {
 // ── Resume ───────────────────────────────────────────────────────────
 
 export async function resumeDuoRoomIfAny(): Promise<boolean> {
-  if (!gs.firebaseReady || !_activeRoomId) return false;
+  if (!_activeRoomId) return false;
   if (isDuoWsEnabled()) {
     const storedRole = readStoredDuoRole();
     if (!storedRole) {
@@ -556,6 +556,7 @@ export async function resumeDuoRoomIfAny(): Promise<boolean> {
     gs.duoRole = storedRole;
     return true;
   }
+  if (!gs.firebaseReady) return false;
   const authUid = getAuthUid();
   if (!authUid) return false;
   try {

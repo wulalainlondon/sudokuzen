@@ -18,17 +18,58 @@ export interface DuoProfile {
 }
 
 const PROFILE_KEY = 'sudoku_duo_profile_v2';
+const RECORDED_ROOMS_KEY = 'sudoku_duo_recorded_rooms_v1';
 
 function emptyProfile(): DuoProfile {
   return { playCount: {}, wins: 0, losses: 0, draws: 0, currentStreak: 0, bestStreak: 0, rivals: {} };
 }
 
 export function loadDuoProfile(): DuoProfile {
-  return readJson<DuoProfile>(PROFILE_KEY, emptyProfile());
+  const raw = readJson<Partial<DuoProfile>>(PROFILE_KEY, {});
+  const defaults = emptyProfile();
+  const finiteCount = (value: unknown): number => {
+    const count = Number(value);
+    return Number.isFinite(count) && count >= 0 ? Math.floor(count) : 0;
+  };
+  const playCount =
+    raw.playCount && typeof raw.playCount === 'object'
+      ? Object.fromEntries(
+          Object.entries(raw.playCount)
+            .filter(([key]) => typeof key === 'string' && key.length > 0)
+            .map(([key, value]) => [key, finiteCount(value)]),
+        )
+      : defaults.playCount;
+  const rivals: DuoProfile['rivals'] = {};
+  if (raw.rivals && typeof raw.rivals === 'object') {
+    for (const [alias, record] of Object.entries(raw.rivals)) {
+      if (!record || typeof record !== 'object') continue;
+      rivals[alias] = {
+        wins: finiteCount((record as { wins?: unknown }).wins),
+        losses: finiteCount((record as { losses?: unknown }).losses),
+      };
+    }
+  }
+  return {
+    playCount,
+    wins: finiteCount(raw.wins),
+    losses: finiteCount(raw.losses),
+    draws: finiteCount(raw.draws),
+    currentStreak: finiteCount(raw.currentStreak),
+    bestStreak: finiteCount(raw.bestStreak),
+    rivals,
+  };
 }
 
 export function saveDuoProfile(p: DuoProfile): void {
   writeJson(PROFILE_KEY, p);
+}
+
+export function markDuoRoomResultRecorded(roundKey: string): boolean {
+  if (!roundKey) return true;
+  const ids = readJson<string[]>(RECORDED_ROOMS_KEY, []).filter((id) => typeof id === 'string' && id.length > 0);
+  if (ids.includes(roundKey)) return false;
+  writeJson(RECORDED_ROOMS_KEY, [...ids, roundKey].slice(-100));
+  return true;
 }
 
 // ── Record a match ───────────────────────────────────────────────────

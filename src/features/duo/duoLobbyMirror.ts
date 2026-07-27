@@ -23,36 +23,102 @@ const WS_LOBBY_DEAD_MS = 180_000;
 let _publishedRoomId: string | null = null;
 let _touchTimer: ReturnType<typeof setInterval> | null = null;
 let _pagehideBound = false;
+let _desiredVisible = false;
+let _visibilityEpoch = 0;
+let _hostRoomConfig: { roomId: string; tierId: string; modeId: string } | null = null;
+let _mutationChain: Promise<unknown> = Promise.resolve();
+let _publishRetryTimer: ReturnType<typeof setTimeout> | null = null;
+let _publishRetryAttempts = 0;
+
+export function getWsLobbyMirrorDebugState(): { desiredVisible: boolean; roomId: string | null } {
+  return {
+    desiredVisible: _desiredVisible,
+    roomId: _hostRoomConfig?.roomId ?? null,
+  };
+}
 
 function wsLobbyDoc(roomId: string) {
   return gs.db!.collection(WS_LOBBY_COLLECTION).doc(roomId);
 }
 
+function enqueueMutation<T>(operation: () => Promise<T>): Promise<T> {
+  const next = _mutationChain.then(operation, operation);
+  _mutationChain = next.then(
+    () => undefined,
+    () => undefined,
+  );
+  return next;
+}
+
 // host 建立 WS 房後寫一筆大廳記錄並開始保鮮。
 export async function publishWsLobbyRoom(roomId: string, tierId: string, modeId: string): Promise<void> {
-  if (!gs.firebaseReady || !gs.db) return;
+  _hostRoomConfig = { roomId, tierId, modeId };
+  _desiredVisible = true;
+  await showWsLobbyRoom();
+}
+
+async function showWsLobbyRoom(): Promise<void> {
+  const config = _hostRoomConfig;
+  const ownerUid = getAuthUid();
+  if (!config || !_desiredVisible) return;
+  if (!gs.firebaseReady || !gs.db || !ownerUid) {
+    schedulePublishRetry();
+    return;
+  }
   const { playerId, alias } = getPlayerIdentity();
-  // 先停掉任何前一房殘留的 timer，確保 timer 與 _publishedRoomId 強一致（連續建房）。
   stopTouch();
-  _publishedRoomId = roomId;
+  _desiredVisible = true;
+  const epoch = ++_visibilityEpoch;
+  _publishedRoomId = config.roomId;
   bindPagehide();
   try {
-    await wsLobbyDoc(roomId).set({
-      roomId,
-      hostId: playerId,
-      hostOwnerUid: getAuthUid() || '',
-      hostAlias: alias || 'Player',
-      tierId,
-      modeId,
-      status: 'waiting',
-      transport: 'ws',
-      hostHeartbeatAtMs: Date.now(),
-      updatedAt: firebaseServerTimestamp(),
-    });
+    await enqueueMutation(() =>
+      wsLobbyDoc(config.roomId).set({
+        roomId: config.roomId,
+        hostId: playerId,
+        hostOwnerUid: ownerUid,
+        hostAlias: alias || 'Player',
+        tierId: config.tierId,
+        modeId: config.modeId,
+        status: 'waiting',
+        transport: 'ws',
+        hostHeartbeatAtMs: Date.now(),
+        updatedAt: firebaseServerTimestamp(),
+      }),
+    );
   } catch (e) {
     console.warn('[duoWsLobby] publish failed:', e);
+    if (epoch === _visibilityEpoch) _publishedRoomId = null;
+    schedulePublishRetry();
+    return;
   }
+  // A guest may have joined while the async Firestore set was in flight.
+  // Reconcile the final desired state so the completed set cannot resurrect
+  // a room that should already be hidden.
+  if (epoch !== _visibilityEpoch || !_desiredVisible) {
+    await enqueueMutation(() => wsLobbyDoc(config.roomId).delete()).catch(() => {});
+    return;
+  }
+  _publishRetryAttempts = 0;
+  clearPublishRetry();
   startTouch();
+}
+
+function schedulePublishRetry(): void {
+  if (!_desiredVisible || !_hostRoomConfig || _publishRetryTimer) return;
+  const delay = Math.min(10_000, 1000 * Math.pow(2, Math.min(_publishRetryAttempts, 3)));
+  _publishRetryAttempts++;
+  _publishRetryTimer = setTimeout(() => {
+    _publishRetryTimer = null;
+    void showWsLobbyRoom();
+  }, delay);
+}
+
+function clearPublishRetry(): void {
+  if (_publishRetryTimer) {
+    clearTimeout(_publishRetryTimer);
+    _publishRetryTimer = null;
+  }
 }
 
 function startTouch(): void {
@@ -61,7 +127,10 @@ function startTouch(): void {
     if (!_publishedRoomId || !gs.firebaseReady) return;
     wsLobbyDoc(_publishedRoomId)
       .update({ hostHeartbeatAtMs: Date.now(), updatedAt: firebaseServerTimestamp() })
-      .catch(() => {});
+      .catch(() => {
+        _publishedRoomId = null;
+        schedulePublishRetry();
+      });
   }, WS_LOBBY_TOUCH_MS);
 }
 
@@ -82,20 +151,41 @@ function bindPagehide(): void {
 }
 
 // 從大廳移除（有人加入、離開、結束）。idempotent。
-export function unpublishWsLobbyRoom(): void {
+function hideWsLobbyRoom(clearConfig: boolean): void {
+  _desiredVisible = false;
+  _visibilityEpoch++;
+  clearPublishRetry();
+  _publishRetryAttempts = 0;
   stopTouch();
-  const roomId = _publishedRoomId;
+  const roomId = _publishedRoomId || _hostRoomConfig?.roomId || null;
   _publishedRoomId = null;
+  if (clearConfig) _hostRoomConfig = null;
   if (!roomId || !gs.firebaseReady || !gs.db) return;
-  wsLobbyDoc(roomId)
-    .delete()
-    .catch(() => {});
+  void enqueueMutation(() => wsLobbyDoc(roomId).delete()).catch(() => {});
 }
 
-// host 從每次 snapshot 觀察房況：有 guest 進來或離開 waiting → 下架。
-export function syncWsLobbyRoom(d: DuoRoomData): void {
-  if (!_publishedRoomId) return;
-  if (d.guestId || d.status !== 'waiting') unpublishWsLobbyRoom();
+export function unpublishWsLobbyRoom(): void {
+  hideWsLobbyRoom(true);
+}
+
+// host 從每次 snapshot 觀察房況：有 guest 或已開局時暫時下架；guest
+// 在倒數前斷線、房間回到 waiting 時重新發布。roomId 參數也讓整頁重載後
+// 能重建遺失的 module-level breadcrumb 狀態。
+export function syncWsLobbyRoom(d: DuoRoomData, roomId: string | null): void {
+  if (d.status === 'waiting' && !d.guestId && roomId) {
+    const configChanged =
+      !_hostRoomConfig ||
+      _hostRoomConfig.roomId !== roomId ||
+      _hostRoomConfig.tierId !== d.tierId ||
+      _hostRoomConfig.modeId !== d.modeId;
+    if (configChanged || !_desiredVisible) {
+      void publishWsLobbyRoom(roomId, d.tierId, d.modeId);
+    } else if (_publishedRoomId !== roomId) {
+      void showWsLobbyRoom();
+    }
+    return;
+  }
+  hideWsLobbyRoom(false);
 }
 
 // 大廳列出等待中的 WS 房（取代 WS 模式下對 duo_rooms 的查詢）。

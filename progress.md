@@ -1,5 +1,11 @@
 Original prompt: 幫我用這個檢查我的關卡 是否都是唯一解
 
+Current prompt (2026-07-27): 把 Chrome + S10+ 十場雙人耐久測試發現的斷線恢復、倒數幽靈局、等待房重新公開、連續戰鬥、殘留進度、建房連線與 Firebase 權限問題逐項修復，完整驗證後再回報。
+
+- 已完成正式站十場雙人測試並保留 `output/duo-adb/` 證據。
+- 已定位根因：Duo profile 未正規化、Duo 誤寫單人存檔、倒數取消未清本地 GO timer、WS lobby breadcrumb 永久忘記、再來一局只是關房回大廳、WS 首次 connect error 立即失敗。
+- 已開始新增房間/角色/seed scoped 的本地盤面快照與 legacy profile 正規化。
+
 Current prompt (2026-07-24): 以 PM 角度選定真實賣點，在不改整體內容下重排功能解鎖章節，並依目前 iOS 送審要求把專案推到可提交 App Store 的狀態；目前不做營利。
 
 - 已讀取並套用 develop-web-game skill，先檢查現有驗證工具。
@@ -135,3 +141,7 @@ TODO / handoff (current):
 - `showFeedback()` 現在會按需建立提示元件；新增 early-tap 回歸測試。本機模擬首次 PWA 更新後立即點對決，已目視確認紅色門檻提示正常且無錯誤。
 - 2026-07-26 對戰入口緊急修復：不再只靠 `LEGACY_PLAYER_ID` 判定舊 PWA；standalone 安裝版 PWA 一律沿用舊規則，修行／世界／對戰直接開放，Capacitor iOS 原生版仍保留旅程門檻。
 - 新增 journey 單元測試（standalone PWA 解鎖、native 不繞過）與 `e2e/pwa-duo-entry.spec.ts`；standalone 無任何舊儲存標記時，實點已成功進入「Duo 對戰大廳」，畫面與連線中狀態均目視確認。
+- 2026-07-27 Duo 十場實機回歸後修復：部分 profile 正規化、房間／角色／題種 scoped 盤面保存、雙端重載續局、開局倒數斷線取消、等待房重新發布、同房再戰、每局進度歸零、連線首個瞬斷容忍，以及 Duo 不再污染單人雲端存檔。
+- 新增 WebSocket 韌性 E2E：雙方落子後同時重載仍保留盤面／進度並可同房再戰；倒數斷線連續五輪都回到等待房且重新標記為公開。視覺檢查等待房無幽靈棋盤。
+- `npm run check:release` 全綠：43 test files / 306 tests，主程式、Functions、Duo Worker typecheck／lint／format／dry-run 全部通過。
+- Duo Worker 已部署，Version ID `2e945779-5c72-4c20-931a-0972c71cc5c6`；前端版本升為 `2026.07.27-V8`，待 GitHub Pages 發布與 Chrome／S10+ 正式環境最終十場驗證。

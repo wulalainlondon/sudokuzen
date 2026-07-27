@@ -50,6 +50,7 @@ export type ClientMsg =
   | { type: 'bomb'; cells: number[] } // 觀戰方丟炸彈
   | { type: 'cc'; update: Partial<CcFields> } // Chess Clock 回合更新
   | { type: 'abort' }
+  | { type: 'rematch' }
   | { type: 'leave' }
   | { type: 'closeResult' }
   | { type: 'ping' }; // 應用層心跳：更新座位 lastSeen，供 alarm 偵測靜默斷線

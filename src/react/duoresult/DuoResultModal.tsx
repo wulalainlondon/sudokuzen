@@ -45,10 +45,9 @@ export function DuoResultModal(): ReactElement {
   const safeContentHtml = useMemo(() => sanitizeHtml(contentHtml), [contentHtml]);
 
   const handlePlayAgain = useCallback(() => {
-    // Close result modal and navigate back to duo lobby for rematch
     import('../../features/duo/duoGame')
       .then((m) => {
-        m.closeDuoResult();
+        m.requestDuoRematch();
       })
       .catch(() => {});
   }, []);

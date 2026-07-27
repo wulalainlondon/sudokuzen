@@ -194,23 +194,26 @@ function waitFor(pred: (m: ServerMsg) => boolean, ms = 8000): Promise<ServerMsg>
   });
 }
 
-function waitOpen(socket: PartySocket): Promise<void> {
+function waitOpen(socket: PartySocket, timeoutMs = 12_000): Promise<void> {
   if (socket.readyState === WS_OPEN) return Promise.resolve();
   return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('duoWs: connect timeout'));
+    }, timeoutMs);
     const onOpen = (): void => {
       cleanup();
       resolve();
     };
-    const onErr = (): void => {
-      cleanup();
-      reject(new Error('duoWs: connect error'));
-    };
     const cleanup = (): void => {
+      clearTimeout(timer);
       socket.removeEventListener('open', onOpen);
-      socket.removeEventListener('error', onErr);
     };
     socket.addEventListener('open', onOpen);
-    socket.addEventListener('error', onErr);
+    // PartySocket reconnects automatically after transient error/close events.
+    // Rejecting the very first `error` made room creation fail even when the
+    // reconnect opened successfully a moment later, so only the wall-clock
+    // timeout above is terminal.
   });
 }
 
@@ -431,6 +434,10 @@ export function duoWsCc(update: Partial<CcFields>): void {
 
 export function duoWsAbort(): void {
   send({ type: 'abort' });
+}
+
+export function duoWsRematch(): void {
+  send({ type: 'rematch' });
 }
 
 export function duoWsCloseResult(): void {

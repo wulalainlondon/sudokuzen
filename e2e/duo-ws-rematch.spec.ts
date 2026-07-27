@@ -6,7 +6,7 @@ import { test, expect, type Page, type Browser, type BrowserContext } from '@pla
  * 目的：
  *  1) 用真人步調（雙方並發、逐格數秒）打完一整場，每場 ≥ 3 分鐘，
  *     驗證「對局開始後棋盤偶發不可點」已修、且長時對局全程穩定。
- *  2) 結算後點「再來一局」→ 回大廳 → 再完整打第二場，確認 rematch loop 能走完。
+ *  2) 結算後點「再來一局」→ 原房雙方回準備區 → 再完整打第二場。
  *  3) round 1 內含 32s 思考停頓探針，驗證 R1 心跳不誤殺 idle 玩家。
  *
  * 預設打本機 dev server（playwright.config.ts，baseURL=localhost:5173，goto('/')）。
@@ -217,7 +217,7 @@ async function waitForResultModal(page: Page): Promise<void> {
   await page.waitForSelector('.duo-result-panel', { timeout: 10_000 });
 }
 
-// 點「再來一局」→ closeDuoResult → 回大廳。
+// 點「再來一局」→ 原房重置並回到雙方準備區。
 async function clickPlayAgain(page: Page): Promise<void> {
   await page.locator('#duo-result-modal .resume-btn').click();
   await page
@@ -237,13 +237,15 @@ async function playFullMatch(
   guestPage: Page,
   hostAlias: string,
   round: number,
-  opts: { idleProbeMs?: number } = {},
+  opts: { idleProbeMs?: number; reuseRoom?: boolean } = {},
 ): Promise<void> {
-  await openLobby(hostPage);
-  await openLobby(guestPage);
+  if (!opts.reuseRoom) {
+    await openLobby(hostPage);
+    await openLobby(guestPage);
 
-  await createRoom(hostPage);
-  await discoverAndJoin(guestPage, hostAlias);
+    await createRoom(hostPage);
+    await discoverAndJoin(guestPage, hostAlias);
+  }
 
   await Promise.all([waitForReadyButtonVisible(hostPage), waitForReadyButtonVisible(guestPage)]);
   await clickReady(hostPage);
@@ -306,21 +308,20 @@ test.describe('duo-ws-rematch', () => {
       // ── 第一場（含真人思考停頓探針：32s idle 驗證心跳不誤殺）──
       await playFullMatch(hostPage, guestPage, hostAlias, 1, { idleProbeMs: 32_000 });
 
-      // ── 再來一局：雙方點 → 回大廳 ──
+      // ── 再來一局：任一方點擊，server-authoritative reset 讓雙方留在原房 ──
       await clickPlayAgain(hostPage);
-      await clickPlayAgain(guestPage);
       await Promise.all([
-        hostPage.waitForFunction(() => !document.getElementById('duo-lobby')?.classList.contains('hidden'), {
+        hostPage.waitForFunction(() => !document.getElementById('duo-room-view')?.classList.contains('hidden'), {
           timeout: 20_000,
         }),
-        guestPage.waitForFunction(() => !document.getElementById('duo-lobby')?.classList.contains('hidden'), {
+        guestPage.waitForFunction(() => !document.getElementById('duo-room-view')?.classList.contains('hidden'), {
           timeout: 20_000,
         }),
       ]);
-      console.log('[rematch] 再來一局 → 雙方已回大廳');
+      console.log('[rematch] 再來一局 → 雙方留在原房準備區');
 
       // ── 第二場（同樣完整走完）──
-      await playFullMatch(hostPage, guestPage, hostAlias, 2);
+      await playFullMatch(hostPage, guestPage, hostAlias, 2, { reuseRoom: true });
 
       // 確認第二場結算面板確實出現
       const r2Host = await hostPage.evaluate(() => !!document.querySelector('.duo-result-panel'));

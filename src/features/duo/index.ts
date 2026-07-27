@@ -28,6 +28,7 @@ export {
   leaveDuoRoom,
 } from './duoRoom';
 export type { DuoRoomSummary } from './duoRoom';
+export { getWsLobbyMirrorDebugState } from './duoLobbyMirror';
 
 // Game
 export {
@@ -41,6 +42,7 @@ export {
   showDuoResult,
   surrenderDuo,
   closeDuoResult,
+  requestDuoRematch,
   resetDuoState,
 } from './duoGame';
 

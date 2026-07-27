@@ -23,12 +23,24 @@ import {
   getActiveDuoRoomId,
 } from './duoRoom';
 import { pickDuoPuzzle, loadDuoTierPuzzles, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
-import { loadDuoProfile, recordDuoMatch, checkNewUnlocks, type DuoProfile } from './duoProfile';
+import {
+  loadDuoProfile,
+  recordDuoMatch,
+  checkNewUnlocks,
+  markDuoRoomResultRecorded,
+  type DuoProfile,
+} from './duoProfile';
 import type { SudokuWindow } from '../../facade/windowTypes';
 import { escapeHtml } from '../../shared/html/escape';
 import { callDuoFunction } from '../../firebase/runtime';
 import { isDuoWsEnabled } from './duoTransport';
 import { playOpponentFinishedCue, playOpponentThreatCue, playDefeatCue } from '../../game/audio';
+import {
+  clearDuoRoundSnapshot,
+  loadDuoRoundSnapshot,
+  restoreDuoCells,
+  saveDuoRoundSnapshot,
+} from './duoRoundPersistence';
 
 // ── Module-level guards ──────────────────────────────────────────────
 
@@ -40,6 +52,7 @@ let _countdownLaunched = false;
 let _launchScheduled = false;
 let _countdownRafCancelled = false;
 let _countdownRafHandle: number | null = null;
+let _goLaunchTimer: ReturnType<typeof setTimeout> | null = null;
 let _duoFinishSubmitted = false;
 let _duoResultShown = false;
 let _duoOpponentOfflineNotified = false;
@@ -116,7 +129,7 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
 
   // WS 大廳麵包屑：host 房一旦有人加入或進入倒數，即從大廳下架（只在開局前檢查）
   if (isDuoWsEnabled() && gs.duoRole === 'host' && (d.status === 'waiting' || d.status === 'countdown')) {
-    import('./duoLobbyMirror').then((m) => m.syncWsLobbyRoom(d)).catch(() => {});
+    import('./duoLobbyMirror').then((m) => m.syncWsLobbyRoom(d, getActiveDuoRoomId())).catch(() => {});
   }
 
   if (d.status === 'waiting' || d.status === 'countdown') {
@@ -128,9 +141,10 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
   }
 
   if (d.status === 'waiting') {
-    gs.duoRoundLaunched = false;
-    gs.duoCountdownStartMs = null;
-    _countdownLaunched = false;
+    const returningForRematch = _duoResultShown && gs.isDuoMode;
+    cancelLocalDuoCountdown();
+    resetDuoProgressUI();
+    if (returningForRematch) void enterDuoRematchRoom();
 
     // Host: prune stale guest
     const guestHb = Number(d.guestHeartbeatAtMs || 0);
@@ -521,18 +535,88 @@ export function startDuoCountdown(startAtTs: { toMillis?: () => number; seconds?
     area!.innerHTML = `<div class="duo-countdown-display go">GO!</div>`;
     playCountdownBeep(true);
     vibrate([50, 30, 50, 30, 100]);
-    setTimeout(() => {
+    _goLaunchTimer = setTimeout(() => {
+      _goLaunchTimer = null;
+      if (isDuoWsEnabled() && gs.duoRoomData?.status !== 'playing') {
+        cancelLocalDuoCountdown();
+        return;
+      }
       const ovl = document.getElementById('duo-countdown-overlay');
       if (ovl) ovl.remove();
-      launchDuoGame();
+      void launchDuoGame();
     }, 600);
   }, delay) as unknown as ReturnType<typeof setInterval>;
+}
+
+function cancelLocalDuoCountdown(): void {
+  _countdownRafCancelled = true;
+  if (_countdownRafHandle !== null) {
+    cancelAnimationFrame(_countdownRafHandle);
+    _countdownRafHandle = null;
+  }
+  if (gs.duoCountdownTimer) {
+    clearTimeout(gs.duoCountdownTimer as unknown as ReturnType<typeof setTimeout>);
+    gs.duoCountdownTimer = null;
+  }
+  if (_goLaunchTimer !== null) {
+    clearTimeout(_goLaunchTimer);
+    _goLaunchTimer = null;
+  }
+  _countdownBeepTimers.forEach((timer) => clearTimeout(timer));
+  _countdownBeepTimers = [];
+  document.getElementById('duo-countdown-overlay')?.remove();
+  gs.duoRoundLaunched = false;
+  gs.duoCountdownStartMs = null;
+  _countdownLaunched = false;
+  _launchScheduled = false;
+}
+
+function resetDuoProgressUI(): void {
+  for (const id of ['duo-progress-fill-self', 'duo-progress-fill-opp']) {
+    const fill = document.getElementById(id);
+    if (fill) {
+      fill.style.width = '0%';
+      fill.classList.remove('trailing');
+    }
+  }
+  for (const id of ['duo-progress-self-pct', 'duo-progress-opp-pct']) {
+    const pct = document.getElementById(id);
+    if (pct) pct.textContent = '0%';
+  }
+}
+
+function roomStartAtMs(d: DuoRoomData): number {
+  const startAt = d.startAt;
+  if (!startAt) return Date.now();
+  const value = startAt.toMillis ? startAt.toMillis() : (startAt.seconds ?? 0) * 1000;
+  return Number.isFinite(value) && value > 0 ? value : Date.now();
+}
+
+export function persistDuoRoundState(): void {
+  const roomId = getActiveDuoRoomId();
+  const role = gs.duoRole;
+  const room = gs.duoRoomData;
+  if (!gs.isDuoMode || !roomId || !role || !room || gs.cellsData.length !== 81) return;
+  saveDuoRoundSnapshot({
+    roomId,
+    role,
+    puzzleSeed: Number(room.puzzleSeed) || 0,
+    startedAtMs: _gameStartedAtMs || roomStartAtMs(room),
+    seconds: gs.seconds,
+    errors: gs.errors,
+    cells: gs.cellsData.map((cell) => ({ value: cell.value, notes: [...cell.notes] })),
+    moves: _localMoves,
+  });
 }
 
 // ── Launch Game ──────────────────────────────────────────────────────
 
 export async function launchDuoGame(): Promise<void> {
   if (!gs.duoRoomData) return;
+  if (isDuoWsEnabled() && gs.duoRoomData.status !== 'playing') {
+    cancelLocalDuoCountdown();
+    return;
+  }
   // 兜底移除倒數 overlay：WS 模式下 DO 的 playing snapshot 可能搶在本地 GO 序列前
   // launch（網路時序競態）。此時 GO 序列的 setTimeout 會因 gs.duoRoundLaunched 提早 return，
   // 漏掉移除全螢幕 overlay(position:fixed/inset:0/z-index:500)，蓋住棋盤導致格子不可點。
@@ -548,6 +632,7 @@ export async function launchDuoGame(): Promise<void> {
   gs.continuousFillDigit = null;
   gs.duoProgressThrottle = 0;
   _lastSubmittedProgress = -1;
+  resetDuoProgressUI();
 
   // Safety reset: clear per-round flags that may be stale if resetDuoState() was
   // skipped (e.g., user pressed hardware back button from the result screen).
@@ -562,7 +647,7 @@ export async function launchDuoGame(): Promise<void> {
   _duoResultShown = false;
   _localMoves = [];
   gs.duoOpponentNotified = false;
-  _gameStartedAtMs = Date.now();
+  _gameStartedAtMs = roomStartAtMs(gs.duoRoomData);
 
   const roomData = gs.duoRoomData;
   const tierId: string = roomData.tierId || 'tierI';
@@ -603,9 +688,33 @@ export async function launchDuoGame(): Promise<void> {
   const { initGame } = await import('../../game/core');
   initGame(level.id, true, false, null, level);
 
+  const roomId = getActiveDuoRoomId();
+  const role = gs.duoRole;
+  if (roomId && role) {
+    const saved = loadDuoRoundSnapshot(roomId, role, puzzleSeed);
+    if (saved) {
+      restoreDuoCells(gs.cellsData, level.puzzle, level.solution, saved);
+      _localMoves = saved.moves;
+      _gameStartedAtMs = Math.min(saved.startedAtMs || _gameStartedAtMs, _gameStartedAtMs);
+      gs.seconds = Math.max(saved.seconds, Math.floor((Date.now() - _gameStartedAtMs) / 1000));
+      gs.errors = Math.min(gs.maxErrors, saved.errors);
+      const { renderGrid } = await import('../../game/board');
+      const { startTimer } = await import('../../game/timer');
+      renderGrid();
+      startTimer(false);
+    }
+  }
+
   // Show duo progress bar
   const progressContainer = document.getElementById('duo-progress-container');
   if (progressContainer) progressContainer.style.display = 'flex';
+  updateDuoProgressUI(
+    gs.duoRole === 'host'
+      ? roomData.guestAlias || t('duoRuntime.opponent')
+      : roomData.hostAlias || t('duoRuntime.opponent'),
+    gs.duoRole === 'host' ? roomData.guestProgress || 0 : roomData.hostProgress || 0,
+  );
+  updateDuoProgress();
   setOppConnIndicator('online'); // 每局開始狀態燈歸零（綠）
   const timerEl = document.getElementById('timer');
   if (timerEl) timerEl.style.display = 'none';
@@ -764,6 +873,8 @@ function showDuoOpponentFinished(alias: string, timeSec: number, stars: number |
 export function recordDuoMove(cell: number, val: number, ok: boolean): void {
   if (!gs.isDuoMode || !_gameStartedAtMs) return;
   _localMoves.push({ t: Date.now() - _gameStartedAtMs, cell, val, ok });
+  if (ok || val === 0) persistDuoRoundState();
+  else setTimeout(() => persistDuoRoundState(), 450);
 }
 
 // ── Submit Finish ────────────────────────────────────────────────────
@@ -883,7 +994,11 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   else if (iWon) result = 'win';
   else result = 'loss';
 
-  const profileAfter = recordDuoMatch(profileBefore, tierId, modeId, result, oppAlias);
+  const roomId = getActiveDuoRoomId();
+  const roundKey = roomId ? `${roomId}:${d.puzzleSeed || 0}` : '';
+  const profileAfter = markDuoRoomResultRecorded(roundKey)
+    ? recordDuoMatch(profileBefore, tierId, modeId, result, oppAlias)
+    : profileBefore;
 
   // Check for new unlocks
   const unlocks = checkNewUnlocks(beforeSnapshot, profileAfter);
@@ -953,6 +1068,7 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
 
   const forfeitBtn = document.getElementById('duo-forfeit-btn');
   if (forfeitBtn) forfeitBtn.remove();
+  clearDuoRoundSnapshot();
 
   if (iWon) {
     vibrate([25, 45, 25, 45, 25, 70, 50]);
@@ -1015,6 +1131,7 @@ export async function closeDuoResult(): Promise<void> {
     .then(({ bridgeCloseDuoReview }) => bridgeCloseDuoReview())
     .catch(() => {});
   const roomId = getActiveDuoRoomId();
+  clearDuoRoundSnapshot();
   if (isDuoWsEnabled()) {
     const { duoWsCloseResult } = await import('./duoSocket');
     duoWsCloseResult();
@@ -1025,25 +1142,60 @@ export async function closeDuoResult(): Promise<void> {
   emitNavigation({ type: 'show-duo-lobby' });
 }
 
+async function enterDuoRematchRoom(): Promise<void> {
+  clearDuoRoundSnapshot();
+  cancelLocalDuoCountdown();
+  if (gs.timerInterval) {
+    clearInterval(gs.timerInterval);
+    gs.timerInterval = null;
+  }
+  _duoResultShown = false;
+  _duoFinishSubmitted = false;
+  _duoOpponentOfflineNotified = false;
+  _autoForfeitStarted = false;
+  _lastSubmittedProgress = -1;
+  _localMoves = [];
+  _gameStartedAtMs = 0;
+  gs.isDuoMode = false;
+  gs.duoMyReady = false;
+  gs.duoTotalToFill = 0;
+  gs.duoOpponentNotified = false;
+  await import('../../react/duoresult/duoResultBridge')
+    .then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult())
+    .catch(() => {});
+  await import('../../react/duoreview/duoReviewBridge')
+    .then(({ bridgeCloseDuoReview }) => bridgeCloseDuoReview())
+    .catch(() => {});
+  await import('./duoLobby').then((m) => m.closeDuoLobby()).catch(() => {});
+  await import('./duoRoomView')
+    .then((m) => m.openDuoRoomView())
+    .catch((e) => console.warn('[duo] open rematch room failed:', e));
+}
+
+export async function requestDuoRematch(): Promise<void> {
+  if (!getActiveDuoRoomId() || !gs.duoRole) {
+    await closeDuoResult();
+    return;
+  }
+  if (!isDuoWsEnabled()) {
+    await closeDuoResult();
+    return;
+  }
+  const { duoWsRematch } = await import('./duoSocket');
+  duoWsRematch();
+}
+
 // ── Reset ────────────────────────────────────────────────────────────
 
 export function resetDuoState(): void {
   void import('../../game/bgm').then(({ stopBgm }) => stopBgm());
-  _countdownRafCancelled = true;
-  if (_countdownRafHandle !== null) {
-    cancelAnimationFrame(_countdownRafHandle);
-    _countdownRafHandle = null;
-  }
+  cancelLocalDuoCountdown();
   _duoResultShown = false;
-  _countdownLaunched = false;
-  _launchScheduled = false;
   _duoFinishSubmitted = false;
   if (isDuoWsEnabled()) {
     void import('./duoSocket').then((m) => m.duoWsDisconnect());
     void import('./duoLobbyMirror').then((m) => m.unpublishWsLobbyRoom());
   }
-  _countdownBeepTimers.forEach((t) => clearTimeout(t));
-  _countdownBeepTimers = [];
   if (_duoResultRetryTimer) {
     clearTimeout(_duoResultRetryTimer);
     _duoResultRetryTimer = null;
@@ -1075,10 +1227,6 @@ export function resetDuoState(): void {
   gs.duoProgressThrottle = 0;
   gs.maxErrors = 3; // restore default
   gs.wildNotesDisabled = false; // restore
-  if (gs.duoCountdownTimer) {
-    clearTimeout(gs.duoCountdownTimer as unknown as ReturnType<typeof setTimeout>);
-    gs.duoCountdownTimer = null;
-  }
   if (gs.duoUnsubscribe) {
     gs.duoUnsubscribe();
     gs.duoUnsubscribe = null;
@@ -1097,6 +1245,7 @@ export function resetDuoState(): void {
     .catch((e) => console.warn('[duo] closeDuoRoomView (reset) failed:', e));
   const progressContainer = document.getElementById('duo-progress-container');
   if (progressContainer) progressContainer.style.display = 'none';
+  resetDuoProgressUI();
   const timerEl = document.getElementById('timer');
   if (timerEl) timerEl.style.display = '';
   const quitBtn = document.getElementById('quit-btn');

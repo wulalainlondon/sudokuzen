@@ -285,6 +285,19 @@ async function openDuoLobbyInternal(): Promise<void> {
   setDuoLobbyConnectionState('connecting');
 
   try {
+    const { resumeDuoRoomIfAny, cleanupStaleDuoRooms, getActiveDuoRoomId } = await import('./duoRoom');
+    const { isDuoWsEnabled } = await import('./duoTransport');
+    // An active WebSocket match is authoritative in the Durable Object and
+    // must remain resumable even when Firebase lobby discovery/auth is slow.
+    if (isDuoWsEnabled() && getActiveDuoRoomId()) {
+      const resumed = await withTimeout(resumeDuoRoomIfAny(), LOBBY_ENTRY_TIMEOUT_MS);
+      if (resumed && getActiveDuoRoomId()) {
+        const { openDuoRoomView } = await import('./duoRoomView');
+        openDuoRoomView();
+        return;
+      }
+    }
+
     const { whenFirebaseReady } = await import('../../firebase/client');
     const ready = await withTimeout(whenFirebaseReady(), LOBBY_ENTRY_TIMEOUT_MS);
     if (!ready) throw new Error('Firebase unavailable');
@@ -294,7 +307,6 @@ async function openDuoLobbyInternal(): Promise<void> {
     const authUid = await withTimeout(initAnonymousAuth(), LOBBY_ENTRY_TIMEOUT_MS);
     if (!authUid) throw new Error('Anonymous auth unavailable');
 
-    const { resumeDuoRoomIfAny, cleanupStaleDuoRooms, getActiveDuoRoomId } = await import('./duoRoom');
     void cleanupStaleDuoRooms();
     const resumed = await withTimeout(resumeDuoRoomIfAny(), LOBBY_ENTRY_TIMEOUT_MS);
     if (resumed && getActiveDuoRoomId()) {
