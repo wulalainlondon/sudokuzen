@@ -621,6 +621,19 @@ export class GameRoom extends Server<Env> {
       }
       changed = true;
     }
+    // Both seats can be forfeited by alarms without either client sending a
+    // final `finish` message. In that path handleFinish() never runs, so the
+    // room must transition here or the UI shows a result whose rematch request
+    // is rejected because the authoritative state is still `playing`.
+    if (
+      this.room.status === 'playing' &&
+      this.room.host?.finishTime != null &&
+      this.room.guest?.finishTime != null
+    ) {
+      this.room.status = 'finished';
+      this.room.presenceCheckAt = null;
+      changed = true;
+    }
     if (this.room.closeRoomAt != null && now >= this.room.closeRoomAt) {
       this.room.closeRoomAt = null;
       if (this.room.status === 'waiting' || this.room.status === 'countdown') {

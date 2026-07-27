@@ -145,3 +145,7 @@ TODO / handoff (current):
 - 新增 WebSocket 韌性 E2E：雙方落子後同時重載仍保留盤面／進度並可同房再戰；倒數斷線連續五輪都回到等待房且重新標記為公開。視覺檢查等待房無幽靈棋盤。
 - `npm run check:release` 全綠：43 test files / 306 tests，主程式、Functions、Duo Worker typecheck／lint／format／dry-run 全部通過。
 - Duo Worker 已部署，Version ID `2e945779-5c72-4c20-931a-0972c71cc5c6`；前端版本升為 `2026.07.27-V8`，待 GitHub Pages 發布與 Chrome／S10+ 正式環境最終十場驗證。
+- 2026-07-27 iPhone 11 + S10+ 正式 V9 邊界實測：雙端建房／加入／準備／開局及各自正確落子後，兩端進度皆同步為 2%；i11 Safari 強制終止超過離線判定後於寬限內重開，可恢復原局與 2%/2% 進度。
+- 同輪發現新的雙斷線邊界：兩座位都由 alarm 判定 `finishTime=9999` 時，房間仍停在 `playing`，導致前端顯示「再來一局」但 server 以 `bad_state` 拒絕 rematch。
+- 已在 Duo Durable Object alarm 加入「雙方皆有 finishTime → status=finished、停止 presence 輪詢」；`phase3-qa.mjs` 更新為要求 `finished`，並直接驗證雙沒收後 rematch 回 `waiting`、雙方 finishTime 歸零。
+- 實機完整終止兩端瀏覽器 45 秒後再開，確認 server 已是 `finished` 且兩座位可重新認領，但前端因重啟後 `gs.isDuoMode=false` 忽略首次 finished snapshot，呈現空白房間骨架；已移除此錯誤守衛，讓經過 server-authoritative hello 認領的 finished 房直接顯示結算。

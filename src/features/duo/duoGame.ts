@@ -282,7 +282,13 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     }
   }
 
-  if (d.status === 'finished' && gs.isDuoMode) {
+  // A full browser/app restart resets the in-memory `isDuoMode` flag, but the
+  // stored room breadcrumb can still reclaim an authoritative finished room.
+  // The direct `hello` response already proves this client owns the seat, so
+  // show the result even when no local board was relaunched. Keeping the old
+  // `isDuoMode` guard trapped both players on an empty room shell after a
+  // dual-disconnect forfeit.
+  if (d.status === 'finished') {
     showDuoResult(d);
   }
 }

@@ -144,8 +144,23 @@ async function main() {
     const st = await obs.waitFor((m) => m.type === 'roomState', 4000);
     check('[P1b] host 斷線後被沒收 → host.finishTime=9999', st.state.host.finishTime === 9999);
     check('[P1b] guest 斷線後被沒收 → guest.finishTime=9999', st.state.guest.finishTime === 9999);
-    check('[P1b] 雙斷線房間不卡死（status 仍 playing，雙方有 finishTime 可結算）', st.state.status === 'playing');
+    check('[P1b] 雙斷線房間完成結算（status=finished，可接受 rematch）', st.state.status === 'finished');
     obs.close();
+    const host2 = new Client(roomId, 'host-rematch');
+    await host2.open();
+    host2.send({ type: 'hello', player: HOST_P, role: 'host' });
+    await host2.waitFor((m) => m.type === 'roomState' && m.you === 'host', 4000);
+    host2.send({ type: 'rematch' });
+    const rematch = await host2.waitFor(
+      (m) =>
+        m.type === 'roomState' &&
+        m.state.status === 'waiting' &&
+        m.state.host?.finishTime == null &&
+        m.state.guest?.finishTime == null,
+      4000,
+    );
+    check('[P1b] 雙沒收後 rematch 成功 → waiting 且雙方成績歸零', rematch.state.status === 'waiting');
+    host2.close();
   }
 
   // ── [2b] 我先完成，對手才斷線 → 對手仍被沒收 ──
