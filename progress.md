@@ -149,3 +149,4 @@ TODO / handoff (current):
 - 同輪發現新的雙斷線邊界：兩座位都由 alarm 判定 `finishTime=9999` 時，房間仍停在 `playing`，導致前端顯示「再來一局」但 server 以 `bad_state` 拒絕 rematch。
 - 已在 Duo Durable Object alarm 加入「雙方皆有 finishTime → status=finished、停止 presence 輪詢」；`phase3-qa.mjs` 更新為要求 `finished`，並直接驗證雙沒收後 rematch 回 `waiting`、雙方 finishTime 歸零。
 - 實機完整終止兩端瀏覽器 45 秒後再開，確認 server 已是 `finished` 且兩座位可重新認領，但前端因重啟後 `gs.isDuoMode=false` 忽略首次 finished snapshot，呈現空白房間骨架；已移除此錯誤守衛，讓經過 server-authoritative hello 認領的 finished 房直接顯示結算。
+- V11 再測發現冷恢復結算後雖可 rematch，`waiting` snapshot 仍因 `gs.isDuoMode=false` 未執行結果遮罩清理，造成準備鈕存在但被遮住；finished 冷恢復時同步還原 Duo mode，確保 rematch 會進入 `enterDuoRematchRoom()` 並關閉遮罩。

@@ -289,6 +289,10 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
   // `isDuoMode` guard trapped both players on an empty room shell after a
   // dual-disconnect forfeit.
   if (d.status === 'finished') {
+    // Rematch cleanup keys off this flag when the next authoritative snapshot
+    // returns to `waiting`. Restore it here so the result overlay is closed and
+    // the waiting-room controls are actually interactable after a cold resume.
+    gs.isDuoMode = true;
     showDuoResult(d);
   }
 }
