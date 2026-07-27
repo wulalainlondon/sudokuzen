@@ -221,7 +221,10 @@ export function initGame(
     gs.currentLevel = levels.find((l) => l.id === levelId) || levels[0];
   }
   callCloseReplay();
-  localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
+  // Duo rounds are room-scoped and must not mutate/sync the single-player
+  // resume pointer. Besides showing the wrong resume banner, that write can
+  // trigger a player-profile cloud update while a Duo room is launching.
+  if (!gs.isDuoMode) localStorage.setItem(SK.LAST_LEVEL, String(gs.currentLevel.id));
   const isWild = gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild';
   void import('./bgm').then(({ playBgm, stopBgm }) => {
     if (gs.isDuoMode) playBgm('duo');
