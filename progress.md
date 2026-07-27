@@ -151,3 +151,5 @@ TODO / handoff (current):
 - 實機完整終止兩端瀏覽器 45 秒後再開，確認 server 已是 `finished` 且兩座位可重新認領，但前端因重啟後 `gs.isDuoMode=false` 忽略首次 finished snapshot，呈現空白房間骨架；已移除此錯誤守衛，讓經過 server-authoritative hello 認領的 finished 房直接顯示結算。
 - V11 再測發現冷恢復結算後雖可 rematch，`waiting` snapshot 仍因 `gs.isDuoMode=false` 未執行結果遮罩清理，造成準備鈕存在但被遮住；finished 冷恢復時同步還原 Duo mode，確保 rematch 會進入 `enterDuoRematchRoom()` 並關閉遮罩。
 - S10+ 快速填完實機展示時，iPhone 已進觀戰但對手進度停在 98%；原因是最後一格的 progress 被 1 秒節流，而 finish 先抵達。對手 finish 已是 server-authoritative 完成證據，UI 改為 `oppFinished` 時直接顯示 100%。
+- 2026-07-28 玩家影片確認新競態：建立房間已由 server 成功發布，但前端在 `send(create)` 後才註冊一次性 waiter；快速 direct `roomState` 會先被 pump 消耗，建立者逾時留在大廳並看到自己的孤兒房，重試會產生重複房。
+- `duoSocket` 已統一改為先註冊 waiter 再 send，涵蓋 create、join、resume、斷線 reclaim；新增同步回應回歸測試，直接模擬 server 在 `send()` 內立即回覆。

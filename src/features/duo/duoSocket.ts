@@ -194,6 +194,21 @@ function waitFor(pred: (m: ServerMsg) => boolean, ms = 8000): Promise<ServerMsg>
   });
 }
 
+/**
+ * Register the response waiter before sending the request.
+ *
+ * A WebSocket peer can reply during the same task as `send()` (this happens in
+ * tests, local workers, and occasionally on very fast mobile connections). If
+ * `waitFor()` is installed afterwards, `pump()` consumes the direct roomState
+ * with no waiter attached: the server has created/joined the room, while the
+ * lobby waits until timeout and may show the player's own orphan room.
+ */
+function request(msg: ClientMsg, pred: (m: ServerMsg) => boolean, ms = 8000): Promise<ServerMsg> {
+  const response = waitFor(pred, ms);
+  send(msg);
+  return response;
+}
+
 function waitOpen(socket: PartySocket, timeoutMs = 12_000): Promise<void> {
   if (socket.readyState === WS_OPEN) return Promise.resolve();
   return new Promise((resolve, reject) => {
@@ -281,9 +296,9 @@ async function reclaimSeat(): Promise<'ok' | 'failed' | 'timeout'> {
   if (!_reconnectMsg || _reconnectMsg.type !== 'hello') return 'ok';
   const role = _reconnectMsg.role;
   const idToken = (await getFirebaseIdToken()) ?? undefined;
-  send({ ..._reconnectMsg, idToken });
   try {
-    const res = await waitFor(
+    const res = await request(
+      { ..._reconnectMsg, idToken },
       (m) => (m.type === 'roomState' && m.you === role) || (m.type === 'error' && m.code === 'reclaim_failed'),
       6000,
     );
@@ -344,8 +359,10 @@ export async function duoWsCreateRoom(tierId: string, modeId: string): Promise<s
   try {
     await waitOpen(socket);
     const idToken = (await getFirebaseIdToken()) ?? undefined;
-    send({ type: 'create', room: { tierId, modeId }, player: playerInfo(), idToken });
-    const res = await waitFor((m) => (m.type === 'roomState' && m.you === 'host') || m.type === 'error');
+    const res = await request(
+      { type: 'create', room: { tierId, modeId }, player: playerInfo(), idToken },
+      (m) => (m.type === 'roomState' && m.you === 'host') || m.type === 'error',
+    );
     if (res.type === 'error') {
       closeSocket();
       return null;
@@ -364,8 +381,10 @@ export async function duoWsJoinRoom(roomId: string): Promise<boolean> {
   try {
     await waitOpen(socket);
     const idToken = (await getFirebaseIdToken()) ?? undefined;
-    send({ type: 'join', player: playerInfo(), idToken });
-    const res = await waitFor((m) => (m.type === 'roomState' && m.you === 'guest') || m.type === 'error');
+    const res = await request(
+      { type: 'join', player: playerInfo(), idToken },
+      (m) => (m.type === 'roomState' && m.you === 'guest') || m.type === 'error',
+    );
     if (res.type === 'error') {
       console.warn('[duoWs] join rejected:', res.code);
       closeSocket();
@@ -386,8 +405,8 @@ export async function duoWsResumeRoom(roomId: string, role: Role): Promise<boole
     await waitOpen(socket);
     const idToken = (await getFirebaseIdToken()) ?? undefined;
     const hello: ClientMsg = { type: 'hello', player: playerInfo(), role, idToken };
-    send(hello);
-    const res = await waitFor(
+    const res = await request(
+      hello,
       (m) => (m.type === 'roomState' && m.you === role) || (m.type === 'error' && m.code === 'reclaim_failed'),
       8_000,
     );
