@@ -785,7 +785,15 @@ function updateDuoProgressUI(oppAlias: string, oppProgress: number, oppFinished 
   const oppPct = document.getElementById('duo-progress-opp-pct');
   const oppLabel = document.getElementById('duo-progress-opp-label');
   if (!oppFill) return;
-  const pct = gs.duoTotalToFill > 0 ? Math.min(100, Math.round((oppProgress / gs.duoTotalToFill) * 100)) : 0;
+  // `progress` messages are intentionally throttled, so a very fast final
+  // input can be followed by the authoritative finish event before the last
+  // progress write. A finished opponent is unambiguously at 100%; do not leave
+  // the other device showing a stale 98% while already in spectator mode.
+  const pct = oppFinished
+    ? 100
+    : gs.duoTotalToFill > 0
+      ? Math.min(100, Math.round((oppProgress / gs.duoTotalToFill) * 100))
+      : 0;
   oppFill.style.width = `${pct}%`;
   if (oppPct) oppPct.textContent = `${pct}%`;
   if (oppLabel) oppLabel.textContent = oppAlias;

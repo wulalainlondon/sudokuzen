@@ -150,3 +150,4 @@ TODO / handoff (current):
 - 已在 Duo Durable Object alarm 加入「雙方皆有 finishTime → status=finished、停止 presence 輪詢」；`phase3-qa.mjs` 更新為要求 `finished`，並直接驗證雙沒收後 rematch 回 `waiting`、雙方 finishTime 歸零。
 - 實機完整終止兩端瀏覽器 45 秒後再開，確認 server 已是 `finished` 且兩座位可重新認領，但前端因重啟後 `gs.isDuoMode=false` 忽略首次 finished snapshot，呈現空白房間骨架；已移除此錯誤守衛，讓經過 server-authoritative hello 認領的 finished 房直接顯示結算。
 - V11 再測發現冷恢復結算後雖可 rematch，`waiting` snapshot 仍因 `gs.isDuoMode=false` 未執行結果遮罩清理，造成準備鈕存在但被遮住；finished 冷恢復時同步還原 Duo mode，確保 rematch 會進入 `enterDuoRematchRoom()` 並關閉遮罩。
+- S10+ 快速填完實機展示時，iPhone 已進觀戰但對手進度停在 98%；原因是最後一格的 progress 被 1 秒節流，而 finish 先抵達。對手 finish 已是 server-authoritative 完成證據，UI 改為 `oppFinished` 時直接顯示 100%。
