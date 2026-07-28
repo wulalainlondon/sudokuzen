@@ -53,6 +53,7 @@ function roomState(role: 'host' | 'guest'): PublicRoomState {
 
 class ImmediateReplySocket extends EventTarget {
   readyState = 1;
+  reconnectCount = 0;
 
   constructor() {
     super();
@@ -75,7 +76,17 @@ class ImmediateReplySocket extends EventTarget {
     this.dispatchEvent(new Event('close'));
   }
 
-  reconnect(): void {}
+  reconnect(): void {
+    this.reconnectCount++;
+    this.readyState = 1;
+    this.dispatchEvent(new Event('open'));
+  }
+
+  simulateNetworkReconnect(): void {
+    this.readyState = 3;
+    this.dispatchEvent(new Event('close'));
+    this.reconnect();
+  }
 }
 
 vi.mock('partysocket', () => ({ PartySocket: ImmediateReplySocket }));
@@ -96,6 +107,9 @@ vi.mock('../src/features/duo/duoGame', () => ({
 }));
 vi.mock('../src/features/duo/duoTransport', () => ({
   getDuoWsHost: () => 'example.test',
+}));
+vi.mock('../src/features/duo/duoLobby', () => ({
+  setDuoLobbyConnectionState: vi.fn(),
 }));
 vi.mock('../src/ui/feedback', () => ({ showFeedback: vi.fn() }));
 vi.mock('../src/i18n/t', () => ({ t: (key: string) => key }));
@@ -123,5 +137,20 @@ describe('duo WebSocket direct response ordering', () => {
     await expect(duoWsJoinRoom('room-join')).resolves.toBe(true);
     duoWsDisconnect();
     await expect(duoWsResumeRoom('room-resume', 'host')).resolves.toBe(true);
+  });
+
+  it('completes a reconnect reclaim when hello is acknowledged synchronously', async () => {
+    const { duoWsCreateRoom } = await import('../src/features/duo/duoSocket');
+    const { setDuoLobbyConnectionState } = await import('../src/features/duo/duoLobby');
+    await expect(duoWsCreateRoom('tierII', 'standard')).resolves.toMatch(/^r_/);
+
+    const socket = sockets.at(-1);
+    expect(socket).toBeDefined();
+    socket?.simulateNetworkReconnect();
+
+    await vi.waitFor(() => {
+      expect(setDuoLobbyConnectionState).toHaveBeenCalledWith('connected');
+    });
+    expect(socket?.reconnectCount).toBe(1);
   });
 });

@@ -154,3 +154,4 @@ TODO / handoff (current):
 - 2026-07-28 玩家影片確認新競態：建立房間已由 server 成功發布，但前端在 `send(create)` 後才註冊一次性 waiter；快速 direct `roomState` 會先被 pump 消耗，建立者逾時留在大廳並看到自己的孤兒房，重試會產生重複房。
 - `duoSocket` 已統一改為先註冊 waiter 再 send，涵蓋 create、join、resume、斷線 reclaim；新增同步回應回歸測試，直接模擬 server 在 `send()` 內立即回覆。
 - 正式站 `2026.07.28-V2` 已發布；S10+ 實機連續 10 輪「建立 → 進準備房 → 離開 → 重新整理大廳」全數通過，進房耗時 1.5–2.6 秒，每輪 active room 均清空、建立鈕未卡住、自己的房間未殘留，且無 page/console error。
+- 已把剩餘回歸缺口納入 CI：同步 ack 的 reconnect reclaim、建房 UI 成功／失敗狀態轉換與重複點擊鎖定、publish 尚未完成就離房時的 mirror 刪除競態；完整 release gate 現為 46 files / 312 tests 全綠。
