@@ -12,8 +12,10 @@ async function waitForE2E(page: Page) {
 async function clearGameData(page: Page) {
   await page.evaluate(() => {
     const appVer = localStorage.getItem('sudoku_app_version');
+    const e2eMode = localStorage.getItem('sudoku_e2e_mode');
     localStorage.clear();
     if (appVer) localStorage.setItem('sudoku_app_version', appVer);
+    if (e2eMode) localStorage.setItem('sudoku_e2e_mode', e2eMode);
   });
 }
 
@@ -25,6 +27,7 @@ test.describe('wild-mode', () => {
     // Ensure level screen is showing
     await page.evaluate(() => (window as unknown).showLevelScreen());
     await page.locator('#level-screen').waitFor({ state: 'visible' });
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('sudoku_e2e_mode'))).toBe('1');
   });
 
   test('wild lobby opens when clicking world button', async ({ page }) => {
@@ -35,9 +38,7 @@ test.describe('wild-mode', () => {
     await page.locator('#wild-lobby:not(.hidden)').waitFor({ timeout: 5000 });
 
     // Stage view should be hidden
-    const stageViewDisplay = await page.locator('#stage-view').evaluate(
-      (el) => getComputedStyle(el).display,
-    );
+    const stageViewDisplay = await page.locator('#stage-view').evaluate((el) => getComputedStyle(el).display);
     expect(stageViewDisplay).toBe('none');
   });
 
@@ -97,9 +98,7 @@ test.describe('wild-mode', () => {
     await page.waitForTimeout(300);
 
     // The discovered filter button should now be active
-    await expect(
-      page.locator('#wild-bestiary-controls button[data-filter="discovered"]'),
-    ).toHaveClass(/active/);
+    await expect(page.locator('#wild-bestiary-controls button[data-filter="discovered"]')).toHaveClass(/active/);
 
     // With clean data, no techniques are discovered yet, so card count should be 0
     const discoveredCards = await page.locator('#wild-bestiary-grid .wild-beast-card').count();
@@ -122,17 +121,13 @@ test.describe('wild-mode', () => {
     await page.waitForTimeout(300);
 
     // The common button should be active
-    await expect(
-      page.locator('#wild-rarity-controls button[data-rarity="common"]'),
-    ).toHaveClass(/active/);
+    await expect(page.locator('#wild-rarity-controls button[data-rarity="common"]')).toHaveClass(/active/);
 
     // Click "all" to restore
     await page.locator('#wild-rarity-controls button[data-rarity="all"]').click();
     await page.waitForTimeout(300);
 
-    await expect(
-      page.locator('#wild-rarity-controls button[data-rarity="all"]'),
-    ).toHaveClass(/active/);
+    await expect(page.locator('#wild-rarity-controls button[data-rarity="all"]')).toHaveClass(/active/);
   });
 
   test('back navigation returns to stage map', async ({ page }) => {
