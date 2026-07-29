@@ -209,6 +209,23 @@ function request(msg: ClientMsg, pred: (m: ServerMsg) => boolean, ms = 8000): Pr
   return response;
 }
 
+/**
+ * iOS standalone PWAs can occasionally deliver the authoritative roomState
+ * while the create/join promise is between async steps.  The normal request()
+ * ordering prevents that race, but if WebKit still misses the one-shot waiter
+ * we must not discard a seat that the server has already assigned.
+ */
+function adoptAuthoritativeSeat(roomId: string, role: Role): boolean {
+  if (_roomId !== roomId || gs.duoRole !== role || !gs.duoRoomData) return false;
+  const { playerId } = getPlayerIdentity();
+  const assignedPlayerId = role === 'host' ? gs.duoRoomData.hostId : gs.duoRoomData.guestId;
+  if (!playerId || assignedPlayerId !== playerId) return false;
+  _reconnectMsg = { type: 'hello', player: playerInfo(), role };
+  _reclaimAttempts = 0;
+  notifyConn('connected');
+  return true;
+}
+
 function waitOpen(socket: PartySocket, timeoutMs = 12_000): Promise<void> {
   if (socket.readyState === WS_OPEN) return Promise.resolve();
   return new Promise((resolve, reject) => {
@@ -364,6 +381,7 @@ export async function duoWsCreateRoom(tierId: string, modeId: string): Promise<s
       (m) => (m.type === 'roomState' && m.you === 'host') || m.type === 'error',
     );
     if (res.type === 'error') {
+      if (adoptAuthoritativeSeat(roomId, 'host')) return roomId;
       closeSocket();
       return null;
     }
@@ -371,6 +389,7 @@ export async function duoWsCreateRoom(tierId: string, modeId: string): Promise<s
     return roomId;
   } catch (e) {
     console.warn('[duoWs] createRoom failed:', e);
+    if (adoptAuthoritativeSeat(roomId, 'host')) return roomId;
     closeSocket();
     return null;
   }
@@ -387,6 +406,7 @@ export async function duoWsJoinRoom(roomId: string): Promise<boolean> {
     );
     if (res.type === 'error') {
       console.warn('[duoWs] join rejected:', res.code);
+      if (adoptAuthoritativeSeat(roomId, 'guest')) return true;
       closeSocket();
       return false;
     }
@@ -394,6 +414,7 @@ export async function duoWsJoinRoom(roomId: string): Promise<boolean> {
     return true;
   } catch (e) {
     console.warn('[duoWs] joinRoom failed:', e);
+    if (adoptAuthoritativeSeat(roomId, 'guest')) return true;
     closeSocket();
     return false;
   }
@@ -411,6 +432,7 @@ export async function duoWsResumeRoom(roomId: string, role: Role): Promise<boole
       8_000,
     );
     if (res.type === 'error') {
+      if (adoptAuthoritativeSeat(roomId, role)) return true;
       closeSocket();
       return false;
     }
@@ -418,6 +440,7 @@ export async function duoWsResumeRoom(roomId: string, role: Role): Promise<boole
     return true;
   } catch (e) {
     console.warn('[duoWs] resumeRoom failed:', e);
+    if (adoptAuthoritativeSeat(roomId, role)) return true;
     closeSocket();
     return false;
   }

@@ -1,5 +1,12 @@
 Original prompt: 幫我用這個檢查我的關卡 是否都是唯一解
 
+Current prompt (2026-07-29): 使用 iPhone 16 Pro 實測 PWA 雙人建房失敗；修正、驗證並部署可更新版本。
+
+- 已用 XCUITest 在 iPhone 16 Pro（iOS 26.5.2）重現：建立房間後仍停留大廳，稍後在清單看到自己的等待房；正式後端 smoke 通過，定位為 iOS PWA 的客戶端訊息時序情況。
+- `duoSocket` 已加入權威座位恢復：只有 room id、角色與 player id 全部吻合才採納伺服器已分配的 host/guest 座位，涵蓋 create/join/resume。
+- 新增 request race 回歸測試，模擬權威 `roomState` 先到且原 request 回覆遺失，確認房間成功且 socket 不被關閉。
+- PWA 版本升為 `2026.07.29-V3`，使 service worker / standalone PWA 取得本次更新。
+
 Current prompt (2026-07-27): 把 Chrome + S10+ 十場雙人耐久測試發現的斷線恢復、倒數幽靈局、等待房重新公開、連續戰鬥、殘留進度、建房連線與 Firebase 權限問題逐項修復，完整驗證後再回報。
 
 - 已完成正式站十場雙人測試並保留 `output/duo-adb/` 證據。

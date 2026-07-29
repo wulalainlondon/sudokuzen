@@ -4,6 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PublicRoomState } from '../src/features/duo/duoWsProtocol';
 
 const sockets: ImmediateReplySocket[] = [];
+const tokenControl = vi.hoisted(() => ({
+  beforeResolve: null as (() => void) | null,
+}));
 
 function roomState(role: 'host' | 'guest'): PublicRoomState {
   const now = Date.now();
@@ -54,6 +57,7 @@ function roomState(role: 'host' | 'guest'): PublicRoomState {
 class ImmediateReplySocket extends EventTarget {
   readyState = 1;
   reconnectCount = 0;
+  dropNextRequest = false;
 
   constructor() {
     super();
@@ -63,6 +67,10 @@ class ImmediateReplySocket extends EventTarget {
   send(raw: string): void {
     const request = JSON.parse(raw) as { type: string; role?: 'host' | 'guest' };
     if (request.type === 'ping' || request.type === 'leave') return;
+    if (this.dropNextRequest) {
+      this.dropNextRequest = false;
+      return;
+    }
     const role = request.type === 'join' ? 'guest' : request.role || 'host';
     this.dispatchEvent(
       new MessageEvent('message', {
@@ -87,6 +95,15 @@ class ImmediateReplySocket extends EventTarget {
     this.dispatchEvent(new Event('close'));
     this.reconnect();
   }
+
+  preconfirmSeatBeforeRequest(role: 'host' | 'guest'): void {
+    this.dispatchEvent(
+      new MessageEvent('message', {
+        data: JSON.stringify({ type: 'roomState', you: role, state: roomState(role) }),
+      }),
+    );
+    this.dropNextRequest = true;
+  }
 }
 
 vi.mock('partysocket', () => ({ PartySocket: ImmediateReplySocket }));
@@ -94,7 +111,11 @@ vi.mock('../src/firebase/client', () => ({
   getPlayerIdentity: () => ({ playerId: 'player-1', alias: 'Steven' }),
 }));
 vi.mock('../src/firebase/runtime', () => ({
-  getFirebaseIdToken: async () => 'token',
+  getFirebaseIdToken: async () => {
+    tokenControl.beforeResolve?.();
+    tokenControl.beforeResolve = null;
+    return 'token';
+  },
 }));
 vi.mock('../src/features/titles', () => ({
   getEquippedTitleDisplay: () => '',
@@ -117,9 +138,11 @@ vi.mock('../src/i18n/t', () => ({ t: (key: string) => key }));
 describe('duo WebSocket direct response ordering', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    tokenControl.beforeResolve = null;
   });
 
   afterEach(async () => {
+    vi.useRealTimers();
     const { duoWsDisconnect } = await import('../src/features/duo/duoSocket');
     duoWsDisconnect();
     sockets.length = 0;
@@ -129,6 +152,18 @@ describe('duo WebSocket direct response ordering', () => {
     const { duoWsCreateRoom } = await import('../src/features/duo/duoSocket');
 
     await expect(duoWsCreateRoom('tierII', 'standard')).resolves.toMatch(/^r_/);
+  });
+
+  it('adopts the authoritative host seat when iOS delivers roomState before the request waiter', async () => {
+    vi.useFakeTimers();
+    tokenControl.beforeResolve = () => sockets.at(-1)?.preconfirmSeatBeforeRequest('host');
+    const { duoWsCreateRoom } = await import('../src/features/duo/duoSocket');
+
+    const result = duoWsCreateRoom('tierII', 'standard');
+    await vi.advanceTimersByTimeAsync(8_100);
+
+    await expect(result).resolves.toMatch(/^r_/);
+    expect(sockets.at(-1)?.readyState).toBe(1);
   });
 
   it('joins and resumes when their acknowledgements arrive synchronously', async () => {
