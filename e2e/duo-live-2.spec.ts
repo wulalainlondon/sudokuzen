@@ -14,6 +14,7 @@ import { test, expect, type Page, type BrowserContext, type Browser } from '@pla
 
 const LIVE_URL = 'https://wulalainlondon.github.io/sudokuzen/';
 const SUITE_TIMEOUT = 300_000; // 5 min
+const latestRoomState = new WeakMap<Page, { tierId: string; puzzleSeed: number }>();
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -23,6 +24,7 @@ async function waitForBoot(page: Page): Promise<void> {
       const badge = document.getElementById('version-badge');
       return badge && badge.textContent && badge.textContent.startsWith('v');
     },
+    undefined,
     { timeout: 60_000 },
   );
 }
@@ -31,36 +33,32 @@ async function setAlias(page: Page, alias: string): Promise<void> {
   await page.evaluate((a) => {
     localStorage.setItem('sudoku_player_alias', a);
     localStorage.setItem('sudoku_player_id', `test_${a}`);
+    localStorage.setItem('sudoku_e2e_mode', '1');
   }, alias);
 }
 
-async function waitForAuthUid(page: Page): Promise<void> {
-  await page.waitForFunction(
-    () => {
-      const connState = document.getElementById('duo-conn-state');
-      const lobby = document.getElementById('duo-lobby');
-      const lobbyVisible = lobby && !lobby.classList.contains('hidden');
-      const notErrorState =
-        !connState || connState.style.display === 'none' || connState.textContent === '';
-      return lobbyVisible && notErrorState;
-    },
-    { timeout: 30_000 },
-  );
-}
-
 async function openDuoLobby(page: Page): Promise<void> {
-  await page.evaluate(() => (window as Record<string, unknown>).openDuoLobby?.());
+  await page.evaluate(() => {
+    void (window as Record<string, unknown>).openDuoLobby?.();
+  });
   await page.waitForFunction(
     () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
+    undefined,
     { timeout: 20_000 },
   );
-  await waitForAuthUid(page);
 }
 
 async function createRoom(page: Page): Promise<void> {
-  await page.evaluate(() => (window as Record<string, unknown>).createDuoRoomFromLobby?.());
+  await page.evaluate(() => {
+    void (window as Record<string, unknown>).createDuoRoomFromLobby?.();
+  });
+  await waitForRoomView(page);
+}
+
+async function waitForRoomView(page: Page): Promise<void> {
   await page.waitForFunction(
     () => !document.getElementById('duo-room-view')?.classList.contains('hidden'),
+    undefined,
     { timeout: 25_000 },
   );
 }
@@ -90,6 +88,7 @@ async function joinRoomByHostAlias(page: Page, hostAlias: string): Promise<void>
   await page.locator(`.duo-room-item:has(.duo-room-host:text("${hostAlias}"))`).click();
   await page.waitForFunction(
     () => !document.getElementById('duo-room-view')?.classList.contains('hidden'),
+    undefined,
     { timeout: 15_000 },
   );
 }
@@ -100,6 +99,7 @@ async function waitForReadyButtonVisible(page: Page): Promise<void> {
       const btn = document.getElementById('duo-ready-btn') as HTMLButtonElement | null;
       return btn != null && btn.style.display !== 'none' && btn.style.display !== '';
     },
+    undefined,
     { timeout: 30_000 },
   );
 }
@@ -114,7 +114,18 @@ async function waitForCountdown(page: Page): Promise<void> {
 
 async function waitForGameStart(page: Page): Promise<void> {
   await page.waitForFunction(
-    () => document.querySelectorAll('.cell[data-idx]').length === 81,
+    () => {
+      const roomView = document.getElementById('duo-room-view');
+      const game = document.querySelector('.game-container') as HTMLElement | null;
+      return (
+        document.querySelectorAll('.cell[data-idx]').length === 81 &&
+        (roomView?.classList.contains('hidden') ?? true) &&
+        game != null &&
+        game.style.display !== 'none' &&
+        !document.getElementById('duo-countdown-overlay')
+      );
+    },
+    undefined,
     { timeout: 30_000 },
   );
   // Handle both standard duo (progress bar) and chess clock (cc-clock-bar) modes
@@ -124,12 +135,15 @@ async function waitForGameStart(page: Page): Promise<void> {
       const clockBar = document.getElementById('cc-clock-bar');
       return (progress != null && progress.style.display === 'flex') || clockBar != null;
     },
+    undefined,
     { timeout: 10_000 },
   );
 }
 
 async function solveBoard(page: Page): Promise<void> {
-  const data = await page.evaluate(() => {
+  const room = latestRoomState.get(page);
+  if (!room) throw new Error('solveBoard: missing authoritative room state');
+  const data = await page.evaluate(async ({ tierId, puzzleSeed }) => {
     function solveSudoku(b: number[]): boolean {
       const empty = b.indexOf(0);
       if (empty === -1) return true;
@@ -162,14 +176,47 @@ async function solveBoard(page: Page): Promise<void> {
       }
       return 0;
     });
-    const solution = [...puzzle];
-    const solved = solveSudoku(solution);
-    return { puzzle, solution, solved, cellCount: cells.length };
-  });
+    const shardsByTier: Record<string, string[]> = {
+      tier0: ['T00'],
+      tierI: ['T01'],
+      tierII: ['T02'],
+      tierIII: ['T03', 'T04'],
+      tierIV: ['T05', 'T06'],
+      tierV: ['T07', 'T08', 'T09', 'T10', 'T11', 'T12'],
+    };
+    const shardKeys = shardsByTier[tierId] ?? ['T00'];
+    const pools = await Promise.all(
+      shardKeys.map(async (key) => {
+        const response = await fetch(`./data/duo-${key}.json`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`duo shard ${key}: HTTP ${response.status}`);
+        return response.json() as Promise<Array<{ id: number; sl: number[] }>>;
+      }),
+    );
+    const pool = pools.flat();
+    const level = pool[((puzzleSeed % pool.length) + pool.length) % pool.length];
+    const canonical = level?.sl;
+    const hasCanonical =
+      Array.isArray(canonical) &&
+      canonical.length === 81 &&
+      canonical.every((value) => Number.isInteger(value) && value >= 1 && value <= 9);
+    const solution = hasCanonical ? [...canonical] : [...puzzle];
+    const solved = hasCanonical || solveSudoku(solution);
+    return {
+      puzzle,
+      solution,
+      solved,
+      cellCount: cells.length,
+      levelId: level?.id ?? null,
+      solutionSource: hasCanonical ? 'canonical' : 'backtracking',
+    };
+  }, room);
 
   if (!data.solved || data.cellCount !== 81) {
     throw new Error(`solveBoard: cellCount=${data.cellCount} solved=${data.solved}`);
   }
+  console.log(
+    `[duo-live-2] solving level=${data.levelId ?? 'unknown'} source=${data.solutionSource}`,
+  );
   for (let i = 0; i < 81; i++) {
     if (data.puzzle[i] === 0) {
       await page.locator(`.cell[data-idx="${i}"]`).click();
@@ -181,13 +228,6 @@ async function solveBoard(page: Page): Promise<void> {
 async function waitForResultModal(page: Page, timeout = 30_000): Promise<void> {
   await page.waitForSelector('#duo-result-modal', { timeout });
   await page.waitForSelector('.duo-result-panel', { timeout: 10_000 });
-}
-
-async function waitForLobby(page: Page): Promise<void> {
-  await page.waitForFunction(
-    () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
-    { timeout: 20_000 },
-  );
 }
 
 async function cleanup(page: Page): Promise<void> {
@@ -269,6 +309,53 @@ interface GameSetup {
   guestAlias: string;
 }
 
+function traceDuoSocket(page: Page, label: string): void {
+  page.on('websocket', (socket) => {
+    let lastState = '';
+    socket.on('framesent', ({ payload }) => {
+      const text = String(payload);
+      try {
+        const msg = JSON.parse(text) as { type?: string; timeSec?: number };
+        if (msg.type === 'finish' || msg.type === 'rematch' || msg.type === 'ready') {
+          const detail = msg.type === 'finish' ? ` time=${msg.timeSec ?? '?'}` : '';
+          console.log(`[duo-live-2/${label}] ws sent ${msg.type}${detail}`);
+        }
+      } catch {
+        // Diagnostic logging only.
+      }
+    });
+    socket.on('framereceived', ({ payload }) => {
+      const text = String(payload);
+      if (!text.includes('"type":"roomState"')) return;
+      try {
+        const msg = JSON.parse(text) as {
+          state?: {
+            status?: string;
+            tierId?: string;
+            puzzleSeed?: number;
+            host?: { finishTime?: number | null };
+            guest?: { finishTime?: number | null };
+          };
+        };
+        const state = msg.state;
+        if (state?.tierId && typeof state.puzzleSeed === 'number' && Number.isFinite(state.puzzleSeed)) {
+          latestRoomState.set(page, {
+            tierId: state.tierId,
+            puzzleSeed: Number(state.puzzleSeed),
+          });
+        }
+        const key = `${state?.status}:${state?.host?.finishTime ?? '-'}:${state?.guest?.finishTime ?? '-'}`;
+        if (key !== lastState) {
+          lastState = key;
+          console.log(`[duo-live-2/${label}] ws state ${key}`);
+        }
+      } catch {
+        // Diagnostic logging only.
+      }
+    });
+  });
+}
+
 /**
  * Full game setup: boot → alias → create room → join → ready → countdown → game start.
  * Cleans up contexts automatically if setup fails.
@@ -282,6 +369,8 @@ async function setupGame(browser: Browser, testId: string): Promise<GameSetup> {
   const guestCtx = await browser.newContext({ ignoreHTTPSErrors: true });
   const hostPage = await hostCtx.newPage();
   const guestPage = await guestCtx.newPage();
+  traceDuoSocket(hostPage, `${testId}/host`);
+  traceDuoSocket(guestPage, `${testId}/guest`);
 
   try {
     await Promise.all([
@@ -412,7 +501,7 @@ test.describe('duo-live-multi-round', () => {
   test.describe.configure({ mode: 'serial', timeout: SUITE_TIMEOUT });
 
   test('連打三局 play-again', async ({ browser }) => {
-    const { hostCtx, guestCtx, hostPage, guestPage, hostAlias } = await setupGame(browser, 'mr');
+    const { hostCtx, guestCtx, hostPage, guestPage } = await setupGame(browser, 'mr');
 
     try {
       for (let round = 1; round <= 3; round++) {
@@ -427,19 +516,10 @@ test.describe('duo-live-multi-round', () => {
         console.log(`[duo-live-2/mr] round ${round} — result shown`);
 
         if (round < 3) {
-          // Both click play-again
-          await Promise.all([
-            hostPage.locator('#duo-result-modal .resume-btn').click(),
-            guestPage.locator('#duo-result-modal .resume-btn').click(),
-          ]);
-          // Both return to duo lobby
-          await Promise.all([waitForLobby(hostPage), waitForLobby(guestPage)]);
-          console.log(`[duo-live-2/mr] round ${round} — both back in lobby`);
-
-          // Host creates a new room; guest finds it by host alias
-          await createRoom(hostPage);
-          await refreshLobbyAndWaitForRoom(guestPage, hostAlias);
-          await joinRoomByHostAlias(guestPage, hostAlias);
+          // One rematch request resets the authoritative room and keeps both seats.
+          await hostPage.locator('#duo-result-modal .resume-btn').click();
+          await Promise.all([waitForRoomView(hostPage), waitForRoomView(guestPage)]);
+          console.log(`[duo-live-2/mr] round ${round} — same room reset`);
 
           await Promise.all([
             waitForReadyButtonVisible(hostPage),

@@ -1,5 +1,12 @@
 Original prompt: 幫我用這個檢查我的關卡 是否都是唯一解
 
+Current prompt (2026-07-30): 找出連續對戰第二局結果不同步問題，修復並以 S10+ / i11 實體 PWA 完整驗證。
+
+- 正式站 WebSocket frame trace 證明原先第二局「沒有結果」不是產品漏送：舊 E2E 在 `countdown` 階段誤把上一局殘留棋盤視為新局，且用回溯解答而非當局權威 solution，導致填錯／填舊棋盤而沒有送出 finish。
+- `duo-live-2` 已改為：從權威 roomState 取得 tier + puzzleSeed、載入對應 Duo shard 的 canonical solution、等待房間畫面真正關閉與新棋盤顯示、依現行協議由一方提出同房 rematch。
+- 正式站完整 edge suite 已通過：錯誤輸入與 cooldown、對手斷線自動沒收、同房三連戰、15 秒離線後重連完賽；4 tests passed（3.2m）。
+- 實機狀態：S10+ 已透過 ADB 連線；i11 目前在 Xcode 裝置清單顯示 offline，尚不能完成雙實機最終驗證。
+
 Current prompt (2026-07-29): 使用 iPhone 16 Pro 實測 PWA 雙人建房失敗；修正、驗證並部署可更新版本。
 
 - 已用 XCUITest 在 iPhone 16 Pro（iOS 26.5.2）重現：建立房間後仍停留大廳，稍後在清單看到自己的等待房；正式後端 smoke 通過，定位為 iOS PWA 的客戶端訊息時序情況。
