@@ -156,3 +156,6 @@ TODO / handoff (current):
 - 正式站 `2026.07.28-V2` 已發布；S10+ 實機連續 10 輪「建立 → 進準備房 → 離開 → 重新整理大廳」全數通過，進房耗時 1.5–2.6 秒，每輪 active room 均清空、建立鈕未卡住、自己的房間未殘留，且無 page/console error。
 - 已把剩餘回歸缺口納入 CI：同步 ack 的 reconnect reclaim、建房 UI 成功／失敗狀態轉換與重複點擊鎖定、publish 尚未完成就離房時的 mirror 刪除競態；完整 release gate 現為 46 files / 312 tests 全綠。
 - Wild CI 7 項失敗根因為 `clearGameData()` 清掉 Playwright storageState 注入的 `sudoku_e2e_mode`；已保留該旗標並加入前置斷言。本機 Wild 7/7、完整 smoke 26/26、release gate 46 files / 312 tests 全綠。
+- 2026-07-29 App Store build 3 已以 Apple Distribution 匯出並通過 IPA 稽核：`1.0 (3)`、Bundle ID `com.wulala.sudokuzen`、內嵌前端 `2026.07.28-V2`，SHA-256 `e9485bbf1361f847cfc1755ebd255039aa5a1c904236f2b066655d4f3faf9d49`。
+- build 3 上傳後由 App Store Connect 處理為 `VALID`；舊 build 2 的 `WAITING_FOR_REVIEW` submission 已撤回並完成，版本改掛 build 3 後重新送審。
+- 2026-07-29 14:16:29（Asia/Taipei）最終 API 回讀：App 與 review submission 均為 `WAITING_FOR_REVIEW`、attached build 為 `3/VALID`，新送審已進入 Apple 排隊。
