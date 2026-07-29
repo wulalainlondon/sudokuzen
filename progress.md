@@ -6,6 +6,7 @@ Current prompt (2026-07-29): 使用 iPhone 16 Pro 實測 PWA 雙人建房失敗�
 - `duoSocket` 已加入權威座位恢復：只有 room id、角色與 player id 全部吻合才採納伺服器已分配的 host/guest 座位，涵蓋 create/join/resume；token 完成後會先立即採納，不依賴可能被背景節流的 timeout。
 - 新增 request race 回歸測試，模擬權威 `roomState` 先到且原 request 回覆遺失，確認房間成功且 socket 不被關閉。
 - PWA 版本升為 `2026.07.29-V4`，使 service worker / standalone PWA 取得本次更新。
+- 修正正式站完整對局 E2E 的過期房號 DOM selector，改驗證實際 active room id，避免建房已成功卻等不存在元素五分鐘的假失敗。
 
 Current prompt (2026-07-27): 把 Chrome + S10+ 十場雙人耐久測試發現的斷線恢復、倒數幽靈局、等待房重新公開、連續戰鬥、殘留進度、建房連線與 Firebase 權限問題逐項修復，完整驗證後再回報。
 

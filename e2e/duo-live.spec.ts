@@ -25,6 +25,7 @@ async function waitForBoot(page: Page): Promise<void> {
       const badge = document.getElementById('version-badge');
       return badge && badge.textContent && badge.textContent.startsWith('v');
     },
+    undefined,
     { timeout: 60_000 },
   );
 }
@@ -50,14 +51,18 @@ async function waitForAuthUid(page: Page): Promise<void> {
       const notErrorState = !connState || connState.style.display === 'none' || connState.textContent === '';
       return lobbyVisible && notErrorState;
     },
+    undefined,
     { timeout: 30_000 },
   );
 }
 
 async function openDuoLobby(page: Page): Promise<void> {
-  await page.evaluate(() => (window as Record<string, unknown>).openDuoLobby?.());
+  await page.evaluate(() => {
+    void (window as Record<string, unknown>).openDuoLobby?.();
+  });
   await page.waitForFunction(
     () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
+    undefined,
     { timeout: 20_000 },
   );
   // Also wait for Firebase to be connected (conn-state hidden = ok)
@@ -65,9 +70,12 @@ async function openDuoLobby(page: Page): Promise<void> {
 }
 
 async function createRoom(page: Page): Promise<void> {
-  await page.evaluate(() => (window as Record<string, unknown>).createDuoRoomFromLobby?.());
+  await page.evaluate(() => {
+    void (window as Record<string, unknown>).createDuoRoomFromLobby?.();
+  });
   await page.waitForFunction(
     () => !document.getElementById('duo-room-view')?.classList.contains('hidden'),
+    undefined,
     { timeout: 25_000 },
   );
 }
@@ -96,6 +104,7 @@ async function joinRoomByHostAlias(page: Page, hostAlias: string): Promise<void>
   await page.locator(`.duo-room-item:has(.duo-room-host:text("${hostAlias}"))`).click();
   await page.waitForFunction(
     () => !document.getElementById('duo-room-view')?.classList.contains('hidden'),
+    undefined,
     { timeout: 15_000 },
   );
 }
@@ -108,6 +117,7 @@ async function waitForReadyButtonVisible(page: Page): Promise<void> {
       // Initial HTML has style="display:none;"; becomes "inline-block" when guest joins
       return btn != null && btn.style.display !== 'none' && btn.style.display !== '';
     },
+    undefined,
     { timeout: 30_000 },
   );
 }
@@ -125,6 +135,7 @@ async function waitForGameStart(page: Page): Promise<void> {
   // Wait until 81 cells are in the DOM — they're rendered by initGame's renderCells call
   await page.waitForFunction(
     () => document.querySelectorAll('.cell[data-idx]').length === 81,
+    undefined,
     { timeout: 30_000 },
   );
   // Also confirm the duo progress bar is shown (set to flex by launchDuoGame)
@@ -133,6 +144,7 @@ async function waitForGameStart(page: Page): Promise<void> {
       const p = document.getElementById('duo-progress-container');
       return p != null && p.style.display === 'flex';
     },
+    undefined,
     { timeout: 10_000 },
   );
 }
@@ -308,6 +320,7 @@ test.describe('duo-live', () => {
       // Guest: should navigate back to lobby
       await guestPage2.waitForFunction(
         () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
+        undefined,
         { timeout: 20_000 },
       );
       console.log(`[duo-live] test2: guest returned to lobby ✓`);
@@ -318,11 +331,13 @@ test.describe('duo-live', () => {
           const btn = document.getElementById('duo-ready-btn') as HTMLButtonElement | null;
           return btn != null && btn.style.display === 'none';
         },
+        undefined,
         { timeout: 20_000 },
       );
       // Host: guest slot should be empty
       await hostPage2.waitForFunction(
         () => document.getElementById('duo-slot-guest')?.classList.contains('empty') ?? false,
+        undefined,
         { timeout: 5_000 },
       );
       console.log(`[duo-live] test2: host sees empty guest slot + hidden ready btn ✓`);
@@ -358,7 +373,10 @@ test.describe('duo-live', () => {
     await openDuoLobby(hostPage);
     console.log(`[duo-live] host lobby open, Firebase ready`);
     await createRoom(hostPage);
-    const roomId = await hostPage.locator('#duo-room-id-value').textContent();
+    const roomId = await hostPage.evaluate(() =>
+      localStorage.getItem('sudoku_duo_active_room_id'),
+    );
+    expect(roomId, 'host active room id').toBeTruthy();
     console.log(`[duo-live] host created room: ${roomId}`);
 
     // ── 4. Guest opens lobby, finds host room, and joins ─────────────────
@@ -467,13 +485,16 @@ test.describe('duo-live', () => {
     // ── 12. Play-again and back buttons are visible in the result modal ─
     await expect(hostPage.locator('#duo-result-modal .resume-btn')).toBeVisible();
     await expect(guestPage.locator('#duo-result-modal .resume-btn')).toBeVisible();
-    await expect(hostPage.locator('#duo-result-modal .back-btn')).toBeVisible();
-    await expect(guestPage.locator('#duo-result-modal .back-btn')).toBeVisible();
+    const hostBackToLobby = hostPage.getByRole('button', { name: '返回大廳', exact: true });
+    const guestBackToLobby = guestPage.getByRole('button', { name: '返回大廳', exact: true });
+    await expect(hostBackToLobby).toBeVisible();
+    await expect(guestBackToLobby).toBeVisible();
 
     // ── 13. Host clicks "back to lobby" from result modal ────────────────
-    await hostPage.locator('#duo-result-modal .back-btn').click();
+    await hostBackToLobby.click();
     await hostPage.waitForFunction(
       () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
+      undefined,
       { timeout: 15_000 },
     );
     console.log(`[duo-live] host returned to lobby after result ✓`);
