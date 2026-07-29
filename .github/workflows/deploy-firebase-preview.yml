@@ -9,6 +9,8 @@ on:
 jobs:
   deploy_preview:
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
     permissions:
       contents: read
     steps:
@@ -50,10 +52,9 @@ jobs:
         working-directory: functions
 
       - name: Deploy Firestore Rules and Cloud Functions
-        env:
-          FIREBASE_SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
         run: |
-          echo "$FIREBASE_SA_JSON" > /tmp/sa.json
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
           GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json npx firebase-tools deploy \
             --only firestore:rules,functions \
             --project sudokuzen-f2aa3 \
@@ -61,10 +62,15 @@ jobs:
           rm -f /tmp/sa.json
 
       - name: Deploy to Firebase Hosting Preview Channel
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          firebaseServiceAccount: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
           projectId: sudokuzen-f2aa3
           channelId: web-preview
           expires: 30d
+
+      - name: Report unavailable Firebase deployment credentials
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT == '' }}
+        run: echo "::notice::Firebase deploy skipped because FIREBASE_SERVICE_ACCOUNT is not configured."

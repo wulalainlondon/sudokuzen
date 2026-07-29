@@ -159,3 +159,4 @@ TODO / handoff (current):
 - 2026-07-29 App Store build 3 已以 Apple Distribution 匯出並通過 IPA 稽核：`1.0 (3)`、Bundle ID `com.wulala.sudokuzen`、內嵌前端 `2026.07.28-V2`，SHA-256 `e9485bbf1361f847cfc1755ebd255039aa5a1c904236f2b066655d4f3faf9d49`。
 - build 3 上傳後由 App Store Connect 處理為 `VALID`；舊 build 2 的 `WAITING_FOR_REVIEW` submission 已撤回並完成，版本改掛 build 3 後重新送審。
 - 2026-07-29 14:16:29（Asia/Taipei）最終 API 回讀：App 與 review submission 均為 `WAITING_FOR_REVIEW`、attached build 為 `3/VALID`，新送審已進入 Apple 排隊。
+- 同輪 GitHub 核心 CI（typecheck、lint、format、312 unit tests、build、E2E smoke）與 Pages 均通過；Firebase Preview 假紅燈根因為 repository 未設定 `FIREBASE_SERVICE_ACCOUNT`，workflow 已改為缺少憑證時明確 notice 並跳過遠端部署。
