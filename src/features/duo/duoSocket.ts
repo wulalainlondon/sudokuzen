@@ -376,6 +376,7 @@ export async function duoWsCreateRoom(tierId: string, modeId: string): Promise<s
   try {
     await waitOpen(socket);
     const idToken = (await getFirebaseIdToken()) ?? undefined;
+    if (adoptAuthoritativeSeat(roomId, 'host')) return roomId;
     const res = await request(
       { type: 'create', room: { tierId, modeId }, player: playerInfo(), idToken },
       (m) => (m.type === 'roomState' && m.you === 'host') || m.type === 'error',
@@ -400,6 +401,7 @@ export async function duoWsJoinRoom(roomId: string): Promise<boolean> {
   try {
     await waitOpen(socket);
     const idToken = (await getFirebaseIdToken()) ?? undefined;
+    if (adoptAuthoritativeSeat(roomId, 'guest')) return true;
     const res = await request(
       { type: 'join', player: playerInfo(), idToken },
       (m) => (m.type === 'roomState' && m.you === 'guest') || m.type === 'error',
@@ -425,6 +427,7 @@ export async function duoWsResumeRoom(roomId: string, role: Role): Promise<boole
   try {
     await waitOpen(socket);
     const idToken = (await getFirebaseIdToken()) ?? undefined;
+    if (adoptAuthoritativeSeat(roomId, role)) return true;
     const hello: ClientMsg = { type: 'hello', player: playerInfo(), role, idToken };
     const res = await request(
       hello,

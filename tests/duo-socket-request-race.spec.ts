@@ -155,14 +155,10 @@ describe('duo WebSocket direct response ordering', () => {
   });
 
   it('adopts the authoritative host seat when iOS delivers roomState before the request waiter', async () => {
-    vi.useFakeTimers();
     tokenControl.beforeResolve = () => sockets.at(-1)?.preconfirmSeatBeforeRequest('host');
     const { duoWsCreateRoom } = await import('../src/features/duo/duoSocket');
 
-    const result = duoWsCreateRoom('tierII', 'standard');
-    await vi.advanceTimersByTimeAsync(8_100);
-
-    await expect(result).resolves.toMatch(/^r_/);
+    await expect(duoWsCreateRoom('tierII', 'standard')).resolves.toMatch(/^r_/);
     expect(sockets.at(-1)?.readyState).toBe(1);
   });
 
