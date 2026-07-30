@@ -186,3 +186,9 @@ TODO / handoff (current):
 - build 3 上傳後由 App Store Connect 處理為 `VALID`；舊 build 2 的 `WAITING_FOR_REVIEW` submission 已撤回並完成，版本改掛 build 3 後重新送審。
 - 2026-07-29 14:16:29（Asia/Taipei）最終 API 回讀：App 與 review submission 均為 `WAITING_FOR_REVIEW`、attached build 為 `3/VALID`，新送審已進入 Apple 排隊。
 - 同輪 GitHub 核心 CI（typecheck、lint、format、312 unit tests、build、E2E smoke）與 Pages 均通過；Firebase Preview 假紅燈根因為 repository 未設定 `FIREBASE_SERVICE_ACCOUNT`，workflow 已改為缺少憑證時明確 notice 並跳過遠端部署。
+- 2026-07-30 真實 PWA 對戰：iPhone 11 standalone PWA（玩家9233）建立房間 `r_kub9rqbqms71qzxa`，S10+ Chrome WebAPK（S10Ezu4g）加入；名稱、準備、倒數、雙端落子進度與結果一致。第一局由 i11 原生逐格完成、S10+ 再完成，雙端正式結算；同房 rematch 後題目與進度均重置。
+- 實機快速輸入找到兩個進度邊界並修復：節流期間的最後 progress 改為 trailing flush；本機正常完成立即顯示自身 100%（認輸 9999 不偽裝完成）。正式 live 三局同房 E2E 通過，完整 gate 為 46 files / 313 tests。
+- 第二／三局強制終止 i11 PWA 找到重連競態：replacement socket 已 hello 認領後，WebKit 延遲送達的舊 socket close 會重新掛上沒收計時。Duo Worker 現在偵測同座位已有有效 socket 時忽略舊 close；精準 QA 與既有 alarm／雙斷線／認領安全共 23/23 通過。
+- 將 iOS 冷啟動恢復時間統一：active-room resume 12s → 45s、Worker playing 沒收寬限 30s → 60s、client reconnect failure 45s → 75s。新增 GitHub CI `duo-worker` job，自動執行 Worker typecheck、dry-run 與 23 項 Phase 3 QA。
+- V9 實機第四局：i11 process kill 後 9.4s 回同一盤；從 kill 起跨過 62s，每 5s 讀取 S10+ 均為綠燈、2%/0%、無誤結算；i11 在截止後原生輸入正確 4，S10+ 立即同步為 2%/2%。S10+ 正常完成 100%，i11 後續固定座標因先前捲動偏移而耗盡生命，S10+ 權威結果正確顯示玩家9233認輸、S10Ezu4g 勝 05:57。
+- 最新正式版本：前端 `2026.07.30-V9`；Duo Worker Version ID `ee5cf3c6-7366-4f69-8304-7e63049276d4`；修正 commit `9958777`（stale close）與 `d1172b9`（cold reconnect grace）均已推至 `main`。
