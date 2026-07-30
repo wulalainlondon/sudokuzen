@@ -36,8 +36,8 @@ let _outbox: ClientMsg[] = [];
 let _reclaimAttempts = 0;
 // 「重連中」掛太久（純斷網不回）的牆鐘上限計時器；超過則升級為 failed，避免無限轉圈
 let _reconnFailTimer: ReturnType<typeof setTimeout> | null = null;
-// 略長於 server 30s 沒收寬限期：超過此時間仍未連回，視為連線失敗
-const RECONNECT_FAIL_MS = 45_000;
+// 略長於 server 60s 沒收寬限期：超過此時間仍未連回，視為連線失敗
+const RECONNECT_FAIL_MS = 75_000;
 
 function clearReconnFailTimer(): void {
   if (_reconnFailTimer !== null) {

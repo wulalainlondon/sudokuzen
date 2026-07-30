@@ -6,7 +6,7 @@ const MAX_MOVES = 2000;
 
 interface Env {
   GameRoom: DurableObjectNamespace<GameRoom>;
-  // 寬限期可由 wrangler --var 覆寫（測試用短值），預設 30s
+  // 寬限期可由 wrangler --var 覆寫（測試用短值），playing 預設 60s
   FORFEIT_GRACE_MS?: string;
   WAITING_CLOSE_GRACE_MS?: string;
   // Firebase 身分驗證：PROJECT_ID 用於驗 aud/iss；AUTH_REQUIRED='false' 關閉驗證（本機測試）
@@ -454,7 +454,7 @@ export class GameRoom extends Server<Env> {
     const lastSeen = role === 'host' ? this.hostLastSeenAt : this.guestLastSeenAt;
     if (lastSeen <= 0 || now - lastSeen <= PRESENCE_STALE_MS) return false;
     slot.online = false;
-    const grace = this.graceMs('FORFEIT_GRACE_MS', 30_000);
+    const grace = this.graceMs('FORFEIT_GRACE_MS', 60_000);
     if (role === 'host') {
       if (this.room.forfeitHostAt == null) this.room.forfeitHostAt = now + grace;
     } else {
@@ -489,7 +489,7 @@ export class GameRoom extends Server<Env> {
     if (this.room.status === 'playing') {
       // 對局中斷線且尚未完成 → 寬限期後沒收（給重連機會）
       if (slot.finishTime == null) {
-        const grace = this.graceMs('FORFEIT_GRACE_MS', 30_000);
+        const grace = this.graceMs('FORFEIT_GRACE_MS', 60_000);
         if (role === 'host') this.room.forfeitHostAt = now + grace;
         else this.room.forfeitGuestAt = now + grace;
       }

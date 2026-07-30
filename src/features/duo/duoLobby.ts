@@ -15,6 +15,9 @@ const LOBBY_POLL_FAST_MS = 6_000;
 const LOBBY_POLL_SLOW_MS = 25_000;
 const LOBBY_POLL_FAST_WINDOW_MS = 15_000;
 const LOBBY_ENTRY_TIMEOUT_MS = 12_000;
+// iOS standalone PWA cold starts may need to load Firebase before a signed
+// WebSocket seat reclaim. Keep this below the server's 60s forfeit grace.
+const ACTIVE_ROOM_RESUME_TIMEOUT_MS = 45_000;
 // WS 路徑專用：與 DO 關房寬限（host 斷線 ~30s 後關房）對齊，壓縮「看得到點不進」窗口。
 // 搭配 WS_LOBBY_TOUCH_MS=15s，健康 host 的 heartbeat 最舊也只 ~15s，不會被誤隱藏。
 const ROOM_FRESHNESS_MS = 45_000;
@@ -290,7 +293,7 @@ async function openDuoLobbyInternal(): Promise<void> {
     // An active WebSocket match is authoritative in the Durable Object and
     // must remain resumable even when Firebase lobby discovery/auth is slow.
     if (isDuoWsEnabled() && getActiveDuoRoomId()) {
-      const resumed = await withTimeout(resumeDuoRoomIfAny(), LOBBY_ENTRY_TIMEOUT_MS);
+      const resumed = await withTimeout(resumeDuoRoomIfAny(), ACTIVE_ROOM_RESUME_TIMEOUT_MS);
       if (resumed && getActiveDuoRoomId()) {
         const { openDuoRoomView } = await import('./duoRoomView');
         openDuoRoomView();
