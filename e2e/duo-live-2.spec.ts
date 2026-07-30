@@ -140,7 +140,7 @@ async function waitForGameStart(page: Page): Promise<void> {
   );
 }
 
-async function solveBoard(page: Page): Promise<void> {
+async function solveBoard(page: Page, leaveLast = 0, primeThenRapid = false): Promise<void> {
   const room = latestRoomState.get(page);
   if (!room) throw new Error('solveBoard: missing authoritative room state');
   const data = await page.evaluate(async ({ tierId, puzzleSeed }) => {
@@ -217,11 +217,35 @@ async function solveBoard(page: Page): Promise<void> {
   console.log(
     `[duo-live-2] solving level=${data.levelId ?? 'unknown'} source=${data.solutionSource}`,
   );
-  for (let i = 0; i < 81; i++) {
-    if (data.puzzle[i] === 0) {
-      await page.locator(`.cell[data-idx="${i}"]`).click();
-      await page.keyboard.press(String(data.solution[i]));
-    }
+  const blankIndices = data.puzzle
+    .map((value, index) => (value === 0 ? index : -1))
+    .filter((index) => index >= 0);
+  const indicesToFill = blankIndices.slice(0, Math.max(0, blankIndices.length - leaveLast));
+  if (primeThenRapid && indicesToFill.length > 1) {
+    const [first, ...rapidIndices] = indicesToFill;
+    await page.locator(`.cell[data-idx="${first}"]`).click();
+    await page.keyboard.press(String(data.solution[first]));
+    // Let the leading update leave the client before the rapid burst. Without
+    // a trailing throttle, the burst's newest value will then be lost.
+    await page.waitForTimeout(1200);
+    await page.evaluate(
+      async ({ indices, solution }) => {
+        for (const index of indices) {
+          const cell = document.querySelector<HTMLElement>(`.cell[data-idx="${index}"]`);
+          cell?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+          window.dispatchEvent(
+            new KeyboardEvent('keydown', { key: String(solution[index]), bubbles: true }),
+          );
+          await new Promise((resolve) => setTimeout(resolve, 10));
+        }
+      },
+      { indices: rapidIndices, solution: data.solution },
+    );
+    return;
+  }
+  for (const i of indicesToFill) {
+    await page.locator(`.cell[data-idx="${i}"]`).click();
+    await page.keyboard.press(String(data.solution[i]));
   }
 }
 
@@ -506,6 +530,23 @@ test.describe('duo-live-multi-round', () => {
     try {
       for (let round = 1; round <= 3; round++) {
         console.log(`[duo-live-2/mr] round ${round} — solving`);
+
+        if (round === 1) {
+          await solveBoard(hostPage, 1, true);
+          await expect
+            .poll(
+              async () => {
+                const [hostSelf, guestOpponent] = await Promise.all([
+                  hostPage.locator('#duo-progress-self-pct').textContent(),
+                  guestPage.locator('#duo-progress-opp-pct').textContent(),
+                ]);
+                return hostSelf !== '100%' && hostSelf === guestOpponent;
+              },
+              { timeout: 5_000 },
+            )
+            .toBe(true);
+          console.log('[duo-live-2/mr] trailing progress synchronized before finish');
+        }
 
         // Host finishes first, then guest (ensures a clear win/loss, not relying on timing)
         await solveBoard(hostPage);

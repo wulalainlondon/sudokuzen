@@ -2,10 +2,17 @@ Original prompt: 幫我用這個檢查我的關卡 是否都是唯一解
 
 Current prompt (2026-07-30): 找出連續對戰第二局結果不同步問題，修復並以 S10+ / i11 實體 PWA 完整驗證。
 
+- 2026-07-30 11:35 實機同房 `r_7o36gi0ems6y1uji`：S10+ 由 2% 快速填至本機 98%，i11 僅收到 96%，直接重現 leading-only 進度 throttle 遺失最後中間值；S10+ 最後一格完成後，i11 由權威 finish 校正為 100%，並顯示「S10Ezu4g 已完成」。
+- 已把進度節流改為 leading + 單一 trailing submission，並在 rematch/reset/新局清除 timer，避免快速連填時對手長時間落後一筆。
+- `duo-live-2` 三連戰新增「第一局先停最後一格、兩端進度必須一致才准完賽」回歸；舊正式 V4 可抓到 timeout 失敗。
+- 版本升為 `2026.07.30-V5`；`npm run check:ci` 通過（46 files / 313 tests）。
+- 真機限制證據：SpringBoard icon state 不含 SudokuZen/Web Clip，i11 目前實測頁是 Safari（`com.apple.mobilesafari`），不是已安裝的 home-screen PWA；iOS 26 WebView 在目前 DVT/XCUITest 遠端觸控下可讀取元素但點棋盤／認輸沒有送入頁面，因此尚不能誠實宣稱 i11 PWA 多局觸控驗證完成。
 - 正式站 WebSocket frame trace 證明原先第二局「沒有結果」不是產品漏送：舊 E2E 在 `countdown` 階段誤把上一局殘留棋盤視為新局，且用回溯解答而非當局權威 solution，導致填錯／填舊棋盤而沒有送出 finish。
 - `duo-live-2` 已改為：從權威 roomState 取得 tier + puzzleSeed、載入對應 Duo shard 的 canonical solution、等待房間畫面真正關閉與新棋盤顯示、依現行協議由一方提出同房 rematch。
 - 正式站完整 edge suite 已通過：錯誤輸入與 cooldown、對手斷線自動沒收、同房三連戰、15 秒離線後重連完賽；4 tests passed（3.2m）。
-- 實機狀態：S10+ 已透過 ADB 連線；i11 目前在 Xcode 裝置清單顯示 offline，尚不能完成雙實機最終驗證。
+- 實機狀態：S10+ 已透過 ADB/CDP 連線；i11 雖然 Xcode CoreDevice provider 異常，已改用 `pymobiledevice3` 的 userspace tunnel + DVT，能直接執行既有 XCTest Runner 與擷取 828×1792 真機畫面。
+- i11 真機畫面已直接確認一局結算：`S10Ezu4g` 對 `玩家4751`，雙方皆顯示認輸、平手，結算畫面可按「再來一局」。證據：`output/duo-physical-20260730/i11-before.png`。
+- i11 的 Safari Web Inspector 目前仍為關閉；已新增 XCTest 自動開啟設定的測試並成功 build。安裝更新 Runner 時裝置再次自動鎖定，需解鎖並保持螢幕亮著後續跑真機多局／斷線驗證。
 
 Current prompt (2026-07-29): 使用 iPhone 16 Pro 實測 PWA 雙人建房失敗；修正、驗證並部署可更新版本。
 

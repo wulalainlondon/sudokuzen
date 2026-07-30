@@ -57,6 +57,7 @@ let _duoFinishSubmitted = false;
 let _duoResultShown = false;
 let _duoOpponentOfflineNotified = false;
 let _lastSubmittedProgress = -1;
+let _duoProgressTrailingTimer: ReturnType<typeof setTimeout> | null = null;
 let _autoForfeitStarted = false;
 let _gameStartedAtMs = 0;
 let _oppStaleSince = 0;
@@ -642,6 +643,10 @@ export async function launchDuoGame(): Promise<void> {
   gs.continuousFillDigit = null;
   gs.duoProgressThrottle = 0;
   _lastSubmittedProgress = -1;
+  if (_duoProgressTrailingTimer !== null) {
+    clearTimeout(_duoProgressTrailingTimer);
+    _duoProgressTrailingTimer = null;
+  }
   resetDuoProgressUI();
 
   // Safety reset: clear per-round flags that may be stale if resetDuoState() was
@@ -757,7 +762,24 @@ export function updateDuoProgress(): void {
   if (!gs.isDuoMode) return;
   if (!isDuoWsEnabled() && !gs.firebaseReady) return;
   const now = Date.now();
-  if (now - gs.duoProgressThrottle < 1000) return;
+  const throttleRemaining = 1000 - (now - gs.duoProgressThrottle);
+  if (throttleRemaining > 0) {
+    // A leading-only throttle permanently loses the newest intermediate value
+    // when a player fills several cells quickly. Keep one trailing submission
+    // so the opponent sees the actual latest progress before either side
+    // finishes (the authoritative finish event still forces 100%).
+    if (_duoProgressTrailingTimer === null) {
+      _duoProgressTrailingTimer = setTimeout(() => {
+        _duoProgressTrailingTimer = null;
+        updateDuoProgress();
+      }, throttleRemaining);
+    }
+    return;
+  }
+  if (_duoProgressTrailingTimer !== null) {
+    clearTimeout(_duoProgressTrailingTimer);
+    _duoProgressTrailingTimer = null;
+  }
   gs.duoProgressThrottle = now;
   const filled = gs.cellsData.filter((c) => !c.fixed && c.value !== 0).length;
   if (filled === _lastSubmittedProgress) return;
@@ -1172,6 +1194,10 @@ async function enterDuoRematchRoom(): Promise<void> {
   _duoOpponentOfflineNotified = false;
   _autoForfeitStarted = false;
   _lastSubmittedProgress = -1;
+  if (_duoProgressTrailingTimer !== null) {
+    clearTimeout(_duoProgressTrailingTimer);
+    _duoProgressTrailingTimer = null;
+  }
   _localMoves = [];
   _gameStartedAtMs = 0;
   gs.isDuoMode = false;
@@ -1224,6 +1250,10 @@ export function resetDuoState(): void {
   _prevOppProgress = null;
   _autoForfeitStarted = false;
   _lastSubmittedProgress = -1;
+  if (_duoProgressTrailingTimer !== null) {
+    clearTimeout(_duoProgressTrailingTimer);
+    _duoProgressTrailingTimer = null;
+  }
   _localMoves = [];
   _gameStartedAtMs = 0;
   gs.duoPenaltySeconds = 0;
