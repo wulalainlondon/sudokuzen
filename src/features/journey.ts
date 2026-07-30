@@ -97,7 +97,7 @@ export function getJourneyState(): JourneyState {
   const worldProfile = readJson<Record<string, unknown>>(SK.WILD_PROFILE, {});
   const worldLevel = Math.max(1, Number(worldProfile.iqLevel) || 1);
   const worldEncounters = Math.max(0, Number(worldProfile.totalEncounters) || 0);
-  const duoProfile = readJson<{ playCount?: Record<string, number> }>('sudoku_duo_profile_v2', {});
+  const duoProfile = readJson<{ playCount?: Record<string, number> }>(SK.DUO_PROFILE, {});
   const profileDuoPlays = Object.values(duoProfile.playCount || {}).reduce(
     (sum, count) => sum + Math.max(0, Number(count) || 0),
     0,

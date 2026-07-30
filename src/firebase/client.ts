@@ -36,6 +36,16 @@ interface SpeedRecord {
 }
 type GenericRecordMap = Record<string, ClassicRecord | SpeedRecord>;
 
+interface CloudDuoProfile {
+  playCount: Record<string, number>;
+  wins: number;
+  losses: number;
+  draws: number;
+  currentStreak: number;
+  bestStreak: number;
+  rivals: Record<string, { wins: number; losses: number }>;
+}
+
 interface LeaderboardRow {
   playerId: string;
   alias: string;
@@ -56,6 +66,7 @@ const PROFILE_SYNC_KEYS: Set<string> = new Set([
   SK.TECHNIQUES_USED,
   SK.WILD_PROFILE,
   SK.DUO_RECORDS,
+  SK.DUO_PROFILE,
   SK.ACHIEVEMENTS,
   SK.LAST_LEVEL,
   SK.SPEEDRUN,
@@ -189,6 +200,104 @@ function mergeRecordMaps(
     if (better) out[levelId] = better;
   }
   return out;
+}
+
+function nonNegativeInt(value: unknown): number {
+  return Math.max(0, toInt(value));
+}
+
+function normalizeDuoProfile(raw: unknown): CloudDuoProfile {
+  const profile = isPlainObject(raw) ? raw : {};
+  const playCount: Record<string, number> = {};
+  if (isPlainObject(profile.playCount)) {
+    for (const [key, value] of Object.entries(profile.playCount)) {
+      if (!key) continue;
+      playCount[key] = nonNegativeInt(value);
+    }
+  }
+
+  const rivals: CloudDuoProfile['rivals'] = {};
+  if (isPlainObject(profile.rivals)) {
+    for (const [alias, record] of Object.entries(profile.rivals)) {
+      if (!alias || !isPlainObject(record)) continue;
+      rivals[alias] = {
+        wins: nonNegativeInt(record.wins),
+        losses: nonNegativeInt(record.losses),
+      };
+    }
+  }
+
+  return {
+    playCount,
+    wins: nonNegativeInt(profile.wins),
+    losses: nonNegativeInt(profile.losses),
+    draws: nonNegativeInt(profile.draws),
+    currentStreak: nonNegativeInt(profile.currentStreak),
+    bestStreak: nonNegativeInt(profile.bestStreak),
+    rivals,
+  };
+}
+
+function duoResultCount(profile: CloudDuoProfile): number {
+  return profile.wins + profile.losses + profile.draws;
+}
+
+function mergeDuoProfiles(localRaw: unknown, remoteRaw: unknown): CloudDuoProfile {
+  const local = normalizeDuoProfile(localRaw);
+  const remote = normalizeDuoProfile(remoteRaw);
+  const playCount = { ...remote.playCount };
+  for (const [key, count] of Object.entries(local.playCount)) {
+    playCount[key] = Math.max(count, playCount[key] || 0);
+  }
+
+  const rivals = { ...remote.rivals };
+  for (const [alias, record] of Object.entries(local.rivals)) {
+    const remoteRecord = rivals[alias];
+    rivals[alias] = {
+      wins: Math.max(record.wins, remoteRecord?.wins || 0),
+      losses: Math.max(record.losses, remoteRecord?.losses || 0),
+    };
+  }
+
+  // currentStreak is not monotonic. Keep it from whichever snapshot contains
+  // more completed results, so an old winning streak cannot override a later loss.
+  const currentStreak = duoResultCount(local) >= duoResultCount(remote) ? local.currentStreak : remote.currentStreak;
+
+  return {
+    playCount,
+    wins: Math.max(local.wins, remote.wins),
+    losses: Math.max(local.losses, remote.losses),
+    draws: Math.max(local.draws, remote.draws),
+    currentStreak,
+    bestStreak: Math.max(local.bestStreak, remote.bestStreak),
+    rivals,
+  };
+}
+
+function mergeLegacyDuoRecords(localRaw: unknown, remoteRaw: unknown): Record<string, unknown> {
+  const local = isPlainObject(localRaw) ? localRaw : {};
+  const remote = isPlainObject(remoteRaw) ? remoteRaw : {};
+  const merged: Record<string, unknown> = { ...remote, ...local };
+  const localWins = isPlainObject(local.wins) ? local.wins : {};
+  const remoteWins = isPlainObject(remote.wins) ? remote.wins : {};
+
+  if (Object.keys(localWins).length > 0 || Object.keys(remoteWins).length > 0) {
+    const wins: Record<string, number> = {};
+    for (const alias of new Set([...Object.keys(remoteWins), ...Object.keys(localWins)])) {
+      wins[alias] = Math.max(nonNegativeInt(remoteWins[alias]), nonNegativeInt(localWins[alias]));
+    }
+    merged.wins = wins;
+  }
+
+  const localStreak = nonNegativeInt(local.streak);
+  const remoteStreak = nonNegativeInt(remote.streak);
+  if ('streak' in local || 'streak' in remote) {
+    merged.streak = Math.max(localStreak, remoteStreak);
+    if (remoteStreak > localStreak && typeof remote.streakHolder === 'string') {
+      merged.streakHolder = remote.streakHolder;
+    }
+  }
+  return merged;
 }
 
 function readLocalSettings(): {
@@ -494,7 +603,7 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
     techniquesUsed: readJson<string[]>(SK.TECHNIQUES_USED, []),
     wildProfile: readJson<Record<string, unknown>>(SK.WILD_PROFILE, {}),
     duoRecords: readJson<Record<string, unknown>>(SK.DUO_RECORDS, {}),
-    duoProfile: readJson<Record<string, unknown>>('sudoku_duo_profile_v2', {}),
+    duoProfile: readJson<Record<string, unknown>>(SK.DUO_PROFILE, {}),
   };
   const settings = readLocalSettings();
   try {
@@ -662,11 +771,23 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
       [SK.PRACTICE_DONE, journey.practiceDone],
       [SK.TECHNIQUES_USED, journey.techniquesUsed],
       [SK.WILD_PROFILE, journey.wildProfile],
-      [SK.DUO_RECORDS, journey.duoRecords],
-      ['sudoku_duo_profile_v2', journey.duoProfile],
     ];
     for (const [key, value] of journeyKeys) {
       if (value != null && localStorage.getItem(key) === null) writeJson(key, value);
+    }
+    const mergedDuoRecords = mergeLegacyDuoRecords(
+      readJson<Record<string, unknown>>(SK.DUO_RECORDS, {}),
+      journey.duoRecords,
+    );
+    if (JSON.stringify(readJson(SK.DUO_RECORDS, {})) !== JSON.stringify(mergedDuoRecords)) {
+      writeJson(SK.DUO_RECORDS, mergedDuoRecords);
+    }
+    const mergedDuoProfile = mergeDuoProfiles(
+      readJson<Record<string, unknown>>(SK.DUO_PROFILE, {}),
+      journey.duoProfile,
+    );
+    if (JSON.stringify(readJson(SK.DUO_PROFILE, {})) !== JSON.stringify(mergedDuoProfile)) {
+      writeJson(SK.DUO_PROFILE, mergedDuoProfile);
     }
 
     const saveSnap = await docRef.collection(PROFILE_SAVE_SUBCOLLECTION).get();

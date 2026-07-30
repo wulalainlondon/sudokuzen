@@ -1,6 +1,6 @@
 // Duo profile — local progression, tier/mode unlock, win tracking
 
-import { readJson, writeJson } from '../../storage/keys';
+import { SK, readJson, writeJson } from '../../storage/keys';
 import { DUO_TIERS, DUO_MODES } from './duoTiers';
 
 // ── Profile shape ────────────────────────────────────────────────────
@@ -17,7 +17,7 @@ export interface DuoProfile {
   rivals: Record<string, { wins: number; losses: number }>;
 }
 
-const PROFILE_KEY = 'sudoku_duo_profile_v2';
+const PROFILE_KEY = SK.DUO_PROFILE;
 const RECORDED_ROOMS_KEY = 'sudoku_duo_recorded_rooms_v1';
 
 function emptyProfile(): DuoProfile {

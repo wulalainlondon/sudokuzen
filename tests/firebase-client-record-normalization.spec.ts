@@ -139,4 +139,123 @@ describe('firebase client record normalization', () => {
       replayHistory: [{ t: 4, type: 'quick_note', detail: 'remote', idx: null, val: null, notes: [3] }],
     });
   });
+
+  it('restores remote Duo progress when a reinstalled PWA already has an empty local profile', async () => {
+    writeJson(SK.DUO_PROFILE, {});
+    writeJson(SK.DUO_RECORDS, {});
+
+    Object.assign(gs as unknown as Record<string, unknown>, {
+      db: makeProfileDb({
+        records: {},
+        speedRecords: {},
+        achievements: {},
+        settings: {},
+        journey: {
+          duoProfile: {
+            playCount: {
+              'tier0-standard': 1,
+              'tierI-standard': 7,
+              'tierII-standard': 89,
+              'tierIII-standard': 9,
+              'tierIV-standard': 2,
+            },
+            wins: 40,
+            losses: 63,
+            draws: 5,
+            currentStreak: 0,
+            bestStreak: 14,
+            rivals: { mm: { wins: 40, losses: 63 } },
+          },
+          duoRecords: {
+            wins: { mm: 2, Steven: 0 },
+            streak: 2,
+            streakHolder: 'mm',
+          },
+        },
+      }),
+    });
+
+    await hydratePlayerProfileFromCloud();
+
+    expect(readJson(SK.DUO_PROFILE, {})).toEqual({
+      playCount: {
+        'tier0-standard': 1,
+        'tierI-standard': 7,
+        'tierII-standard': 89,
+        'tierIII-standard': 9,
+        'tierIV-standard': 2,
+      },
+      wins: 40,
+      losses: 63,
+      draws: 5,
+      currentStreak: 0,
+      bestStreak: 14,
+      rivals: { mm: { wins: 40, losses: 63 } },
+    });
+    expect(readJson(SK.DUO_RECORDS, {})).toEqual({
+      wins: { mm: 2, Steven: 0 },
+      streak: 2,
+      streakHolder: 'mm',
+    });
+  });
+
+  it('merges Duo snapshots without rolling back newer local match progress', async () => {
+    writeJson(SK.DUO_PROFILE, {
+      playCount: { 'tierII-standard': 90 },
+      wins: 41,
+      losses: 63,
+      draws: 5,
+      currentStreak: 1,
+      bestStreak: 14,
+      rivals: { mm: { wins: 41, losses: 63 } },
+    });
+
+    Object.assign(gs as unknown as Record<string, unknown>, {
+      db: makeProfileDb({
+        records: {},
+        speedRecords: {},
+        achievements: {},
+        settings: {},
+        journey: {
+          duoProfile: {
+            playCount: { 'tierI-standard': 7, 'tierII-standard': 89 },
+            wins: 40,
+            losses: 63,
+            draws: 5,
+            currentStreak: 0,
+            bestStreak: 14,
+            rivals: { mm: { wins: 40, losses: 63 } },
+          },
+        },
+      }),
+    });
+
+    await hydratePlayerProfileFromCloud();
+
+    expect(readJson(SK.DUO_PROFILE, {})).toEqual({
+      playCount: { 'tierI-standard': 7, 'tierII-standard': 90 },
+      wins: 41,
+      losses: 63,
+      draws: 5,
+      currentStreak: 1,
+      bestStreak: 14,
+      rivals: { mm: { wins: 41, losses: 63 } },
+    });
+  });
+
+  it('does not invent legacy Duo records for a player with no Duo history', async () => {
+    Object.assign(gs as unknown as Record<string, unknown>, {
+      db: makeProfileDb({
+        records: {},
+        speedRecords: {},
+        achievements: {},
+        settings: {},
+        journey: {},
+      }),
+    });
+
+    await hydratePlayerProfileFromCloud();
+
+    expect(localStorage.getItem(SK.DUO_RECORDS)).toBeNull();
+  });
 });
