@@ -1,7 +1,7 @@
 // DuoResultModal — React component replacing the legacy #duo-result-modal DOM.
 // Uses hybrid approach: React owns the modal shell, content is rendered via dangerouslySetInnerHTML.
 
-import { useCallback, useMemo, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, type ReactElement } from 'react';
 import { useDuoResultStore } from './duoResultStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { t } from '../../i18n/t';
@@ -40,21 +40,41 @@ function ConfettiLayer({ count, colors }: { count: number; colors: string[] }): 
 }
 
 export function DuoResultModal(): ReactElement {
-  const { visible, contentHtml, iWon, isDraw, hostMoves, guestMoves, hostAlias, guestAlias, puzzle } =
-    useDuoResultStore();
+  const {
+    visible,
+    contentHtml,
+    iWon,
+    isDraw,
+    hostMoves,
+    guestMoves,
+    hostAlias,
+    guestAlias,
+    puzzle,
+    rematchPending,
+    setRematchPending,
+  } = useDuoResultStore();
   const safeContentHtml = useMemo(() => sanitizeHtml(contentHtml), [contentHtml]);
 
   const handlePlayAgain = useCallback(() => {
+    if (rematchPending) return;
+    setRematchPending(true);
     import('../../features/duo/duoGame')
       .then((m) => {
-        m.requestDuoRematch();
+        return m.requestDuoRematch();
       })
-      .catch(() => {});
-  }, []);
+      .catch(() => setRematchPending(false));
+  }, [rematchPending, setRematchPending]);
+
+  useEffect(() => {
+    if (!rematchPending) return;
+    const timeout = window.setTimeout(() => setRematchPending(false), 12_000);
+    return () => window.clearTimeout(timeout);
+  }, [rematchPending, setRematchPending]);
 
   const handleBack = useCallback(() => {
+    if (rematchPending) return;
     import('../../features/duo/duoGame').then((m) => m.closeDuoResult()).catch(() => {});
-  }, []);
+  }, [rematchPending]);
 
   const handleReview = useCallback(() => {
     const hasData = hostMoves.length > 0 || guestMoves.length > 0;
@@ -70,7 +90,7 @@ export function DuoResultModal(): ReactElement {
   const confettiCount = iWon ? 30 : 25;
   const confettiColors = iWon ? CONFETTI_COLORS_WIN : CONFETTI_COLORS_DRAW;
 
-  const panelClass = `duo-result-panel${iWon ? ' victory' : isDraw ? '' : visible ? ' defeat' : ''}`;
+  const panelClass = `duo-result-panel${iWon ? ' victory' : isDraw ? '' : visible ? ' defeat' : ''}${rematchPending ? ' rematch-pending' : ''}`;
   const titleClass = iWon ? 'victory-title' : isDraw ? 'draw-title' : 'defeat-title';
 
   return (
@@ -80,14 +100,21 @@ export function DuoResultModal(): ReactElement {
         <h2 className={titleClass}>{t('duo.resultTitle')}</h2>
         {/* Safety: contentHtml built by our own duo.ts code (trusted) */}
         <div dangerouslySetInnerHTML={{ __html: safeContentHtml }} />
-        <button className="resume-btn" onClick={handlePlayAgain}>
-          {t('duo.playAgain')}
+        <button
+          className="resume-btn duo-rematch-btn"
+          onClick={handlePlayAgain}
+          disabled={rematchPending}
+          aria-busy={rematchPending}
+        >
+          {rematchPending && <span className="duo-rematch-spinner" aria-hidden="true" />}
+          {rematchPending ? t('duo.rematchPreparing') : t('duo.playAgain')}
         </button>
         {(hostMoves.length > 0 || guestMoves.length > 0) && (
           <button
             className="back-btn"
             style={{ border: '1px solid rgba(167,139,250,0.5)', fontSize: '0.85rem', color: '#a78bfa', marginTop: 4 }}
             onClick={handleReview}
+            disabled={rematchPending}
           >
             {t('duo.reviewReplay')}
           </button>
@@ -96,6 +123,7 @@ export function DuoResultModal(): ReactElement {
           className="back-btn"
           style={{ border: 'none', fontSize: '0.8rem', color: 'var(--text-light)' }}
           onClick={handleBack}
+          disabled={rematchPending}
         >
           {t('duo.backToLobby')}
         </button>

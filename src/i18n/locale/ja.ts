@@ -349,6 +349,7 @@ export const ja: Widen<Locale> = {
     surrender: '降参',
     resultTitle: '💑 デュオバトル結果',
     playAgain: 'もう一戦',
+    rematchPreparing: '準備ルームに戻っています...',
     connecting: 'Duo ロビーに接続中...',
     connectionLost: '接続が切断されました。再接続中...',
     connectionFailed: '接続失敗',

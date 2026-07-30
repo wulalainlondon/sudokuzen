@@ -19,6 +19,7 @@ export interface DuoResultState {
   hostAlias: string;
   guestAlias: string;
   puzzle: number[];
+  rematchPending: boolean;
 
   open: (payload: {
     contentHtml: string;
@@ -32,6 +33,7 @@ export interface DuoResultState {
     puzzle: number[];
   }) => void;
   close: () => void;
+  setRematchPending: (pending: boolean) => void;
 }
 
 export const useDuoResultStore = create<DuoResultState>((set) => ({
@@ -45,6 +47,7 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
   hostAlias: '',
   guestAlias: '',
   puzzle: [],
+  rematchPending: false,
 
   open: (payload) =>
     set({
@@ -58,7 +61,9 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
       hostAlias: payload.hostAlias,
       guestAlias: payload.guestAlias,
       puzzle: payload.puzzle,
+      rematchPending: false,
     }),
 
-  close: () => set({ visible: false }),
+  close: () => set({ visible: false, rematchPending: false }),
+  setRematchPending: (rematchPending) => set({ rematchPending }),
 }));

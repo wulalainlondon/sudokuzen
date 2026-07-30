@@ -364,6 +364,7 @@ export const zhTW = {
     surrender: '認輸',
     resultTitle: '💑 雙人對決結果',
     playAgain: '再來一局',
+    rematchPreparing: '正在返回準備區...',
     connecting: '正在連接對戰大廳...',
     connectionLost: '連線中斷，嘗試重新連接...',
     connectionFailed: '連線失敗',

@@ -20,3 +20,7 @@ export function bridgeOpenDuoResult(payload: {
 export function bridgeCloseDuoResult(): void {
   useDuoResultStore.getState().close();
 }
+
+export function bridgeSetDuoRematchPending(pending: boolean): void {
+  useDuoResultStore.getState().setRematchPending(pending);
+}

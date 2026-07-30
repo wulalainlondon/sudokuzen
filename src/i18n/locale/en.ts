@@ -363,6 +363,7 @@ export const en: Widen<Locale> = {
     surrender: 'Forfeit',
     resultTitle: '\uD83D\uDC91 Duo Result',
     playAgain: 'Play Again',
+    rematchPreparing: 'Returning to the ready room...',
     connecting: 'Connecting to Duo Lobby...',
     connectionLost: 'Connection lost, reconnecting...',
     connectionFailed: 'Connection failed',

@@ -195,3 +195,8 @@ TODO / handoff (current):
 - 2026-07-30 Duo 體驗優化第一批：standalone PWA 若保有有效房間座位，會在首頁首次穩定繪製後自動返回原局，啟動時並行預載 Firebase Auth 與 Duo 房間模組；恢復期間顯示明確同步畫面，不再讓玩家停在首頁猜測。
 - 對戰中連線中斷改為棋盤上方的非阻塞狀態膠囊，連回後自動消失；不會跳 modal 或遮住棋盤。手機視覺回歸另外發現並修正 Duo 進度 HUD 的 `width: 100%` flex 擠壓，414px 畫面已恢復橫向進度列。
 - 新增冷啟動／連線 UI 單元測試與 `e2e/duo-startup-ux.spec.ts`；Chromium 2/2 通過，並目視檢查冷恢復及 414×896 重連畫面。
+- 2026-07-30 Duo 體驗優化第二批進行中：PWA 新 Worker 不再於 install 階段直接 `skipWaiting`；若本機仍持有有效 Duo 房間座位，從遊戲、結算到 rematch 準備房全程延後接管與 reload，清除座位後才安全更新。
+- 「再來一局」新增伺服器回覆等待狀態、spinner、重複點擊鎖定與 12 秒可重試保護；等待期間同時阻擋結果頁返回／回放操作，避免 server 已 reset、client 卻離房的競態。
+- 第二批精準單元測試目前 16/16 通過；Duo UX Chromium 3/3 通過。第一次視覺回歸抓到測試直接 import store 的實例分岔，已改用正式 React bridge 統一狀態入口。
+- 第二批完整 release gate 通過：51 files / 324 tests，Functions build、Duo Worker dry-run 與 Phase 3 QA 23/23 全綠；本機雙瀏覽器＋本機 Durable Object 實跑「完賽 → rematch → 同房準備 → 第二局進場」亦通過（15.5s）。
+- 414×896 rematch 等待畫面已重拍目視：結果卡維持可讀、主按鈕顯示 spinner 與「正在返回準備區…」、返回動作降階且不可誤觸。

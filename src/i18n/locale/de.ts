@@ -355,6 +355,7 @@ export const de: Widen<Locale> = {
     surrender: 'Aufgeben',
     resultTitle: '\uD83D\uDC91 Duo-Ergebnis',
     playAgain: 'Nochmal spielen',
+    rematchPreparing: 'Zurück zum Bereitschaftsraum...',
     connecting: 'Verbindung zur Duo-Lobby...',
     connectionLost: 'Verbindung verloren, Neuverbindung...',
     connectionFailed: 'Verbindung fehlgeschlagen',

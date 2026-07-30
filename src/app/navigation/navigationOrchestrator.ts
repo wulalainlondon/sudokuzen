@@ -122,7 +122,9 @@ export function back(): void {
     closeReplayModal();
     return;
   }
-  if (useDuoResultStore.getState().visible) {
+  const duoResultState = useDuoResultStore.getState();
+  if (duoResultState.visible) {
+    if (duoResultState.rematchPending) return;
     closeDuoResult();
     return;
   }

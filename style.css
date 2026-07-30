@@ -7059,6 +7059,33 @@ html.native-app .alias-config {
   box-shadow: var(--shadow-lg);
   animation: resultPanelIn 0.4s var(--ease-zen);
 }
+.duo-result-panel.rematch-pending {
+  transform: scale(0.99);
+}
+.duo-result-panel.rematch-pending .back-btn {
+  opacity: 0.42;
+  pointer-events: none;
+}
+.duo-rematch-btn {
+  width: min(100%, 230px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.duo-rematch-btn:disabled {
+  cursor: wait;
+  opacity: 0.78;
+}
+.duo-rematch-spinner {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: duoResumeSpin 0.7s linear infinite;
+}
 .duo-result-panel.victory {
   border-color: color-mix(in srgb, var(--duo-win) 40%, transparent);
   box-shadow:

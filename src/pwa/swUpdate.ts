@@ -1,5 +1,6 @@
 import { SK } from '../storage/keys';
 import { isNativeApp } from '../platform/nativeApp';
+import { isPwaUpdateBlocked } from './updateSafety';
 
 const RELOAD_GUARD_KEY = 'sudoku_reload_guard_ts';
 const RELOAD_GUARD_MS = 15000;
@@ -22,22 +23,6 @@ function canReloadNow(): boolean {
 function safeReload(): void {
   if (!canReloadNow()) return;
   window.location.reload();
-}
-
-function isGameActivelyPlaying(): boolean {
-  const gameContainer = document.querySelector('.game-container') as HTMLElement | null;
-  if (!gameContainer || gameContainer.style.display !== 'flex') return false;
-
-  const pauseScreen = document.getElementById('pause-screen') as HTMLElement | null;
-  if (pauseScreen?.style.display === 'flex') return false;
-
-  const gameOverOverlay = document.getElementById('overlay') as HTMLElement | null;
-  if (gameOverOverlay?.style.display === 'flex') return false;
-
-  const winCelebration = document.getElementById('win-celebration') as HTMLElement | null;
-  if (winCelebration?.style.display === 'flex') return false;
-
-  return true;
 }
 
 export function enforceAppVersion(appVersion: string): Promise<boolean> {
@@ -85,28 +70,50 @@ export function registerServiceWorkerUpdateFlow(): void {
 
   let refreshing = false;
   let pendingRefresh = false;
+  let waitingWorker: ServiceWorker | null = null;
   let refreshPollTimer: number | null = null;
+
+  const ensureRefreshPoll = () => {
+    if (refreshPollTimer !== null) return;
+    refreshPollTimer = window.setInterval(() => {
+      tryApplyUpdate();
+      tryRefresh();
+    }, 1500);
+  };
+
+  const stopRefreshPollIfIdle = () => {
+    if (refreshPollTimer === null || waitingWorker || pendingRefresh) return;
+    clearInterval(refreshPollTimer);
+    refreshPollTimer = null;
+  };
+
+  const tryApplyUpdate = () => {
+    if (!waitingWorker || isPwaUpdateBlocked()) return;
+    const worker = waitingWorker;
+    waitingWorker = null;
+    worker.postMessage({ type: 'SKIP_WAITING' });
+    stopRefreshPollIfIdle();
+  };
+
+  const requestApplyUpdate = (worker: ServiceWorker) => {
+    waitingWorker = worker;
+    tryApplyUpdate();
+    ensureRefreshPoll();
+  };
 
   const tryRefresh = () => {
     if (refreshing || !pendingRefresh) return;
-    if (isGameActivelyPlaying()) return;
+    if (isPwaUpdateBlocked()) return;
     refreshing = true;
     pendingRefresh = false;
-    if (refreshPollTimer !== null) {
-      clearInterval(refreshPollTimer);
-      refreshPollTimer = null;
-    }
+    stopRefreshPollIfIdle();
     safeReload();
   };
 
   const requestRefresh = () => {
     pendingRefresh = true;
     tryRefresh();
-    if (refreshPollTimer === null) {
-      refreshPollTimer = window.setInterval(() => {
-        tryRefresh();
-      }, 1500);
-    }
+    ensureRefreshPoll();
   };
 
   navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -119,14 +126,14 @@ export function registerServiceWorkerUpdateFlow(): void {
   navigator.serviceWorker
     .register('sw.js', { updateViaCache: 'none' })
     .then((reg) => {
-      if (reg.waiting) applyUpdateImmediately(reg.waiting);
+      if (reg.waiting) requestApplyUpdate(reg.waiting);
 
       reg.onupdatefound = () => {
         const installingWorker = reg.installing;
         if (!installingWorker) return;
         installingWorker.onstatechange = () => {
           if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            applyUpdateImmediately(installingWorker);
+            requestApplyUpdate(installingWorker);
           }
         };
       };
@@ -136,8 +143,4 @@ export function registerServiceWorkerUpdateFlow(): void {
       setInterval(() => reg.update(), 1000 * 60 * 60);
     })
     .catch((err) => console.error('SW init fail:', err));
-}
-
-function applyUpdateImmediately(worker: ServiceWorker): void {
-  worker.postMessage({ type: 'SKIP_WAITING' });
 }

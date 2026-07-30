@@ -77,4 +77,38 @@ test.describe('Duo startup and connection UX', () => {
     await expect(banner).toBeHidden();
     await expect(page.locator('.sudoku-grid')).toBeVisible();
   });
+
+  test('rematch transition prevents duplicate actions without hiding the result', async ({ page }) => {
+    await page.setViewportSize({ width: 414, height: 896 });
+    await page.goto('/');
+    await waitForE2E(page);
+    await page.evaluate(async () => {
+      const { bridgeOpenDuoResult, bridgeSetDuoRematchPending } =
+        await import('/src/react/duoresult/duoResultBridge.ts');
+      bridgeOpenDuoResult({
+        contentHtml: `
+          <div class="duo-result-cards">
+            <div class="duo-result-card winner"><div class="duo-result-alias">玩家9233</div><div class="duo-result-time">03:14</div></div>
+            <div class="duo-result-card"><div class="duo-result-alias">S10Ezu4g</div><div class="duo-result-time">04:17</div></div>
+          </div>
+        `,
+        iWon: true,
+        isDraw: false,
+        levelId: 1,
+        hostMoves: [],
+        guestMoves: [],
+        hostAlias: '玩家9233',
+        guestAlias: 'S10Ezu4g',
+        puzzle: [],
+      });
+      bridgeSetDuoRematchPending(true);
+    });
+
+    const rematch = page.locator('.duo-rematch-btn');
+    await expect(rematch).toBeVisible();
+    await expect(rematch).toBeDisabled();
+    await expect(rematch).toContainText('正在返回準備區');
+    await expect(page.locator('.duo-rematch-spinner')).toBeVisible();
+    await page.screenshot({ path: `${OUTPUT_DIR}/rematch-pending.png`, fullPage: true });
+  });
 });
