@@ -925,6 +925,17 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
   if (_duoFinishSubmitted) return;
   _duoFinishSubmitted = true;
 
+  // Once the local board is authoritatively complete, do not leave its own
+  // progress label on the last throttled value (for example 96%/98%). The
+  // server correctly ignores late progress after finish, so this correction
+  // must happen locally. A 9999 finish is a forfeit and must not look solved.
+  if (timeSec !== 9999) {
+    const selfFill = document.getElementById('duo-progress-fill-self');
+    const selfPct = document.getElementById('duo-progress-self-pct');
+    if (selfFill) selfFill.style.width = '100%';
+    if (selfPct) selfPct.textContent = '100%';
+  }
+
   if (isDuoWsEnabled()) {
     const { duoWsFinish } = await import('./duoSocket');
     duoWsFinish(timeSec, stars, _localMoves);

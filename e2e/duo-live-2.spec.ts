@@ -550,6 +550,8 @@ test.describe('duo-live-multi-round', () => {
 
         // Host finishes first, then guest (ensures a clear win/loss, not relying on timing)
         await solveBoard(hostPage);
+        await expect(hostPage.locator('#duo-progress-self-pct')).toHaveText('100%');
+        await expect(guestPage.locator('#duo-progress-opp-pct')).toHaveText('100%');
         await hostPage.waitForTimeout(1_000);
         await solveBoard(guestPage);
 
