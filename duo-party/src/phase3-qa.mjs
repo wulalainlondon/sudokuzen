@@ -233,6 +233,28 @@ async function main() {
     host2.close();
   }
 
+  // ── [3d] 新 socket 先認領，舊 socket 後 close，不得誤設沒收 ──
+  // iOS PWA 冷啟動可能先建立 replacement socket，之後 WebKit 才回報舊
+  // process 的 close。舊 close 不得覆蓋新 hello 已恢復的 online 狀態。
+  {
+    const { host, guest, roomId } = await playTo();
+    const guest2 = new Client(roomId, 'guest-replacement');
+    await guest2.open();
+    guest2.send({ type: 'hello', player: GUEST_P, role: 'guest' });
+    await guest2.waitFor(
+      (m) => m.type === 'roomState' && m.you === 'guest' && m.state.guest?.online === true,
+      4000,
+    );
+    guest.close();
+    await sleep(2200);
+    const st = host.latest();
+    check('[3d] replacement 已認領後舊 socket close → guest 仍 online', st.guest.online === true);
+    check('[3d] replacement 已認領後舊 socket close → guest 未被沒收', st.guest.finishTime == null);
+    check('[3d] replacement 已認領後舊 socket close → 對局仍 playing', st.status === 'playing');
+    host.close();
+    guest2.close();
+  }
+
   // ── [P6] progress 在非 playing(waiting) 狀態送出應被忽略 ──
   {
     const roomId = rid();

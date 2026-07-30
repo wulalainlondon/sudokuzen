@@ -468,6 +468,19 @@ export class GameRoom extends Server<Env> {
   async onClose(connection: Connection<ConnState>): Promise<void> {
     const role = connection.state?.role;
     if (!this.room || !role) return;
+    // A cold PWA resume can establish and reclaim a replacement socket before
+    // WebKit reports the old process' socket as closed.  In that ordering the
+    // stale onClose must not mark the shared seat offline or arm a forfeit
+    // deadline after handleHello() already cancelled it.
+    for (const active of this.getConnections<ConnState>()) {
+      if (
+        active.id !== connection.id &&
+        active.state?.role === role &&
+        active.state.ownerUid === connection.state?.ownerUid
+      ) {
+        return;
+      }
+    }
     const slot = role === 'host' ? this.room.host : this.room.guest;
     if (!slot) return;
     slot.online = false;

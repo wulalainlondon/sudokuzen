@@ -7,6 +7,28 @@ on:
     branches: ['main']
 
 jobs:
+  duo-worker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: duo-party
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: duo-party/package-lock.json
+
+      - run: npm ci
+
+      - name: Durable Object checks and reconnect regression
+        run: npm run check
+
   check:
     runs-on: ubuntu-latest
     permissions:
