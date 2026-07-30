@@ -28,6 +28,9 @@ const PING_INTERVAL_MS = 10_000;
 
 let _socket: PartySocket | null = null;
 let _roomId: string | null = null;
+// Room id carried by the most recent authoritative roomState. This must match
+// _roomId before cached gs.duoRoomData can be adopted for a new request.
+let _lastStateRoomId: string | null = null;
 // 重連認領：create/join 成功後設定，partysocket 自動重連時用 hello 接管原座位
 let _reconnectMsg: ClientMsg | null = null;
 // 重連期間未送出的訊息，認領成功後依序補送（避免本地落子遺失）
@@ -170,6 +173,7 @@ function pump(raw: string): void {
   }
 
   if (msg.type === 'roomState') {
+    _lastStateRoomId = msg.state.roomId;
     // 刻意只在 you 為 truthy 時更新角色：廣播一律送 you=null（單次序列化），
     // 角色只由 create/join/hello 的 direct sendStateTo（帶 you）設定。
     // ⚠️ 勿改成 `gs.duoRole = msg.you ?? gs.duoRole` 之類——對局中的 you=null 廣播
@@ -216,7 +220,7 @@ function request(msg: ClientMsg, pred: (m: ServerMsg) => boolean, ms = 8000): Pr
  * we must not discard a seat that the server has already assigned.
  */
 function adoptAuthoritativeSeat(roomId: string, role: Role): boolean {
-  if (_roomId !== roomId || gs.duoRole !== role || !gs.duoRoomData) return false;
+  if (_roomId !== roomId || _lastStateRoomId !== roomId || gs.duoRole !== role || !gs.duoRoomData) return false;
   const { playerId } = getPlayerIdentity();
   const assignedPlayerId = role === 'host' ? gs.duoRoomData.hostId : gs.duoRoomData.guestId;
   if (!playerId || assignedPlayerId !== playerId) return false;
@@ -224,6 +228,55 @@ function adoptAuthoritativeSeat(roomId: string, role: Role): boolean {
   _reclaimAttempts = 0;
   notifyConn('connected');
   return true;
+}
+
+/**
+ * Recover a seat when the server applied create/join but its one-shot direct
+ * roomState acknowledgement never reached the client.
+ *
+ * This is different from the waiter-ordering race handled above: in that case
+ * pump() saw the state and adoptAuthoritativeSeat() can use it. On some mobile
+ * WebSocket paths the direct frame itself can be lost, leaving a real server
+ * room behind while the PWA times out in the lobby. A hello is an idempotent,
+ * authenticated read/claim of the already-created seat, so retrying it cannot
+ * create another room or take another player's seat.
+ */
+async function recoverAuthoritativeSeat(roomId: string, role: Role): Promise<boolean> {
+  if (_roomId !== roomId || !_socket || _socket.readyState !== WS_OPEN) return false;
+  if (adoptAuthoritativeSeat(roomId, role)) return true;
+
+  const idToken = (await getFirebaseIdToken()) ?? undefined;
+  const hello: ClientMsg = { type: 'hello', player: playerInfo(), role, idToken };
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await request(
+        hello,
+        (m) =>
+          (m.type === 'roomState' && m.you === role) ||
+          (m.type === 'error' &&
+            (m.code === 'reclaim_failed' ||
+              m.code === 'no_room' ||
+              m.code === 'auth_required' ||
+              m.code === 'auth_invalid')),
+        3_000,
+      );
+      if (res.type === 'roomState') {
+        // `you` is set only by the server's authenticated direct response.
+        // Trust it even if an old install changed its local playerId while
+        // anonymous auth was being bound; ownerUid is the server authority.
+        gs.duoRole = role;
+        _reconnectMsg = { type: 'hello', player: playerInfo(), role };
+        _reclaimAttempts = 0;
+        notifyConn('connected');
+        return true;
+      }
+      return false;
+    } catch {
+      // A second hello covers a dropped recovery acknowledgement without
+      // creating another Durable Object room.
+    }
+  }
+  return adoptAuthoritativeSeat(roomId, role);
 }
 
 function waitOpen(socket: PartySocket, timeoutMs = 12_000): Promise<void> {
@@ -351,6 +404,7 @@ function closeSocket(): void {
   const sock = _socket;
   _socket = null;
   _roomId = null;
+  _lastStateRoomId = null;
   if (sock) {
     try {
       sock.close();
@@ -383,6 +437,7 @@ export async function duoWsCreateRoom(tierId: string, modeId: string): Promise<s
     );
     if (res.type === 'error') {
       if (adoptAuthoritativeSeat(roomId, 'host')) return roomId;
+      if (await recoverAuthoritativeSeat(roomId, 'host')) return roomId;
       closeSocket();
       return null;
     }
@@ -391,6 +446,7 @@ export async function duoWsCreateRoom(tierId: string, modeId: string): Promise<s
   } catch (e) {
     console.warn('[duoWs] createRoom failed:', e);
     if (adoptAuthoritativeSeat(roomId, 'host')) return roomId;
+    if (await recoverAuthoritativeSeat(roomId, 'host')) return roomId;
     closeSocket();
     return null;
   }
@@ -409,6 +465,7 @@ export async function duoWsJoinRoom(roomId: string): Promise<boolean> {
     if (res.type === 'error') {
       console.warn('[duoWs] join rejected:', res.code);
       if (adoptAuthoritativeSeat(roomId, 'guest')) return true;
+      if (await recoverAuthoritativeSeat(roomId, 'guest')) return true;
       closeSocket();
       return false;
     }
@@ -417,6 +474,7 @@ export async function duoWsJoinRoom(roomId: string): Promise<boolean> {
   } catch (e) {
     console.warn('[duoWs] joinRoom failed:', e);
     if (adoptAuthoritativeSeat(roomId, 'guest')) return true;
+    if (await recoverAuthoritativeSeat(roomId, 'guest')) return true;
     closeSocket();
     return false;
   }

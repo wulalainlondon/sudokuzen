@@ -209,3 +209,6 @@ TODO / handoff (current):
 - 正式站同房連打已提升為可設定 `DUO_LIVE_ROUNDS`，本輪以 10 局執行：每局 ready/countdown/換題/雙端 finish/result，9 次 rematch 全成功；第一局另驗證快速連填 trailing progress 在完賽前一致，雙端 100% 正確。
 - 最新 V11 實機交叉驗證通過：S10+ Chrome WebAPK 建房、iPhone 11 iOS 26.5 standalone PWA 加入；雙方準備／開局，iPhone 收到 S10+ 2% 與 100%，認輸後名稱與勝負一致。再戰第二局後強制終止 iPhone PWA，8 秒重開恢復同一盤與 S10+ 名稱，沒有誤顯上一局結算；完成第二局結算後已清除實機 active room。
 - 更新邊界實測：S10+ 原本停留在 V6 的有效舊結算房，V11 依設計延後 Service Worker 接管；退出舊房並重新載入後更新為 V11，`sudoku_app_version=2026.07.30-V11`。iPhone 11 standalone PWA 亦重新冷啟動並目視確認 `v2026.07.30-V11`。
+- 2026-07-30 Steven 的 V12 iPhone 錄影確認「建房按鈕轉圈後仍留在大廳，自己的等待房逐次增加」；正式 Firestore breadcrumb 與 Durable Object 都證明房已建立，但 host heartbeat 只停在建立當下，約 32 秒後房間因離線關閉。
+- 前端原本只處理 direct `roomState` 已進入 `pump()`、但一次性 waiter 錯過的競態；若 direct ack frame 完全遺失，會關閉 socket 並留下孤兒房。現在 create/join 逾時會在同一 roomId 以 Firebase ownerUid 驗證的 `hello` 重認領，不會再建立第二間房。
+- 同輪精準測試發現舊 `gs.duoRoomData` 可在新隨機 roomId 被誤採納；新增 `_lastStateRoomId`，快照房號必須與目前 socket 房號完全一致。漏 ack 恢復與跨房殘留拒絕回歸已加入，精準 8/8、完整 release gate 51 files / 326 tests、Worker Phase 3 QA 23/23 通過。

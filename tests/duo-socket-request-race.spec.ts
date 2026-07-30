@@ -8,10 +8,10 @@ const tokenControl = vi.hoisted(() => ({
   beforeResolve: null as (() => void) | null,
 }));
 
-function roomState(role: 'host' | 'guest'): PublicRoomState {
+function roomState(role: 'host' | 'guest', roomId = 'room-test'): PublicRoomState {
   const now = Date.now();
   return {
-    roomId: 'room-test',
+    roomId,
     tierId: 'tierII',
     modeId: 'standard',
     puzzleSeed: 123,
@@ -58,15 +58,33 @@ class ImmediateReplySocket extends EventTarget {
   readyState = 1;
   reconnectCount = 0;
   dropNextRequest = false;
+  dropCreateAckAfterApply = false;
+  rejectHello = false;
+  sentTypes: string[] = [];
+  roomId: string;
 
-  constructor() {
+  constructor(options?: { room?: string }) {
     super();
+    this.roomId = options?.room || 'room-test';
     sockets.push(this);
   }
 
   send(raw: string): void {
     const request = JSON.parse(raw) as { type: string; role?: 'host' | 'guest' };
     if (request.type === 'ping' || request.type === 'leave') return;
+    this.sentTypes.push(request.type);
+    if (request.type === 'create' && this.dropCreateAckAfterApply) {
+      this.dropCreateAckAfterApply = false;
+      return;
+    }
+    if (request.type === 'hello' && this.rejectHello) {
+      this.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({ type: 'error', code: 'reclaim_failed', message: 'Seat no longer yours' }),
+        }),
+      );
+      return;
+    }
     if (this.dropNextRequest) {
       this.dropNextRequest = false;
       return;
@@ -74,7 +92,7 @@ class ImmediateReplySocket extends EventTarget {
     const role = request.type === 'join' ? 'guest' : request.role || 'host';
     this.dispatchEvent(
       new MessageEvent('message', {
-        data: JSON.stringify({ type: 'roomState', you: role, state: roomState(role) }),
+        data: JSON.stringify({ type: 'roomState', you: role, state: roomState(role, this.roomId) }),
       }),
     );
   }
@@ -99,7 +117,7 @@ class ImmediateReplySocket extends EventTarget {
   preconfirmSeatBeforeRequest(role: 'host' | 'guest'): void {
     this.dispatchEvent(
       new MessageEvent('message', {
-        data: JSON.stringify({ type: 'roomState', you: role, state: roomState(role) }),
+        data: JSON.stringify({ type: 'roomState', you: role, state: roomState(role, this.roomId) }),
       }),
     );
     this.dropNextRequest = true;
@@ -160,6 +178,42 @@ describe('duo WebSocket direct response ordering', () => {
 
     await expect(duoWsCreateRoom('tierII', 'standard')).resolves.toMatch(/^r_/);
     expect(sockets.at(-1)?.readyState).toBe(1);
+  });
+
+  it('reclaims the same host seat when create succeeded but its direct acknowledgement was lost', async () => {
+    vi.useFakeTimers();
+    tokenControl.beforeResolve = () => {
+      const socket = sockets.at(-1);
+      if (socket) socket.dropCreateAckAfterApply = true;
+    };
+    const { duoWsCreateRoom } = await import('../src/features/duo/duoSocket');
+
+    const create = duoWsCreateRoom('tierII', 'standard');
+    await vi.advanceTimersByTimeAsync(8_001);
+
+    await expect(create).resolves.toMatch(/^r_/);
+    expect(sockets.at(-1)?.sentTypes).toEqual(['create', 'hello']);
+    expect(sockets.at(-1)?.readyState).toBe(1);
+  });
+
+  it('does not reuse a previous room snapshot for a different room id', async () => {
+    const { duoWsCreateRoom, duoWsDisconnect } = await import('../src/features/duo/duoSocket');
+    await expect(duoWsCreateRoom('tierII', 'standard')).resolves.toMatch(/^r_/);
+    duoWsDisconnect();
+
+    vi.useFakeTimers();
+    tokenControl.beforeResolve = () => {
+      const socket = sockets.at(-1);
+      if (!socket) return;
+      socket.dropNextRequest = true;
+      socket.rejectHello = true;
+    };
+    const create = duoWsCreateRoom('tierII', 'standard');
+    await vi.advanceTimersByTimeAsync(8_001);
+
+    await expect(create).resolves.toBeNull();
+    expect(sockets.at(-1)?.sentTypes).toEqual(['create', 'hello']);
+    expect(sockets.at(-1)?.readyState).toBe(3);
   });
 
   it('joins and resumes when their acknowledgements arrive synchronously', async () => {
