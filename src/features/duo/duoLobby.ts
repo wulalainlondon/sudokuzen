@@ -9,8 +9,9 @@ import { loadDuoProfile, getUnlockedTiers, getUnlockedModes } from './duoProfile
 import { type DuoRoomSummary } from './duoRoom';
 import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
 import { canOpenJourneyMode, getJourneyLockMessage } from '../journey';
+import { renderDuoConnectionState, type DuoConnectionState } from './duoConnectionUi';
 
-type ConnState = 'connecting' | 'connected' | 'reconnecting' | 'failed';
+type ConnState = DuoConnectionState;
 const LOBBY_POLL_FAST_MS = 6_000;
 const LOBBY_POLL_SLOW_MS = 25_000;
 const LOBBY_POLL_FAST_WINDOW_MS = 15_000;
@@ -407,21 +408,7 @@ export async function joinDuoRoomFromLobby(): Promise<void> {
 }
 
 export function setDuoLobbyConnectionState(state: ConnState): void {
-  for (const id of ['duo-conn-state', 'duo-room-conn-state']) {
-    const el = document.getElementById(id);
-    if (!el) continue;
-    if (state === 'connected') {
-      el.style.display = 'none';
-      continue;
-    }
-    el.style.display = '';
-    el.textContent =
-      state === 'connecting'
-        ? t('duo.connecting')
-        : state === 'reconnecting'
-          ? t('duo.connectionLost')
-          : t('duo.connectionFailed');
-  }
+  renderDuoConnectionState(state);
 }
 
 export async function refreshDuoLobbyRoom(opts: { force?: boolean } = {}): Promise<void> {

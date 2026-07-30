@@ -26,6 +26,7 @@ import {
 import { getDuoMetrics, resetDuoMetrics } from '../features/duo/duoMetrics';
 import { isNativeApp } from '../platform/nativeApp';
 import { syncJourneyHome } from '../features/journey';
+import { scheduleDuoAutoResume } from '../features/duo/duoStartup';
 
 declare global {
   interface Window {
@@ -48,6 +49,7 @@ export function bootstrapApp(): void {
     };
 
     bootLegacyRuntime(APP_VERSION);
+    scheduleDuoAutoResume();
     Object.assign(window as unknown as Record<string, unknown>, {
       openDuoLobby,
       closeDuoLobby,

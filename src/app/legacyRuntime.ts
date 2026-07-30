@@ -98,6 +98,7 @@ import {
   type HostBridgeApi,
 } from '../platform/hostBridge';
 import { isNativeApp } from '../platform/nativeApp';
+import { notifyLevelScreenReady } from '../features/duo/duoStartup';
 
 export function bootLegacyRuntime(appVersion: string): void {
   gs.appVersion = appVersion;
@@ -302,6 +303,7 @@ export function bootLegacyRuntime(appVersion: string): void {
     if (levelScreenBooted) return;
     levelScreenBooted = true;
     showLevelScreen();
+    notifyLevelScreenReady();
   };
   window.setTimeout(bootLevelScreen, 1200);
   preloadMode('normal')

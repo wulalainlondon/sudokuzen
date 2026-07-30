@@ -309,6 +309,7 @@
                 <span id="ghost-progress-text">👻 0 | 🧑 0</span>
             </div>
             <div class="duo-progress-container" id="duo-progress-container">
+                <div class="duo-game-connection connected" id="duo-game-connection" role="status" aria-live="polite" hidden></div>
                 <div class="duo-progress-row">
                     <span class="duo-conn-dot" id="duo-progress-opp-conn"></span>
                     <span class="duo-progress-label" id="duo-progress-opp-label">對手</span>
@@ -501,7 +502,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.07.30-V9';
+        var INLINE_VER = '2026.07.30-V10';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

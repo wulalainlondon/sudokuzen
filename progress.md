@@ -192,3 +192,6 @@ TODO / handoff (current):
 - 將 iOS 冷啟動恢復時間統一：active-room resume 12s → 45s、Worker playing 沒收寬限 30s → 60s、client reconnect failure 45s → 75s。新增 GitHub CI `duo-worker` job，自動執行 Worker typecheck、dry-run 與 23 項 Phase 3 QA。
 - V9 實機第四局：i11 process kill 後 9.4s 回同一盤；從 kill 起跨過 62s，每 5s 讀取 S10+ 均為綠燈、2%/0%、無誤結算；i11 在截止後原生輸入正確 4，S10+ 立即同步為 2%/2%。S10+ 正常完成 100%，i11 後續固定座標因先前捲動偏移而耗盡生命，S10+ 權威結果正確顯示玩家9233認輸、S10Ezu4g 勝 05:57。
 - 最新正式版本：前端 `2026.07.30-V9`；Duo Worker Version ID `ee5cf3c6-7366-4f69-8304-7e63049276d4`；修正 commit `9958777`（stale close）與 `d1172b9`（cold reconnect grace）均已推至 `main`。
+- 2026-07-30 Duo 體驗優化第一批：standalone PWA 若保有有效房間座位，會在首頁首次穩定繪製後自動返回原局，啟動時並行預載 Firebase Auth 與 Duo 房間模組；恢復期間顯示明確同步畫面，不再讓玩家停在首頁猜測。
+- 對戰中連線中斷改為棋盤上方的非阻塞狀態膠囊，連回後自動消失；不會跳 modal 或遮住棋盤。手機視覺回歸另外發現並修正 Duo 進度 HUD 的 `width: 100%` flex 擠壓，414px 畫面已恢復橫向進度列。
+- 新增冷啟動／連線 UI 單元測試與 `e2e/duo-startup-ux.spec.ts`；Chromium 2/2 通過，並目視檢查冷恢復及 414×896 重連畫面。

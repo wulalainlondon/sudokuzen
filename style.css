@@ -6810,11 +6810,63 @@ html.native-app .alias-config {
 }
 
 /* Duo progress during gameplay */
+.duo-game-connection {
+  width: 100%;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-bottom: 3px;
+  padding: 5px 10px;
+  border: 1px solid color-mix(in srgb, var(--duo-conn-warn) 58%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--duo-conn-warn) 18%, var(--grid-bg));
+  color: var(--text-main);
+  font-size: 0.68rem;
+  line-height: 1.2;
+  text-align: center;
+  animation: duoConnectionEnter 180ms ease-out;
+}
+.duo-game-connection::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--duo-conn-warn);
+  animation: trailingPulse 1.2s ease-in-out infinite;
+}
+.duo-game-connection.failed {
+  border-color: color-mix(in srgb, var(--error-color) 42%, transparent);
+  background: color-mix(in srgb, var(--error-color) 10%, var(--grid-bg));
+}
+.duo-game-connection.failed::before {
+  background: var(--error-color);
+  animation: none;
+}
+.duo-game-connection[hidden],
+.duo-game-connection.connected {
+  display: none;
+}
+@keyframes duoConnectionEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .duo-progress-container {
   display: none;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: 3px;
-  width: 100%;
+  width: auto;
+  min-width: 0;
   padding: 0 4px;
   margin-bottom: 6px;
 }
@@ -6920,6 +6972,68 @@ html.native-app .alias-config {
 }
 .duo-conn-dot.offline {
   background: var(--error-color);
+}
+
+.duo-resume-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 310;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--bg-color) 88%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.duo-resume-card {
+  width: min(88vw, 330px);
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 28px 24px;
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  background: var(--grid-bg);
+  box-shadow: var(--card-shadow);
+  color: var(--text-main);
+  text-align: center;
+}
+.duo-resume-card strong {
+  font-size: 1.05rem;
+}
+.duo-resume-card > span:last-child {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+.duo-resume-spinner {
+  width: 26px;
+  height: 26px;
+  border: 3px solid color-mix(in srgb, var(--duo-accent) 22%, transparent);
+  border-top-color: var(--duo-accent);
+  border-radius: 50%;
+  animation: duoResumeSpin 0.8s linear infinite;
+}
+.duo-resume-overlay.connected .duo-resume-spinner,
+.duo-resume-overlay.ended .duo-resume-spinner {
+  border: 0;
+  animation: none;
+}
+.duo-resume-overlay.connected .duo-resume-spinner::before {
+  content: '✓';
+  color: var(--success-color);
+  font-size: 1.45rem;
+  line-height: 26px;
+}
+.duo-resume-overlay.ended .duo-resume-spinner::before {
+  content: '•';
+  color: var(--text-secondary);
+  font-size: 1.6rem;
+  line-height: 20px;
+}
+@keyframes duoResumeSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Duo result overlay */
