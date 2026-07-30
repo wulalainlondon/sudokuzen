@@ -204,3 +204,8 @@ TODO / handoff (current):
 - build 4 已使用 Xcode 26.4.1 / iOS 26.4 SDK 建立、Apple Distribution 遠端簽章並匯出；IPA 稽核確認 `1.0 (4)`、Bundle ID `com.wulala.sudokuzen`、`get-task-allow=false`、三份 PrivacyInfo、Firebase 必要欄位、內嵌前端 `2026.07.30-V11`。SHA-256：`af5806b3c1751139653e318bce2e22701b32520e4d0c23fdcd64eea00e874c71`。
 - build 4 上傳後讀回 `VALID`；舊 build 3 submission 安全撤回並完成，版本 1.0 改掛 build 4。App Store metadata / 5 screenshots / 4+ / review contact、notes 與免 demo account 稽核維持完整。
 - 2026-07-30 14:21:51（Asia/Taipei）最終 API 回讀：App 與 review submission 均為 `WAITING_FOR_REVIEW`、attached build 為 `4/VALID`，新 submission submitted date `2026-07-30T06:21:34.489Z`。
+- 2026-07-30 14:29（Asia/Taipei）已把 SudokuZen 接入既有 Salon App Store Connect → LINE 即時通知管線：獨立路徑 `/apple-app-store/sudokuzen`、獨立 Keychain account `sudokuzen`，Webhook `3db077a9-ad2a-46d3-80b7-a394f0b2cc5f` 啟用 `APP_STORE_VERSION_APP_VERSION_STATE_UPDATED`。Apple 官方 Ping delivery `5c76d74b-a6e6-4874-8a06-ba34c7809ac3` 為 `SUCCEEDED`，receiver HTTP 200、LINE HTTP 200；送審狀態仍為 build 4 / `WAITING_FOR_REVIEW`。
+- 2026-07-30 15:02（Asia/Taipei）針對「能否向 PWA 玩家宣稱雙人穩定」重新獨立驗收最新正式版 `2026.07.30-V11`：release gate 51 files / 324 tests、Duo Worker Phase 3 QA 23/23、正式 Worker 10/10 次 create/join/playing/finish 生命週期、正式站 6/6 邊界場景均通過。
+- 正式站同房連打已提升為可設定 `DUO_LIVE_ROUNDS`，本輪以 10 局執行：每局 ready/countdown/換題/雙端 finish/result，9 次 rematch 全成功；第一局另驗證快速連填 trailing progress 在完賽前一致，雙端 100% 正確。
+- 最新 V11 實機交叉驗證通過：S10+ Chrome WebAPK 建房、iPhone 11 iOS 26.5 standalone PWA 加入；雙方準備／開局，iPhone 收到 S10+ 2% 與 100%，認輸後名稱與勝負一致。再戰第二局後強制終止 iPhone PWA，8 秒重開恢復同一盤與 S10+ 名稱，沒有誤顯上一局結算；完成第二局結算後已清除實機 active room。
+- 更新邊界實測：S10+ 原本停留在 V6 的有效舊結算房，V11 依設計延後 Service Worker 接管；退出舊房並重新載入後更新為 V11，`sudoku_app_version=2026.07.30-V11`。iPhone 11 standalone PWA 亦重新冷啟動並目視確認 `v2026.07.30-V11`。

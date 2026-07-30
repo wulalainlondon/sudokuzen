@@ -14,7 +14,12 @@ import { test, expect, type Page, type BrowserContext, type Browser } from '@pla
 
 const LIVE_URL = 'https://wulalainlondon.github.io/sudokuzen/';
 const SUITE_TIMEOUT = 300_000; // 5 min
+const MULTI_ROUND_COUNT = Number.parseInt(process.env.DUO_LIVE_ROUNDS ?? '3', 10);
 const latestRoomState = new WeakMap<Page, { tierId: string; puzzleSeed: number }>();
+
+if (!Number.isInteger(MULTI_ROUND_COUNT) || MULTI_ROUND_COUNT < 1) {
+  throw new Error(`DUO_LIVE_ROUNDS must be a positive integer, got ${MULTI_ROUND_COUNT}`);
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -41,11 +46,9 @@ async function openDuoLobby(page: Page): Promise<void> {
   await page.evaluate(() => {
     void (window as Record<string, unknown>).openDuoLobby?.();
   });
-  await page.waitForFunction(
-    () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
-    undefined,
-    { timeout: 20_000 },
-  );
+  await page.waitForFunction(() => !document.getElementById('duo-lobby')?.classList.contains('hidden'), undefined, {
+    timeout: 20_000,
+  });
 }
 
 async function createRoom(page: Page): Promise<void> {
@@ -56,21 +59,15 @@ async function createRoom(page: Page): Promise<void> {
 }
 
 async function waitForRoomView(page: Page): Promise<void> {
-  await page.waitForFunction(
-    () => !document.getElementById('duo-room-view')?.classList.contains('hidden'),
-    undefined,
-    { timeout: 25_000 },
-  );
+  await page.waitForFunction(() => !document.getElementById('duo-room-view')?.classList.contains('hidden'), undefined, {
+    timeout: 25_000,
+  });
 }
 
 async function refreshLobbyAndWaitForRoom(page: Page, hostAlias: string): Promise<void> {
   await page.waitForFunction(
     async (alias) => {
-      if (
-        Array.from(document.querySelectorAll('.duo-room-item .duo-room-host')).some(
-          (el) => el.textContent === alias,
-        )
-      )
+      if (Array.from(document.querySelectorAll('.duo-room-item .duo-room-host')).some((el) => el.textContent === alias))
         return true;
       await new Promise<void>((resolve) => {
         const w = window as Record<string, unknown>;
@@ -86,11 +83,9 @@ async function refreshLobbyAndWaitForRoom(page: Page, hostAlias: string): Promis
 
 async function joinRoomByHostAlias(page: Page, hostAlias: string): Promise<void> {
   await page.locator(`.duo-room-item:has(.duo-room-host:text("${hostAlias}"))`).click();
-  await page.waitForFunction(
-    () => !document.getElementById('duo-room-view')?.classList.contains('hidden'),
-    undefined,
-    { timeout: 15_000 },
-  );
+  await page.waitForFunction(() => !document.getElementById('duo-room-view')?.classList.contains('hidden'), undefined, {
+    timeout: 15_000,
+  });
 }
 
 async function waitForReadyButtonVisible(page: Page): Promise<void> {
@@ -214,12 +209,8 @@ async function solveBoard(page: Page, leaveLast = 0, primeThenRapid = false): Pr
   if (!data.solved || data.cellCount !== 81) {
     throw new Error(`solveBoard: cellCount=${data.cellCount} solved=${data.solved}`);
   }
-  console.log(
-    `[duo-live-2] solving level=${data.levelId ?? 'unknown'} source=${data.solutionSource}`,
-  );
-  const blankIndices = data.puzzle
-    .map((value, index) => (value === 0 ? index : -1))
-    .filter((index) => index >= 0);
+  console.log(`[duo-live-2] solving level=${data.levelId ?? 'unknown'} source=${data.solutionSource}`);
+  const blankIndices = data.puzzle.map((value, index) => (value === 0 ? index : -1)).filter((index) => index >= 0);
   const indicesToFill = blankIndices.slice(0, Math.max(0, blankIndices.length - leaveLast));
   if (primeThenRapid && indicesToFill.length > 1) {
     const [first, ...rapidIndices] = indicesToFill;
@@ -233,9 +224,7 @@ async function solveBoard(page: Page, leaveLast = 0, primeThenRapid = false): Pr
         for (const index of indices) {
           const cell = document.querySelector<HTMLElement>(`.cell[data-idx="${index}"]`);
           cell?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
-          window.dispatchEvent(
-            new KeyboardEvent('keydown', { key: String(solution[index]), bubbles: true }),
-          );
+          window.dispatchEvent(new KeyboardEvent('keydown', { key: String(solution[index]), bubbles: true }));
           await new Promise((resolve) => setTimeout(resolve, 10));
         }
       },
@@ -524,11 +513,11 @@ test.describe('duo-live-disconnect', () => {
 test.describe('duo-live-multi-round', () => {
   test.describe.configure({ mode: 'serial', timeout: SUITE_TIMEOUT });
 
-  test('連打三局 play-again', async ({ browser }) => {
+  test(`連打 ${MULTI_ROUND_COUNT} 局 play-again`, async ({ browser }) => {
     const { hostCtx, guestCtx, hostPage, guestPage } = await setupGame(browser, 'mr');
 
     try {
-      for (let round = 1; round <= 3; round++) {
+      for (let round = 1; round <= MULTI_ROUND_COUNT; round++) {
         console.log(`[duo-live-2/mr] round ${round} — solving`);
 
         if (round === 1) {
@@ -558,16 +547,13 @@ test.describe('duo-live-multi-round', () => {
         await Promise.all([waitForResultModal(hostPage), waitForResultModal(guestPage)]);
         console.log(`[duo-live-2/mr] round ${round} — result shown`);
 
-        if (round < 3) {
+        if (round < MULTI_ROUND_COUNT) {
           // One rematch request resets the authoritative room and keeps both seats.
           await hostPage.locator('#duo-result-modal .resume-btn').click();
           await Promise.all([waitForRoomView(hostPage), waitForRoomView(guestPage)]);
           console.log(`[duo-live-2/mr] round ${round} — same room reset`);
 
-          await Promise.all([
-            waitForReadyButtonVisible(hostPage),
-            waitForReadyButtonVisible(guestPage),
-          ]);
+          await Promise.all([waitForReadyButtonVisible(hostPage), waitForReadyButtonVisible(guestPage)]);
           await clickReady(hostPage);
           await hostPage.waitForTimeout(500);
           await clickReady(guestPage);
@@ -578,14 +564,14 @@ test.describe('duo-live-multi-round', () => {
         }
       }
 
-      // Final assertion: both pages show a result panel after 3 rounds
+      // Final assertion: both pages show a result panel after every requested round.
       const [h, g] = await Promise.all([
         hostPage.evaluate(() => !!document.querySelector('.duo-result-panel')),
         guestPage.evaluate(() => !!document.querySelector('.duo-result-panel')),
       ]);
-      expect(h, 'host result panel after 3 rounds').toBe(true);
-      expect(g, 'guest result panel after 3 rounds').toBe(true);
-      console.log('[duo-live-2/mr] ✓ 3 rounds completed');
+      expect(h, `host result panel after ${MULTI_ROUND_COUNT} rounds`).toBe(true);
+      expect(g, `guest result panel after ${MULTI_ROUND_COUNT} rounds`).toBe(true);
+      console.log(`[duo-live-2/mr] ✓ ${MULTI_ROUND_COUNT} rounds completed`);
     } finally {
       try {
         await cleanup(hostPage);
