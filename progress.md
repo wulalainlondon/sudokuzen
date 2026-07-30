@@ -200,3 +200,7 @@ TODO / handoff (current):
 - 第二批精準單元測試目前 16/16 通過；Duo UX Chromium 3/3 通過。第一次視覺回歸抓到測試直接 import store 的實例分岔，已改用正式 React bridge 統一狀態入口。
 - 第二批完整 release gate 通過：51 files / 324 tests，Functions build、Duo Worker dry-run 與 Phase 3 QA 23/23 全綠；本機雙瀏覽器＋本機 Durable Object 實跑「完賽 → rematch → 同房準備 → 第二局進場」亦通過（15.5s）。
 - 414×896 rematch 等待畫面已重拍目視：結果卡維持可讀、主按鈕顯示 spinner 與「正在返回準備區…」、返回動作降階且不可誤觸。
+- 2026-07-30 iOS 送審版本稽核：原 submission 仍掛 build 3 / `VALID` / `WAITING_FOR_REVIEW`，但 IPA 僅內嵌 `2026.07.28-V2`，缺少其後建房 ack、進度 98→100、冷重連寬限、雙斷線結算與 V10/V11 UX 修正，因此判定必須換包。
+- build 4 已使用 Xcode 26.4.1 / iOS 26.4 SDK 建立、Apple Distribution 遠端簽章並匯出；IPA 稽核確認 `1.0 (4)`、Bundle ID `com.wulala.sudokuzen`、`get-task-allow=false`、三份 PrivacyInfo、Firebase 必要欄位、內嵌前端 `2026.07.30-V11`。SHA-256：`af5806b3c1751139653e318bce2e22701b32520e4d0c23fdcd64eea00e874c71`。
+- build 4 上傳後讀回 `VALID`；舊 build 3 submission 安全撤回並完成，版本 1.0 改掛 build 4。App Store metadata / 5 screenshots / 4+ / review contact、notes 與免 demo account 稽核維持完整。
+- 2026-07-30 14:21:51（Asia/Taipei）最終 API 回讀：App 與 review submission 均為 `WAITING_FOR_REVIEW`、attached build 為 `4/VALID`，新 submission submitted date `2026-07-30T06:21:34.489Z`。
