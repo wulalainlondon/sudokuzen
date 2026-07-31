@@ -23,6 +23,8 @@ const FORFEIT_TIME = 9999;
 const PRESENCE_STALE_MS = 25_000;
 const PRESENCE_CHECK_MS = 10_000;
 const FINISHED_ROOM_TTL_MS = 24 * 60 * 60 * 1000;
+const LOBBY_COLLECTION = 'duo_ws_rooms';
+const MAX_LOBBY_PAGE_SIZE = 50;
 
 // 內部狀態：含對外不廣播的 alarm deadline。
 interface RoomState extends PublicRoomState {
@@ -638,11 +640,7 @@ export class GameRoom extends Server<Env> {
     // final `finish` message. In that path handleFinish() never runs, so the
     // room must transition here or the UI shows a result whose rematch request
     // is rejected because the authoritative state is still `playing`.
-    if (
-      this.room.status === 'playing' &&
-      this.room.host?.finishTime != null &&
-      this.room.guest?.finishTime != null
-    ) {
+    if (this.room.status === 'playing' && this.room.host?.finishTime != null && this.room.guest?.finishTime != null) {
       this.room.status = 'finished';
       this.room.presenceCheckAt = null;
       changed = true;
@@ -758,8 +756,63 @@ function toPublic(r: RoomState): PublicRoomState {
   };
 }
 
+function lobbyCorsHeaders(request: Request): Headers {
+  const headers = new Headers({
+    'Cache-Control': 'no-store',
+    'Content-Type': 'application/json; charset=utf-8',
+  });
+  const origin = request.headers.get('Origin') || '';
+  if (
+    /^https:\/\/wulalainlondon\.github\.io$/.test(origin) ||
+    /^https:\/\/sudokuzen-f2aa3(?:--[a-z0-9-]+)?\.web\.app$/.test(origin)
+  ) {
+    headers.set('Access-Control-Allow-Origin', origin);
+    headers.set('Vary', 'Origin');
+  }
+  return headers;
+}
+
+async function handleLobbyRequest(request: Request, env: Env): Promise<Response> {
+  const headers = lobbyCorsHeaders(request);
+  if (request.method === 'OPTIONS') {
+    headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return new Response(null, { status: 204, headers });
+  }
+  if (request.method !== 'GET') {
+    headers.set('Allow', 'GET, OPTIONS');
+    return Response.json({ error: 'method_not_allowed' }, { status: 405, headers });
+  }
+  const projectId = env.PROJECT_ID || '';
+  if (!projectId) return Response.json({ error: 'project_not_configured' }, { status: 503, headers });
+  const requestedLimit = Number(new URL(request.url).searchParams.get('limit') || 20);
+  const limit = Math.max(1, Math.min(MAX_LOBBY_PAGE_SIZE, Math.floor(requestedLimit) || 20));
+  const params = new URLSearchParams({
+    pageSize: String(limit),
+    orderBy: 'updatedAt desc',
+  });
+  const endpoint =
+    `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}` +
+    `/databases/(default)/documents/${LOBBY_COLLECTION}?${params}`;
+  try {
+    const upstream = await fetch(endpoint, {
+      headers: { Accept: 'application/json' },
+    });
+    if (!upstream.ok) {
+      console.error(JSON.stringify({ event: 'lobby_upstream_failed', status: upstream.status }));
+      return Response.json({ error: 'lobby_unavailable' }, { status: 502, headers });
+    }
+    return new Response(upstream.body, { status: 200, headers });
+  } catch (error) {
+    console.error(JSON.stringify({ event: 'lobby_fetch_failed', error: String(error) }));
+    return Response.json({ error: 'lobby_unavailable' }, { status: 502, headers });
+  }
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname === '/lobby') return handleLobbyRequest(request, env);
     return (
       (await routePartykitRequest(request, env, { locationHint: 'apac' })) || new Response('Not found', { status: 404 })
     );

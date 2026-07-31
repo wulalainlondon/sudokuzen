@@ -117,7 +117,7 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
     const rooms = await listWaitingWsRooms(20, { force: true });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/documents/duo_ws_rooms?'),
+      expect.stringContaining('duo-party.wulalainlondon.workers.dev/lobby?'),
       expect.objectContaining({ cache: 'no-store' }),
     );
     expect(rooms).toEqual([

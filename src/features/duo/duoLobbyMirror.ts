@@ -11,6 +11,7 @@ import type { FirestoreDoc, FirestoreSnap } from '../../firebase/types';
 import type { DuoRoomSummary } from './duoRoom';
 import { publicPlayerAlias } from '../../platform/publicAlias';
 import type { SudokuWindow } from '../../facade/windowTypes';
+import { getDuoWsHost } from './duoTransport';
 
 const WS_LOBBY_COLLECTION = 'duo_ws_rooms';
 // 15s touch：搭配 duoLobby 的 ROOM_FRESHNESS_MS=45s，健康 host 的 heartbeat 最舊只 ~15s，
@@ -234,19 +235,25 @@ async function listWaitingWsRoomsViaRest(limit: number): Promise<DuoRoomSummary[
   const config = (window as SudokuWindow).SUDOKU_FIREBASE_CONFIG;
   const projectId = config?.projectId;
   if (!projectId || typeof fetch !== 'function') return [];
-  const params = new URLSearchParams({
-    pageSize: String(Math.max(1, limit)),
-    orderBy: 'updatedAt desc',
-  });
-  if (config.apiKey) params.set('key', config.apiKey);
-  const endpoint =
-    `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}` +
-    `/databases/(default)/documents/${WS_LOBBY_COLLECTION}?${params}`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), WS_LOBBY_REST_TIMEOUT_MS);
   try {
-    const response = await fetch(endpoint, { cache: 'no-store', signal: controller.signal });
-    if (!response.ok) throw new Error(`Firestore REST ${response.status}`);
+    // Prefer the existing Duo Worker as a bounded proxy. This avoids the
+    // cross-origin Firestore REST failure observed in iOS standalone PWAs.
+    const workerEndpoint = `https://${getDuoWsHost()}/lobby?limit=${Math.max(1, limit)}`;
+    let response = await fetch(workerEndpoint, { cache: 'no-store', signal: controller.signal });
+    if (!response.ok) {
+      const params = new URLSearchParams({
+        pageSize: String(Math.max(1, limit)),
+        orderBy: 'updatedAt desc',
+      });
+      if (config.apiKey) params.set('key', config.apiKey);
+      const firestoreEndpoint =
+        `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}` +
+        `/databases/(default)/documents/${WS_LOBBY_COLLECTION}?${params}`;
+      response = await fetch(firestoreEndpoint, { cache: 'no-store', signal: controller.signal });
+    }
+    if (!response.ok) throw new Error(`Lobby REST ${response.status}`);
     const payload = (await response.json()) as { documents?: FirestoreRestDocument[] };
     return parseWsLobbyRestDocuments(payload.documents ?? []);
   } catch (error) {
