@@ -301,11 +301,26 @@ export async function listWaitingWsRooms(limit = 20, opts: { force?: boolean } =
       });
     });
     if (deadDeletes.length) void Promise.allSettled(deadDeletes);
-    const hasDisplayFreshRoom = rows.some((room) => {
-      const heartbeat = room.hostHeartbeatAtMs || room.updatedAtMs;
-      return heartbeat > 0 && now - heartbeat < WS_LOBBY_DISPLAY_FRESH_MS;
-    });
-    if (opts.force && !hasDisplayFreshRoom) return listWaitingWsRoomsViaRest(limit);
+    if (opts.force) {
+      // A server-source SDK query can be partially stale on iOS standalone
+      // PWAs: it may contain one healthy cached room while omitting a newer
+      // room. Always reconcile manual refreshes with the Worker snapshot,
+      // rather than using REST only when the SDK list is completely empty.
+      const restRows = await listWaitingWsRoomsViaRest(limit);
+      const merged = new Map<string, DuoRoomSummary>();
+      for (const room of rows) merged.set(room.roomId, room);
+      for (const room of restRows) {
+        const existing = merged.get(room.roomId);
+        if (!existing || room.updatedAtMs >= existing.updatedAtMs) merged.set(room.roomId, room);
+      }
+      return [...merged.values()]
+        .filter((room) => {
+          const heartbeat = room.hostHeartbeatAtMs || room.updatedAtMs;
+          return heartbeat > 0 && now - heartbeat < WS_LOBBY_DISPLAY_FRESH_MS;
+        })
+        .sort((a, b) => b.updatedAtMs - a.updatedAtMs)
+        .slice(0, Math.max(1, limit));
+    }
     return rows;
   } catch (e) {
     console.warn('[duoWsLobby] list failed:', e);

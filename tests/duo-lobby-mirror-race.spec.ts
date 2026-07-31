@@ -178,4 +178,48 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
       }),
     ]);
   });
+
+  it('merges a newer Worker room when the iOS SDK still returns a different fresh room', async () => {
+    const now = Date.now();
+    getRooms.mockResolvedValueOnce({
+      forEach: (visit: (doc: unknown) => void) =>
+        visit({
+          id: 'room-sdk-fresh',
+          data: () => ({
+            hostId: 'host-sdk',
+            hostAlias: 'Cached host',
+            tierId: 'tier0',
+            modeId: 'standard',
+            hostHeartbeatAtMs: now - 2_000,
+            updatedAt: { toDate: () => new Date(now - 2_000) },
+          }),
+          ref: { delete: vi.fn() },
+        }),
+    });
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          documents: [
+            {
+              name: 'projects/sudoku-test/databases/(default)/documents/duo_ws_rooms/room-worker-new',
+              fields: {
+                hostId: { stringValue: 'host-worker' },
+                hostAlias: { stringValue: 'S10V20QA' },
+                tierId: { stringValue: 'tier0' },
+                modeId: { stringValue: 'standard' },
+                hostHeartbeatAtMs: { integerValue: String(now - 500) },
+                updatedAt: { timestampValue: new Date(now - 500).toISOString() },
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
+    const { listWaitingWsRooms } = await import('../src/features/duo/duoLobbyMirror');
+
+    const rooms = await listWaitingWsRooms(20, { force: true });
+
+    expect(rooms.map((room) => room.roomId)).toEqual(['room-worker-new', 'room-sdk-fresh']);
+  });
 });
