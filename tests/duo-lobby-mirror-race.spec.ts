@@ -129,4 +129,53 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
       }),
     ]);
   });
+
+  it('falls back when the SDK returns only rows too stale for the visible lobby', async () => {
+    const now = Date.now();
+    getRooms.mockResolvedValueOnce({
+      forEach: (visit: (doc: unknown) => void) =>
+        visit({
+          id: 'room-stale-cache',
+          data: () => ({
+            hostId: 'host-stale',
+            hostAlias: 'Old host',
+            tierId: 'tier0',
+            modeId: 'standard',
+            hostHeartbeatAtMs: now - 90_000,
+            updatedAt: { toDate: () => new Date(now - 90_000) },
+          }),
+          ref: { delete: vi.fn() },
+        }),
+    });
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          documents: [
+            {
+              name: 'projects/sudoku-test/databases/(default)/documents/duo_ws_rooms/room-fresh-rest',
+              fields: {
+                hostId: { stringValue: 'host-fresh' },
+                hostAlias: { stringValue: 'S10Ezu4g' },
+                tierId: { stringValue: 'tier0' },
+                modeId: { stringValue: 'standard' },
+                hostHeartbeatAtMs: { integerValue: String(now - 1_000) },
+                updatedAt: { timestampValue: new Date(now - 500).toISOString() },
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
+    const { listWaitingWsRooms } = await import('../src/features/duo/duoLobbyMirror');
+
+    const rooms = await listWaitingWsRooms(20, { force: true });
+
+    expect(rooms).toEqual([
+      expect.objectContaining({
+        roomId: 'room-fresh-rest',
+        hostAlias: 'S10Ezu4g',
+      }),
+    ]);
+  });
 });
