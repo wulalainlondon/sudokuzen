@@ -252,6 +252,9 @@ test.describe('duo-two-rounds', () => {
 
     // Toast must contain waiting-related text (not empty)
     expect(toastContent, 'host should see a waiting feedback toast').toBeTruthy();
+    await expect(hostPage.locator('#duo-finish-moment.local')).toBeVisible();
+    await expect(hostPage.locator('#duo-finish-moment.local .duo-finish-moment-title')).toContainText('完成');
+    await expect(guestPage.locator('#duo-finish-moment.opponent')).toBeVisible();
     console.log('[duo-two-rounds] ✓ win celebration 未出現，host 有 toast 通知');
 
     // Guest solves
@@ -298,6 +301,10 @@ test.describe('duo-two-rounds', () => {
     );
     expect(hostWin).toBe(true);
     expect(guestLose).toBe(true);
+    await expect(hostPage.locator('.duo-result-panel.victory h2')).toHaveText('勝利');
+    await expect(guestPage.locator('.duo-result-panel.defeat h2')).toHaveText('惜敗');
+    await expect(hostPage.locator('#duo-finish-moment')).toHaveCount(0);
+    await expect(guestPage.locator('#duo-finish-moment')).toHaveCount(0);
     console.log('[duo-two-rounds] ✓ 局1 勝負正確');
   });
 

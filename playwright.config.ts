@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const useManagedWebServer = !!process.env.CI;
+const baseURL = process.env.E2E_BASE_URL || 'http://localhost:5173';
+const managedPort = new URL(baseURL).port || '5173';
+const useManagedWebServer = !!process.env.CI || process.env.E2E_MANAGED_SERVER === '1';
 
 export default defineConfig({
   testDir: './e2e',
@@ -10,7 +12,7 @@ export default defineConfig({
   reporter: 'html',
   timeout: 60_000,
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     storageState: {
@@ -29,8 +31,8 @@ export default defineConfig({
   ],
   webServer: useManagedWebServer
     ? {
-      command: 'npm run dev -- --host 127.0.0.1 --port 5173',
-      url: 'http://localhost:5173',
+      command: `npm run dev -- --host 127.0.0.1 --port ${managedPort}`,
+      url: baseURL,
       reuseExistingServer: false,
       timeout: 30_000,
     }

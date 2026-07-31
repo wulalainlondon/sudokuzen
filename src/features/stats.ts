@@ -269,6 +269,28 @@ export async function hydrateAchievementsFromCloud(): Promise<void> {
 
 export function processAchievementToasts(): void {
   if (gs.achievementToastActive || !gs.achievementToastQueue.length) return;
+  // Duo has a deliberate two-stage finish. Do not let an achievement toast
+  // steal focus while either player is still finishing or while the result
+  // reveal is entering. The queue remains intact and is retried after the
+  // decisive result beat has settled.
+  if (gs.isDuoMode) {
+    const result = document.getElementById('duo-result-modal');
+    const panel = result?.querySelector('.duo-result-panel');
+    if (!result || !panel) {
+      setTimeout(processAchievementToasts, 400);
+      return;
+    }
+    const openedAt = Number(result.dataset.achievementReadyAt || 0);
+    if (!openedAt) {
+      result.dataset.achievementReadyAt = String(Date.now() + 1_100);
+      setTimeout(processAchievementToasts, 1_100);
+      return;
+    }
+    if (Date.now() < openedAt) {
+      setTimeout(processAchievementToasts, Math.max(50, openedAt - Date.now()));
+      return;
+    }
+  }
   gs.achievementToastActive = true;
   const a = gs.achievementToastQueue.shift()!;
 

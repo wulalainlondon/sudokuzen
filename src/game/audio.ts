@@ -211,6 +211,32 @@ export function playDefeatCue(): void {
   );
 }
 
+/** Final Duo victory — a fast three-note rise with a bright resolving octave. */
+export function playDuoVictoryCue(): void {
+  playCue(
+    [
+      { freq: 523, start: 0, dur: 0.16, type: 'triangle' },
+      { freq: 659, start: 0.09, dur: 0.18, type: 'triangle' },
+      { freq: 784, start: 0.18, dur: 0.2, type: 'triangle' },
+      { freq: 1047, start: 0.3, dur: 0.38, type: 'sine' },
+    ],
+    0.46,
+  );
+}
+
+/** Final Duo draw — two balanced tones resolving together. */
+export function playDuoDrawCue(): void {
+  playCue(
+    [
+      { freq: 587, start: 0, dur: 0.2, type: 'triangle' },
+      { freq: 698, start: 0.12, dur: 0.24, type: 'triangle' },
+      { freq: 587, start: 0.3, dur: 0.28, type: 'sine' },
+      { freq: 698, start: 0.3, dur: 0.28, type: 'sine' },
+    ],
+    0.38,
+  );
+}
+
 // ── Shared helpers (used by zenAudio.ts) ─────────────────────────────
 
 export { getCtx, ensureGraph, connectToRoom, getNoiseBuffer };

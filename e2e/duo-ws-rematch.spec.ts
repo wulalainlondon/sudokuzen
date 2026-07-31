@@ -24,7 +24,16 @@ async function waitForBoot(page: Page): Promise<void> {
   await page.waitForFunction(
     () => {
       const badge = document.getElementById('version-badge');
-      return badge && badge.textContent && badge.textContent.startsWith('v');
+      const levelScreen = document.getElementById('level-screen');
+      const stageView = document.getElementById('stage-view');
+      return (
+        badge &&
+        badge.textContent &&
+        badge.textContent.startsWith('v') &&
+        typeof (window as Record<string, unknown>).openDuoLobby === 'function' &&
+        levelScreen?.style.display === 'flex' &&
+        stageView?.style.display === 'flex'
+      );
     },
     { timeout: 60_000 },
   );
@@ -52,18 +61,28 @@ async function waitForAuthUid(page: Page): Promise<void> {
 }
 
 async function openLobby(page: Page): Promise<void> {
-  await page.evaluate(() => (window as Record<string, unknown>).openDuoLobby?.());
-  await page.waitForFunction(() => !document.getElementById('duo-lobby')?.classList.contains('hidden'), {
-    timeout: 20_000,
-  });
+  await page.locator('#duo-journey-entry-btn').click();
+  await page.waitForFunction(
+    () => {
+      const lobby = document.getElementById('duo-lobby');
+      return !!lobby && !lobby.classList.contains('hidden') && getComputedStyle(lobby).display !== 'none';
+    },
+    undefined,
+    { timeout: 20_000 },
+  );
   await waitForAuthUid(page);
 }
 
 async function createRoom(page: Page): Promise<void> {
-  await page.evaluate(() => (window as Record<string, unknown>).createDuoRoomFromLobby?.());
-  await page.waitForFunction(() => !document.getElementById('duo-room-view')?.classList.contains('hidden'), {
-    timeout: 25_000,
-  });
+  await page.locator('.duo-lobby-create').click();
+  await page.waitForFunction(
+    () => {
+      const room = document.getElementById('duo-room-view');
+      return !!room && !room.classList.contains('hidden') && getComputedStyle(room).display !== 'none';
+    },
+    undefined,
+    { timeout: 25_000 },
+  );
 }
 
 async function discoverAndJoin(page: Page, hostAlias: string): Promise<void> {

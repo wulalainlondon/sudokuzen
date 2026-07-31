@@ -24,6 +24,7 @@ describe('Duo result rematch state', () => {
 
     expect(useDuoResultStore.getState().visible).toBe(true);
     expect(useDuoResultStore.getState().rematchPending).toBe(true);
+    expect(useDuoResultStore.getState().openedAtMs).toBeGreaterThan(0);
   });
 
   it('clears the pending transition when the result closes or a later result opens', () => {

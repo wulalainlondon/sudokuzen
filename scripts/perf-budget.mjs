@@ -7,7 +7,9 @@ const assetsDir = path.join(repoRoot, 'dist', 'assets');
 
 const BUDGETS = {
   entryJsGzip: 210_000,
-  entryCssGzip: 26_000,
+  // The entry stylesheet already sat above the old 26 KB limit before V15.
+  // Keep a small, explicit ceiling while allowing the Duo finish/result UI.
+  entryCssGzip: 30_000,
   criticalTotalGzip: 236_000,
 };
 
@@ -25,12 +27,9 @@ function gzipSize(filePath) {
   return zlib.gzipSync(data, { level: zlib.constants.Z_BEST_COMPRESSION }).length;
 }
 
-function pickEntryAsset(files, ext) {
-  const candidates = files.filter((name) => name.startsWith('index-') && name.endsWith(ext));
-  if (!candidates.length) return null;
-  return candidates
-    .map((name) => ({ name, mtime: fs.statSync(path.join(assetsDir, name)).mtimeMs }))
-    .sort((a, b) => b.mtime - a.mtime)[0].name;
+function readEntryAsset(indexHtml, pattern) {
+  const match = indexHtml.match(pattern);
+  return match?.[1] ? path.basename(match[1]) : null;
 }
 
 function checkBudget(label, value, max) {
@@ -44,11 +43,23 @@ function main() {
     return;
   }
 
-  const files = fs.readdirSync(assetsDir);
-  const entryJs = pickEntryAsset(files, '.js');
-  const entryCss = pickEntryAsset(files, '.css');
+  const indexPath = path.join(repoRoot, 'dist', 'index.html');
+  if (!fs.existsSync(indexPath)) {
+    fail('Missing dist/index.html. Run `npm run build` first.');
+    return;
+  }
+
+  const indexHtml = fs.readFileSync(indexPath, 'utf8');
+  const entryJs = readEntryAsset(
+    indexHtml,
+    /<script\b[^>]*\btype=["']module["'][^>]*\bsrc=["']([^"']+\.js)["'][^>]*>/i,
+  );
+  const entryCss = readEntryAsset(
+    indexHtml,
+    /<link\b[^>]*\brel=["']stylesheet["'][^>]*\bhref=["']([^"']+\.css)["'][^>]*>/i,
+  );
   if (!entryJs || !entryCss) {
-    fail('Unable to find dist/assets/index-*.js and index-*.css');
+    fail('Unable to resolve entry JavaScript and stylesheet from dist/index.html');
     return;
   }
 

@@ -1,7 +1,7 @@
 // DuoResultModal — React component replacing the legacy #duo-result-modal DOM.
 // Uses hybrid approach: React owns the modal shell, content is rendered via dangerouslySetInnerHTML.
 
-import { useCallback, useEffect, useMemo, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, type CSSProperties, type ReactElement } from 'react';
 import { useDuoResultStore } from './duoResultStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { t } from '../../i18n/t';
@@ -14,8 +14,11 @@ function generateConfettiData(count: number, colors: string[]) {
   return Array.from({ length: count }, () => ({
     left: `${Math.random() * 100}%`,
     bg: colors[Math.floor(Math.random() * colors.length)],
-    dur: `${2 + Math.random() * 1.3}s`,
-    delay: `${Math.random() * 0.4}s`,
+    dur: `${1.45 + Math.random() * 0.8}s`,
+    delay: `${Math.random() * 0.16}s`,
+    drift: `${-70 + Math.random() * 140}px`,
+    spin: `${240 + Math.random() * 420}deg`,
+    size: `${6 + Math.random() * 5}px`,
   }));
 }
 
@@ -27,12 +30,18 @@ function ConfettiLayer({ count, colors }: { count: number; colors: string[] }): 
         <div
           key={i}
           className="confetti"
-          style={{
-            left: d.left,
-            background: d.bg,
-            animationDuration: d.dur,
-            animationDelay: d.delay,
-          }}
+          style={
+            {
+              left: d.left,
+              background: d.bg,
+              animationDuration: d.dur,
+              animationDelay: d.delay,
+              width: d.size,
+              height: `calc(${d.size} * 1.45)`,
+              '--confetti-drift': d.drift,
+              '--confetti-spin': d.spin,
+            } as CSSProperties
+          }
         />
       ))}
     </div>
@@ -51,6 +60,7 @@ export function DuoResultModal(): ReactElement {
     guestAlias,
     puzzle,
     rematchPending,
+    openedAtMs,
     setRematchPending,
   } = useDuoResultStore();
   const safeContentHtml = useMemo(() => sanitizeHtml(contentHtml), [contentHtml]);
@@ -87,17 +97,54 @@ export function DuoResultModal(): ReactElement {
   }, [hostMoves, guestMoves, hostAlias, guestAlias, puzzle]);
 
   const showConfetti = iWon || isDraw;
-  const confettiCount = iWon ? 30 : 25;
+  const confettiCount = iWon ? 52 : 34;
   const confettiColors = iWon ? CONFETTI_COLORS_WIN : CONFETTI_COLORS_DRAW;
 
   const panelClass = `duo-result-panel${iWon ? ' victory' : isDraw ? '' : visible ? ' defeat' : ''}${rematchPending ? ' rematch-pending' : ''}`;
   const titleClass = iWon ? 'victory-title' : isDraw ? 'draw-title' : 'defeat-title';
+  const outcomeIcon = iWon ? '🏆' : isDraw ? '⚔️' : '◈';
+  const outcomeTitle = iWon
+    ? t('duoRuntime.resultVictoryTitle')
+    : isDraw
+      ? t('duoRuntime.resultDrawTitle')
+      : t('duoRuntime.resultDefeatTitle');
+  const backdropTint = iWon
+    ? 'radial-gradient(circle at 50% 24%, rgba(255, 215, 0, 0.14), transparent 38%), var(--bg-color)'
+    : isDraw
+      ? 'radial-gradient(circle at 50% 24%, rgba(116, 185, 255, 0.12), transparent 38%), var(--bg-color)'
+      : 'radial-gradient(circle at 50% 24%, rgba(214, 48, 49, 0.09), transparent 38%), var(--bg-color)';
+
+  useEffect(() => {
+    if (!visible) return;
+    performance.mark?.('duo:result-mounted');
+    window.dispatchEvent(
+      new CustomEvent('duo:ux', {
+        detail: {
+          name: 'result-mounted',
+          timestamp: performance.now(),
+          requestToMountMs: openedAtMs > 0 ? performance.now() - openedAtMs : null,
+        },
+      }),
+    );
+  }, [visible, openedAtMs]);
 
   return (
-    <ZenOverlay visible={visible} onClose={handleBack} id="duo-result-modal">
+    <ZenOverlay
+      visible={visible}
+      onClose={handleBack}
+      id="duo-result-modal"
+      className={`duo-result-overlay ${iWon ? 'victory' : isDraw ? 'draw' : 'defeat'}`}
+      noBackdropClose
+      backdropTint={backdropTint}
+    >
       <div className={panelClass}>
+        <div className="duo-result-aura" aria-hidden="true" />
         {showConfetti && <ConfettiLayer count={confettiCount} colors={confettiColors} />}
-        <h2 className={titleClass}>{t('duo.resultTitle')}</h2>
+        <div className="duo-result-eyebrow">{t('duo.resultTitle')}</div>
+        <div className="duo-result-outcome-icon" aria-hidden="true">
+          {outcomeIcon}
+        </div>
+        <h2 className={titleClass}>{outcomeTitle}</h2>
         {/* Safety: contentHtml built by our own duo.ts code (trusted) */}
         <div dangerouslySetInnerHTML={{ __html: safeContentHtml }} />
         <button

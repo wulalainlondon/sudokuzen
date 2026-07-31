@@ -34,7 +34,15 @@ import type { SudokuWindow } from '../../facade/windowTypes';
 import { escapeHtml } from '../../shared/html/escape';
 import { callDuoFunction } from '../../firebase/runtime';
 import { isDuoWsEnabled } from './duoTransport';
-import { playOpponentFinishedCue, playOpponentThreatCue, playDefeatCue } from '../../game/audio';
+import {
+  playOpponentFinishedCue,
+  playOpponentThreatCue,
+  playDefeatCue,
+  playDuoVictoryCue,
+  playDuoDrawCue,
+} from '../../game/audio';
+import { useDuoResultStore } from '../../react/duoresult/duoResultStore';
+import { clearDuoFinishMoment, showDuoFinishMoment } from './duoFinishMoment';
 import {
   clearDuoRoundSnapshot,
   loadDuoRoundSnapshot,
@@ -272,7 +280,7 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
     // Check opponent finished
     const oppFinish = gs.duoRole === 'host' ? d.guestFinishTime : d.hostFinishTime;
     const oppStars = gs.duoRole === 'host' ? d.guestStars : d.hostStars;
-    if (oppFinish !== null && oppFinish !== undefined) {
+    if (myFinishTime == null && oppFinish !== null && oppFinish !== undefined) {
       showDuoOpponentFinished(oppAlias, oppFinish, oppStars);
     }
 
@@ -889,6 +897,11 @@ function showDuoOpponentFinished(alias: string, timeSec: number, stars: number |
   gs.duoOpponentNotified = true;
   const starsStr = stars ? ' ' + '\u2605'.repeat(stars) : '';
   showFeedback(t('duoRuntime.opponentFinished', { alias, time: formatSeconds(timeSec), stars: starsStr }), 'error');
+  showDuoFinishMoment(
+    'opponent',
+    t('duoRuntime.opponentCompleteTitle', { alias }),
+    t('duoRuntime.opponentCompleteChase'),
+  );
   vibrate([50, 30, 50, 30, 50]);
   playOpponentFinishedCue(); // P1b：對手完成的標誌性音效（過去只有震動）
 
@@ -924,6 +937,10 @@ export async function submitDuoFinish(timeSec: number, stars: number): Promise<v
   if (!isDuoWsEnabled() && !gs.firebaseReady) return;
   if (_duoFinishSubmitted) return;
   _duoFinishSubmitted = true;
+
+  if (timeSec !== 9999) {
+    showDuoFinishMoment('local', t('duoRuntime.localCompleteTitle'), t('duoRuntime.localCompleteWaiting'));
+  }
 
   // Once the local board is authoritatively complete, do not leave its own
   // progress label on the last throttled value (for example 96%/98%). The
@@ -1119,12 +1136,15 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
 
   const forfeitBtn = document.getElementById('duo-forfeit-btn');
   if (forfeitBtn) forfeitBtn.remove();
+  clearDuoFinishMoment();
   clearDuoRoundSnapshot();
 
   if (iWon) {
     vibrate([25, 45, 25, 45, 25, 70, 50]);
+    playDuoVictoryCue();
   } else if (isDraw) {
     vibrate([25, 45, 25, 45, 25]);
+    playDuoDrawCue();
   } else {
     // P2a：落敗也給回饋（低沉音 + 輕震動），不再被靜默冷處理
     vibrate([80, 50, 140]);
@@ -1132,21 +1152,18 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   }
 
   const puzzle = gs.currentLevel?.puzzle ?? [];
-  import('../../react/duoresult/duoResultBridge')
-    .then(({ bridgeOpenDuoResult }) => {
-      bridgeOpenDuoResult({
-        contentHtml,
-        iWon,
-        isDraw,
-        levelId: d.levelId ?? null,
-        hostMoves: d.hostMoves ?? [],
-        guestMoves: d.guestMoves ?? [],
-        hostAlias: d.hostAlias || '',
-        guestAlias: d.guestAlias || '',
-        puzzle,
-      });
-    })
-    .catch((e) => console.warn('[duo] bridgeOpenDuoResult failed:', e));
+  performance.mark?.('duo:result-open-request');
+  useDuoResultStore.getState().open({
+    contentHtml,
+    iWon,
+    isDraw,
+    levelId: d.levelId ?? null,
+    hostMoves: d.hostMoves ?? [],
+    guestMoves: d.guestMoves ?? [],
+    hostAlias: d.hostAlias || '',
+    guestAlias: d.guestAlias || '',
+    puzzle,
+  });
 }
 
 // ── Surrender ────────────────────────────────────────────────────────
@@ -1175,9 +1192,7 @@ export async function surrenderDuo(): Promise<void> {
 // ── Close Result ─────────────────────────────────────────────────────
 
 export async function closeDuoResult(): Promise<void> {
-  import('../../react/duoresult/duoResultBridge')
-    .then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult())
-    .catch((e) => console.warn('[duo] bridgeCloseDuoResult failed:', e));
+  useDuoResultStore.getState().close();
   import('../../react/duoreview/duoReviewBridge')
     .then(({ bridgeCloseDuoReview }) => bridgeCloseDuoReview())
     .catch(() => {});
@@ -1215,9 +1230,8 @@ async function enterDuoRematchRoom(): Promise<void> {
   gs.duoMyReady = false;
   gs.duoTotalToFill = 0;
   gs.duoOpponentNotified = false;
-  await import('../../react/duoresult/duoResultBridge')
-    .then(({ bridgeCloseDuoResult }) => bridgeCloseDuoResult())
-    .catch(() => {});
+  clearDuoFinishMoment();
+  useDuoResultStore.getState().close();
   await import('../../react/duoreview/duoReviewBridge')
     .then(({ bridgeCloseDuoReview }) => bridgeCloseDuoReview())
     .catch(() => {});
@@ -1247,6 +1261,7 @@ export function resetDuoState(): void {
   cancelLocalDuoCountdown();
   _duoResultShown = false;
   _duoFinishSubmitted = false;
+  clearDuoFinishMoment();
   if (isDuoWsEnabled()) {
     void import('./duoSocket').then((m) => m.duoWsDisconnect());
     void import('./duoLobbyMirror').then((m) => m.unpublishWsLobbyRoom());

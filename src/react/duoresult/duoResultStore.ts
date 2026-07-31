@@ -20,6 +20,7 @@ export interface DuoResultState {
   guestAlias: string;
   puzzle: number[];
   rematchPending: boolean;
+  openedAtMs: number;
 
   open: (payload: {
     contentHtml: string;
@@ -48,6 +49,7 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
   guestAlias: '',
   puzzle: [],
   rematchPending: false,
+  openedAtMs: 0,
 
   open: (payload) =>
     set({
@@ -62,6 +64,7 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
       guestAlias: payload.guestAlias,
       puzzle: payload.puzzle,
       rematchPending: false,
+      openedAtMs: performance.now(),
     }),
 
   close: () => set({ visible: false, rematchPending: false }),

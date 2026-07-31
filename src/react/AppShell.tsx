@@ -26,6 +26,7 @@ import { useMentorStore } from './mentor/mentorStore';
 import { useEncounterTransitionStore } from './wild/encounterTransitionStore';
 import { useFirstKillRevelationStore } from './wild/firstKillRevelationStore';
 import { useSettingsStore } from './settings/settingsStore';
+import { DuoResultModal } from './duoresult/DuoResultModal';
 
 const TeachOverlay = lazy(() =>
   import('../features/teach/components/TeachOverlay').then((m) => ({ default: m.TeachOverlay })),
@@ -35,7 +36,6 @@ const GameOverOverlay = lazy(() => import('./gameover/GameOverOverlay').then((m)
 const StatsModal = lazy(() => import('./stats/StatsModal').then((m) => ({ default: m.StatsModal })));
 const PreLevelModal = lazy(() => import('./prelevel/PreLevelModal').then((m) => ({ default: m.PreLevelModal })));
 const ReplayModal = lazy(() => import('./replay/ReplayModal').then((m) => ({ default: m.ReplayModal })));
-const DuoResultModal = lazy(() => import('./duoresult/DuoResultModal').then((m) => ({ default: m.DuoResultModal })));
 const AchievementToast = lazy(() => import('./toast/AchievementToast').then((m) => ({ default: m.AchievementToast })));
 const LibraryOverlay = lazy(() => import('./library/LibraryOverlay').then((m) => ({ default: m.LibraryOverlay })));
 const MentorOverlay = lazy(() => import('./mentor/MentorOverlay').then((m) => ({ default: m.MentorOverlay })));
