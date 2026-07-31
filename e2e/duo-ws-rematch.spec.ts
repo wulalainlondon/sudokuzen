@@ -122,7 +122,16 @@ async function clickReady(page: Page): Promise<void> {
 
 // 等遊戲真正可玩：81 格就緒、進度條顯示、且全螢幕倒數 overlay 已消失（關鍵：
 // snapshot-launch 競態下 overlay 可能殘留蓋住棋盤）。
-async function waitForPlayableBoard(page: Page): Promise<void> {
+async function waitForPlayableBoard(page: Page, requireFreshCountdown = false): Promise<void> {
+  // A rematch leaves the completed board in the DOM while both players are in
+  // the ready room. Require the new countdown to appear before accepting 81
+  // cells, otherwise the old solved board can be mistaken for round 2.
+  if (requireFreshCountdown) {
+    await page.waitForSelector('#duo-countdown-overlay', {
+      state: 'attached',
+      timeout: 30_000,
+    });
+  }
   await page.waitForFunction(() => document.querySelectorAll('.cell[data-idx]').length === 81, { timeout: 30_000 });
   await page.waitForFunction(() => document.getElementById('duo-progress-container')?.style.display === 'flex', {
     timeout: 10_000,
@@ -271,7 +280,10 @@ async function playFullMatch(
   await hostPage.waitForTimeout(400);
   await clickReady(guestPage);
 
-  await Promise.all([waitForPlayableBoard(hostPage), waitForPlayableBoard(guestPage)]);
+  await Promise.all([
+    waitForPlayableBoard(hostPage, !!opts.reuseRoom),
+    waitForPlayableBoard(guestPage, !!opts.reuseRoom),
+  ]);
   console.log(`[rematch] round ${round}: 棋盤可玩（overlay 已消失）`);
   const matchStart = Date.now();
 
@@ -281,15 +293,17 @@ async function playFullMatch(
     console.log(`[rematch] round ${round}: 停頓後雙方仍在線、未誤觸沒收 ✓`);
   }
 
-  // 雙方並發真人慢速填盤：host 配速到 ~MATCH_MIN_MS 解完獲勝；guest 較慢、
-  // 對局結算即停。整場 ≈ host 解題時長（≥ 3 分鐘）。
+  // 雙方並發真人慢速填盤：host 配速到 ~MATCH_MIN_MS；guest 每格慢 150ms，
+  // 形成約 5–8 秒的可預期近距離差，整場仍 ≥ 3 分鐘。
   console.log(`[rematch] round ${round}: 開始真人步調填盤（目標單場 ≈ ${Math.round(MATCH_MIN_MS / 1000)}s）`);
   await Promise.all([
     fillBoardPaced(hostPage, { targetTotalMs: MATCH_MIN_MS }),
-    fillBoardPaced(guestPage, { targetTotalMs: MATCH_MIN_MS, extraPerCellMs: 2500, stopOnResult: true }),
+    fillBoardPaced(guestPage, { targetTotalMs: MATCH_MIN_MS, extraPerCellMs: 150, stopOnResult: true }),
   ]);
 
   await Promise.all([waitForResultModal(hostPage), waitForResultModal(guestPage)]);
+  await expect(hostPage.locator('.duo-result-panel.outcome-close-win h2')).toHaveText('險勝');
+  await expect(guestPage.locator('.duo-result-panel.outcome-close-loss h2')).toHaveText('惜敗');
   const matchMs = Date.now() - matchStart;
   console.log(`[rematch] round ${round}: 雙方結算完成，對局歷時 ${Math.round(matchMs / 1000)}s`);
   expect(matchMs, `round ${round} 對局時長應 ≥ 3 分鐘`).toBeGreaterThanOrEqual(180_000);

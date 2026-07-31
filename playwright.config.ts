@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:5173';
+const baseOrigin = new URL(baseURL).origin;
 const managedPort = new URL(baseURL).port || '5173';
 const useManagedWebServer = !!process.env.CI || process.env.E2E_MANAGED_SERVER === '1';
 
@@ -18,7 +19,7 @@ export default defineConfig({
     storageState: {
       cookies: [],
       origins: [{
-        origin: 'http://localhost:5173',
+        origin: baseOrigin,
         localStorage: [{ name: 'sudoku_e2e_mode', value: '1' }],
       }],
     },

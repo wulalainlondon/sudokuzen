@@ -39,6 +39,10 @@ import {
   playOpponentThreatCue,
   playDefeatCue,
   playDuoVictoryCue,
+  playDuoDominantVictoryCue,
+  playDuoCloseVictoryCue,
+  playDuoCloseDefeatCue,
+  playDuoDominantDefeatCue,
   playDuoDrawCue,
 } from '../../game/audio';
 import { useDuoResultStore } from '../../react/duoresult/duoResultStore';
@@ -49,6 +53,7 @@ import {
   restoreDuoCells,
   saveDuoRoundSnapshot,
 } from './duoRoundPersistence';
+import { classifyDuoOutcome, DUO_FORFEIT_TIME } from './duoOutcome';
 
 // ── Module-level guards ──────────────────────────────────────────────
 
@@ -1044,8 +1049,6 @@ export function showDuoResult(d: DuoRoomData): void {
 function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void {
   const hWin = hTime < gTime;
   const gWin = gTime < hTime;
-  const isDraw = hTime === gTime;
-  const diff = Math.abs(hTime - gTime);
 
   // Record match using new DuoProfile
   const profileBefore = loadDuoProfile();
@@ -1054,7 +1057,8 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   const modeId = d.modeId || 'standard';
   const myTime = gs.duoRole === 'host' ? hTime : gTime;
   const oppTime = gs.duoRole === 'host' ? gTime : hTime;
-  const iWon = myTime < oppTime;
+  const outcome = classifyDuoOutcome(myTime, oppTime);
+  const { iWon, isDraw, diffSec: diff } = outcome;
   const oppAlias = gs.duoRole === 'host' ? d.guestAlias || '' : d.hostAlias;
 
   let result: 'win' | 'loss' | 'draw';
@@ -1064,9 +1068,12 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
 
   const roomId = getActiveDuoRoomId();
   const roundKey = roomId ? `${roomId}:${d.puzzleSeed || 0}` : '';
-  const profileAfter = markDuoRoomResultRecorded(roundKey)
-    ? recordDuoMatch(profileBefore, tierId, modeId, result, oppAlias)
-    : profileBefore;
+  const profileAfter =
+    outcome.tier === 'abandoned'
+      ? profileBefore
+      : markDuoRoomResultRecorded(roundKey)
+        ? recordDuoMatch(profileBefore, tierId, modeId, result, oppAlias)
+        : profileBefore;
 
   // Check for new unlocks
   const unlocks = checkNewUnlocks(beforeSnapshot, profileAfter);
@@ -1078,16 +1085,18 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     contentHtml += `<div id="duo-result-streak"><div class="duo-streak-badge">${t('duoRuntime.streakBadgeExcl', { holder: '你', count: String(profileAfter.currentStreak) })}</div></div>`;
   }
 
-  const FORFEIT_SENTINEL = 9999;
-  const hostForfeited = hTime === FORFEIT_SENTINEL;
-  const guestForfeited = gTime === FORFEIT_SENTINEL;
+  const hostForfeited = hTime === DUO_FORFEIT_TIME;
+  const guestForfeited = gTime === DUO_FORFEIT_TIME;
 
   function makeCard(alias: string, time: number, stars: number | null, isWinner: boolean, forfeited: boolean): string {
-    const resultLabel = isWinner
-      ? `<div class="duo-result-label win">${t('duoRuntime.resultWin')}</div>`
-      : isDraw
+    const resultLabel =
+      outcome.tier === 'abandoned'
         ? ''
-        : `<div class="duo-result-label lose">${t('duoRuntime.resultLose')}</div>`;
+        : isWinner
+          ? `<div class="duo-result-label win">${t('duoRuntime.resultWin')}</div>`
+          : isDraw
+            ? ''
+            : `<div class="duo-result-label lose">${t('duoRuntime.resultLose')}</div>`;
     const timeDisplay = forfeited
       ? `<div class="duo-result-time forfeit">${t('duoRuntime.resultForfeitTime')}</div>`
       : `<div class="duo-result-time">${formatSeconds(time)}</div>`;
@@ -1110,15 +1119,25 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   const modeLabelStr = DUO_MODE_MAP.get(modeId)?.label || modeId;
   contentHtml += `<div class="duo-result-tier-mode">${tierLabel} · ${modeLabelStr}</div>`;
 
-  if (isDraw) {
+  if (outcome.tier === 'abandoned') {
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultAbandoned')}</div>`;
+  } else if (isDraw) {
     contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultDraw')}</div>`;
   } else if (hostForfeited || guestForfeited) {
     // One player forfeited — show that instead of a meaningless time diff
-    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultOpponentForfeit')}</div>`;
+    const forfeitText =
+      outcome.tier === 'forfeit-loss' ? t('duoRuntime.resultYouForfeit') : t('duoRuntime.resultOpponentForfeit');
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${forfeitText}</div>`;
   } else {
     const winnerAlias = hWin ? d.hostAlias : d.guestAlias || '';
     const diffClass = iWon ? 'faster' : 'slower';
-    contentHtml += `<div class="duo-result-diff ${diffClass}" id="duo-result-diff">${t('duoRuntime.resultFaster', { winner: winnerAlias, diff: formatSeconds(diff) })}</div>`;
+    const diffText =
+      outcome.tier === 'close-win' || outcome.tier === 'close-loss'
+        ? t('duoRuntime.resultCloseGap', { diff: formatSeconds(diff) })
+        : outcome.tier === 'dominant-win' || outcome.tier === 'dominant-loss'
+          ? t('duoRuntime.resultDominantGap', { winner: winnerAlias, diff: formatSeconds(diff) })
+          : t('duoRuntime.resultFaster', { winner: winnerAlias, diff: formatSeconds(diff) });
+    contentHtml += `<div class="duo-result-diff ${diffClass}" id="duo-result-diff">${diffText}</div>`;
   }
 
   // Stats
@@ -1139,12 +1158,26 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   clearDuoFinishMoment();
   clearDuoRoundSnapshot();
 
-  if (iWon) {
+  if (outcome.tier === 'dominant-win') {
+    vibrate([35, 35, 35, 35, 70, 45, 90]);
+    playDuoDominantVictoryCue();
+  } else if (outcome.tier === 'close-win') {
+    vibrate([20, 35, 20, 55, 45]);
+    playDuoCloseVictoryCue();
+  } else if (iWon) {
     vibrate([25, 45, 25, 45, 25, 70, 50]);
     playDuoVictoryCue();
   } else if (isDraw) {
     vibrate([25, 45, 25, 45, 25]);
     playDuoDrawCue();
+  } else if (outcome.tier === 'close-loss') {
+    vibrate([35, 45, 70]);
+    playDuoCloseDefeatCue();
+  } else if (outcome.tier === 'dominant-loss') {
+    vibrate([95, 55, 150]);
+    playDuoDominantDefeatCue();
+  } else if (outcome.tier === 'abandoned') {
+    vibrate([25]);
   } else {
     // P2a：落敗也給回饋（低沉音 + 輕震動），不再被靜默冷處理
     vibrate([80, 50, 140]);
@@ -1157,6 +1190,9 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     contentHtml,
     iWon,
     isDraw,
+    outcomeTier: outcome.tier,
+    timeDiffSec: outcome.diffSec,
+    gapRatio: outcome.gapRatio,
     levelId: d.levelId ?? null,
     hostMoves: d.hostMoves ?? [],
     guestMoves: d.guestMoves ?? [],

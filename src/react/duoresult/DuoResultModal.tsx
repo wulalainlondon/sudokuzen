@@ -8,6 +8,7 @@ import { t } from '../../i18n/t';
 import { sanitizeHtml } from '../../shared/html/sanitize';
 
 const CONFETTI_COLORS_WIN = ['#FFD700', '#FF6B6B', '#74b9ff', '#55efc4', '#a29bfe'];
+const CONFETTI_COLORS_DOMINANT = ['#FFD700', '#fff3a3', '#ff9f43', '#55efc4', '#ffffff'];
 const CONFETTI_COLORS_DRAW = ['#fd79a8', '#a29bfe', '#74b9ff', '#dfe6e9', '#fab1a0'];
 
 function generateConfettiData(count: number, colors: string[]) {
@@ -52,8 +53,10 @@ export function DuoResultModal(): ReactElement {
   const {
     visible,
     contentHtml,
-    iWon,
     isDraw,
+    outcomeTier,
+    timeDiffSec,
+    gapRatio,
     hostMoves,
     guestMoves,
     hostAlias,
@@ -96,23 +99,56 @@ export function DuoResultModal(): ReactElement {
       .catch(() => {});
   }, [hostMoves, guestMoves, hostAlias, guestAlias, puzzle]);
 
-  const showConfetti = iWon || isDraw;
-  const confettiCount = iWon ? 52 : 34;
-  const confettiColors = iWon ? CONFETTI_COLORS_WIN : CONFETTI_COLORS_DRAW;
+  const isVictory = outcomeTier.endsWith('win');
+  const isDefeat = outcomeTier.endsWith('loss');
+  const showConfetti = isVictory || isDraw;
+  const confettiCount =
+    outcomeTier === 'dominant-win'
+      ? 72
+      : outcomeTier === 'close-win'
+        ? 46
+        : outcomeTier === 'forfeit-win'
+          ? 32
+          : isVictory
+            ? 52
+            : 34;
+  const confettiColors =
+    outcomeTier === 'dominant-win'
+      ? CONFETTI_COLORS_DOMINANT
+      : outcomeTier === 'close-win'
+        ? CONFETTI_COLORS_DRAW
+        : isVictory
+          ? CONFETTI_COLORS_WIN
+          : CONFETTI_COLORS_DRAW;
 
-  const panelClass = `duo-result-panel${iWon ? ' victory' : isDraw ? '' : visible ? ' defeat' : ''}${rematchPending ? ' rematch-pending' : ''}`;
-  const titleClass = iWon ? 'victory-title' : isDraw ? 'draw-title' : 'defeat-title';
-  const outcomeIcon = iWon ? '🏆' : isDraw ? '⚔️' : '◈';
-  const outcomeTitle = iWon
-    ? t('duoRuntime.resultVictoryTitle')
+  const outcomeMeta = {
+    'dominant-win': { title: t('duoRuntime.resultDominantWinTitle'), icon: '🏆' },
+    'close-win': { title: t('duoRuntime.resultCloseWinTitle'), icon: '⚔️' },
+    win: { title: t('duoRuntime.resultVictoryTitle'), icon: '🏆' },
+    draw: { title: t('duoRuntime.resultDrawTitle'), icon: '⚔️' },
+    'close-loss': { title: t('duoRuntime.resultCloseLossTitle'), icon: '⚔️' },
+    loss: { title: t('duoRuntime.resultLossTitle'), icon: '◇' },
+    'dominant-loss': { title: t('duoRuntime.resultDominantLossTitle'), icon: '◆' },
+    'forfeit-win': { title: t('duoRuntime.resultForfeitWinTitle'), icon: '🏆' },
+    'forfeit-loss': { title: t('duoRuntime.resultForfeitLossTitle'), icon: '◇' },
+    abandoned: { title: t('duoRuntime.resultAbandonedTitle'), icon: '◌' },
+  }[outcomeTier];
+  const outcomeTone = isVictory ? 'victory' : isDraw ? 'draw' : isDefeat ? 'defeat' : 'abandoned';
+  const panelClass = `duo-result-panel ${outcomeTone} outcome-${outcomeTier}${rematchPending ? ' rematch-pending' : ''}`;
+  const titleClass = isVictory
+    ? 'victory-title'
     : isDraw
-      ? t('duoRuntime.resultDrawTitle')
-      : t('duoRuntime.resultDefeatTitle');
-  const backdropTint = iWon
+      ? 'draw-title'
+      : isDefeat
+        ? 'defeat-title'
+        : 'abandoned-title';
+  const backdropTint = isVictory
     ? 'radial-gradient(circle at 50% 24%, rgba(255, 215, 0, 0.14), transparent 38%), var(--bg-color)'
     : isDraw
       ? 'radial-gradient(circle at 50% 24%, rgba(116, 185, 255, 0.12), transparent 38%), var(--bg-color)'
-      : 'radial-gradient(circle at 50% 24%, rgba(214, 48, 49, 0.09), transparent 38%), var(--bg-color)';
+      : isDefeat
+        ? 'radial-gradient(circle at 50% 24%, rgba(214, 48, 49, 0.09), transparent 38%), var(--bg-color)'
+        : 'radial-gradient(circle at 50% 24%, rgba(127, 140, 141, 0.1), transparent 38%), var(--bg-color)';
 
   useEffect(() => {
     if (!visible) return;
@@ -133,7 +169,7 @@ export function DuoResultModal(): ReactElement {
       visible={visible}
       onClose={handleBack}
       id="duo-result-modal"
-      className={`duo-result-overlay ${iWon ? 'victory' : isDraw ? 'draw' : 'defeat'}`}
+      className={`duo-result-overlay ${outcomeTone} outcome-${outcomeTier}`}
       noBackdropClose
       backdropTint={backdropTint}
     >
@@ -141,10 +177,15 @@ export function DuoResultModal(): ReactElement {
         <div className="duo-result-aura" aria-hidden="true" />
         {showConfetti && <ConfettiLayer count={confettiCount} colors={confettiColors} />}
         <div className="duo-result-eyebrow">{t('duo.resultTitle')}</div>
-        <div className="duo-result-outcome-icon" aria-hidden="true">
-          {outcomeIcon}
+        <div
+          className="duo-result-outcome-icon"
+          aria-hidden="true"
+          data-time-diff={timeDiffSec}
+          data-gap-ratio={gapRatio}
+        >
+          {outcomeMeta.icon}
         </div>
-        <h2 className={titleClass}>{outcomeTitle}</h2>
+        <h2 className={titleClass}>{outcomeMeta.title}</h2>
         {/* Safety: contentHtml built by our own duo.ts code (trusted) */}
         <div dangerouslySetInnerHTML={{ __html: safeContentHtml }} />
         <button

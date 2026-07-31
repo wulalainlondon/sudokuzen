@@ -2,11 +2,15 @@
 
 import { useDuoResultStore } from './duoResultStore';
 import type { MoveRecord } from '../../game/state';
+import type { DuoOutcomeTier } from '../../features/duo/duoOutcome';
 
 export function bridgeOpenDuoResult(payload: {
   contentHtml: string;
   iWon: boolean;
   isDraw: boolean;
+  outcomeTier: DuoOutcomeTier;
+  timeDiffSec: number;
+  gapRatio: number;
   levelId: number | null;
   hostMoves: MoveRecord[];
   guestMoves: MoveRecord[];

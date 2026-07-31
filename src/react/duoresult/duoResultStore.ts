@@ -3,6 +3,7 @@
 
 import { create } from 'zustand';
 import type { MoveRecord } from '../../game/state';
+import type { DuoOutcomeTier } from '../../features/duo/duoOutcome';
 
 export interface DuoResultState {
   visible: boolean;
@@ -12,6 +13,12 @@ export interface DuoResultState {
   iWon: boolean;
   /** Whether it's a draw (triggers softer confetti) */
   isDraw: boolean;
+  /** Time-gap classification from the local player's perspective */
+  outcomeTier: DuoOutcomeTier;
+  /** Absolute completion-time gap; zero for draws and forfeits */
+  timeDiffSec: number;
+  /** Completion-time gap divided by the slower player's time */
+  gapRatio: number;
   /** The level ID of the duo match (for "play again") */
   levelId: number | null;
   hostMoves: MoveRecord[];
@@ -26,6 +33,9 @@ export interface DuoResultState {
     contentHtml: string;
     iWon: boolean;
     isDraw: boolean;
+    outcomeTier: DuoOutcomeTier;
+    timeDiffSec: number;
+    gapRatio: number;
     levelId: number | null;
     hostMoves: MoveRecord[];
     guestMoves: MoveRecord[];
@@ -42,6 +52,9 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
   contentHtml: '',
   iWon: false,
   isDraw: false,
+  outcomeTier: 'draw',
+  timeDiffSec: 0,
+  gapRatio: 0,
   levelId: null,
   hostMoves: [],
   guestMoves: [],
@@ -57,6 +70,9 @@ export const useDuoResultStore = create<DuoResultState>((set) => ({
       contentHtml: payload.contentHtml,
       iWon: payload.iWon,
       isDraw: payload.isDraw,
+      outcomeTier: payload.outcomeTier,
+      timeDiffSec: payload.timeDiffSec,
+      gapRatio: payload.gapRatio,
       levelId: payload.levelId,
       hostMoves: payload.hostMoves,
       guestMoves: payload.guestMoves,

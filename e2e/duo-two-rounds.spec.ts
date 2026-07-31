@@ -32,25 +32,50 @@ async function setAlias(page: Page, alias: string) {
 
 async function cleanupDuoRoom(page: Page) {
   await Promise.race([
-    page.evaluate(async ({ tierId, modeId }) => {
-      const e2e = (window as unknown).__e2e;
-      if (!e2e?.gs?.firebaseReady) return;
-      try {
-        const activeRoomId = localStorage.getItem('sudoku_duo_active_room_id');
-        if (activeRoomId) {
-          await e2e.gs.db.collection('duo_rooms').doc(activeRoomId).set({
-            tierId, modeId, puzzleSeed: 0, levelId: 0, status: 'idle',
-            hostId: 'cleanup', hostAlias: 'cleanup', hostTitle: null,
-            hostReady: false, hostProgress: 0, hostFinishTime: null,
-            hostStars: null, hostDuoWins: 0, hostHeartbeatAtMs: 0, hostOnline: false,
-            guestId: null, guestAlias: null, guestTitle: null, guestReady: false,
-            guestProgress: 0, guestFinishTime: null, guestStars: null,
-            guestDuoWins: null, guestHeartbeatAtMs: null, guestOnline: false,
-            startAt: null, levelLocked: false, updatedAt: Date.now(),
-          });
+    page.evaluate(
+      async ({ tierId, modeId }) => {
+        const e2e = (window as unknown).__e2e;
+        if (!e2e?.gs?.firebaseReady) return;
+        try {
+          const activeRoomId = localStorage.getItem('sudoku_duo_active_room_id');
+          if (activeRoomId) {
+            await e2e.gs.db.collection('duo_rooms').doc(activeRoomId).set({
+              tierId,
+              modeId,
+              puzzleSeed: 0,
+              levelId: 0,
+              status: 'idle',
+              hostId: 'cleanup',
+              hostAlias: 'cleanup',
+              hostTitle: null,
+              hostReady: false,
+              hostProgress: 0,
+              hostFinishTime: null,
+              hostStars: null,
+              hostDuoWins: 0,
+              hostHeartbeatAtMs: 0,
+              hostOnline: false,
+              guestId: null,
+              guestAlias: null,
+              guestTitle: null,
+              guestReady: false,
+              guestProgress: 0,
+              guestFinishTime: null,
+              guestStars: null,
+              guestDuoWins: null,
+              guestHeartbeatAtMs: null,
+              guestOnline: false,
+              startAt: null,
+              levelLocked: false,
+              updatedAt: Date.now(),
+            });
+          }
+        } catch {
+          /* ignore */
         }
-      } catch { /* ignore */ }
-    }, { tierId: TEST_TIER_ID, modeId: TEST_MODE_ID }),
+      },
+      { tierId: TEST_TIER_ID, modeId: TEST_MODE_ID },
+    ),
     page.waitForTimeout(5000),
   ]);
 }
@@ -78,7 +103,11 @@ async function waitForRoomStatus(page: Page, status: string, timeoutMs = 12000) 
       if (!e2e?.gs?.firebaseReady) return false;
       const roomId = localStorage.getItem('sudoku_duo_active_room_id');
       if (!roomId) return false;
-      const doc = await e2e.gs.db.collection('duo_rooms').doc(roomId).get().catch(() => null);
+      const doc = await e2e.gs.db
+        .collection('duo_rooms')
+        .doc(roomId)
+        .get()
+        .catch(() => null);
       return doc?.exists ? doc.data()?.status === s : false;
     },
     status,
@@ -88,17 +117,22 @@ async function waitForRoomStatus(page: Page, status: string, timeoutMs = 12000) 
 
 async function createRoomAsHost(page: Page, tierId: string, modeId: string): Promise<string> {
   for (let attempt = 0; attempt < 5; attempt++) {
-    const result = await page.evaluate(async ({ tierId, modeId }) => {
-      const e2e = (window as unknown).__e2e;
-      const duo = await import('/src/features/duo/index.ts');
-      const fb = await import('/src/firebase/runtime.ts');
-      return {
-        roomId: await duo.createDuoRoom(tierId, modeId) as string | null,
-        firebaseReady: !!e2e?.gs?.firebaseReady,
-        authUid: fb.getAuthUid(),
-      };
-    }, { tierId, modeId });
-    console.log(`[createRoomAsHost] attempt ${attempt + 1}: roomId=${result.roomId}, fbReady=${result.firebaseReady}, authUid=${result.authUid?.slice(0, 8) ?? 'null'}`);
+    const result = await page.evaluate(
+      async ({ tierId, modeId }) => {
+        const e2e = (window as unknown).__e2e;
+        const duo = await import('/src/features/duo/index.ts');
+        const fb = await import('/src/firebase/runtime.ts');
+        return {
+          roomId: (await duo.createDuoRoom(tierId, modeId)) as string | null,
+          firebaseReady: !!e2e?.gs?.firebaseReady,
+          authUid: fb.getAuthUid(),
+        };
+      },
+      { tierId, modeId },
+    );
+    console.log(
+      `[createRoomAsHost] attempt ${attempt + 1}: roomId=${result.roomId}, fbReady=${result.firebaseReady}, authUid=${result.authUid?.slice(0, 8) ?? 'null'}`,
+    );
     if (result.roomId) {
       await waitForRoomStatus(page, 'waiting', 10000);
       return result.roomId;
@@ -146,9 +180,11 @@ async function waitForGameStart(page: Page) {
       const gc = document.querySelector('.game-container') as HTMLElement | null;
       const p = document.getElementById('duo-progress-container');
       return (
-        gc != null && gc.style.display === 'flex' &&
+        gc != null &&
+        gc.style.display === 'flex' &&
         document.querySelectorAll('.cell[data-idx]').length === 81 &&
-        p != null && p.style.display === 'flex'
+        p != null &&
+        p.style.display === 'flex'
       );
     },
     { timeout: 30_000 },
@@ -202,8 +238,12 @@ test.describe('duo-two-rounds', () => {
     guestCtx = await browser.newContext();
     hostPage = await hostCtx.newPage();
     guestPage = await guestCtx.newPage();
-    hostPage.on('console', (msg) => { if (msg.text().includes('[duo]')) console.log('[H]', msg.text()); });
-    guestPage.on('console', (msg) => { if (msg.text().includes('[duo]')) console.log('[G]', msg.text()); });
+    hostPage.on('console', (msg) => {
+      if (msg.text().includes('[duo]')) console.log('[H]', msg.text());
+    });
+    guestPage.on('console', (msg) => {
+      if (msg.text().includes('[duo]')) console.log('[G]', msg.text());
+    });
 
     await Promise.all([hostPage.goto('/'), guestPage.goto('/')]);
     await Promise.all([waitForE2E(hostPage), waitForE2E(guestPage)]);
@@ -234,9 +274,7 @@ test.describe('duo-two-rounds', () => {
     const toastText = await hostPage.waitForFunction(
       () => {
         const toast = document.getElementById('feedback-toast');
-        return toast && toast.textContent && toast.textContent.trim().length > 0
-          ? toast.textContent.trim()
-          : null;
+        return toast && toast.textContent && toast.textContent.trim().length > 0 ? toast.textContent.trim() : null;
       },
       { timeout: 3000 },
     );
@@ -269,7 +307,11 @@ test.describe('duo-two-rounds', () => {
         const e2e = (window as unknown).__e2e;
         const roomId = localStorage.getItem('sudoku_duo_active_room_id');
         if (!e2e?.gs?.firebaseReady || !roomId) return false;
-        const doc = await e2e.gs.db.collection('duo_rooms').doc(roomId).get().catch(() => null);
+        const doc = await e2e.gs.db
+          .collection('duo_rooms')
+          .doc(roomId)
+          .get()
+          .catch(() => null);
         if (!doc?.exists) return false;
         const d = doc.data();
         return d?.hostFinishTime != null && d?.guestFinishTime != null;
@@ -279,10 +321,7 @@ test.describe('duo-two-rounds', () => {
     console.log('[duo-two-rounds] 局1 Firestore 已有雙方 finishTime');
 
     // Both see result modal
-    await Promise.all([
-      waitForResultModal(hostPage),
-      waitForResultModal(guestPage),
-    ]);
+    await Promise.all([waitForResultModal(hostPage), waitForResultModal(guestPage)]);
     console.log('[duo-two-rounds] 局1 雙方結果 modal 出現');
 
     // Firestore: both finish times set, host faster
@@ -293,15 +332,15 @@ test.describe('duo-two-rounds', () => {
     console.log(`[duo-two-rounds] ✓ 局1 host ${room!.hostFinishTime}s < guest ${room!.guestFinishTime}s`);
 
     // Host wins
-    const hostWin = await hostPage.evaluate(() =>
-      document.querySelector('.duo-result-panel')?.classList.contains('victory') ?? false,
+    const hostWin = await hostPage.evaluate(
+      () => document.querySelector('.duo-result-panel')?.classList.contains('victory') ?? false,
     );
-    const guestLose = await guestPage.evaluate(() =>
-      document.querySelector('.duo-result-panel')?.classList.contains('defeat') ?? false,
+    const guestLose = await guestPage.evaluate(
+      () => document.querySelector('.duo-result-panel')?.classList.contains('defeat') ?? false,
     );
     expect(hostWin).toBe(true);
     expect(guestLose).toBe(true);
-    await expect(hostPage.locator('.duo-result-panel.victory h2')).toHaveText('勝利');
+    await expect(hostPage.locator('.duo-result-panel.victory h2')).toHaveText('險勝');
     await expect(guestPage.locator('.duo-result-panel.defeat h2')).toHaveText('惜敗');
     await expect(hostPage.locator('#duo-finish-moment')).toHaveCount(0);
     await expect(guestPage.locator('#duo-finish-moment')).toHaveCount(0);
@@ -323,14 +362,12 @@ test.describe('duo-two-rounds', () => {
 
     // Wait for duo lobby to be visible on both sides
     await Promise.all([
-      hostPage.waitForFunction(
-        () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
-        { timeout: 10_000 },
-      ),
-      guestPage.waitForFunction(
-        () => !document.getElementById('duo-lobby')?.classList.contains('hidden'),
-        { timeout: 10_000 },
-      ),
+      hostPage.waitForFunction(() => !document.getElementById('duo-lobby')?.classList.contains('hidden'), {
+        timeout: 10_000,
+      }),
+      guestPage.waitForFunction(() => !document.getElementById('duo-lobby')?.classList.contains('hidden'), {
+        timeout: 10_000,
+      }),
     ]);
     console.log('[duo-two-rounds] 局2 雙方返回大廳');
 
@@ -349,9 +386,7 @@ test.describe('duo-two-rounds', () => {
     const guestToastText = await guestPage.waitForFunction(
       () => {
         const toast = document.getElementById('feedback-toast');
-        return toast && toast.textContent && toast.textContent.trim().length > 0
-          ? toast.textContent.trim()
-          : null;
+        return toast && toast.textContent && toast.textContent.trim().length > 0 ? toast.textContent.trim() : null;
       },
       { timeout: 3000 },
     );
@@ -377,7 +412,11 @@ test.describe('duo-two-rounds', () => {
         const e2e = (window as unknown).__e2e;
         const roomId = localStorage.getItem('sudoku_duo_active_room_id');
         if (!e2e?.gs?.firebaseReady || !roomId) return false;
-        const doc = await e2e.gs.db.collection('duo_rooms').doc(roomId).get().catch(() => null);
+        const doc = await e2e.gs.db
+          .collection('duo_rooms')
+          .doc(roomId)
+          .get()
+          .catch(() => null);
         if (!doc?.exists) return false;
         const d = doc.data();
         return d?.hostFinishTime != null && d?.guestFinishTime != null;
@@ -419,13 +458,16 @@ test.describe('duo-two-rounds', () => {
     console.log('[duo-two-rounds] 局2 guest 診斷:', JSON.stringify(diagR2g));
 
     // Wait for in-memory gs.duoRoomData to reflect Firestore (snapshot propagation)
-    const hostGsUpdated = await hostPage.waitForFunction(
-      () => {
-        const e2e = (window as unknown).__e2e;
-        return e2e?.gs?.duoRoomData?.hostFinishTime != null && e2e?.gs?.duoRoomData?.guestFinishTime != null;
-      },
-      { timeout: 10_000 },
-    ).then(() => true).catch(() => false);
+    const hostGsUpdated = await hostPage
+      .waitForFunction(
+        () => {
+          const e2e = (window as unknown).__e2e;
+          return e2e?.gs?.duoRoomData?.hostFinishTime != null && e2e?.gs?.duoRoomData?.guestFinishTime != null;
+        },
+        { timeout: 10_000 },
+      )
+      .then(() => true)
+      .catch(() => false);
     console.log('[duo-two-rounds] 局2 host gs更新:', hostGsUpdated);
     if (!hostGsUpdated) {
       const diagR2b = await hostPage.evaluate(async () => {
@@ -433,7 +475,11 @@ test.describe('duo-two-rounds', () => {
         const roomId = localStorage.getItem('sudoku_duo_active_room_id');
         let fsData = null;
         if (e2e?.gs?.firebaseReady && roomId) {
-          const doc = await e2e.gs.db.collection('duo_rooms').doc(roomId).get().catch(() => null);
+          const doc = await e2e.gs.db
+            .collection('duo_rooms')
+            .doc(roomId)
+            .get()
+            .catch(() => null);
           fsData = doc?.exists ? doc.data() : null;
         }
         return {
@@ -449,10 +495,7 @@ test.describe('duo-two-rounds', () => {
     }
 
     // Both see result modal
-    await Promise.all([
-      waitForResultModal(hostPage, 15000),
-      waitForResultModal(guestPage, 15000),
-    ]);
+    await Promise.all([waitForResultModal(hostPage, 15000), waitForResultModal(guestPage, 15000)]);
     console.log('[duo-two-rounds] 局2 雙方結果 modal 出現');
 
     const room2 = await getDuoRoomData(hostPage);
@@ -462,11 +505,11 @@ test.describe('duo-two-rounds', () => {
     console.log(`[duo-two-rounds] ✓ 局2 guest ${room2!.guestFinishTime}s < host ${room2!.hostFinishTime}s`);
 
     // Guest wins round 2
-    const guestWin2 = await guestPage.evaluate(() =>
-      document.querySelector('.duo-result-panel')?.classList.contains('victory') ?? false,
+    const guestWin2 = await guestPage.evaluate(
+      () => document.querySelector('.duo-result-panel')?.classList.contains('victory') ?? false,
     );
-    const hostLose2 = await hostPage.evaluate(() =>
-      document.querySelector('.duo-result-panel')?.classList.contains('defeat') ?? false,
+    const hostLose2 = await hostPage.evaluate(
+      () => document.querySelector('.duo-result-panel')?.classList.contains('defeat') ?? false,
     );
     expect(guestWin2).toBe(true);
     expect(hostLose2).toBe(true);

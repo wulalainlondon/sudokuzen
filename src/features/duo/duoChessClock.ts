@@ -9,6 +9,7 @@ import { firebaseServerTimestamp } from '../../firebase/runtime';
 import type { FirestoreTransaction } from '../../firebase/types';
 import { isDuoWsEnabled } from './duoTransport';
 import type { CcFields } from './duoWsProtocol';
+import { classifyDuoOutcome } from './duoOutcome';
 
 // ── Module-level state ───────────────────────────────────────────────
 
@@ -384,6 +385,7 @@ function showChessClockResult(d: DuoRoomData): void {
   const iWin = myMs < oppMs;
   const isDraw = myMs === oppMs;
   const diffMs = Math.abs(myMs - oppMs);
+  const outcome = classifyDuoOutcome(myMs / 1000, oppMs / 1000);
 
   const contentHtml = `
     <div class="cc-result">
@@ -402,6 +404,9 @@ function showChessClockResult(d: DuoRoomData): void {
         contentHtml,
         iWon: iWin,
         isDraw,
+        outcomeTier: outcome.tier,
+        timeDiffSec: Math.floor(diffMs / 1000),
+        gapRatio: outcome.gapRatio,
         levelId: d.levelId ?? null,
         hostMoves: [],
         guestMoves: [],

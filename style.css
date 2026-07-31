@@ -7180,8 +7180,29 @@ html.native-app .alias-config {
     var(--shadow-lg),
     0 0 54px rgba(255, 215, 0, 0.2);
 }
+.duo-result-panel.outcome-dominant-win {
+  border-color: rgba(255, 215, 0, 0.72);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 74px rgba(255, 184, 0, 0.29);
+}
+.duo-result-panel.outcome-close-win {
+  border-color: color-mix(in srgb, var(--duo-draw) 62%, transparent);
+}
 .duo-result-panel.defeat {
   border-color: var(--duo-lose);
+}
+.duo-result-panel.outcome-close-loss {
+  border-color: color-mix(in srgb, var(--duo-draw) 50%, transparent);
+}
+.duo-result-panel.outcome-close-loss .duo-result-aura {
+  background: radial-gradient(circle, rgba(116, 185, 255, 0.2), transparent 68%);
+}
+.duo-result-panel.outcome-dominant-loss {
+  border-color: color-mix(in srgb, var(--duo-lose) 68%, transparent);
+}
+.duo-result-panel.abandoned {
+  border-color: color-mix(in srgb, var(--text-light) 42%, transparent);
 }
 @keyframes resultPanelIn {
   0% {
@@ -7200,8 +7221,9 @@ html.native-app .alias-config {
   font-weight: 700;
   letter-spacing: 4px;
   margin: 0 0 20px;
-  font-size: 1.72rem;
+  font-size: clamp(1.35rem, 6vw, 1.72rem);
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 .duo-result-eyebrow {
   margin-bottom: 7px;
@@ -7236,6 +7258,15 @@ html.native-app .alias-config {
 .duo-result-panel.defeat .duo-result-aura {
   background: radial-gradient(circle, color-mix(in srgb, var(--duo-lose) 22%, transparent), transparent 68%);
 }
+.duo-result-panel.outcome-dominant-win .duo-result-aura {
+  width: 230px;
+  height: 230px;
+  top: -72px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.38), rgba(255, 159, 67, 0.08) 48%, transparent 70%);
+}
+.duo-result-panel.outcome-close-win .duo-result-aura {
+  background: radial-gradient(circle, rgba(116, 185, 255, 0.28), rgba(255, 215, 0, 0.08) 48%, transparent 70%);
+}
 @keyframes duoOutcomeIconIn {
   0% {
     opacity: 0;
@@ -7266,8 +7297,23 @@ html.native-app .alias-config {
 .duo-result-panel h2.defeat-title {
   color: var(--duo-lose);
 }
+.duo-result-panel.outcome-close-loss h2.defeat-title {
+  color: var(--duo-draw);
+}
+.duo-result-panel.outcome-dominant-loss h2.defeat-title {
+  color: color-mix(in srgb, var(--duo-lose) 88%, #7f8c8d);
+}
 .duo-result-panel h2.draw-title {
   color: var(--duo-draw);
+}
+.duo-result-panel h2.abandoned-title {
+  color: var(--text-light);
+}
+.duo-result-panel.outcome-dominant-win .duo-result-outcome-icon {
+  font-size: 2.65rem;
+  filter:
+    drop-shadow(0 6px 13px rgba(0, 0, 0, 0.16))
+    drop-shadow(0 0 17px rgba(255, 215, 0, 0.46));
 }
 .duo-result-cards {
   display: flex;

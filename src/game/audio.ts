@@ -224,6 +224,55 @@ export function playDuoVictoryCue(): void {
   );
 }
 
+/** Decisive Duo victory — a broader fanfare reserved for a dominant time gap. */
+export function playDuoDominantVictoryCue(): void {
+  playCue(
+    [
+      { freq: 392, start: 0, dur: 0.14, type: 'triangle' },
+      { freq: 523, start: 0.08, dur: 0.18, type: 'triangle' },
+      { freq: 659, start: 0.16, dur: 0.2, type: 'triangle' },
+      { freq: 784, start: 0.25, dur: 0.22, type: 'triangle' },
+      { freq: 1047, start: 0.36, dur: 0.44, type: 'sine' },
+    ],
+    0.48,
+  );
+}
+
+/** Close Duo victory — a tense two-note pickup resolving into a bright tone. */
+export function playDuoCloseVictoryCue(): void {
+  playCue(
+    [
+      { freq: 659, start: 0, dur: 0.1, type: 'triangle' },
+      { freq: 698, start: 0.08, dur: 0.1, type: 'triangle' },
+      { freq: 988, start: 0.18, dur: 0.34, type: 'sine' },
+    ],
+    0.42,
+  );
+}
+
+/** Close Duo loss — restrained, short, and deliberately less final. */
+export function playDuoCloseDefeatCue(): void {
+  playCue(
+    [
+      { freq: 392, start: 0, dur: 0.16, type: 'sine' },
+      { freq: 349, start: 0.13, dur: 0.26, type: 'sine' },
+    ],
+    0.3,
+  );
+}
+
+/** Decisive Duo loss — lower resolution without an aggressive or mocking sting. */
+export function playDuoDominantDefeatCue(): void {
+  playCue(
+    [
+      { freq: 294, start: 0, dur: 0.2, type: 'sine' },
+      { freq: 220, start: 0.16, dur: 0.28, type: 'sine' },
+      { freq: 165, start: 0.36, dur: 0.3, type: 'sine' },
+    ],
+    0.34,
+  );
+}
+
 /** Final Duo draw — two balanced tones resolving together. */
 export function playDuoDrawCue(): void {
   playCue(
