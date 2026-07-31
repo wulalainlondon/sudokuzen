@@ -10,6 +10,7 @@ import { firebaseServerTimestamp, getAuthUid } from '../../firebase/runtime';
 import type { FirestoreDoc, FirestoreSnap } from '../../firebase/types';
 import type { DuoRoomSummary } from './duoRoom';
 import { publicPlayerAlias } from '../../platform/publicAlias';
+import type { SudokuWindow } from '../../facade/windowTypes';
 
 const WS_LOBBY_COLLECTION = 'duo_ws_rooms';
 // 15s touch：搭配 duoLobby 的 ROOM_FRESHNESS_MS=45s，健康 host 的 heartbeat 最舊只 ~15s，
@@ -19,6 +20,7 @@ const WS_LOBBY_TOUCH_MS = 15_000;
 // 顯示過期只是大廳隱藏（host 一旦恢復 touch 就會重新出現），真正 delete 留給確定
 // 死亡的殘檔（>3 分鐘無 touch），避免短暫網路抖動造成房間被誤刪後再也回不來。
 const WS_LOBBY_DEAD_MS = 180_000;
+const WS_LOBBY_REST_TIMEOUT_MS = 8_000;
 
 let _publishedRoomId: string | null = null;
 let _touchTimer: ReturnType<typeof setInterval> | null = null;
@@ -188,6 +190,72 @@ export function syncWsLobbyRoom(d: DuoRoomData, roomId: string | null): void {
   hideWsLobbyRoom(false);
 }
 
+interface FirestoreRestValue {
+  stringValue?: string;
+  integerValue?: string;
+  timestampValue?: string;
+}
+
+interface FirestoreRestDocument {
+  name?: string;
+  fields?: Record<string, FirestoreRestValue>;
+}
+
+export function parseWsLobbyRestDocuments(documents: FirestoreRestDocument[], now = Date.now()): DuoRoomSummary[] {
+  const rows: DuoRoomSummary[] = [];
+  for (const doc of documents) {
+    const fields = doc.fields ?? {};
+    const hostId = fields.hostId?.stringValue ?? '';
+    const roomId = doc.name?.split('/').pop() ?? '';
+    const hb = Number(fields.hostHeartbeatAtMs?.integerValue ?? 0);
+    if (!roomId || !hostId || (hb > 0 && now - hb > WS_LOBBY_DEAD_MS)) continue;
+    const updatedAtMs = Date.parse(fields.updatedAt?.timestampValue ?? '');
+    rows.push({
+      roomId,
+      tierId: fields.tierId?.stringValue ?? '',
+      modeId: fields.modeId?.stringValue ?? '',
+      status: 'waiting',
+      hostId,
+      hostAlias: publicPlayerAlias(hostId, fields.hostAlias?.stringValue ?? '--'),
+      guestAlias: null,
+      updatedAtMs: Number.isFinite(updatedAtMs) ? updatedAtMs : hb,
+      hostHeartbeatAtMs: hb,
+    });
+  }
+  return rows;
+}
+
+// WebKit standalone PWAs have occasionally returned an empty server-source
+// snapshot while the same live document is visible through Firestore REST.
+// Use REST only as an authoritative manual-refresh fallback; normal polling
+// remains on the SDK to avoid extra reads.
+async function listWaitingWsRoomsViaRest(limit: number): Promise<DuoRoomSummary[]> {
+  const config = (window as SudokuWindow).SUDOKU_FIREBASE_CONFIG;
+  const projectId = config?.projectId;
+  if (!projectId || typeof fetch !== 'function') return [];
+  const params = new URLSearchParams({
+    pageSize: String(Math.max(1, limit)),
+    orderBy: 'updatedAt desc',
+  });
+  if (config.apiKey) params.set('key', config.apiKey);
+  const endpoint =
+    `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}` +
+    `/databases/(default)/documents/${WS_LOBBY_COLLECTION}?${params}`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), WS_LOBBY_REST_TIMEOUT_MS);
+  try {
+    const response = await fetch(endpoint, { cache: 'no-store', signal: controller.signal });
+    if (!response.ok) throw new Error(`Firestore REST ${response.status}`);
+    const payload = (await response.json()) as { documents?: FirestoreRestDocument[] };
+    return parseWsLobbyRestDocuments(payload.documents ?? []);
+  } catch (error) {
+    console.warn('[duoWsLobby] REST fallback failed:', error);
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // 大廳列出等待中的 WS 房（取代 WS 模式下對 duo_rooms 的查詢）。
 // 回傳全部（顯示過期由 renderRoomList 的 freshness 過濾負責），只順手刪除
 // 確定死亡（>3 分鐘無 touch）的殘檔，自癒且不誤刪短暫抖動的活房。
@@ -225,9 +293,11 @@ export async function listWaitingWsRooms(limit = 20, opts: { force?: boolean } =
       });
     });
     if (deadDeletes.length) void Promise.allSettled(deadDeletes);
+    if (opts.force && rows.length === 0) return listWaitingWsRoomsViaRest(limit);
     return rows;
   } catch (e) {
     console.warn('[duoWsLobby] list failed:', e);
+    if (opts.force) return listWaitingWsRoomsViaRest(limit);
     return [];
   }
 }

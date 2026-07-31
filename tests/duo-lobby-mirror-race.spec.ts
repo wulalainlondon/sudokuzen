@@ -25,6 +25,11 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
       forEach: () => {},
     });
     gs.firebaseReady = true;
+    (window as typeof window & { SUDOKU_FIREBASE_CONFIG: Record<string, string> }).SUDOKU_FIREBASE_CONFIG = {
+      projectId: 'sudoku-test',
+      apiKey: 'public-key',
+    };
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ documents: [] }), { status: 200 }));
     gs.db = {
       collection: () =>
         ({
@@ -47,6 +52,7 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
     unpublishWsLobbyRoom();
     gs.db = null;
     gs.firebaseReady = false;
+    vi.restoreAllMocks();
   });
 
   it('deletes a late publish so leaving cannot resurrect the host room in the lobby', async () => {
@@ -82,5 +88,45 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
     await listWaitingWsRooms(20);
 
     expect(getRooms).toHaveBeenCalledWith(undefined);
+  });
+
+  it('falls back to authoritative REST documents when a forced iOS SDK read is empty', async () => {
+    const now = Date.now();
+    const fetchMock = vi.mocked(globalThis.fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          documents: [
+            {
+              name: 'projects/sudoku-test/databases/(default)/documents/duo_ws_rooms/room-live',
+              fields: {
+                hostId: { stringValue: 'host-1' },
+                hostAlias: { stringValue: 'S10Ezu4g' },
+                tierId: { stringValue: 'tier0' },
+                modeId: { stringValue: 'standard' },
+                hostHeartbeatAtMs: { integerValue: String(now - 1_000) },
+                updatedAt: { timestampValue: new Date(now - 500).toISOString() },
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
+    const { listWaitingWsRooms } = await import('../src/features/duo/duoLobbyMirror');
+
+    const rooms = await listWaitingWsRooms(20, { force: true });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/documents/duo_ws_rooms?'),
+      expect.objectContaining({ cache: 'no-store' }),
+    );
+    expect(rooms).toEqual([
+      expect.objectContaining({
+        roomId: 'room-live',
+        hostAlias: 'S10Ezu4g',
+        tierId: 'tier0',
+        modeId: 'standard',
+      }),
+    ]);
   });
 });
