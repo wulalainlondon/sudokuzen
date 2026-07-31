@@ -191,14 +191,15 @@ export function syncWsLobbyRoom(d: DuoRoomData, roomId: string | null): void {
 // 大廳列出等待中的 WS 房（取代 WS 模式下對 duo_rooms 的查詢）。
 // 回傳全部（顯示過期由 renderRoomList 的 freshness 過濾負責），只順手刪除
 // 確定死亡（>3 分鐘無 touch）的殘檔，自癒且不誤刪短暫抖動的活房。
-export async function listWaitingWsRooms(limit = 20): Promise<DuoRoomSummary[]> {
+export async function listWaitingWsRooms(limit = 20, opts: { force?: boolean } = {}): Promise<DuoRoomSummary[]> {
   if (!gs.firebaseReady || !gs.db) return [];
   try {
-    const snap: FirestoreSnap = await gs.db
-      .collection(WS_LOBBY_COLLECTION)
-      .orderBy('updatedAt', 'desc')
-      .limit(limit)
-      .get();
+    const query = gs.db.collection(WS_LOBBY_COLLECTION).orderBy('updatedAt', 'desc').limit(limit);
+    // iOS standalone PWA can keep a stale Firestore query snapshot after a
+    // background/offline transition. A player-triggered refresh must bypass
+    // that cache, otherwise a healthy room can disappear until the SDK
+    // eventually reconnects.
+    const snap: FirestoreSnap = await query.get(opts.force ? { source: 'server' } : undefined);
     const now = Date.now();
     const rows: DuoRoomSummary[] = [];
     const deadDeletes: Promise<unknown>[] = [];

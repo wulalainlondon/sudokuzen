@@ -129,7 +129,7 @@ export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } 
   // 不與舊 Firebase 玩家查的 duo_rooms 混淆。
   if (isDuoWsEnabled()) {
     const { listWaitingWsRooms } = await import('./duoLobbyMirror');
-    return listWaitingWsRooms(limit);
+    return listWaitingWsRooms(limit, opts);
   }
   if (!gs.firebaseReady || !gs.db) return [];
   const db = gs.db;

@@ -3,15 +3,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const createDuoRoom = vi.fn();
+const listWaitingDuoRooms = vi.fn();
 
 vi.mock('../src/features/duo/duoRoom', () => ({
   createDuoRoom,
+  listWaitingDuoRooms,
   leaveDuoRoom: vi.fn(),
 }));
 
 describe('duo lobby create-room UI flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    listWaitingDuoRooms.mockResolvedValue([]);
     document.body.innerHTML = `
       <div id="level-screen"></div>
       <div class="level-screen-header"></div>
@@ -71,5 +74,13 @@ describe('duo lobby create-room UI flow', () => {
     expect(document.getElementById('duo-room-view')?.classList.contains('hidden')).toBe(true);
     expect(document.querySelector<HTMLButtonElement>('.duo-lobby-create')?.disabled).toBe(false);
     expect(document.getElementById('duo-create-btn-text')?.textContent).toBe('建立房間');
+  });
+
+  it('makes the visible refresh button bypass stale room cache by default', async () => {
+    const { refreshDuoLobbyRoom } = await import('../src/features/duo/duoLobby');
+
+    await refreshDuoLobbyRoom();
+
+    expect(listWaitingDuoRooms).toHaveBeenCalledWith(20, { force: true });
   });
 });

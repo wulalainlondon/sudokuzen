@@ -6,6 +6,7 @@ import { gs } from '../src/game/state';
 const setDoc = vi.fn();
 const deleteDoc = vi.fn();
 const updateDoc = vi.fn();
+const getRooms = vi.fn();
 
 vi.mock('../src/firebase/client', () => ({
   getPlayerIdentity: () => ({ playerId: 'player-1', alias: 'Steven' }),
@@ -20,6 +21,9 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
     vi.clearAllMocks();
     deleteDoc.mockResolvedValue(undefined);
     updateDoc.mockResolvedValue(undefined);
+    getRooms.mockResolvedValue({
+      forEach: () => {},
+    });
     gs.firebaseReady = true;
     gs.db = {
       collection: () =>
@@ -28,6 +32,11 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
             set: setDoc,
             delete: deleteDoc,
             update: updateDoc,
+          }),
+          orderBy: () => ({
+            limit: () => ({
+              get: getRooms,
+            }),
           }),
         }) as never,
     } as never;
@@ -57,5 +66,21 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
     await publishing;
 
     await vi.waitFor(() => expect(deleteDoc).toHaveBeenCalled());
+  });
+
+  it('bypasses the Firestore cache when the player forces a lobby refresh', async () => {
+    const { listWaitingWsRooms } = await import('../src/features/duo/duoLobbyMirror');
+
+    await listWaitingWsRooms(20, { force: true });
+
+    expect(getRooms).toHaveBeenCalledWith({ source: 'server' });
+  });
+
+  it('allows the SDK cache during background lobby polling', async () => {
+    const { listWaitingWsRooms } = await import('../src/features/duo/duoLobbyMirror');
+
+    await listWaitingWsRooms(20);
+
+    expect(getRooms).toHaveBeenCalledWith(undefined);
   });
 });

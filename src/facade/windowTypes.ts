@@ -18,7 +18,7 @@ export interface SudokuWindow extends Window {
   closeDuoLobby?: () => void;
   createDuoRoomFromLobby?: () => void;
   joinDuoRoomFromLobby?: () => void;
-  refreshDuoLobbyRoom?: () => void;
+  refreshDuoLobbyRoom?: (opts?: { force?: boolean }) => void;
   leaveDuoRoom?: () => void;
   getDuoMetrics?: () => Record<string, number>;
   resetDuoMetrics?: () => void;

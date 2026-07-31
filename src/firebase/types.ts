@@ -36,12 +36,12 @@ export interface FirestoreCollectionRef {
   orderBy(field: string, direction?: 'asc' | 'desc'): FirestoreQuery;
   where(field: string, op: string, value: unknown): FirestoreQuery;
   limit(n: number): FirestoreQuery;
-  get(): Promise<FirestoreSnap>;
+  get(options?: { source?: 'default' | 'server' | 'cache' }): Promise<FirestoreSnap>;
   onSnapshot(onNext: (snap: FirestoreSnap) => void, onError?: (err: unknown) => void): () => void;
 }
 
 export interface FirestoreQuery {
-  get(): Promise<FirestoreSnap>;
+  get(options?: { source?: 'default' | 'server' | 'cache' }): Promise<FirestoreSnap>;
   orderBy(field: string, direction?: 'asc' | 'desc'): FirestoreQuery;
   where(field: string, op: string, value: unknown): FirestoreQuery;
   limit(n: number): FirestoreQuery;

@@ -198,9 +198,9 @@ function renderRoomList(rooms: DuoRoomSummary[]): void {
   bindRoomListDelegate();
 }
 
-async function refreshRoomCard(): Promise<void> {
+async function refreshRoomCard(opts: { force?: boolean } = {}): Promise<void> {
   const { listWaitingDuoRooms } = await import('./duoRoom');
-  const rooms = await listWaitingDuoRooms(20);
+  const rooms = await listWaitingDuoRooms(20, opts);
   const statusEl = document.getElementById('duo-room-status');
   if (statusEl) statusEl.textContent = '';
   renderRoomList(rooms);
@@ -411,10 +411,8 @@ export function setDuoLobbyConnectionState(state: ConnState): void {
   renderDuoConnectionState(state);
 }
 
-export async function refreshDuoLobbyRoom(opts: { force?: boolean } = {}): Promise<void> {
-  if (opts.force) {
-    const { listWaitingDuoRooms } = await import('./duoRoom');
-    await listWaitingDuoRooms(20, { force: true });
-  }
-  await refreshRoomCard();
+// Public/manual refresh defaults to a server read. Background polling calls
+// refreshRoomCard() directly so it can still use the SDK's normal cache policy.
+export async function refreshDuoLobbyRoom(opts: { force?: boolean } = { force: true }): Promise<void> {
+  await refreshRoomCard(opts);
 }
