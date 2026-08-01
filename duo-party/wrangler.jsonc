@@ -2,7 +2,8 @@
   // Phase 0 spike — 最小 Durable Object，量台灣 → 邊緣 WebSocket 延遲
   "name": "duo-party",
   "main": "src/server.ts",
-  "compatibility_date": "2025-05-01",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
 
   // GameRoom = 一房一物件。partyserver 的 routePartykitRequest 會把
   // URL 的 party 段 "game-room" 對應到這個 PascalCase binding "GameRoom"

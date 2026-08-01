@@ -14,7 +14,10 @@ interface Env {
   AUTH_REQUIRED?: string;
 }
 
-type ConnState = { role: Role; playerId: string; ownerUid: string };
+// PartyServer stores Connection.state as a WebSocket serialized attachment when
+// hibernation is enabled. Keep lastSeenAt here (instead of only in class
+// memory) so an alarm wake or runtime eviction cannot reset presence history.
+type ConnState = { role: Role; playerId: string; ownerUid: string; lastSeenAt?: number };
 
 const COUNTDOWN_MS = 4000; // 3-2-1-GO
 const FORFEIT_TIME = 9999;
@@ -48,11 +51,12 @@ interface RoomState extends PublicRoomState {
  * ctx.storage 取代 Firestore 文件。
  */
 export class GameRoom extends Server<Env> {
+  // Use Cloudflare's Hibernation WebSocket API. PartyServer preserves each
+  // connection's state attachment and rebuilds its connection iterator after a
+  // wake, so idle rooms no longer accrue continuous wall-clock duration.
+  static options = { hibernate: true };
+
   private room: RoomState | null = null;
-  // 每座位最後收到訊息的時間（epoch ms，記憶體內；不持久化以免每次 ping 都寫 storage）。
-  // 冷啟動時以 onStart 的當下時間重置，給雙方一個完整心跳週期再判定，避免誤殺。
-  private hostLastSeenAt = 0;
-  private guestLastSeenAt = 0;
 
   private graceMs(key: 'FORFEIT_GRACE_MS' | 'WAITING_CLOSE_GRACE_MS', def: number): number {
     const v = Number(this.env[key]);
@@ -62,10 +66,17 @@ export class GameRoom extends Server<Env> {
   async onStart(): Promise<void> {
     this.room = (await this.ctx.storage.get<RoomState>('room')) ?? null;
     const now = Date.now();
-    if (this.room?.host) this.hostLastSeenAt = now;
-    if (this.room?.guest) this.guestLastSeenAt = now;
+    // Connections accepted by the pre-hibernation deployment have an older
+    // attachment shape. Seed them once on the first wake so they receive a
+    // full stale window instead of becoming permanently exempt from checks.
+    for (const conn of this.getConnections<ConnState>()) {
+      if (conn.state && !(Number.isFinite(conn.state.lastSeenAt) && conn.state.lastSeenAt! > 0)) {
+        conn.setState({ ...conn.state, lastSeenAt: now });
+      }
+    }
     // 對局進行中卻沒有 presence 排程（部署前就在 playing 的舊房，或未持久化的 reload）
-    // → 補設一次，確保靜默斷線偵測在 reload 後仍會運作。lastSeen 上面剛重置為 now，不會誤殺。
+    // → 補設一次，確保靜默斷線偵測在 reload 後仍會運作。每條連線的 lastSeenAt
+    // 由 WebSocket attachment 跨休眠保存，不在 wake 時重設。
     if (this.room?.status === 'playing' && this.room.presenceCheckAt == null) {
       this.room.presenceCheckAt = now + PRESENCE_CHECK_MS;
       await this.rescheduleAlarm();
@@ -182,8 +193,7 @@ export class GameRoom extends Server<Env> {
       hostOwnerUid: uid,
       guestOwnerUid: null,
     };
-    this.hostLastSeenAt = now;
-    conn.setState({ role: 'host', playerId: msg.player.id, ownerUid: uid });
+    conn.setState({ role: 'host', playerId: msg.player.id, ownerUid: uid, lastSeenAt: now });
     this.sendStateTo(conn); // direct：帶 you 讓 client 認領 host 角色
     await this.commit();
   }
@@ -198,13 +208,13 @@ export class GameRoom extends Server<Env> {
 
     this.room.guest = makeSlot(msg.player);
     this.room.guestOwnerUid = uid;
-    this.guestLastSeenAt = Date.now();
+    const now = Date.now();
     // guest 加入 → 取消 host 斷線時設的關房計時，避免房在 guest 加入後被 alarm 關掉。
     if (this.room.closeRoomAt != null) {
       this.room.closeRoomAt = null;
       await this.rescheduleAlarm();
     }
-    conn.setState({ role: 'guest', playerId: msg.player.id, ownerUid: uid });
+    conn.setState({ role: 'guest', playerId: msg.player.id, ownerUid: uid, lastSeenAt: now });
     this.sendStateTo(conn); // direct：帶 you 讓 client 認領 guest 角色
     await this.commit();
   }
@@ -218,13 +228,12 @@ export class GameRoom extends Server<Env> {
     const ownerUid = msg.role === 'host' ? this.room.hostOwnerUid : this.room.guestOwnerUid;
     if (!slot || ownerUid !== uid) return this.err(conn, 'reclaim_failed', 'Seat no longer yours');
     slot.online = true;
-    conn.setState({ role: msg.role, playerId: msg.player.id, ownerUid: uid });
+    const now = Date.now();
+    conn.setState({ role: msg.role, playerId: msg.player.id, ownerUid: uid, lastSeenAt: now });
     if (msg.role === 'host') {
-      this.hostLastSeenAt = Date.now();
       this.room.forfeitHostAt = null;
       this.room.closeRoomAt = null;
     } else {
-      this.guestLastSeenAt = Date.now();
       this.room.forfeitGuestAt = null;
     }
     await this.rescheduleAlarm();
@@ -434,8 +443,7 @@ export class GameRoom extends Server<Env> {
     const role = conn.state?.role;
     if (!this.room || !role) return;
     const now = Date.now();
-    if (role === 'host') this.hostLastSeenAt = now;
-    else this.guestLastSeenAt = now;
+    conn.setState({ ...conn.state!, lastSeenAt: now });
 
     const slot = role === 'host' ? this.room.host : this.room.guest;
     // 僅在 playing 中、座位存在、先前被判離線、且尚未完成時才恢復。
@@ -453,7 +461,15 @@ export class GameRoom extends Server<Env> {
     if (!this.room || this.room.status !== 'playing') return false;
     const slot = role === 'host' ? this.room.host : this.room.guest;
     if (!slot || !slot.online || slot.finishTime != null) return false;
-    const lastSeen = role === 'host' ? this.hostLastSeenAt : this.guestLastSeenAt;
+    const ownerUid = role === 'host' ? this.room.hostOwnerUid : this.room.guestOwnerUid;
+    let lastSeen = 0;
+    // Multiple sockets can briefly represent one seat during a mobile PWA
+    // resume. The freshest authenticated socket keeps the seat online.
+    for (const conn of this.getConnections<ConnState>()) {
+      if (conn.state?.role === role && conn.state.ownerUid === ownerUid) {
+        lastSeen = Math.max(lastSeen, conn.state.lastSeenAt || 0);
+      }
+    }
     if (lastSeen <= 0 || now - lastSeen <= PRESENCE_STALE_MS) return false;
     slot.online = false;
     const grace = this.graceMs('FORFEIT_GRACE_MS', 60_000);

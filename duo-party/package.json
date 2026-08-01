@@ -7,16 +7,17 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
+    "check:hibernation": "node scripts/assert-hibernation.mjs",
     "qa:phase3": "node scripts/run-phase3-qa.mjs",
-    "check": "npm run typecheck && wrangler deploy --dry-run && npm run qa:phase3",
+    "check": "npm run typecheck && npm run check:hibernation && wrangler deploy --dry-run && npm run qa:phase3",
     "latency": "node src/latency-test.mjs"
   },
   "dependencies": {
-    "partyserver": "latest"
+    "partyserver": "^0.5.9"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "latest",
-    "ws": "latest",
-    "wrangler": "latest"
+    "@cloudflare/workers-types": "^5.20260801.1",
+    "wrangler": "^4.118.0",
+    "ws": "latest"
   }
 }
