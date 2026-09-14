@@ -30,6 +30,16 @@ let passed = false;
 let serverOffline = false;
 const requests = [];
 
+// waitForFunction treats the Promise returned by an async predicate as truthy
+// in our Playwright version. Evaluate and await each result before polling.
+async function waitForBrowserState(predicate, timeout = 30_000) {
+  const deadline = Date.now() + timeout;
+  while (!await page.evaluate(predicate)) {
+    assert(Date.now() < deadline, 'Timed out waiting for browser state');
+    await page.waitForTimeout(100);
+  }
+}
+
 try {
   for (const version of versions) {
     const destination = path.join(temporary, version);
@@ -103,7 +113,7 @@ try {
   });
   await page.goto(url);
   await page.waitForFunction(version => document.getElementById('version-badge')?.textContent === `v${version}`, versions[0]);
-  await page.waitForFunction(async () => !!navigator.serviceWorker.controller && (await navigator.serviceWorker.getRegistration())?.active?.state === 'activated');
+  await waitForBrowserState(async () => !!navigator.serviceWorker.controller && (await navigator.serviceWorker.getRegistration())?.active?.state === 'activated');
   await page.locator('#stage-map .stage-node').first().waitFor({ state: 'visible' });
   await page.waitForTimeout(200); // Allow the version handshake after first claim.
   const firstInstallNavigations = navigations;
@@ -146,7 +156,7 @@ try {
   // starts against A and an immediate explicit update can join that old check.
   await reconnect();
   await page.evaluate(async () => { await (await navigator.serviceWorker.getRegistration()).update(); });
-  await page.waitForFunction(async () => (await navigator.serviceWorker.getRegistration())?.waiting?.state === 'installed');
+  await waitForBrowserState(async () => (await navigator.serviceWorker.getRegistration())?.waiting?.state === 'installed');
   assert.equal(await page.locator('#version-badge').textContent(), `v${versions[0]}`, 'active Duo seat must delay activation');
   await page.evaluate(() => {
     localStorage.removeItem('sudoku_duo_active_room_id');
@@ -156,7 +166,7 @@ try {
   if (legacyDist) {
     // The already-running V2 script has a session-wide reload-once guard.
     // Verify the supported migration on the next user reload after safe activation.
-    await page.waitForFunction(async () => {
+    await waitForBrowserState(async () => {
       const registration = await navigator.serviceWorker.getRegistration();
       return !registration?.waiting && registration?.active?.state === 'activated';
     });
