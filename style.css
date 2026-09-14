@@ -767,11 +767,9 @@ header h1 {
   cursor: pointer;
   position: relative;
   background: var(--grid-bg);
-  transition:
-    background-color 0.18s var(--ease-zen),
-    color 0.28s var(--ease-zen),
-    box-shadow 0.18s var(--ease-zen),
-    transform 0.12s var(--ease-zen);
+  /* Selection must be visible on the first frame of pointerdown. Animating
+     its background, ring or scale made taps feel delayed by about 180ms. */
+  transition: color 0.28s var(--ease-zen);
   /* 確保文字不換行 */
   white-space: nowrap;
   overflow: hidden;
