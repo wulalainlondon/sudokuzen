@@ -8,7 +8,13 @@ import { gs } from '../../game/state';
 import { evaluateAllSkills, getSkillById } from './skillRegistry';
 import type { SkillPreview } from './types';
 import { getUnitCells } from './types';
-import { getChoreography, showChainPreview, clearChainPreview } from './castChoreography';
+import {
+  getChoreography,
+  showChainPreview,
+  clearChainPreview,
+  loadSkillRuntime,
+  isSkillRuntimeReady,
+} from './skillRuntime';
 import { showFeedback } from '../../ui/feedback';
 import { updateCellDisplay } from '../../game/board';
 import { cellLabel } from '../../game/utils';
@@ -243,6 +249,19 @@ export function enterCandidateTracking(digit: number): void {
   const isWild = !!(gs.currentLevel && gs.currentLevel.id < 0 && gs.currentLevel.source === 'wild');
   if (!isWild || !gs.candidateTrackingEnabled) return;
   if (gs.candidateTracking.active) return; // already tracking — ignore
+  if (!isSkillRuntimeReady()) {
+    const level = gs.currentLevel;
+    void loadSkillRuntime()
+      .then(() => {
+        if (
+          gs.currentLevel === level &&
+          document.querySelector<HTMLElement>('.game-container')?.style.display === 'flex'
+        )
+          enterCandidateTracking(digit);
+      })
+      .catch(() => showFeedback(t('wild.worldLoadError'), 'error'));
+    return;
+  }
 
   _preview = null;
   gs.candidateTracking = { active: true, digit, nodes: [] };

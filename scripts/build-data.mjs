@@ -68,10 +68,8 @@ for (const [tier, levels] of Object.entries(worldByTier)) {
 }
 
 // Write shards + build manifest
-const version = crypto.randomBytes(6).toString('hex');
 const manifest = {
-  version,
-  generatedAt: new Date().toISOString(),
+  version: '',
   totalLevels: allLevels.length,
   shards: {},
 };
@@ -86,7 +84,8 @@ for (const [name, levels] of Object.entries(shards)) {
   manifest.shards[name] = {
     file: filename,
     count: levels.length,
-    size: json.length,
+    size: Buffer.byteLength(json, 'utf8'),
+    hash: crypto.createHash('sha256').update(json).digest('hex').slice(0, 16),
   };
 
   const kb = Math.round(json.length / 1024);
@@ -100,12 +99,21 @@ for (const filename of duoFiles) {
   if (manifest.shards[name]) continue; // already registered
   const content = fs.readFileSync(path.join(DATA_DIR, filename), 'utf8');
   const count = JSON.parse(content).length;
-  manifest.shards[name] = { file: filename, count, size: content.length };
+  manifest.shards[name] = {
+    file: filename,
+    count,
+    size: Buffer.byteLength(content, 'utf8'),
+    hash: crypto.createHash('sha256').update(content).digest('hex').slice(0, 16),
+  };
   const kb = Math.round(content.length / 1024);
   console.log(`  ${filename}: ${count} levels (${kb} KB) [pre-built]`);
 }
 
 // Write manifest
+const version = crypto.createHash('sha256')
+  .update(JSON.stringify(Object.entries(manifest.shards).sort(([a], [b]) => a.localeCompare(b))))
+  .digest('hex').slice(0, 16);
+manifest.version = version;
 const manifestJson = JSON.stringify(manifest, null, 2);
 fs.writeFileSync(path.join(DATA_DIR, 'manifest.json'), manifestJson, 'utf8');
 console.log(`\nManifest: ${Object.keys(manifest.shards).length} shards, version ${version}`);

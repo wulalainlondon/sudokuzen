@@ -355,6 +355,8 @@ export const ja: Widen<Locale> = {
     connectionFailed: '接続失敗',
     connectionError: '接続エラー、再試行してください',
     roomCreateFailed: 'ルームの作成に失敗しました。ネットワークを確認して再試行',
+    roomPublishing: 'ルームを公開しています…',
+    roomPublishRetrying: 'ルームをまだ公開できません。再試行中…',
     puzzleLoadFailed: '問題データの読み込みに失敗しました。ページを更新して再試行',
     backToLobby: 'ロビーに戻る',
     reviewReplay: '対局を振り返る',

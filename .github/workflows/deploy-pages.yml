@@ -73,6 +73,9 @@ jobs:
       - name: Smoke Test (boot + main thread responsive)
         run: node scripts/smoke-test-dist.mjs --base=/sudokuzen
 
+      - name: Verify Offline Play And Safe Upgrade
+        run: node scripts/verify-pwa-offline.mjs
+
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:

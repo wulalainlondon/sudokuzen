@@ -14,6 +14,14 @@ import crypto from 'node:crypto';
 const TD = JSON.parse(fs.readFileSync('teach-data.json', 'utf8'));
 const keys = Object.keys(TD).sort((a, b) => Number(a) - Number(b));
 
+// Replay and statistics only need labels, not boards and walkthroughs.
+const catalog = Object.fromEntries(keys.map(key => [key, {
+  name: TD[key].name,
+  technique: TD[key].technique,
+}]));
+fs.mkdirSync(path.join('src', 'data'), { recursive: true });
+fs.writeFileSync(path.join('src', 'data', 'teachCatalog.json'), JSON.stringify(catalog, null, 2) + '\n', 'utf8');
+
 // ── 1. techniques.js (Phase 1 compat) ────────────────────────────
 const header = `/**
  * 數獨技巧教學資料 — 秘笈 1 ~ 40
@@ -37,7 +45,8 @@ for (const key of keys) {
     name: TD[key].name,
     subtitle: TD[key].subtitle || '',
     hasPractice: Array.isArray(TD[key].practice) && TD[key].practice.length > 0,
-    size: shard.length,
+    size: Buffer.byteLength(shard, 'utf8'),
+    hash: crypto.createHash('sha256').update(shard).digest('hex').slice(0, 16),
   };
 }
 console.log(`✓ ${keys.length} shards → public/teach/`);
@@ -46,7 +55,6 @@ console.log(`✓ ${keys.length} shards → public/teach/`);
 const fullHash = crypto.createHash('sha256').update(JSON.stringify(TD)).digest('hex').slice(0, 12);
 const manifest = {
   version: fullHash,
-  generatedAt: new Date().toISOString(),
   totalModules: keys.length,
   modules: shardMeta,
 };

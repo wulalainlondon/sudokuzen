@@ -4803,6 +4803,13 @@ html.native-app .alias-config {
   border: 1px solid var(--duo-border);
 }
 
+.duo-publication-state {
+  margin-top: 8px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--text-light);
+}
+
 .duo-room-id-label {
   font-size: 0.72rem;
   color: var(--text-light);

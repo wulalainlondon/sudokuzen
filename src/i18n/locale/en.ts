@@ -369,6 +369,8 @@ export const en: Widen<Locale> = {
     connectionFailed: 'Connection failed',
     connectionError: 'Connection error, please retry',
     roomCreateFailed: 'Failed to create room — check your connection',
+    roomPublishing: 'Making room public…',
+    roomPublishRetrying: 'Room is not public yet. Retrying…',
     puzzleLoadFailed: 'Puzzle data failed to load — try refreshing',
     backToLobby: 'Back to Lobby',
     reviewReplay: 'Review Replay',

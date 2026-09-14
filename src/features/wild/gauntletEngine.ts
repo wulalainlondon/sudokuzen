@@ -1,3 +1,4 @@
+import { loadSkillRuntime } from '../skills/skillRuntime';
 // Gauntlet engine — extracted from wildController.ts
 // Manages gauntlet queue, advancement, and failure logic.
 
@@ -167,6 +168,7 @@ export async function launchGauntletNext(
 
   applyRarityTint(encounter.rarity);
 
+  await loadSkillRuntime();
   const { initGame, updateLivesUI } = await import('../../game/core');
   initGame(wildLevel.id, true, false, null, wildLevel);
 

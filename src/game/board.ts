@@ -166,6 +166,12 @@ export function selectCell(idx: number): void {
   gs.selectedIdx = idx;
   if (!gs.gridEl) return;
   playCellSelectSound();
+  refreshSelection();
+}
+
+export function refreshSelection(): void {
+  const idx = gs.selectedIdx;
+  if (idx === null || !gs.gridEl) return;
   const selectedVal = gs.cellsData[idx].value;
   // In continuous mode, highlight the locked digit; otherwise use selected cell's value
   const highlightDigit = gs.continuousFillDigit && gs.continuousFillDigit >= 1 ? gs.continuousFillDigit : selectedVal;

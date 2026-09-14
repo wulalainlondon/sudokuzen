@@ -3,6 +3,7 @@ import { vibrate } from '../../platform/haptics';
 // Extracted from duo.ts, adapted for tier/mode system.
 
 import { gs, type DuoRoomData, type MoveRecord } from '../../game/state';
+import { bindDuoPersistence } from '../../game/duoPersistenceBridge';
 import { formatSeconds } from '../../game/utils';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
@@ -91,6 +92,7 @@ const STALE_CONFIRM_MS = 20_000;
 
 setSnapshotHandler(handleDuoSnapshot);
 setResetHandler(resetDuoState);
+bindDuoPersistence({ recordMove: recordDuoMove, saveRound: persistDuoRoundState });
 
 // ── Snapshot Handler ─────────────────────────────────────────────────
 
@@ -931,8 +933,8 @@ function showDuoOpponentFinished(alias: string, timeSec: number, stars: number |
 export function recordDuoMove(cell: number, val: number, ok: boolean): void {
   if (!gs.isDuoMode || !_gameStartedAtMs) return;
   _localMoves.push({ t: Date.now() - _gameStartedAtMs, cell, val, ok });
-  if (ok || val === 0) persistDuoRoundState();
-  else setTimeout(() => persistDuoRoundState(), 450);
+  // The input transaction saves once, after recording the move and updating
+  // the board. Lifecycle saves use the same synchronous bridge.
 }
 
 // ── Submit Finish ────────────────────────────────────────────────────

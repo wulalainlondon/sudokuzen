@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { getBuildAssetGraph } from './build-asset-graph.mjs';
 
 const root = process.cwd();
 const distDir = path.join(root, 'dist');
@@ -27,6 +28,12 @@ for (const rel of requiredFiles) {
   }
   fs.copyFileSync(src, dest);
 }
+
+const graph = getBuildAssetGraph(distDir);
+const swPath = path.join(distDir, 'sw.js');
+const swSource = fs.readFileSync(swPath, 'utf8');
+if (!swSource.includes('/* __BUILD_ASSETS__ */ []')) throw new Error('SW is missing its build asset placeholder');
+fs.writeFileSync(swPath, swSource.replace('/* __BUILD_ASSETS__ */ []', JSON.stringify(graph.offlineAssets)), 'utf8');
 
 // CI and local release tooling generate the runtime Firebase config under public/.
 // Prefer it over the root placeholder so prepare-pages-dist does not overwrite a

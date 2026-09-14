@@ -1,3 +1,4 @@
+import { loadSkillRuntime } from '../skills/skillRuntime';
 // Wild mode controller — encounter lifecycle, bridging ecology engine → game core.
 // Replaces the old "今日隨機" with the ecology-driven Wild system.
 
@@ -150,6 +151,7 @@ export async function resumeWildEncounter(): Promise<void> {
   // Launch game — initGame with forceReset=false will pick up the save
   const levelScreenEl = document.getElementById('level-screen');
   if (levelScreenEl) levelScreenEl.style.display = 'none';
+  await loadSkillRuntime();
   const { initGame, updateLivesUI } = await import('../../game/core');
   initGame(wildLevel.id, false, false, null, wildLevel);
 
@@ -299,6 +301,7 @@ export async function startWildEncounter(): Promise<void> {
 
       const levelScreenLaunch = document.getElementById('level-screen');
       if (levelScreenLaunch) levelScreenLaunch.style.display = 'none';
+      await loadSkillRuntime();
       const { initGame } = await import('../../game/core');
       initGame(wildLevel.id, true, false, null, wildLevel);
 
@@ -468,6 +471,7 @@ export async function startWildEncounter(): Promise<void> {
   // Launch game via core — dynamic import to avoid circular deps
   const levelScreenLaunch = document.getElementById('level-screen');
   if (levelScreenLaunch) levelScreenLaunch.style.display = 'none';
+  await loadSkillRuntime();
   const { initGame } = await import('../../game/core');
   initGame(wildLevel.id, true, false, null, wildLevel);
 

@@ -11,6 +11,7 @@ interface ShardMeta {
   file: string;
   count: number;
   size: number;
+  hash?: string;
 }
 
 interface DataManifest {
@@ -44,6 +45,7 @@ interface CompactLevel {
 let _manifest: DataManifest | null = null;
 let _manifestPromise: Promise<DataManifest | null> | null = null;
 const _shardCache = new Map<string, LevelData[]>();
+const _shardRequests = new Map<string, Promise<LevelData[]>>();
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -83,11 +85,7 @@ function expandLevel(c: CompactLevel, mode: GameMode): LevelData {
 export async function getDataManifest(): Promise<DataManifest | null> {
   if (_manifest) return _manifest;
   if (_manifestPromise) return _manifestPromise;
-  _manifestPromise = fetch(resolveDataPath('manifest.json'))
-    .then((r) => {
-      if (!r.ok) throw new Error(`data manifest ${r.status}`);
-      return r.json() as Promise<DataManifest>;
-    })
+  _manifestPromise = fetchJsonWithTimeout<DataManifest>(resolveDataPath('manifest.json'))
     .then((m) => {
       _manifest = m;
       return m;
@@ -109,16 +107,22 @@ export function warmManifest(): void {
 /** Fetch a single data shard by name (lazy, cached). */
 async function loadShard(name: string, mode: GameMode): Promise<LevelData[]> {
   if (_shardCache.has(name)) return _shardCache.get(name)!;
+  const existing = _shardRequests.get(name);
+  if (existing) return existing;
 
+  const request = fetchShard(name, mode).finally(() => _shardRequests.delete(name));
+  _shardRequests.set(name, request);
+  return request;
+}
+
+async function fetchShard(name: string, mode: GameMode): Promise<LevelData[]> {
   const manifest = await getDataManifest();
   if (!manifest || !manifest.shards[name]) return [];
 
   try {
     const meta = manifest.shards[name];
-    const url = resolveDataPath(meta.file) + `?v=${manifest.version}`;
-    const r = await fetch(url);
-    if (!r.ok) throw new Error(`shard ${name}: ${r.status}`);
-    const compact: CompactLevel[] = await r.json();
+    const url = resolveDataPath(meta.file) + `?v=${meta.hash || manifest.version}`;
+    const compact = await fetchJsonWithTimeout<CompactLevel[]>(url);
     const expanded = compact.map((c) => expandLevel(c, mode));
     _shardCache.set(name, expanded);
     return expanded;
@@ -202,6 +206,7 @@ export interface TeachModuleMeta {
   subtitle: string;
   hasPractice: boolean;
   size: number;
+  hash?: string;
 }
 
 export interface TeachManifest {
@@ -213,6 +218,7 @@ export interface TeachManifest {
 let _teachManifest: TeachManifest | null = null;
 let _teachManifestPromise: Promise<TeachManifest | null> | null = null;
 const _teachShardCache = new Map<string, unknown>();
+const _teachShardRequests = new Map<string, Promise<unknown | null>>();
 const FETCH_TIMEOUT_MS = 6000;
 
 function resolveTeachPath(file: string): string {
@@ -226,11 +232,21 @@ function resolveTeachPath(file: string): string {
 
 async function fetchJsonWithTimeout<T>(url: string, timeoutMs = FETCH_TIMEOUT_MS): Promise<T> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    const r = await fetch(url, { signal: controller.signal });
-    if (!r.ok) throw new Error(`fetch ${r.status}`);
-    return (await r.json()) as T;
+    return await Promise.race([
+      (async () => {
+        const r = await fetch(url, { signal: controller.signal });
+        if (!r.ok) throw new Error(`fetch ${r.status}`);
+        return (await r.json()) as T;
+      })(),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          controller.abort();
+          reject(new Error(`fetch timed out: ${url}`));
+        }, timeoutMs);
+      }),
+    ]);
   } finally {
     clearTimeout(timer);
   }
@@ -255,10 +271,18 @@ export async function getTeachManifest(): Promise<TeachManifest | null> {
 export async function getTeachShard(stars: string | number): Promise<unknown | null> {
   const key = String(stars);
   if (_teachShardCache.has(key)) return _teachShardCache.get(key);
+  const existing = _teachShardRequests.get(key);
+  if (existing) return existing;
+  const request = fetchTeachShard(key).finally(() => _teachShardRequests.delete(key));
+  _teachShardRequests.set(key, request);
+  return request;
+}
+
+async function fetchTeachShard(key: string): Promise<unknown | null> {
   const manifest = await getTeachManifest();
   if (!manifest || !manifest.modules[key]) return null;
   try {
-    const url = resolveTeachPath(`${key}.json`) + `?v=${manifest.version}`;
+    const url = resolveTeachPath(`${key}.json`) + `?v=${manifest.modules[key].hash || manifest.version}`;
     const data = await fetchJsonWithTimeout<unknown>(url);
     _teachShardCache.set(key, data);
     return data;

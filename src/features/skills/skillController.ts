@@ -9,105 +9,10 @@ import { updateCellDisplay } from '../../game/board';
 import { cellLabel } from '../../game/utils';
 import { recordElimination } from '../stats';
 import { t } from '../../i18n/t';
-import { registerSkill, evaluateAllSkills, getSkillById } from './skillRegistry';
-import { nakedSingleSkill } from './nakedSingle';
-import { hiddenSingleSkill } from './hiddenSingle';
-import { lockedCandidatesSkill } from './lockedCandidates';
-import { nakedPairSkill } from './nakedPair';
-import { hiddenPairSkill } from './hiddenPair';
-import { nakedTripleSkill } from './nakedTriple';
-import { hiddenTripleSkill } from './hiddenTriple';
-import { xWingSkill } from './xWing';
-import { swordfishSkill } from './swordfish';
-import { jellyfishSkill } from './jellyfish';
-import { xyWingSkill } from './xyWing';
-import { xyzWingSkill } from './xyzWing';
-import { wWingSkill } from './wWing';
-import { uniqueRectangleSkill } from './uniqueRectangle';
-import { remotePairsSkill } from './remotePairs';
-import { skyscraperSkill } from './skyscraper';
-import { twoStringKiteSkill } from './twoStringKite';
-import { emptyRectangleSkill } from './emptyRectangle';
-import { finnedXWingSkill } from './finnedXWing';
-import { finnedSwordfishSkill } from './finnedSwordfish';
-import { finnedJellyfishSkill } from './finnedJellyfish';
-import { xCycleSimpleColoringSkill } from './xCycleSimpleColoring';
-import { xyChainSkill } from './xyChain';
-import { aicSkill } from './aic';
-import { aicLongChainSkill } from './aicLongChain';
-import { aicMidChainSkill } from './aicMidChain';
-import { groupedAicNiceLoopSkill } from './groupedAicNiceLoop';
-import { discontinuousNiceLoopSkill } from './discontinuousNiceLoop';
-import { cellForcingChainSkill } from './cellForcingChain';
-import { regionForcingChainSkill } from './regionForcingChain';
-import { forcingChainNetSkill } from './forcingChainNet';
-import { alsXZSkill } from './alsXZ';
-import { alsXYSkill } from './alsXY';
-import { alsWWingSkill } from './alsWWing';
-import { alsChainSkill } from './alsChain';
-import { sueDeCoqSkill } from './sueDeCoq';
-import { templateSkill } from './template';
-import { deathBlossomSkill } from './deathBlossom';
-import { exocetSkill } from './exocet';
-import { bugPlusOneSkill } from './bugPlusOne';
+import { evaluateAllSkills, getSkillById } from './skillRegistry';
 import type { SkillPreview } from './types';
-import { getChoreography } from './castChoreography';
+import { getChoreography, loadSkillRuntime, isSkillRuntimeReady } from './skillRuntime';
 import { showSkillPanel, hideSkillPanel, updatePanelUI as _updatePanelUI } from './skillPanelUI';
-
-// ── Register skills (order = evaluation priority) ────────────────────
-// Quick-cast singles (evaluated first for speed)
-registerSkill(nakedSingleSkill);
-registerSkill(hiddenSingleSkill);
-
-// Lv1 — Phase 1 techniques (3-7)
-registerSkill(lockedCandidatesSkill);
-registerSkill(nakedPairSkill);
-registerSkill(nakedTripleSkill);
-registerSkill(hiddenPairSkill);
-registerSkill(hiddenTripleSkill);
-
-// Lv2 — Phase 2 techniques
-registerSkill(xWingSkill);
-registerSkill(swordfishSkill);
-registerSkill(jellyfishSkill);
-registerSkill(xyWingSkill);
-registerSkill(xyzWingSkill);
-registerSkill(wWingSkill);
-registerSkill(uniqueRectangleSkill);
-registerSkill(remotePairsSkill);
-registerSkill(skyscraperSkill);
-registerSkill(twoStringKiteSkill);
-registerSkill(emptyRectangleSkill);
-registerSkill(finnedXWingSkill);
-registerSkill(finnedSwordfishSkill);
-registerSkill(finnedJellyfishSkill);
-registerSkill(bugPlusOneSkill);
-
-// Lv3 — Tier 2-3 chain techniques
-registerSkill(xCycleSimpleColoringSkill);
-registerSkill(xyChainSkill);
-registerSkill(aicSkill);
-registerSkill(aicMidChainSkill);
-registerSkill(aicLongChainSkill);
-registerSkill(groupedAicNiceLoopSkill);
-registerSkill(discontinuousNiceLoopSkill);
-
-// Lv4 — Tier 3-4 forcing chains
-registerSkill(cellForcingChainSkill);
-registerSkill(regionForcingChainSkill);
-registerSkill(forcingChainNetSkill);
-
-// Lv5 — Tier 4 ALS techniques
-registerSkill(alsXZSkill);
-registerSkill(alsXYSkill);
-registerSkill(alsWWingSkill);
-registerSkill(alsChainSkill);
-
-// Lv6 — Tier 4 ultimate techniques
-registerSkill(sueDeCoqSkill);
-registerSkill(templateSkill);
-registerSkill(deathBlossomSkill);
-registerSkill(exocetSkill);
 
 // ── State ────────────────────────────────────────────────────────────
 
@@ -239,8 +144,23 @@ function evaluate(): void {
 
 /** Called by board.ts when a cell is long-pressed. prevSelected is the cell that was selected before this tap. */
 export function enterSkillMode(cellIdx: number, prevSelected?: number): void {
-  // Don't interrupt CTM or an ongoing cast
-  if (gs.candidateTracking?.active) return;
+  // Skill interactions are only meaningful in World mode.
+  const level = gs.currentLevel;
+  if (!level || level.source !== 'wild' || gs.isDuoMode || gs.candidateTracking?.active) return;
+  if (prevSelected === -1 && gs.isNotesMode) return;
+  if (!isSkillRuntimeReady()) {
+    void loadSkillRuntime()
+      .then(() => {
+        if (
+          gs.currentLevel === level &&
+          gs.selectedIdx === cellIdx &&
+          document.querySelector<HTMLElement>('.game-container')?.style.display === 'flex'
+        )
+          enterSkillMode(cellIdx, prevSelected);
+      })
+      .catch(() => showFeedback(t('wild.worldLoadError'), 'error'));
+    return;
+  }
 
   const skill = sm();
 
@@ -285,7 +205,7 @@ export function enterSkillMode(cellIdx: number, prevSelected?: number): void {
 export function tryQuickCast(cellIdx: number): boolean {
   // Editing candidates must never implicitly promote a note into an answer.
   // A normal cell press can exceed the 300ms long-press threshold on touchscreens.
-  if (gs.isNotesMode) return false;
+  if (gs.isNotesMode || !isSkillRuntimeReady()) return false;
   const cell = gs.cellsData[cellIdx];
   if (!cell || cell.value !== 0) return false;
 

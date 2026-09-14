@@ -5,7 +5,7 @@ import { ZenStagger } from '../motion/ZenStagger';
 import { t } from '../../i18n/t';
 import { SK, readJson } from '../../storage/keys';
 import { TITLE_DEFS, getTitleName, getEquippedTitle, setEquippedTitle } from '../../features/titles';
-import teachData from '../../../teach-data.json';
+import teachData from '../../data/teachCatalog.json';
 import type { TeachLaunchSource, TeachOpenOptions } from '../../entities/teach';
 
 // Import data functions from legacy stats module

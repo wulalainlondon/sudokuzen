@@ -190,6 +190,7 @@
             <div class="duo-room-body">
                 <div class="duo-room-id-card">
                     <div class="duo-room-tier-mode" id="duo-room-tier-mode"></div>
+                    <div class="duo-publication-state hidden" id="duo-room-publication-state" role="status" aria-live="polite"></div>
                 </div>
                 <div class="duo-room-slots-card">
                     <div class="duo-player-slots">
@@ -502,7 +503,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.09.14-V2';
+        var INLINE_VER = '2026.09.14-V3';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

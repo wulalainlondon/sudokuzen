@@ -20,6 +20,7 @@ export default defineConfig({
     port: 5173,
   },
   build: {
+    manifest: true,
     target: 'es2022',
     chunkSizeWarningLimit: 700,
     rollupOptions: {
@@ -47,6 +48,18 @@ export default defineConfig({
           }
           if (id.includes('/src/i18n/locale/')) return 'locale-data';
           if (id.includes('/src/solver/')) return 'solver';
+          if (id.endsWith('/src/features/skills/castChoreography.ts')) return 'skill-choreography';
+          if (id.includes('/src/features/skills/')) {
+            const runtimeFiles = [
+              'skillRuntime.ts',
+              'skillController.ts',
+              'candidateTrackingController.ts',
+              'skillRegistry.ts',
+              'skillPanelUI.ts',
+              'types.ts',
+            ];
+            if (!runtimeFiles.some((file) => id.endsWith('/' + file))) return 'skill-detectors';
+          }
           if (
             id.includes('/src/features/skills/') ||
             id.endsWith('/src/features/chainMapPanel.ts') ||

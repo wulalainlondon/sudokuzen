@@ -4,6 +4,7 @@ import { gs, type ActionRecord } from './state';
 import { SK, readJson, writeJson } from '../storage/keys';
 import { getSaveKeyForCurrentMode, getRecordsStorageKeyForLevelList, getModePolicy } from './modePolicy';
 import { sanitizeReplayHistory, toClassicLevelRecord, toSpeedLevelRecord } from '../shared/records/levelRecords';
+import { saveDuoInput } from './duoPersistenceBridge';
 
 export interface SavedGameState {
   levelId: number;
@@ -22,7 +23,7 @@ export function saveGameStatus(): void {
   // single-player save key both polluted normal saves and raced the cloud
   // game_saves rule before the player profile existed.
   if (gs.isDuoMode) {
-    import('../features/duo/duoGame').then((m) => m.persistDuoRoundState()).catch(() => {});
+    saveDuoInput();
     return;
   }
   // Wild mode puzzles save to dedicated wild save key (pause/resume)

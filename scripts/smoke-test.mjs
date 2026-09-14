@@ -5,6 +5,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { getBuildAssetGraph } from './build-asset-graph.mjs';
 
 const errors = [];
 const check = (ok, msg) => { if (!ok) errors.push(msg); };
@@ -13,7 +14,7 @@ const check = (ok, msg) => { if (!ok) errors.push(msg); };
 const dist = 'dist';
 check(fs.existsSync(dist), 'dist/ directory missing — did build run?');
 
-const requiredFiles = ['index.html', 'sw.js', 'levels.js', 'teach/manifest.json'];
+const requiredFiles = ['index.html', 'sw.js', 'data/manifest.json', 'teach/manifest.json'];
 for (const f of requiredFiles) {
   check(fs.existsSync(path.join(dist, f)), `Missing ${f} in dist/`);
 }
@@ -40,6 +41,10 @@ if (fs.existsSync(manifestPath)) {
 const swContent = fs.readFileSync(path.join(dist, 'sw.js'), 'utf8');
 check(swContent.includes('teach/manifest.json'), 'SW missing teach/manifest.json in pre-cache list');
 check(!swContent.includes("'techniques.js'"), 'SW still pre-caches techniques.js — should be removed');
+check(!swContent.includes("'levels.js'"), 'SW still pre-caches the unused legacy level file');
+check(!swContent.includes('__BUILD_ASSETS__'), 'SW build asset list was not generated');
+const graph = getBuildAssetGraph(dist);
+for (const asset of graph.offlineAssets) check(swContent.includes(JSON.stringify(asset)), `SW is missing offline asset ${asset}`);
 
 // ── 5. JS bundle size gate ───────────────────────────────────────
 const jsFiles = fs.readdirSync(path.join(dist, 'assets')).filter((f) => f.endsWith('.js'));

@@ -88,7 +88,7 @@ export default tseslint.config(
   {
     files: ['src/pwa/sw.template.js'],
     languageOptions: {
-      globals: { self: 'readonly', caches: 'readonly', fetch: 'readonly', Response: 'readonly', URL: 'readonly', clients: 'readonly' },
+      globals: { self: 'readonly', caches: 'readonly', fetch: 'readonly', Response: 'readonly', Request: 'readonly', AbortController: 'readonly', setTimeout: 'readonly', clearTimeout: 'readonly', URL: 'readonly', clients: 'readonly' },
     },
   },
   {

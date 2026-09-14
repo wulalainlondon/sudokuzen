@@ -370,6 +370,8 @@ export const zhTW = {
     connectionFailed: '連線失敗',
     connectionError: '連線異常，請重試',
     roomCreateFailed: '建立房間失敗，請檢查網路後重試',
+    roomPublishing: '正在公開房間…',
+    roomPublishRetrying: '房間尚未公開，正在重試…',
     puzzleLoadFailed: '題目資料載入失敗，請重新整理後再試',
     backToLobby: '返回大廳',
     reviewReplay: '回放對局',

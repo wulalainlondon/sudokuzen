@@ -19,7 +19,7 @@ import {
   bridgeSetReplayListHtml,
   bridgeSetReplayPlayback,
 } from '../react/replay/replayBridge';
-import teachData from '../../teach-data.json';
+import teachData from '../data/teachCatalog.json';
 
 const RB_BASE_INTERVAL = 700;
 

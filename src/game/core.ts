@@ -6,6 +6,7 @@ import { vibrate } from '../platform/haptics';
 import { gs, type LevelData, type ActionRecord } from './state';
 import { getAllLevels } from '../data/dataRegistry';
 import { SK } from '../storage/keys';
+import { recordDuoInput } from './duoPersistenceBridge';
 import { formatSeconds, cellLabel, normalizeSavedCells } from './utils';
 import { canInputByErrorGate, getModePolicy } from './modePolicy';
 import { playFillSound, playErrorFeedback, playNoteToggleSound, playEraseSound } from './audio';
@@ -47,6 +48,7 @@ import {
   renderGrid,
   updateCellDisplay,
   selectCell,
+  refreshSelection,
   getUnitIndices,
   isUnitComplete,
   updateNumpadState,
@@ -93,7 +95,7 @@ async function callDuoProgress() {
   }
 }
 function callRecordDuoMove(cell: number, val: number, ok: boolean) {
-  import('../features/duo/duoGame').then((m) => m.recordDuoMove(cell, val, ok)).catch(() => {});
+  recordDuoInput(cell, val, ok);
 }
 async function callCloseReplay() {
   try {
@@ -396,18 +398,12 @@ export function handleInput(num: number): void {
         import('../features/duo/duoChessClock').then((m) => m.onChessClockError(gs.selectedIdx!)).catch(() => {});
         data.isError = true;
         addCellClasses(cellEl, 'error', 'wrong-preview');
-        const originalValue = data.value;
-        const originalNotes = data.notes.slice();
-        data.value = num;
-        data.notes = [];
-        updateCellDisplay(cellEl, data);
+        updateCellDisplay(cellEl, { ...data, value: num, notes: [] });
         playErrorFeedback();
         vibrate([35, 20, 25]);
         setTimeout(() => {
           data.isError = false;
           removeCellClasses(cellEl, 'error', 'wrong-preview');
-          data.value = originalValue;
-          data.notes = originalNotes;
           updateCellDisplay(cellEl, data);
         }, 400);
         return;
@@ -415,12 +411,9 @@ export function handleInput(num: number): void {
       gs.errors++;
       data.isError = true;
       addCellClasses(cellEl, 'error');
-      const originalValue = data.value;
-      const originalNotes = data.notes.slice();
-      data.value = num;
-      data.notes = [];
       addCellClasses(cellEl, 'wrong-preview');
-      updateCellDisplay(cellEl, data);
+      // A wrong digit is a visual preview, never part of the durable board.
+      updateCellDisplay(cellEl, { ...data, value: num, notes: [] });
       markErrorArea(gs.selectedIdx);
 
       if (gs.isDuoMode) {
@@ -465,8 +458,6 @@ export function handleInput(num: number): void {
       setTimeout(() => {
         data.isError = false;
         removeCellClasses(cellEl, 'error', 'wrong-preview');
-        data.value = originalValue;
-        data.notes = originalNotes;
         updateCellDisplay(cellEl, data);
       }, 400);
       saveGameStatus();
@@ -512,7 +503,7 @@ export function handleInput(num: number): void {
   updateCellDisplay(cellEl, data);
   saveGameStatus();
   updateNumpadState();
-  selectCell(gs.selectedIdx);
+  refreshSelection();
   evaluateLockedSkill();
 }
 

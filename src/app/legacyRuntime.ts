@@ -100,17 +100,15 @@ import {
 } from '../platform/hostBridge';
 import { isNativeApp } from '../platform/nativeApp';
 import { notifyLevelScreenReady } from '../features/duo/duoStartup';
-import { isPwaUpdateBlocked } from '../pwa/updateSafety';
 
 export function bootLegacyRuntime(appVersion: string): void {
   gs.appVersion = appVersion;
 
-  // Native shell ships assets in the binary — version-enforced reload is web-only.
+  // Native shell ships its assets in the binary; web releases use the SW safety gate.
   if (import.meta.env.PROD && !isNativeApp()) {
     const storedVersion = localStorage.getItem(SK.APP_VERSION);
-    if (storedVersion !== appVersion && !isPwaUpdateBlocked()) {
+    if (storedVersion !== appVersion) {
       void window.__pwaRuntime.enforceAppVersion(appVersion);
-      return;
     }
   }
 

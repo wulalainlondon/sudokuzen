@@ -1,4 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 
 /**
  * E2E: Offline / Service Worker
@@ -47,33 +49,17 @@ test.describe('offline-sw', () => {
     expect(result).toBe(true);
   });
 
-  test('app still functions after going offline', async ({ page, context }) => {
-    // First visit — let SW install and cache
-    await page.goto('/');
-    await waitForE2E(page);
-
-    // Wait for SW to activate
-    await page.waitForTimeout(2000);
-
-    // Go offline
-    await context.setOffline(true);
-
-    // Navigate again — should load from cache
-    try {
-      await page.goto('/', { timeout: 10_000 });
-    } catch {
-      // Navigation may partially fail offline, that's expected
-    }
-
-    // The page should still render level screen (from SW cache)
-    const hasLevelScreen = await page.locator('#level-screen').isVisible().catch(() => false);
-    // Note: this test may be flaky depending on SW installation timing
-    // If it fails, it indicates the SW needs more setup time
-    if (hasLevelScreen) {
-      expect(hasLevelScreen).toBe(true);
-    }
-
-    // Restore online
-    await context.setOffline(false);
+  test('production PWA plays offline and preserves data through a guarded upgrade', async () => {
+    test.setTimeout(120_000);
+    const { stdout } = await promisify(execFile)(process.execPath, ['scripts/verify-pwa-offline.mjs'], {
+      timeout: 110_000,
+      maxBuffer: 2_000_000,
+    }).catch(error => {
+      console.error(error.stdout);
+      throw error;
+    });
+    expect(stdout).toContain('"offlinePlayBeforeUpgrade":true');
+    expect(stdout).toContain('"offlinePlayAfterUpgrade":true');
+    expect(stdout).toContain('"additionalNormalDownloadsOnUpgrade":0');
   });
 });

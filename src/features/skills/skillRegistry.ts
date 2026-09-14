@@ -5,7 +5,9 @@ import { t } from '../../i18n/t';
 const registry: SkillDetector[] = [];
 
 export function registerSkill(detector: SkillDetector): void {
-  registry.push(detector);
+  const existing = registry.findIndex((skill) => skill.id === detector.id);
+  if (existing < 0) registry.push(detector);
+  else registry[existing] = detector;
 }
 
 /** Evaluate selectedCells against all registered skills. Returns first valid match or best miss. */

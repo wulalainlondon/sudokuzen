@@ -361,6 +361,8 @@ export const de: Widen<Locale> = {
     connectionFailed: 'Verbindung fehlgeschlagen',
     connectionError: 'Verbindungsfehler, bitte erneut versuchen',
     roomCreateFailed: 'Raum konnte nicht erstellt werden — Verbindung prüfen und erneut versuchen',
+    roomPublishing: 'Raum wird veröffentlicht…',
+    roomPublishRetrying: 'Raum noch nicht öffentlich. Erneuter Versuch…',
     puzzleLoadFailed: 'Rätseldaten konnten nicht geladen werden — Seite neu laden und erneut versuchen',
     backToLobby: 'Zur\u00FCck zur Lobby',
     reviewReplay: 'Spiel nachspielen',

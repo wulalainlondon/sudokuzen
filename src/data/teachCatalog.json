@@ -1,0 +1,162 @@
+{
+  "1": {
+    "name": "啟蒙",
+    "technique": "naked_single"
+  },
+  "2": {
+    "name": "觀照",
+    "technique": "hidden_single"
+  },
+  "3": {
+    "name": "封鎖",
+    "technique": "locked_candidates"
+  },
+  "4": {
+    "name": "雙契",
+    "technique": "naked_pair"
+  },
+  "5": {
+    "name": "藏雙",
+    "technique": "hidden_pair"
+  },
+  "6": {
+    "name": "編織",
+    "technique": "naked_triple"
+  },
+  "7": {
+    "name": "隱流",
+    "technique": "hidden_triple"
+  },
+  "8": {
+    "name": "破陣",
+    "technique": "x_wing"
+  },
+  "9": {
+    "name": "天望",
+    "technique": "finned_x_wing"
+  },
+  "10": {
+    "name": "鋒刃",
+    "technique": "skyscraper"
+  },
+  "11": {
+    "name": "雙翼",
+    "technique": "xy_wing"
+  },
+  "12": {
+    "name": "三翼",
+    "technique": "xyz_wing"
+  },
+  "13": {
+    "name": "鏡花",
+    "technique": "w_wing"
+  },
+  "14": {
+    "name": "空鏡",
+    "technique": "unique_rectangle"
+  },
+  "15": {
+    "name": "流彩",
+    "technique": "x_cycle_simple_coloring"
+  },
+  "16": {
+    "name": "法印",
+    "technique": "swordfish"
+  },
+  "17": {
+    "name": "荊棘",
+    "technique": "finned_swordfish"
+  },
+  "18": {
+    "name": "玄鏈",
+    "technique": "aic"
+  },
+  "19": {
+    "name": "無相",
+    "technique": "aic_mid_chain"
+  },
+  "20": {
+    "name": "觀海",
+    "technique": "grouped_aic_nice_loop"
+  },
+  "21": {
+    "name": "破執",
+    "technique": "aic_long_chain"
+  },
+  "22": {
+    "name": "明空",
+    "technique": "als_xz"
+  },
+  "23": {
+    "name": "照界",
+    "technique": "als_chain"
+  },
+  "24": {
+    "name": "玄穹",
+    "technique": "forcing_chain_net"
+  },
+  "25": {
+    "name": "神人",
+    "technique": "exocet_death_blossom"
+  },
+  "26": {
+    "name": "遙對雙珠",
+    "technique": "remote_pairs"
+  },
+  "27": {
+    "name": "雙線風箏",
+    "technique": "two_string_kite"
+  },
+  "28": {
+    "name": "空矩折返",
+    "technique": "empty_rectangle"
+  },
+  "29": {
+    "name": "唯一缺口",
+    "technique": "bug_plus_one"
+  },
+  "30": {
+    "name": "水母陣",
+    "technique": "jellyfish"
+  },
+  "31": {
+    "name": "鰭水母",
+    "technique": "finned_jellyfish"
+  },
+  "32": {
+    "name": "雙值連環",
+    "technique": "xy_chain"
+  },
+  "33": {
+    "name": "斷續環",
+    "technique": "discontinuous_nice_loop"
+  },
+  "34": {
+    "name": "格強制鏈",
+    "technique": "cell_forcing_chain"
+  },
+  "35": {
+    "name": "域強制鏈",
+    "technique": "region_forcing_chain"
+  },
+  "36": {
+    "name": "模板映射",
+    "technique": "template"
+  },
+  "37": {
+    "name": "ALS 交映",
+    "technique": "als_xy"
+  },
+  "38": {
+    "name": "ALS 翼合",
+    "technique": "als_w_wing"
+  },
+  "39": {
+    "name": "蘇德可",
+    "technique": "sue_de_coq"
+  },
+  "40": {
+    "name": "終花綻放",
+    "technique": "death_blossom"
+  }
+}
