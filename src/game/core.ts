@@ -822,6 +822,11 @@ export function toggleTheme(): void {
   localStorage.setItem(SK.THEME, next);
 }
 
+export function restoreNoteMode(): void {
+  gs.isNotesMode = localStorage.getItem(SK.NOTES_MODE) === '1';
+  setNoteToggleActive(gs.isNotesMode);
+}
+
 export function toggleNoteMode(): void {
   if (!getModePolicy().allowNotes) {
     showFeedback(t('feedback.noNotesMode'), 'error');
@@ -829,6 +834,11 @@ export function toggleNoteMode(): void {
   }
   gs.isNotesMode = !gs.isNotesMode;
   setNoteToggleActive(gs.isNotesMode);
+  try {
+    localStorage.setItem(SK.NOTES_MODE, gs.isNotesMode ? '1' : '0');
+  } catch {
+    // Input remains usable if device storage is unavailable.
+  }
   // If continuous fill is active, let user know notes mode changes how it fills
   if (gs.continuousFillDigit !== null && gs.isNotesMode) {
     showFeedback(t('feedback.continuousFillNote'), 'neutral');

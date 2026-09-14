@@ -6,6 +6,7 @@ export const SK = {
   LEGACY_PLAYER_ID: 'sudoku_legacy_player_id',
   PLAYER_ALIAS: 'sudoku_player_alias',
   SPEEDRUN: 'sudoku_speedrun',
+  NOTES_MODE: 'sudoku_notes_mode',
   THEME: 'sudoku_theme',
   LAST_LEVEL: 'sudoku_last_level',
   RECORDS: 'sudoku_records',

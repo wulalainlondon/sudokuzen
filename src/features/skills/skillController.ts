@@ -283,6 +283,9 @@ export function enterSkillMode(cellIdx: number, prevSelected?: number): void {
  *  Used for naked_single / hidden_single in wild mode.
  *  Returns true if a quick cast was initiated. */
 export function tryQuickCast(cellIdx: number): boolean {
+  // Editing candidates must never implicitly promote a note into an answer.
+  // A normal cell press can exceed the 300ms long-press threshold on touchscreens.
+  if (gs.isNotesMode) return false;
   const cell = gs.cellsData[cellIdx];
   if (!cell || cell.value !== 0) return false;
 

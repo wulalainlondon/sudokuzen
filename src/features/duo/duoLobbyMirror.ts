@@ -23,6 +23,7 @@ const WS_LOBBY_DISPLAY_FRESH_MS = 45_000;
 // 死亡的殘檔（>3 分鐘無 touch），避免短暫網路抖動造成房間被誤刪後再也回不來。
 const WS_LOBBY_DEAD_MS = 180_000;
 const WS_LOBBY_REST_TIMEOUT_MS = 8_000;
+const WS_LOBBY_SDK_TIMEOUT_MS = 3_000;
 
 let _publishedRoomId: string | null = null;
 let _touchTimer: ReturnType<typeof setInterval> | null = null;
@@ -229,8 +230,8 @@ export function parseWsLobbyRestDocuments(documents: FirestoreRestDocument[], no
 
 // WebKit standalone PWAs have occasionally returned an empty server-source
 // snapshot while the same live document is visible through Firestore REST.
-// Use REST only as an authoritative manual-refresh fallback; normal polling
-// remains on the SDK to avoid extra reads.
+// Forced reads start REST alongside the SDK so SDK reconnect delays cannot
+// prevent discovery through the independent Worker path.
 async function listWaitingWsRoomsViaRest(limit: number): Promise<DuoRoomSummary[]> {
   const config = (window as SudokuWindow).SUDOKU_FIREBASE_CONFIG;
   const projectId = config?.projectId;
@@ -269,13 +270,22 @@ async function listWaitingWsRoomsViaRest(limit: number): Promise<DuoRoomSummary[
 // 確定死亡（>3 分鐘無 touch）的殘檔，自癒且不誤刪短暫抖動的活房。
 export async function listWaitingWsRooms(limit = 20, opts: { force?: boolean } = {}): Promise<DuoRoomSummary[]> {
   if (!gs.firebaseReady || !gs.db) return [];
+  const restRead = opts.force ? listWaitingWsRoomsViaRest(limit) : null;
+  let sdkTimer: ReturnType<typeof setTimeout> | undefined;
   try {
     const query = gs.db.collection(WS_LOBBY_COLLECTION).orderBy('updatedAt', 'desc').limit(limit);
     // iOS standalone PWA can keep a stale Firestore query snapshot after a
     // background/offline transition. A player-triggered refresh must bypass
     // that cache, otherwise a healthy room can disappear until the SDK
     // eventually reconnects.
-    const snap: FirestoreSnap = await query.get(opts.force ? { source: 'server' } : undefined);
+    const sdkRead = query.get(opts.force ? { source: 'server' } : undefined);
+    const snap: FirestoreSnap = await Promise.race([
+      sdkRead,
+      new Promise<never>((_, reject) => {
+        sdkTimer = setTimeout(() => reject(new Error('Lobby SDK read timed out')), WS_LOBBY_SDK_TIMEOUT_MS);
+      }),
+    ]);
+    clearTimeout(sdkTimer);
     const now = Date.now();
     const rows: DuoRoomSummary[] = [];
     const deadDeletes: Promise<unknown>[] = [];
@@ -306,7 +316,7 @@ export async function listWaitingWsRooms(limit = 20, opts: { force?: boolean } =
       // PWAs: it may contain one healthy cached room while omitting a newer
       // room. Always reconcile manual refreshes with the Worker snapshot,
       // rather than using REST only when the SDK list is completely empty.
-      const restRows = await listWaitingWsRoomsViaRest(limit);
+      const restRows = (await restRead) ?? [];
       const merged = new Map<string, DuoRoomSummary>();
       for (const room of rows) merged.set(room.roomId, room);
       for (const room of restRows) {
@@ -316,7 +326,7 @@ export async function listWaitingWsRooms(limit = 20, opts: { force?: boolean } =
       return [...merged.values()]
         .filter((room) => {
           const heartbeat = room.hostHeartbeatAtMs || room.updatedAtMs;
-          return heartbeat > 0 && now - heartbeat < WS_LOBBY_DISPLAY_FRESH_MS;
+          return heartbeat > 0 && Date.now() - heartbeat < WS_LOBBY_DISPLAY_FRESH_MS;
         })
         .sort((a, b) => b.updatedAtMs - a.updatedAtMs)
         .slice(0, Math.max(1, limit));
@@ -324,7 +334,9 @@ export async function listWaitingWsRooms(limit = 20, opts: { force?: boolean } =
     return rows;
   } catch (e) {
     console.warn('[duoWsLobby] list failed:', e);
-    if (opts.force) return listWaitingWsRoomsViaRest(limit);
+    if (restRead) return restRead;
     return [];
+  } finally {
+    clearTimeout(sdkTimer);
   }
 }

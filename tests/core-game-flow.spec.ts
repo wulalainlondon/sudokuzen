@@ -1,8 +1,18 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SK, readJson } from '../src/storage/keys';
 import { gs } from '../src/game/state';
-import { saveGameStatus, loadGameStatus, clearGameStatus, saveProgress } from '../src/game/core';
+import {
+  saveGameStatus,
+  loadGameStatus,
+  clearGameStatus,
+  saveProgress,
+  restoreNoteMode,
+  toggleNoteMode,
+  handleInput,
+} from '../src/game/core';
+import { renderGrid } from '../src/game/board';
+import { tryQuickCast, enterSkillMode } from '../src/features/skills/skillController';
 import { toClassicLevelRecord, toSpeedLevelRecord } from '../src/shared/records/levelRecords';
 
 // Minimal level data for testing
@@ -207,5 +217,75 @@ describe('saveProgress', () => {
       { t: 12, type: 'fill', detail: 'valid', idx: 3, val: 7, notes: [1, 2] },
       { t: 14, type: 'note', detail: 'valid note', idx: null, val: null, notes: [4, 5] },
     ]);
+  });
+});
+
+describe('PWA note input recovery', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.body.innerHTML = '<button id="note-toggle"></button><div id="grid"><div></div></div>';
+    gs.gridEl = document.getElementById('grid');
+    gs.currentLevel = makeLevelData();
+    gs.cellsData = gs.currentLevel.puzzle.map(() => ({ value: 0, fixed: false, notes: [], isError: false }));
+    gs.selectedIdx = 0;
+    gs.isNotesMode = false;
+    gs.isDuoMode = false;
+    gs.isChessClockMode = false;
+    gs.wildNotesDisabled = false;
+    gs.continuousFillDigit = null;
+    gs.errors = 0;
+  });
+
+  it('does not turn a single candidate into an answer on a world-mode long press', () => {
+    gs.currentLevel = { ...makeLevelData(-1), source: 'wild' };
+    gs.skillMode.enabled = false;
+    gs.candidateTracking.active = false;
+    gs.isNotesMode = true;
+    gs.cellsData[0].notes = [3];
+    expect(tryQuickCast(0)).toBe(false);
+    enterSkillMode(0, -1);
+    expect(gs.cellsData[0].notes).toEqual([3]);
+    expect(gs.cellsData[0].value).toBe(0);
+    expect(gs.skillMode.enabled).toBe(false);
+    handleInput(5);
+    expect(gs.cellsData[0].notes).toEqual([3, 5]);
+    expect(gs.cellsData[0].value).toBe(0);
+  });
+
+  it('cancels pending long-press actions when the browser cancels a touch', async () => {
+    vi.useFakeTimers();
+    try {
+      gs.currentLevel = { ...makeLevelData(-1), source: 'wild' };
+      gs.skillMode.enabled = false;
+      gs.candidateTracking.active = false;
+      gs.isNotesMode = false;
+      gs.selectedIdx = null;
+      gs.cellsData[0].notes = [3];
+      renderGrid();
+      const cell = gs.gridEl!.children[0];
+      cell.dispatchEvent(new Event('pointerdown'));
+      cell.dispatchEvent(new Event('pointercancel'));
+      await vi.advanceTimersByTimeAsync(500);
+      expect(gs.cellsData[0].notes).toEqual([3]);
+      expect(gs.cellsData[0].value).toBe(0);
+      expect(gs.skillMode.enabled).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('keeps entering candidates after runtime state is lost and restored', () => {
+    toggleNoteMode();
+    gs.isNotesMode = false; // Simulate PWA process recreation.
+    restoreNoteMode();
+    handleInput(3);
+    handleInput(5);
+    expect(gs.cellsData[0].value).toBe(0);
+    expect(gs.cellsData[0].notes).toEqual([3, 5]);
+    expect(document.getElementById('note-toggle')?.getAttribute('aria-pressed')).toBe('true');
+    toggleNoteMode();
+    restoreNoteMode();
+    expect(gs.isNotesMode).toBe(false);
+    expect(document.getElementById('note-toggle')?.classList.contains('active')).toBe(false);
   });
 });

@@ -95,7 +95,9 @@ export function getDocumentTheme(): string {
 }
 
 export function setNoteToggleActive(active: boolean): void {
-  document.getElementById('note-toggle')?.classList.toggle('active', active);
+  const button = document.getElementById('note-toggle');
+  button?.classList.toggle('active', active);
+  button?.setAttribute('aria-pressed', String(active));
 }
 
 export function setContinuousFillToggleActive(active: boolean): void {

@@ -52,6 +52,7 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
     unpublishWsLobbyRoom();
     gs.db = null;
     gs.firebaseReady = false;
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -72,6 +73,34 @@ describe('duo lobby mirror publish/unpublish ordering', () => {
     await publishing;
 
     await vi.waitFor(() => expect(deleteDoc).toHaveBeenCalled());
+  });
+
+  it('discovers rooms within three seconds even when the SDK never resolves', async () => {
+    vi.useFakeTimers();
+    getRooms.mockReturnValueOnce(new Promise(() => {}));
+    const now = Date.now();
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          documents: [
+            {
+              name: 'projects/test/databases/(default)/documents/duo_ws_rooms/new-room',
+              fields: {
+                hostId: { stringValue: 'new-host' },
+                hostHeartbeatAtMs: { integerValue: String(now) },
+                updatedAt: { timestampValue: new Date(now).toISOString() },
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
+    const { listWaitingWsRooms } = await import('../src/features/duo/duoLobbyMirror');
+    const pending = listWaitingWsRooms(20, { force: true });
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(3_000);
+    expect((await pending).map((room) => room.roomId)).toEqual(['new-room']);
   });
 
   it('bypasses the Firestore cache when the player forces a lobby refresh', async () => {

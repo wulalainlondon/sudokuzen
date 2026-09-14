@@ -99,6 +99,12 @@ export function renderGrid(): void {
       }
     });
 
+    cell.addEventListener('pointercancel', () => {
+      if (lpTimer) clearTimeout(lpTimer);
+      lpTimer = null;
+      lpFired = false;
+    });
+
     cell.addEventListener('pointerleave', () => {
       if (lpTimer) {
         clearTimeout(lpTimer);

@@ -19,6 +19,7 @@ import {
   resumeGame,
   toggleTheme,
   toggleNoteMode,
+  restoreNoteMode,
   toggleContinuousFill,
   setContinuousDigit,
   fillAllCandidates,
@@ -123,6 +124,8 @@ export function bootLegacyRuntime(appVersion: string): void {
   warmTeachManifest();
   warmManifest();
   preloadMode('normal'); // warm shard early so level screen appears sooner
+
+  restoreNoteMode();
 
   // 3. Restore persisted settings
   gs.isSpeedrunMode = localStorage.getItem(SK.SPEEDRUN) === 'true';

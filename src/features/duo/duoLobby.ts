@@ -12,9 +12,7 @@ import { canOpenJourneyMode, getJourneyLockMessage } from '../journey';
 import { renderDuoConnectionState, type DuoConnectionState } from './duoConnectionUi';
 
 type ConnState = DuoConnectionState;
-const LOBBY_POLL_FAST_MS = 6_000;
-const LOBBY_POLL_SLOW_MS = 25_000;
-const LOBBY_POLL_FAST_WINDOW_MS = 15_000;
+const LOBBY_POLL_MS = 6_000;
 const LOBBY_ENTRY_TIMEOUT_MS = 12_000;
 // iOS standalone PWA cold starts may need to load Firebase before a signed
 // WebSocket seat reclaim. Keep this below the server's 60s forfeit grace.
@@ -23,7 +21,9 @@ const ACTIVE_ROOM_RESUME_TIMEOUT_MS = 45_000;
 // 搭配 WS_LOBBY_TOUCH_MS=15s，健康 host 的 heartbeat 最舊也只 ~15s，不會被誤隱藏。
 const ROOM_FRESHNESS_MS = 45_000;
 let _duoLobbyPollTimer: ReturnType<typeof setTimeout> | null = null;
-let _duoLobbyOpenedAtMs = 0;
+let _lobbyPollingActive = false;
+let _lobbyPollingGeneration = 0;
+let _roomRefreshGeneration = 0;
 let _selectedTier = 'tier0';
 let _selectedMode = 'standard';
 let _roomListListenerBound = false;
@@ -199,8 +199,10 @@ function renderRoomList(rooms: DuoRoomSummary[]): void {
 }
 
 async function refreshRoomCard(opts: { force?: boolean } = {}): Promise<void> {
+  const generation = ++_roomRefreshGeneration;
   const { listWaitingDuoRooms } = await import('./duoRoom');
   const rooms = await listWaitingDuoRooms(20, opts);
+  if (generation !== _roomRefreshGeneration || !isDuoLobbyOpen()) return;
   const statusEl = document.getElementById('duo-room-status');
   if (statusEl) statusEl.textContent = '';
   renderRoomList(rooms);
@@ -208,27 +210,39 @@ async function refreshRoomCard(opts: { force?: boolean } = {}): Promise<void> {
 
 // ── Polling ──────────────────────────────────────────────────────────
 
+async function refreshLobbyOnResume(): Promise<void> {
+  if (!_lobbyPollingActive || !isDuoLobbyOpen() || document.visibilityState !== 'visible') return;
+  await refreshDuoLobbyRoom().catch((error) => console.warn('Lobby refresh failed:', error));
+}
+
 function startLobbyPolling(): void {
-  if (_duoLobbyPollTimer) return;
-  _duoLobbyOpenedAtMs = Date.now();
-  const poll = () => {
-    if (!isDuoLobbyOpen() || document.visibilityState !== 'visible') return;
-    void import('./duoRoom').then((m) => m.cleanupStaleDuoRooms()).catch(() => {});
-    void refreshDuoLobbyRoom();
-  };
+  if (_lobbyPollingActive) return;
+  _lobbyPollingActive = true;
+  const generation = ++_lobbyPollingGeneration;
+  document.addEventListener('visibilitychange', refreshLobbyOnResume);
+  window.addEventListener('pageshow', refreshLobbyOnResume);
+  window.addEventListener('online', refreshLobbyOnResume);
   const scheduleNext = () => {
-    if (!isDuoLobbyOpen()) return;
-    const elapsed = Date.now() - _duoLobbyOpenedAtMs;
-    const nextMs = elapsed < LOBBY_POLL_FAST_WINDOW_MS ? LOBBY_POLL_FAST_MS : LOBBY_POLL_SLOW_MS;
-    _duoLobbyPollTimer = setTimeout(() => {
-      poll();
+    if (!_lobbyPollingActive || generation !== _lobbyPollingGeneration || !isDuoLobbyOpen()) return;
+    _duoLobbyPollTimer = setTimeout(async () => {
+      if (document.visibilityState === 'visible') {
+        const { cleanupStaleDuoRooms } = await import('./duoRoom');
+        void cleanupStaleDuoRooms();
+      }
+      await refreshLobbyOnResume();
       scheduleNext();
-    }, nextMs);
+    }, LOBBY_POLL_MS);
   };
   scheduleNext();
 }
 
 function stopLobbyPolling(): void {
+  _lobbyPollingActive = false;
+  _lobbyPollingGeneration++;
+  _roomRefreshGeneration++;
+  document.removeEventListener('visibilitychange', refreshLobbyOnResume);
+  window.removeEventListener('pageshow', refreshLobbyOnResume);
+  window.removeEventListener('online', refreshLobbyOnResume);
   if (_duoLobbyPollTimer) {
     clearTimeout(_duoLobbyPollTimer);
     _duoLobbyPollTimer = null;
@@ -320,8 +334,8 @@ async function openDuoLobbyInternal(): Promise<void> {
     }
 
     setDuoLobbyConnectionState('connected');
-    startLobbyPolling();
-    await refreshRoomCard();
+    await refreshRoomCard({ force: true });
+    if (isDuoLobbyOpen()) startLobbyPolling();
   } catch (error) {
     console.warn('openDuoLobby failed:', error);
     stopLobbyPolling();
@@ -411,8 +425,7 @@ export function setDuoLobbyConnectionState(state: ConnState): void {
   renderDuoConnectionState(state);
 }
 
-// Public/manual refresh defaults to a server read. Background polling calls
-// refreshRoomCard() directly so it can still use the SDK's normal cache policy.
+// Entry, polling and manual refresh all bypass stale discovery snapshots.
 export async function refreshDuoLobbyRoom(opts: { force?: boolean } = { force: true }): Promise<void> {
   await refreshRoomCard(opts);
 }
