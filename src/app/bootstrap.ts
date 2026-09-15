@@ -27,6 +27,7 @@ import { getDuoMetrics, resetDuoMetrics } from '../features/duo/duoMetrics';
 import { isNativeApp } from '../platform/nativeApp';
 import { syncJourneyHome } from '../features/journey';
 import { scheduleDuoAutoResume } from '../features/duo/duoStartup';
+import { scheduleFirebaseDuoReturn } from '../firebase/sdkRecovery';
 
 declare global {
   interface Window {
@@ -48,6 +49,7 @@ export function bootstrapApp(): void {
       registerServiceWorkerUpdateFlow,
     };
 
+    scheduleFirebaseDuoReturn(openDuoLobby);
     bootLegacyRuntime(APP_VERSION);
     scheduleDuoAutoResume();
     Object.assign(window as unknown as Record<string, unknown>, {
@@ -59,8 +61,10 @@ export function bootstrapApp(): void {
       getDuoMetrics,
       resetDuoMetrics,
     });
-    void whenFirebaseReady().then((ready) => {
-      if (!ready) return;
+    let cloudSetupStarted = false;
+    const setupCloud = () => {
+      if (cloudSetupStarted || !gs.firebaseReady) return;
+      cloudSetupStarted = true;
       // Auth binding may have just marked this install as a pre-journey PWA
       // upgrade. Refresh the entry gates immediately so returning players do
       // not need to reload before their previously available modes reopen.
@@ -71,6 +75,10 @@ export function bootstrapApp(): void {
       hydratePlayerProfileFromCloud().finally(() => {
         installPlayerCloudSyncBridge();
       });
+    };
+    window.addEventListener('sudoku:firebase-ready', setupCloud);
+    void whenFirebaseReady().then((ready) => {
+      if (ready) setupCloud();
     });
     mountReactStrangler();
     installLegacyTeachBridge();

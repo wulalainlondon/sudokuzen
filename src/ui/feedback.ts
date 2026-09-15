@@ -32,6 +32,11 @@ export function showFeedback(msg: string, tone: 'neutral' | 'success' | 'error' 
   );
 }
 
+export function clearFeedback(): void {
+  clearTimeout(gs.feedbackTimer!);
+  (gs.feedbackToast ?? document.getElementById('feedback-toast'))?.classList.remove('show');
+}
+
 export function markErrorArea(idx: number): void {
   if (!gs.gridEl) return;
   const row = Math.floor(idx / 9);

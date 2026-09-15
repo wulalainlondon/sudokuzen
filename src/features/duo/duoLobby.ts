@@ -1,7 +1,7 @@
 // Duo lobby — tier/mode selection, room list, stats card
 // Complete rewrite: no more level-select coupling.
 
-import { showFeedback } from '../../ui/feedback';
+import { clearFeedback, showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
 import { escapeHtml } from '../../shared/html/escape';
 import { DUO_TIERS, DUO_MODES, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
@@ -289,6 +289,7 @@ export function openDuoLobby(): Promise<void> {
 }
 
 async function openDuoLobbyInternal(): Promise<void> {
+  clearFeedback();
   setDuoEntryBusy(true);
   saveScroll('stage-map');
   const levelScreen = document.getElementById('level-screen');
@@ -338,6 +339,8 @@ async function openDuoLobbyInternal(): Promise<void> {
     if (isDuoLobbyOpen()) startLobbyPolling();
   } catch (error) {
     console.warn('openDuoLobby failed:', error);
+    const { recoverFirebaseSdkForDuo } = await import('../../firebase/sdkRecovery');
+    if (await recoverFirebaseSdkForDuo()) return;
     stopLobbyPolling();
     setDuoLobbyConnectionState('failed');
     setDuoViewActive(false);

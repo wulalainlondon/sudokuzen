@@ -35,6 +35,43 @@ let _firebaseInitPromise: Promise<FirebaseCompat | null> | null = null;
 let _firebaseConfigLoadPromise: Promise<void> | null = null;
 let _authUid: string | null = null;
 let _authReady: Promise<void> | null = null;
+let _sdkFailureUrl: string | null = null;
+let _sdkLoadFailed = false;
+
+export function hasFirebaseSdkLoadFailure(): boolean {
+  return _sdkLoadFailed;
+}
+
+export function getFirebaseSdkFailureUrl(): string | null {
+  return _sdkFailureUrl;
+}
+
+async function loadSdk(): Promise<FirebaseCompat> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      (async () => {
+        const appModule = await import('firebase/compat/app');
+        await Promise.all([
+          import('firebase/compat/firestore'),
+          import('firebase/compat/auth'),
+          import('firebase/compat/functions'),
+        ]);
+        return (appModule.default || appModule) as unknown as FirebaseCompat;
+      })(),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error('Firebase SDK load timed out')), 8000);
+      }),
+    ]);
+  } catch (error) {
+    _sdkLoadFailed = true;
+    const url = String(error).match(/https?:\/\/[^\s"']+\.js(?:\?[^\s"']*)?/)?.[0];
+    _sdkFailureUrl = url && new URL(url).origin === window.location.origin ? url : null;
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 function resolvePublicPath(file: string): string {
   try {
@@ -50,11 +87,17 @@ function appendScript(src: string, optional = false): Promise<void> {
     const script = document.createElement('script');
     script.src = src;
     script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => {
-      if (optional) resolve();
-      else reject(new Error(`script load failed: ${src}`));
+    const finish = (error?: Error) => {
+      clearTimeout(timer);
+      script.onload = null;
+      script.onerror = null;
+      script.remove();
+      if (error && !optional) reject(error);
+      else resolve();
     };
+    const timer = setTimeout(() => finish(new Error(`script load timed out: ${src}`)), optional ? 1500 : 8000);
+    script.onload = () => finish();
+    script.onerror = () => finish(new Error(`script load failed: ${src}`));
     document.head.appendChild(script);
   });
 }
@@ -65,7 +108,9 @@ async function ensureFirebaseConfigLoaded(): Promise<void> {
   _firebaseConfigLoadPromise = (async () => {
     await appendScript(resolvePublicPath('firebase-config.js'));
     await appendScript(resolvePublicPath('firebase-config.local.js'), true);
-  })();
+  })().finally(() => {
+    _firebaseConfigLoadPromise = null;
+  });
   return _firebaseConfigLoadPromise;
 }
 
@@ -77,13 +122,13 @@ export async function ensureFirebaseRuntime(): Promise<FirebaseCompat | null> {
     await ensureFirebaseConfigLoaded();
     const win = window as SudokuWindow;
     if (!win.SUDOKU_FIREBASE_CONFIG) return null;
-    const appModule = await import('firebase/compat/app');
-    await import('firebase/compat/firestore');
-    await import('firebase/compat/auth');
-    await import('firebase/compat/functions');
-    _firebaseCompat = (appModule.default || appModule) as unknown as FirebaseCompat;
+    _firebaseCompat = await loadSdk();
+    _sdkFailureUrl = null;
+    _sdkLoadFailed = false;
     return _firebaseCompat;
-  })();
+  })().finally(() => {
+    _firebaseInitPromise = null;
+  });
 
   return _firebaseInitPromise;
 }
@@ -118,11 +163,14 @@ export async function initAnonymousAuth(): Promise<string | null> {
       }
       const cred = await auth.signInAnonymously();
       _authUid = cred.user?.uid ?? null;
-    } catch {
+    } catch (error) {
+      console.warn('Firebase anonymous auth failed:', error);
       _authUid = null;
       _authReady = null; // Reset so the next callDuoFunction can retry auth
     }
-  })();
+  })().finally(() => {
+    if (!_authUid) _authReady = null;
+  });
   await _authReady;
   return _authUid;
 }

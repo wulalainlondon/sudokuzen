@@ -441,7 +441,7 @@ export function subscribeOnlineCount(callback: (count: number) => void): () => v
 // ── Init ────────────────────────────────────────────────────────────
 
 export async function initFirebase(): Promise<boolean> {
-  if (gs.firebaseReady && gs.db) return true;
+  if (gs.firebaseReady && gs.db && getAuthUid()) return true;
   if (_firebaseInitPromise) return _firebaseInitPromise;
 
   _firebaseInitPromise = (async () => {
@@ -451,17 +451,20 @@ export async function initFirebase(): Promise<boolean> {
       if (!firebase) return false;
       if (!win.SUDOKU_FIREBASE_CONFIG) return false;
       if (!firebase.apps.length) firebase.initializeApp(win.SUDOKU_FIREBASE_CONFIG);
-      gs.db = firebase.firestore();
-      gs.firebaseReady = true;
       const ownerUid = await initAnonymousAuth();
       if (!ownerUid) return false;
       bindPlayerIdentityToAuth(ownerUid);
+      gs.db = firebase.firestore();
+      gs.firebaseReady = true;
+      window.dispatchEvent(new Event('sudoku:firebase-ready'));
       return true;
     } catch (e) {
       console.warn('Firebase init failed:', e);
       return false;
     }
-  })();
+  })().finally(() => {
+    _firebaseInitPromise = null;
+  });
 
   return _firebaseInitPromise;
 }
@@ -485,7 +488,6 @@ export function bindPlayerIdentityToAuth(ownerUid: string): string {
 }
 
 export function whenFirebaseReady(): Promise<boolean> {
-  if (gs.firebaseReady && gs.db) return Promise.resolve(true);
   return initFirebase();
 }
 

@@ -11,7 +11,7 @@ if (!fs.existsSync(distDir)) {
 
 // Files that need manual copy (NOT in public/, so Vite doesn't handle them)
 const requiredFiles = [
-  'levels.js',        // legacy compat (normal only) — will be removed after full migration
+  'levels.js', // legacy compat (normal only) — will be removed after full migration
   // mid_pool.js removed — merged into levels-data.json
   // techniques.js removed — teach data now lazy-loads via public/teach/*.json shards
   // Level data now lazy-loads via public/data/*.json shards (Vite copies public/ automatically)
@@ -30,6 +30,21 @@ for (const rel of requiredFiles) {
 }
 
 const graph = getBuildAssetGraph(distDir);
+const buildManifest = JSON.parse(fs.readFileSync(path.join(distDir, '.vite/manifest.json'), 'utf8'));
+const firebaseApp = Object.entries(buildManifest).find(([key]) => key.includes('firebase/compat/app/'))?.[1].file;
+if (!firebaseApp) throw new Error('Missing Firebase SDK app chunk');
+const sdkFiles = new Set();
+const visitSdk = (key) => {
+  const chunk = buildManifest[key];
+  if (!chunk || sdkFiles.has(chunk.file)) return;
+  sdkFiles.add(chunk.file);
+  for (const dependency of chunk.imports || []) visitSdk(dependency);
+};
+for (const key of Object.keys(buildManifest)) if (key.includes('firebase/compat/')) visitSdk(key);
+fs.writeFileSync(
+  path.join(distDir, 'firebase-sdk-manifest.json'),
+  JSON.stringify({ app: firebaseApp, files: [...sdkFiles] }),
+);
 const swPath = path.join(distDir, 'sw.js');
 const swSource = fs.readFileSync(swPath, 'utf8');
 if (!swSource.includes('/* __BUILD_ASSETS__ */ []')) throw new Error('SW is missing its build asset placeholder');

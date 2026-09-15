@@ -216,11 +216,14 @@ export function bootLegacyRuntime(appVersion: string): void {
   window.__pwaRuntime.registerServiceWorkerUpdateFlow();
 
   // 9. Firebase
-  void initFirebase().then((ready) => {
-    if (ready) {
+  window.addEventListener(
+    'sudoku:firebase-ready',
+    () => {
       void initPresence();
-    }
-  });
+    },
+    { once: true },
+  );
+  void initFirebase();
 
   // 10. Alias
   loadAliasToInput();
