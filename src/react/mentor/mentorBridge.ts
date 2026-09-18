@@ -2,8 +2,8 @@
 
 import { useMentorStore } from './mentorStore';
 
-export function bridgeShowMentor(text: string, subText: string): void {
-  useMentorStore.getState().open({ text, subText });
+export function bridgeShowMentor(text: string, subText: string, dismissLabelKey = 'mentor.continue'): void {
+  useMentorStore.getState().open({ text, subText, dismissLabelKey });
 }
 
 export function bridgeDismissMentor(): void {

@@ -3,6 +3,8 @@
 
 export const deMentor = {
   mentor: {
+    continue: 'Weiter',
+    backToBoard: 'Zurück zum Spielfeld',
     intro: {
       intro_1:
         'Sudoku ist kein Spiel, bei dem man Zahlen eintraegt.\nEs ist eine Uebung darin, Strukturen zu erkennen.',

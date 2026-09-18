@@ -3,6 +3,8 @@
 
 export const jaMentor = {
   mentor: {
+    continue: '続ける',
+    backToBoard: '盤面に戻る',
     intro: {
       intro_1: '数独は、数字を埋める遊びではない。\n構造を見抜く修行だ。',
       intro_2: 'ひとつ、見せたいものがある。',

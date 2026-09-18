@@ -12,6 +12,7 @@ import {
   MENTOR_ENCOUNTER_HINTS,
 } from './mentorDialogue';
 import { t } from '../../i18n/t';
+import { bridgeDismissMentor } from '../../react/mentor/mentorBridge';
 
 // ── Seen state persistence ───────────────────────────────────────────
 
@@ -52,11 +53,7 @@ let _dismissResolve: (() => void) | null = null;
 function showMentorMessage(line: MentorLine): Promise<void> {
   return new Promise((resolve) => {
     _dismissResolve = () => {
-      import('../../react/mentor/mentorBridge')
-        .then(({ bridgeDismissMentor }) => bridgeDismissMentor())
-        .catch(() => {});
       markSeen(line.key);
-      _dismissResolve = null;
       resolve();
     };
 
@@ -69,7 +66,13 @@ function showMentorMessage(line: MentorLine): Promise<void> {
 }
 
 export function dismissMentor(): void {
-  _dismissResolve?.();
+  // Hints are opened directly and have no narrative-sequence resolver.
+  // Close synchronously before advancing a sequence so a delayed close cannot
+  // dismiss the next message that the resolver opens.
+  bridgeDismissMentor();
+  const resolve = _dismissResolve;
+  _dismissResolve = null;
+  resolve?.();
 }
 
 // ── Trigger points ───────────────────────────────────────────────────
@@ -164,7 +167,7 @@ function showEncounterHint(techKey: string, level: 1 | 2 | 3): void {
   if (!text || text.startsWith('mentor.encounterHints.')) return; // i18n key not yet translated
   import('../../react/mentor/mentorBridge')
     .then(({ bridgeShowMentor }) => {
-      bridgeShowMentor(text, '── 弈塵 ──');
+      bridgeShowMentor(text, '── 弈塵 ──', 'mentor.backToBoard');
     })
     .catch(() => {});
 }
@@ -258,7 +261,7 @@ export function triggerCtmIntroIfNeeded(techKey: string, isFirstEncounter: boole
     pulseCTMNumpad();
     import('../../react/mentor/mentorBridge')
       .then(({ bridgeShowMentor }) => {
-        bridgeShowMentor(t('mentor.ctmIntro.text'), t('mentor.ctmIntro.sub'));
+        bridgeShowMentor(t('mentor.ctmIntro.text'), t('mentor.ctmIntro.sub'), 'mentor.backToBoard');
       })
       .catch(() => {});
   }, 2000);

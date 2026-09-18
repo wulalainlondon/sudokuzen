@@ -3,6 +3,8 @@
 
 export const enMentor = {
   mentor: {
+    continue: 'Continue',
+    backToBoard: 'Return to board',
     intro: {
       intro_1: "Sudoku isn't about filling in numbers.\nIt's about seeing structure.",
       intro_2: 'Let me show you something.',

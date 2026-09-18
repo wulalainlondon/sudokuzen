@@ -764,6 +764,8 @@ export const zhTW = {
 
   // ── Mentor (弈塵) dialogue ──────────────────────────────────────────
   mentor: {
+    continue: '繼續',
+    backToBoard: '返回棋盤',
     intro: {
       intro_1: '數獨，不是填數字的遊戲。\n是看見結構的修行。',
       intro_2: '讓你看一樣東西。',

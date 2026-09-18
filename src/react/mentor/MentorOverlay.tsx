@@ -6,9 +6,10 @@ import { useMentorStore } from './mentorStore';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
 import type { SudokuWindow } from '../../facade/windowTypes';
+import { t } from '../../i18n/t';
 
 export function MentorOverlay(): ReactElement {
-  const { visible, text, subText } = useMentorStore();
+  const { visible, text, subText, dismissLabelKey } = useMentorStore();
 
   const handleDismiss = useCallback(() => {
     const win = window as unknown as SudokuWindow;
@@ -26,7 +27,7 @@ export function MentorOverlay(): ReactElement {
             {subText}
           </div>
           <button className="mentor-dismiss-btn" onClick={handleDismiss}>
-            {'......'}
+            {t(dismissLabelKey)}
           </button>
         </ZenStagger>
       </div>
