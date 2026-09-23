@@ -54,7 +54,7 @@ import {
   updateNumpadState,
   setBoardCallbacks,
 } from './board';
-import { startTimer } from './timer';
+import { startTimer, captureDuoElapsedTime } from './timer';
 import { loadLevelLeaderboard } from '../firebase/client';
 import { recalculatePlayerFilledCount, updateGhostProgressUI } from '../features/ghost';
 import { recordElimination } from '../features/stats';
@@ -617,6 +617,7 @@ export function isDuoCooldownActive(): boolean {
 // ── Pause / Resume ──────────────────────────────────────────────────
 
 export function pauseGame(): void {
+  captureDuoElapsedTime(true);
   if (gs.timerInterval) clearInterval(gs.timerInterval);
   if (gs.wildTimerInterval) {
     clearInterval(gs.wildTimerInterval);

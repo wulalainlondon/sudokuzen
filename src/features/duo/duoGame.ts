@@ -4,6 +4,7 @@ import { vibrate } from '../../platform/haptics';
 
 import { gs, type DuoRoomData, type MoveRecord } from '../../game/state';
 import { bindDuoPersistence } from '../../game/duoPersistenceBridge';
+import { captureDuoElapsedTime } from '../../game/timer';
 import { formatSeconds } from '../../game/utils';
 import { showFeedback } from '../../ui/feedback';
 import { t } from '../../i18n/t';
@@ -623,6 +624,7 @@ export function persistDuoRoundState(): void {
   const role = gs.duoRole;
   const room = gs.duoRoomData;
   if (!gs.isDuoMode || !roomId || !role || !room || gs.cellsData.length !== 81) return;
+  captureDuoElapsedTime();
   saveDuoRoundSnapshot({
     roomId,
     role,

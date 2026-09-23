@@ -2,6 +2,7 @@
 import { vibrate } from '../platform/haptics';
 
 import { gs } from './state';
+import { captureDuoElapsedTime } from './timer';
 import { getModePolicy } from './modePolicy';
 import { showFeedback } from '../ui/feedback';
 import { t } from '../i18n/t';
@@ -52,6 +53,7 @@ export function checkWin(): void {
   const policy = getModePolicy();
   const isComplete = gs.cellsData.every((data, i) => data.value === solutionDigitAt(i));
   if (!isComplete) return;
+  captureDuoElapsedTime(true);
   if (gs.timerInterval) clearInterval(gs.timerInterval);
   // Clear duo cooldown if active
   if (gs.duoCooldownTimer) {

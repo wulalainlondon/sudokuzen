@@ -4,6 +4,18 @@ import { gs } from './state';
 import { recalculatePlayerFilledCount, updateGhostEngine, updateGhostProgressUI } from '../features/ghost';
 import { t } from '../i18n/t';
 
+let duoClock: { startedAt: number; initialSeconds: number } | null = null;
+
+// Intervals only refresh the display. A delayed callback must not make a
+// player's submitted time shorter than the time they actually spent playing.
+export function captureDuoElapsedTime(stop = false): number {
+  if (gs.isDuoMode && duoClock) {
+    gs.seconds = duoClock.initialSeconds + Math.floor(Math.max(0, performance.now() - duoClock.startedAt) / 1000);
+  }
+  if (stop) duoClock = null;
+  return gs.seconds;
+}
+
 export function startTimer(reset = true): void {
   if (gs.timerInterval) clearInterval(gs.timerInterval);
   if (reset) {
@@ -13,6 +25,8 @@ export function startTimer(reset = true): void {
     gs.playerFilledCount = 0;
   }
 
+  duoClock = gs.isDuoMode ? { startedAt: performance.now(), initialSeconds: gs.seconds } : null;
+
   if (gs.isGhostMode) {
     recalculatePlayerFilledCount();
     updateGhostEngine(gs.seconds);
@@ -21,7 +35,8 @@ export function startTimer(reset = true): void {
 
   updateTimerUI();
   gs.timerInterval = setInterval(() => {
-    gs.seconds++;
+    if (gs.isDuoMode) captureDuoElapsedTime();
+    else gs.seconds++;
     updateTimerUI();
     if (gs.isGhostMode) updateGhostEngine(gs.seconds);
   }, 1000);
