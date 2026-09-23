@@ -66,7 +66,6 @@ export { getSession, sessionStreakMultiplier, startWorldSession } from './sessio
 
 // ── Runtime state (non-persisted) ────────────────────────────────────
 
-let _profile: WildProfile | null = null;
 let _encounter: WildEncounter | null = null;
 let _active = false;
 
@@ -74,8 +73,7 @@ export function isWildActive(): boolean {
   return _active;
 }
 export function getWildProfile(): WildProfile {
-  if (!_profile) _profile = loadWildProfile();
-  return _profile;
+  return loadWildProfile();
 }
 export function getCurrentEncounter(): WildEncounter | null {
   return _encounter;

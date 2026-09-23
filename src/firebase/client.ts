@@ -19,6 +19,8 @@ import {
 import { escapeHtml } from '../shared/html/escape';
 import { sanitizeReplayHistory } from '../shared/records/levelRecords';
 import { publicPlayerAlias } from '../platform/publicAlias';
+import { mergeWildProfiles } from '../shared/records/wildProfileMerge';
+import type { WildProfile } from '../features/wild/wildState';
 
 let _firebaseInitPromise: Promise<boolean> | null = null;
 
@@ -772,10 +774,14 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
       [SK.TEACH_READ, journey.teachRead],
       [SK.PRACTICE_DONE, journey.practiceDone],
       [SK.TECHNIQUES_USED, journey.techniquesUsed],
-      [SK.WILD_PROFILE, journey.wildProfile],
     ];
     for (const [key, value] of journeyKeys) {
       if (value != null && localStorage.getItem(key) === null) writeJson(key, value);
+    }
+    if (isPlainObject(journey.wildProfile)) {
+      const localWild = readJson<Partial<WildProfile>>(SK.WILD_PROFILE, {});
+      const mergedWild = mergeWildProfiles(journey.wildProfile as Partial<WildProfile>, localWild);
+      if (JSON.stringify(localWild) !== JSON.stringify(mergedWild)) writeJson(SK.WILD_PROFILE, mergedWild);
     }
     const mergedDuoRecords = mergeLegacyDuoRecords(
       readJson<Record<string, unknown>>(SK.DUO_RECORDS, {}),

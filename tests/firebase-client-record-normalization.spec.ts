@@ -243,6 +243,58 @@ describe('firebase client record normalization', () => {
     });
   });
 
+  it('restores newer World progress from cloud even when a stale local profile exists', async () => {
+    writeJson(SK.WILD_PROFILE, {
+      iqLevel: 4,
+      totalExp: 100,
+      puzzlesCompleted: 3,
+      bestiary: {
+        naked_single: {
+          discovered: '2026-09-18',
+          encounters: 2,
+          kills: 1,
+          escapes: 0,
+          bestTime: 80,
+          modesCleared: ['standard'],
+        },
+      },
+    });
+    Object.assign(gs as unknown as Record<string, unknown>, {
+      db: makeProfileDb({
+        records: {},
+        speedRecords: {},
+        achievements: {},
+        settings: {},
+        journey: {
+          wildProfile: {
+            iqLevel: 8,
+            totalExp: 300,
+            puzzlesCompleted: 10,
+            bestiary: {
+              naked_single: {
+                discovered: '2026-09-16',
+                encounters: 9,
+                kills: 6,
+                escapes: 2,
+                bestTime: 60,
+                modesCleared: ['blind'],
+              },
+            },
+          },
+        },
+      }),
+    });
+
+    await hydratePlayerProfileFromCloud();
+
+    expect(readJson(SK.WILD_PROFILE, {})).toMatchObject({
+      iqLevel: 8,
+      totalExp: 300,
+      puzzlesCompleted: 10,
+      bestiary: { naked_single: { encounters: 9, kills: 6, escapes: 2, bestTime: 60 } },
+    });
+  });
+
   it('does not invent legacy Duo records for a player with no Duo history', async () => {
     Object.assign(gs as unknown as Record<string, unknown>, {
       db: makeProfileDb({

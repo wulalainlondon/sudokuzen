@@ -3,6 +3,9 @@
 import { SK, readJson, writeJson } from '../../storage/keys';
 import { t } from '../../i18n/t';
 import type { Rarity } from './techniqueMeta';
+import { DEFAULT_WILD_PROFILE, mergeWildProfiles } from '../../shared/records/wildProfileMerge';
+
+export { mergeWildProfiles } from '../../shared/records/wildProfileMerge';
 
 // ── Challenge Modes ──────────────────────────────────────────────────
 
@@ -115,26 +118,9 @@ export interface WildEncounter {
   mentorTime: number; // 弈塵's estimated clear time in seconds (0 = T4, he can't solve)
 }
 
-const DEFAULT_PROFILE: WildProfile = {
-  iqLevel: 1,
-  totalExp: 0,
-  gateOverflowExp: 0,
-  puzzlesCompleted: 0,
-  totalEncounters: 0,
-  cooldowns: {},
-  bestiary: {},
-  battlefieldMode: 'knight',
-  autoCastEnabled: true,
-  currentSession: null,
-  fragments: {},
-  studiedSkills: [],
-  tutorialCompleted: false,
-  tutorialRound: 0,
-};
-
 export function loadWildProfile(): WildProfile {
   const raw = readJson<Partial<WildProfile>>(SK.WILD_PROFILE, {});
-  const result = { ...DEFAULT_PROFILE, ...raw };
+  const result = { ...DEFAULT_WILD_PROFILE, ...raw };
   // Protect existing players: if no tutorial state saved but they have encounter history,
   // skip the tutorial entirely so they aren't regressed through it.
   if (!raw.tutorialCompleted && raw.totalEncounters !== undefined && raw.totalEncounters > 0) {
@@ -144,14 +130,8 @@ export function loadWildProfile(): WildProfile {
   return result;
 }
 
-let _saveProfileTimer: ReturnType<typeof setTimeout> | null = null;
-
 export function saveWildProfile(profile: WildProfile): void {
-  if (_saveProfileTimer) clearTimeout(_saveProfileTimer);
-  _saveProfileTimer = setTimeout(() => {
-    _saveProfileTimer = null;
-    writeJson(SK.WILD_PROFILE, profile);
-  }, 100);
+  writeJson(SK.WILD_PROFILE, mergeWildProfiles(readJson<Partial<WildProfile>>(SK.WILD_PROFILE, {}), profile));
 }
 
 // ── Wild Save (pause/resume) ────────────────────────────────────────
