@@ -11,11 +11,11 @@ interface Jwk extends JsonWebKey {
 
 let _jwksCache: { keys: Map<string, CryptoKey>; expMs: number } | null = null;
 
-function b64urlToBytes(s: string): Uint8Array {
+function b64urlToBytes(s: string): Uint8Array<ArrayBuffer> {
   const norm = s.replace(/-/g, '+').replace(/_/g, '/');
   const pad = norm.length % 4 ? 4 - (norm.length % 4) : 0;
   const bin = atob(norm + '='.repeat(pad));
-  const out = new Uint8Array(bin.length);
+  const out = new Uint8Array(new ArrayBuffer(bin.length));
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
 }

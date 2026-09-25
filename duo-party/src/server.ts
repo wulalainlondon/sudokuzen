@@ -1,6 +1,7 @@
 import { Server, routePartykitRequest, type Connection, type WSMessage } from 'partyserver';
 import type { ClientMsg, ServerMsg, PublicRoomState, PlayerInfo, PlayerSlot, Role, MoveRecord } from './protocol';
 import { verifyFirebaseIdToken } from './auth';
+import { handleLobbyMutationRequest } from './lobbyMutation';
 
 const MAX_MOVES = 2000;
 
@@ -780,7 +781,8 @@ function lobbyCorsHeaders(request: Request): Headers {
   const origin = request.headers.get('Origin') || '';
   if (
     /^https:\/\/wulalainlondon\.github\.io$/.test(origin) ||
-    /^https:\/\/sudokuzen-f2aa3(?:--[a-z0-9-]+)?\.web\.app$/.test(origin)
+    /^https:\/\/sudokuzen-f2aa3(?:--[a-z0-9-]+)?\.web\.app$/.test(origin) ||
+    /^(?:capacitor|https?):\/\/localhost(?::\d+)?$/.test(origin)
   ) {
     headers.set('Access-Control-Allow-Origin', origin);
     headers.set('Vary', 'Origin');
@@ -829,6 +831,8 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === '/lobby') return handleLobbyRequest(request, env);
+    if (url.pathname.startsWith('/lobby/'))
+      return handleLobbyMutationRequest(request, env.PROJECT_ID || '', lobbyCorsHeaders(request));
     return (
       (await routePartykitRequest(request, env, { locationHint: 'apac' })) || new Response('Not found', { status: 404 })
     );

@@ -6,7 +6,7 @@
 
 import { gs, type DuoRoomData } from '../../game/state';
 import { getPlayerIdentity } from '../../firebase/client';
-import { firebaseServerTimestamp, getAuthUid } from '../../firebase/runtime';
+import { firebaseServerTimestamp, getAuthUid, getFirebaseIdToken } from '../../firebase/runtime';
 import type { FirestoreDoc, FirestoreSnap, FirestoreDocRef } from '../../firebase/types';
 import type { DuoRoomSummary } from './duoRoom';
 import { publicPlayerAlias } from '../../platform/publicAlias';
@@ -26,6 +26,7 @@ const WS_LOBBY_DEAD_MS = 180_000;
 const WS_LOBBY_REST_TIMEOUT_MS = 8_000;
 const WS_LOBBY_SDK_TIMEOUT_MS = 3_000;
 const WS_LOBBY_WRITE_TIMEOUT_MS = 4_000;
+const WS_LOBBY_WORKER_TIMEOUT_MS = 2_000;
 
 let _publishedRoomId: string | null = null;
 let _touchTimer: ReturnType<typeof setInterval> | null = null;
@@ -75,6 +76,69 @@ function wsLobbyDoc(roomId: string) {
 
 function wantsRoom(roomId: string): boolean {
   return _desiredVisible && _hostRoomConfig?.roomId === roomId;
+}
+
+// Use the Worker to write through Firestore REST, independently of the SDK's
+// persistent write stream (which can stall in an iOS standalone PWA).
+async function mutateViaWorker(
+  method: 'PUT' | 'PATCH' | 'DELETE',
+  roomId: string,
+  body: Record<string, string> | null,
+  shouldProceed: () => boolean,
+  onLateSuccess: () => void,
+): Promise<void> {
+  const controller = new AbortController();
+  let expired = false;
+  const operation = (async (): Promise<boolean> => {
+    const token = await getFirebaseIdToken();
+    if (!token) throw new Error('Lobby auth unavailable');
+    if (expired || !shouldProceed()) return false;
+    const response = await fetch(`https://${getDuoWsHost()}/lobby/${encodeURIComponent(roomId)}`, {
+      method,
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+      cache: 'no-store',
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(`Lobby Worker ${response.status}`);
+    return true;
+  })();
+  void operation.then(
+    (wrote) => {
+      if (expired && wrote) onLateSuccess();
+    },
+    () => {},
+  );
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      operation,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          expired = true;
+          controller.abort();
+          reject(new Error('Lobby Worker timed out'));
+        }, WS_LOBBY_WORKER_TIMEOUT_MS);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function mutateWithSdkFallback(
+  method: 'PUT' | 'PATCH' | 'DELETE',
+  roomId: string,
+  body: Record<string, string> | null,
+  sdkOperation: () => Promise<void>,
+  shouldProceed: () => boolean,
+  onLateSuccess: () => void,
+): Promise<void> {
+  try {
+    await mutateViaWorker(method, roomId, body, shouldProceed, onLateSuccess);
+  } catch {
+    if (shouldProceed()) await sdkOperation();
+  }
 }
 
 // A Firestore write cannot be cancelled. Release the per-room queue on a
@@ -144,7 +208,17 @@ function removeRoom(roomId: string, ref: FirestoreDocRef, attempt = 0): void {
   }
   const pending = enqueueMutation(
     roomId,
-    () => (wantsRoom(roomId) ? Promise.resolve() : ref.delete()),
+    () =>
+      mutateWithSdkFallback(
+        'DELETE',
+        roomId,
+        null,
+        () => ref.delete(),
+        () => !wantsRoom(roomId),
+        () => {
+          if (wantsRoom(roomId)) reconcileLateWrite(roomId, ref);
+        },
+      ),
     () => {
       if (wantsRoom(roomId)) reconcileLateWrite(roomId, ref);
     },
@@ -205,7 +279,7 @@ function showWsLobbyRoom(): Promise<void> {
         config.roomId,
         () => {
           if (!wantsRoom(config.roomId) || epoch !== _visibilityEpoch) return Promise.resolve();
-          return ref.set({
+          const data = {
             roomId: config.roomId,
             hostId: playerId,
             hostOwnerUid: ownerUid,
@@ -216,7 +290,15 @@ function showWsLobbyRoom(): Promise<void> {
             transport: 'ws',
             hostHeartbeatAtMs: Date.now(),
             updatedAt: firebaseServerTimestamp(),
-          });
+          };
+          return mutateWithSdkFallback(
+            'PUT',
+            config.roomId,
+            { hostId: playerId, hostAlias: alias || 'Player', tierId: config.tierId, modeId: config.modeId },
+            () => ref.set(data),
+            () => wantsRoom(config.roomId) && epoch === _visibilityEpoch,
+            () => reconcileLateWrite(config.roomId, ref),
+          );
         },
         () => reconcileLateWrite(config.roomId, ref),
       );
@@ -275,7 +357,14 @@ function startTouch(): void {
       roomId,
       () => {
         if (!wantsRoom(roomId) || epoch !== _visibilityEpoch) return Promise.resolve();
-        return ref.update({ hostHeartbeatAtMs: Date.now(), updatedAt: firebaseServerTimestamp() });
+        return mutateWithSdkFallback(
+          'PATCH',
+          roomId,
+          null,
+          () => ref.update({ hostHeartbeatAtMs: Date.now(), updatedAt: firebaseServerTimestamp() }),
+          () => wantsRoom(roomId) && epoch === _visibilityEpoch,
+          () => reconcileLateWrite(roomId, ref),
+        );
       },
       () => reconcileLateWrite(roomId, ref),
     ).catch(() => {

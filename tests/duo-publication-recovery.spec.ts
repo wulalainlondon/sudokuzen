@@ -1,8 +1,13 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../src/firebase/client', () => ({ getPlayerIdentity: () => ({ playerId: 'host', alias: 'Host' }) }));
-vi.mock('../src/firebase/runtime', () => ({ getAuthUid: () => 'owner', firebaseServerTimestamp: () => Date.now() }));
+const getToken = vi.hoisted(() => vi.fn<() => Promise<string | null>>());
+vi.mock('../src/firebase/client', () => ({ getPlayerIdentity: () => ({ playerId: 'p_owner', alias: 'Host' }) }));
+vi.mock('../src/firebase/runtime', () => ({
+  getAuthUid: () => 'owner',
+  getFirebaseIdToken: () => getToken(),
+  firebaseServerTimestamp: () => Date.now(),
+}));
 
 describe('bounded lobby publication and late-write reconciliation', () => {
   let gs: (typeof import('../src/game/state'))['gs'];
@@ -15,6 +20,7 @@ describe('bounded lobby publication and late-write reconciliation', () => {
   beforeEach(async () => {
     vi.resetModules();
     vi.useFakeTimers();
+    getToken.mockReset().mockResolvedValue(null);
     server = new Map();
     document.body.innerHTML = '<div id="duo-room-publication-state" class="hidden"></div>';
     set.mockReset().mockImplementation(async (id: string, data: Record<string, unknown>) => {
@@ -45,6 +51,7 @@ describe('bounded lobby publication and late-write reconciliation', () => {
     gs.db = null;
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   function delayFirstPublish(): () => void {
@@ -169,5 +176,37 @@ describe('bounded lobby publication and late-write reconciliation', () => {
     await vi.advanceTimersByTimeAsync(1_000);
     expect(remove).toHaveBeenCalledTimes(2);
     expect(server.has('room')).toBe(false);
+  });
+
+  it('publishes and keeps a room fresh through the Worker when the SDK write stream is stuck', async () => {
+    getToken.mockResolvedValue('test-token');
+    const workerFetch = vi.fn().mockResolvedValue({ ok: true, status: 204 });
+    vi.stubGlobal('fetch', workerFetch);
+    const roomId = 'r_abcdefgh12345678';
+    await mirror.publishWsLobbyRoom(roomId, 'tier0', 'standard');
+    expect(mirror.getWsLobbyMirrorDebugState().publicationState).toBe('published');
+    expect(set).not.toHaveBeenCalled();
+    expect(workerFetch).toHaveBeenCalledWith(
+      expect.stringContaining(`/lobby/${roomId}`),
+      expect.objectContaining({
+        method: 'PUT',
+        headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),
+      }),
+    );
+    await vi.advanceTimersByTimeAsync(15_000);
+    expect(workerFetch.mock.calls.some(([, init]) => init.method === 'PATCH')).toBe(true);
+    expect(update).not.toHaveBeenCalled();
+    mirror.unpublishWsLobbyRoom();
+    await vi.runAllTimersAsync();
+    expect(workerFetch.mock.calls.some(([, init]) => init.method === 'DELETE')).toBe(true);
+    expect(remove).not.toHaveBeenCalled();
+  });
+
+  it('falls back to an SDK write when the Worker is unavailable', async () => {
+    getToken.mockResolvedValue('test-token');
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
+    await mirror.publishWsLobbyRoom('r_abcdefgh12345678', 'tier0', 'standard');
+    expect(set).toHaveBeenCalledTimes(1);
+    expect(mirror.getWsLobbyMirrorDebugState().publicationState).toBe('published');
   });
 });
