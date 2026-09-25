@@ -17,6 +17,22 @@ export interface SavedGameState {
   ghostHistory: ActionRecord[] | null;
 }
 
+/** A completed board is a result, never an in-progress resume snapshot. */
+export function isCompletedBoard(
+  cells: ReadonlyArray<{ value: number }> | undefined,
+  solution: ReadonlyArray<number> | undefined,
+): boolean {
+  return !!(
+    Array.isArray(cells) &&
+    Array.isArray(solution) &&
+    cells.length === 81 &&
+    solution.length === 81 &&
+    cells.every(
+      (cell, i) => Number.isInteger(solution[i]) && solution[i] >= 1 && solution[i] <= 9 && cell?.value === solution[i],
+    )
+  );
+}
+
 export function saveGameStatus(): void {
   if (!gs.currentLevel) return;
   // Duo rounds have a room/seed/role scoped snapshot. Writing them through the
@@ -32,6 +48,13 @@ export function saveGameStatus(): void {
     return;
   }
   const saveKey = getSaveKeyForCurrentMode(gs.currentLevel.id);
+  // checkWin clears the save on completion, then the input handler calls this
+  // function once more. Do not recreate a solved snapshot after the result.
+  // Practice records are written asynchronously, so retain their recovery save.
+  if (gs.currentLevel.mode !== 'practice' && isCompletedBoard(gs.cellsData, gs.currentLevel.solution)) {
+    if (localStorage.getItem(saveKey) !== null) localStorage.removeItem(saveKey);
+    return;
+  }
   const data = {
     levelId: gs.currentLevel.id,
     cellsData: gs.cellsData,

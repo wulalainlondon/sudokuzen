@@ -6,6 +6,7 @@ import { SK, readJson } from '../storage/keys';
 import { escapeHtml } from '../shared/html/escape';
 import { formatSeconds } from '../game/utils';
 import { getRecordsStorageKeyForLevelList, getSaveKeyForCurrentMode } from '../game/modePolicy';
+import { clearGameStatus, isCompletedBoard, loadGameStatus } from '../game/persistence';
 import { showFeedback } from '../ui/feedback';
 import { loadPreLevelLeaderboard } from '../firebase/client';
 import { syncLevelCardSize } from '../game/board';
@@ -75,12 +76,33 @@ export function updateResumeBanner(): void {
 
   if (!hasGame) {
     banner.classList.add('hidden');
+    banner.onclick = null;
     return;
+  }
+
+  const saved = loadGameStatus(level.id);
+  const solvedSave = isCompletedBoard(saved?.cellsData, level.solution);
+  if (solvedSave) {
+    const records = readJson<Record<string, unknown>>(getRecordsStorageKeyForLevelList(level.mode === 'practice'), {});
+    if (records[level.id]) {
+      // Older releases could rewrite the completed board after checkWin had
+      // cleared it. Keep the earned record and remove only that stale save.
+      clearGameStatus(level.id);
+      banner.classList.add('hidden');
+      banner.onclick = null;
+      return;
+    }
   }
 
   banner.classList.remove('hidden');
   banner.textContent = t('nav.resumeGameWithLevel', { level: level!.displayName });
   banner.onclick = () => {
+    if (solvedSave) {
+      // A solved save without a result means settlement was interrupted.
+      // Re-enter through initGame so its solved-on-load path awards the result.
+      void import('../game/core').then(({ initGame }) => initGame(level.id, false, false, null, level)).catch(() => {});
+      return;
+    }
     // Resume: fade level screen out, show game board, restart timer
     const lsResume = document.getElementById('level-screen')!;
     lsResume.classList.add('screen-exit');

@@ -93,6 +93,19 @@ describe('saveGameStatus / loadGameStatus', () => {
     expect(localStorage.getItem(SK.LAST_LEVEL)).toBe('42');
   });
 
+  it('does not recreate a completed single-player save after the win handler clears it', () => {
+    gs.cellsData = gs.currentLevel!.solution.map((value) => ({ value, fixed: false, notes: [], isError: false }));
+    saveGameStatus();
+    expect(localStorage.getItem(SK.save(42, false))).toBeNull();
+  });
+
+  it('keeps a solved practice snapshot until its asynchronous result is recorded', () => {
+    gs.currentLevel = { ...makeLevelData(42), mode: 'practice' };
+    gs.cellsData = gs.currentLevel.solution.map((value) => ({ value, fixed: false, notes: [], isError: false }));
+    saveGameStatus();
+    expect(localStorage.getItem(SK.save(42, false))).not.toBeNull();
+  });
+
   it('does not pollute the single-player save while playing Duo', () => {
     gs.isDuoMode = true;
     saveGameStatus();
