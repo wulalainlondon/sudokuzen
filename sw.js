@@ -1,4 +1,4 @@
-const CACHE_VERSION = '2026.09.25-V3';
+const CACHE_VERSION = '2026.09.25-V4';
 const CACHE_NAME = `sudoku-zen-${CACHE_VERSION}`;
 const DATA_CACHE_NAME = 'sudoku-zen-data-v1';
 const DATA_CACHE_LIMIT = 256;

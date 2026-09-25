@@ -919,14 +919,13 @@ function showDuoOpponentFinished(alias: string, timeSec: number, stars: number |
     const btn = document.createElement('button');
     btn.id = 'duo-forfeit-btn';
     btn.className = 'duo-forfeit-btn';
+    btn.type = 'button';
     btn.textContent = t('duoRuntime.forfeit');
     btn.onclick = async () => {
       btn.remove();
       await submitDuoFinish(9999, 0);
     };
-    const progressContainer = document.getElementById('duo-progress-container');
-    if (progressContainer) progressContainer.insertAdjacentElement('afterend', btn);
-    else document.body.appendChild(btn);
+    document.querySelector('.game-title-wrap')?.appendChild(btn);
   }
 }
 

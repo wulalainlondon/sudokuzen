@@ -7553,12 +7553,8 @@ html.native-app .alias-config {
 }
 /* Duo forfeit button */
 .duo-forfeit-btn {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  padding: 6px 20px;
+  flex: 0 0 auto;
+  padding: 5px 10px;
   background: transparent;
   border: 1px solid rgba(255, 100, 100, 0.4);
   color: rgba(255, 100, 100, 0.7);
