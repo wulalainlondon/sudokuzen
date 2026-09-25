@@ -399,6 +399,7 @@ function bindPagehide(): void {
 }
 
 function hideWsLobbyRoom(clearConfig: boolean): void {
+  const wasVisible = _desiredVisible || _publishedRoomId !== null;
   _desiredVisible = false;
   _visibilityEpoch++;
   _needsRepublish = false;
@@ -409,7 +410,7 @@ function hideWsLobbyRoom(clearConfig: boolean): void {
   _publishedRoomId = null;
   if (clearConfig) _hostRoomConfig = null;
   renderPublicationState();
-  if (roomId && gs.firebaseReady && gs.db) removeRoom(roomId, wsLobbyDoc(roomId));
+  if (wasVisible && roomId && gs.firebaseReady && gs.db) removeRoom(roomId, wsLobbyDoc(roomId));
 }
 
 export function unpublishWsLobbyRoom(): void {

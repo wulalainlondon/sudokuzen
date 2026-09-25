@@ -209,4 +209,14 @@ describe('bounded lobby publication and late-write reconciliation', () => {
     expect(set).toHaveBeenCalledTimes(1);
     expect(mirror.getWsLobbyMirrorDebugState().publicationState).toBe('published');
   });
+
+  it('does not repeatedly delete an already-hidden room on later snapshots or leave', async () => {
+    await mirror.publishWsLobbyRoom('room', 'tier0', 'standard');
+    mirror.syncWsLobbyRoom({ status: 'waiting', guestId: 'guest' } as never, 'room');
+    await vi.advanceTimersByTimeAsync(0);
+    mirror.syncWsLobbyRoom({ status: 'waiting', guestId: 'guest' } as never, 'room');
+    mirror.unpublishWsLobbyRoom();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(remove).toHaveBeenCalledTimes(1);
+  });
 });

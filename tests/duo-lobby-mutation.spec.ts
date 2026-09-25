@@ -75,4 +75,33 @@ describe('Duo Worker lobby mutations', () => {
     expect(cleanup.status).toBe(204);
     expect(upstream.mock.calls[2][1].method).toBe('DELETE');
   });
+
+  it("accepts an already-deleted room but still rejects deleting another owner's existing room", async () => {
+    const absentFetch = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(null, { status: 403 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }));
+    const absent = await handleLobbyMutationRequest(
+      request('DELETE'),
+      'sudokuzen-f2aa3',
+      new Headers(),
+      verify,
+      absentFetch,
+    );
+    expect(absent.status).toBe(204);
+    expect(absentFetch.mock.calls[1][1].method).toBe('GET');
+
+    const existingFetch = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(null, { status: 403 }))
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    const forbidden = await handleLobbyMutationRequest(
+      request('DELETE'),
+      'sudokuzen-f2aa3',
+      new Headers(),
+      verify,
+      existingFetch,
+    );
+    expect(forbidden.status).toBe(502);
+  });
 });

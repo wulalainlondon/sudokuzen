@@ -88,6 +88,16 @@ export async function handleLobbyMutationRequest(
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: request.method === 'DELETE' ? undefined : JSON.stringify(document),
     });
+    // Firestore Security Rules can return 403 (instead of 404) when deleting
+    // an already-absent document. Confirm absence before treating it as an
+    // idempotent cleanup; an existing room owned by someone else stays denied.
+    if (request.method === 'DELETE' && upstream.status === 403) {
+      const existing = await upstreamFetch(endpoint, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      });
+      if (existing.status === 404) return new Response(null, { status: 204, headers });
+    }
     if (!upstream.ok && !(request.method === 'DELETE' && upstream.status === 404)) {
       console.error(
         JSON.stringify({ event: 'lobby_mutation_failed', method: request.method, status: upstream.status }),
