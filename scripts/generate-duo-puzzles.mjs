@@ -10,11 +10,18 @@
  *
  * Output: public/data/duo-T*.json (independent copies, sorted by avgC)
  *
- * Usage: node scripts/generate-duo-puzzles.mjs
+ * Historical tool only: node scripts/generate-duo-puzzles.mjs --unsafe-overwrite-canonical-duo-bank
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
+
+// This historical world-copy generator predates the canonical, independently
+// generated Duo bank. Running it would overwrite validated puzzles and change
+// seed ordering for existing clients. Keep it opt-in for archival experiments.
+if (!process.argv.includes('--unsafe-overwrite-canonical-duo-bank')) {
+  throw new Error('Duo shards are canonical pre-built data. Use npm run validate:duo; this old generator requires --unsafe-overwrite-canonical-duo-bank.');
+}
 
 const DATA_DIR = path.join('public', 'data');
 

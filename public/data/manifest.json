@@ -1,5 +1,5 @@
 {
-  "version": "76460cda749f095d",
+  "version": "58637847ce2ad62f",
   "totalLevels": 9437,
   "shards": {
     "normal": {
@@ -89,80 +89,80 @@
     "duo-T00": {
       "file": "duo-T00.json",
       "count": 300,
-      "size": 142743,
-      "hash": "73ef1f1c8018b41f"
+      "size": 147220,
+      "hash": "c9f99fc712c0a5d1"
     },
     "duo-T01": {
       "file": "duo-T01.json",
       "count": 200,
-      "size": 136874,
-      "hash": "9af52bbfcedc4a1b"
+      "size": 100792,
+      "hash": "2d6591a6254ccb9c"
     },
     "duo-T02": {
       "file": "duo-T02.json",
       "count": 227,
-      "size": 155539,
-      "hash": "961edad973ee243b"
+      "size": 114585,
+      "hash": "abc3eac773adbe5b"
     },
     "duo-T03": {
       "file": "duo-T03.json",
       "count": 80,
-      "size": 54746,
-      "hash": "ccb751aaec5b71c6"
+      "size": 40318,
+      "hash": "1e755a51a31e2a40"
     },
     "duo-T04": {
       "file": "duo-T04.json",
       "count": 200,
-      "size": 137067,
-      "hash": "cd116f4c432c3eb9"
+      "size": 100997,
+      "hash": "ad52eec734e2362f"
     },
     "duo-T05": {
       "file": "duo-T05.json",
-      "count": 379,
-      "size": 258824,
-      "hash": "9cbfffff0bb177b9"
+      "count": 369,
+      "size": 185452,
+      "hash": "c9df182a99f8c470"
     },
     "duo-T06": {
       "file": "duo-T06.json",
       "count": 200,
-      "size": 137501,
-      "hash": "df55b70d0fd0f3c0"
+      "size": 101442,
+      "hash": "d9262f8b1a948cdb"
     },
     "duo-T07": {
       "file": "duo-T07.json",
       "count": 200,
-      "size": 136095,
-      "hash": "c34d7699e9dd7e7e"
+      "size": 100023,
+      "hash": "f3ed0b348d0cae10"
     },
     "duo-T08": {
       "file": "duo-T08.json",
       "count": 200,
-      "size": 138376,
-      "hash": "8da4b16c8140e7e4"
+      "size": 102292,
+      "hash": "499ba43eeb02dadb"
     },
     "duo-T09": {
       "file": "duo-T09.json",
       "count": 200,
-      "size": 136059,
-      "hash": "01682c1b4ab0a41c"
+      "size": 99993,
+      "hash": "d5c3afa04d930b4f"
     },
     "duo-T10": {
       "file": "duo-T10.json",
       "count": 200,
-      "size": 138192,
-      "hash": "25feeae996bd9df0"
+      "size": 102113,
+      "hash": "6938dc2ec0cb73a5"
     },
     "duo-T11": {
       "file": "duo-T11.json",
       "count": 200,
-      "size": 136316,
-      "hash": "84ddf226bd07614f"
+      "size": 100232,
+      "hash": "a3d8ad41e63299cc"
     },
     "duo-T12": {
       "file": "duo-T12.json",
       "count": 200,
-      "size": 137819,
-      "hash": "7cefb7b9d8bde729"
+      "size": 101728,
+      "hash": "2560b843f06857ce"
     }
   }
 }

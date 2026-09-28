@@ -43,6 +43,19 @@ describe('concurrent data loading and recovery', () => {
     expect(fetch).toHaveBeenCalledTimes(3);
   });
 
+  it('rejects a valid JSON shard with fewer rows than its manifest declares', async () => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(response(manifest))
+      .mockResolvedValueOnce(response([]))
+      .mockResolvedValueOnce(response(levels));
+    vi.stubGlobal('fetch', fetch);
+    const { getNormalLevels } = await import('../src/data/dataRegistry');
+    expect(await getNormalLevels()).toEqual([]);
+    expect(await getNormalLevels()).toHaveLength(1);
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
   it('bounds a stuck manifest and permits a fresh request even if the old fetch ignores abort', async () => {
     vi.useFakeTimers();
     let finishOld: (value: unknown) => void = () => {};

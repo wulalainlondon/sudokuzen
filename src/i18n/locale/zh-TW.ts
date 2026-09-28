@@ -543,6 +543,7 @@ export const zhTW = {
     connectionFailed: '連線失敗，請返回大廳重新加入',
     connectionError: '連線異常，請重試',
     roomSyncFailed: '房間狀態同步失敗（遊戲已正常啟動）',
+    puzzleMismatch: '雙方題目不同，無法開始對戰。請更新遊戲後重試',
     opponentFinished: '⚡ {alias} 已完成！{time}{stars} — 加油！',
     localCompleteTitle: '挑戰完成',
     localCompleteWaiting: '成績已送出 · 等待最終裁定',

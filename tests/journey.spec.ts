@@ -48,6 +48,13 @@ describe('journey rollout policy', () => {
     expect(state.currentChapter).toBe('practice');
   });
 
+  it('does not count legacy Duo puzzle IDs as normal clears', () => {
+    localStorage.setItem(SK.RECORDS, JSON.stringify({ '-20001': { time: 30, stars: 3 } }));
+    const state = getJourneyState();
+    expect(state.normalClears).toBe(0);
+    expect(state.practiceUnlocked).toBe(false);
+  });
+
   it('counts a technique only after study, three practices, and field proof', () => {
     localStorage.setItem(SK.TEACH_READ, JSON.stringify({ 1: true }));
     localStorage.setItem(SK.PRACTICE_RECORDS, JSON.stringify(buildPracticeRecords(['naked_single'])));

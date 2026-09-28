@@ -96,6 +96,48 @@ async function toCountdown() {
 async function main() {
   console.log(`\nPhase 3 QA 補充測試 @ ${HOST}\n`);
 
+  // Both clients must have loaded the same board before countdown. A seed on
+  // its own is not sufficient when an old/partial local bank differs.
+  {
+    const roomId = rid();
+    const host = new Client(roomId, 'fingerprint-host');
+    await host.open();
+    host.send({ type: 'create', room: { tierId: 'tierIII', modeId: 'standard' }, player: HOST_P });
+    await host.waitFor((m) => m.type === 'roomState' && m.you === 'host');
+    const guest = new Client(roomId, 'fingerprint-guest');
+    await guest.open();
+    guest.send({ type: 'join', player: GUEST_P });
+    await guest.waitFor((m) => m.type === 'roomState' && m.you === 'guest');
+    const boardA = 'p81:' + '1'.repeat(81);
+    const boardB = 'p81:' + '2'.repeat(81);
+    host.send({ type: 'ready', ready: true, puzzleFingerprint: boardA });
+    guest.send({ type: 'ready', ready: true, puzzleFingerprint: boardB });
+    await host.waitFor((m) => m.type === 'error' && m.code === 'puzzle_mismatch');
+    await sleep(50);
+    const blocked = host.latest();
+    check('[bank] 不同盤面禁止倒數', blocked.status === 'waiting' && !blocked.host.ready && !blocked.guest.ready);
+    host.send({ type: 'ready', ready: true, puzzleFingerprint: boardA });
+    guest.send({ type: 'ready', ready: true, puzzleFingerprint: boardA });
+    const matched = await host.waitFor((m) => m.type === 'roomState' && m.state.status === 'countdown');
+    check('[bank] 相同盤面才開始倒數', matched.state.status === 'countdown');
+    guest.close();
+    host.close();
+  }
+
+  {
+    const { host, guest } = await playTo();
+    const seen = guest.msgs.length;
+    host.send({ type: 'abort', reason: 'puzzle_unavailable' });
+    let reset = null;
+    for (let attempt = 0; attempt < 40 && !reset; attempt++) {
+      reset = guest.msgs.slice(seen).find((m) => m.type === 'roomState' && m.state.status === 'waiting') ?? null;
+      if (!reset) await sleep(100);
+    }
+    check('[bank] 開局載入失敗可重設尚未落子的回合', !!reset && !reset.state.host.ready && !reset.state.guest.ready);
+    guest.close();
+    host.close();
+  }
+
   // ── [P1a] countdown 進行中 guest 斷線 → 伺服器把 guest 釋出、回到 waiting ──
   // （onClose 對 countdown 狀態的 guest 走 releaseGuest，不是 forfeit。這是設計行為，
   //  順帶驗證 cancelCountdown 把 countdownEndAt 清掉、alarm 不殘留誤觸發。）

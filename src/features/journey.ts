@@ -91,7 +91,11 @@ export function getJourneyState(): JourneyState {
   const normalRecords = readJson<Record<string, unknown>>(SK.RECORDS, {});
   const practiceRecords = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
   const teachRead = readJson<Record<string, boolean>>(SK.TEACH_READ, {});
-  const normalClears = countTruthyRecords(normalRecords);
+  // Older Duo builds wrote negative puzzle IDs into the classic record map.
+  // Keep those legacy entries intact, but do not count them as normal clears.
+  const normalClears = Object.entries(normalRecords).filter(
+    ([id, record]) => /^[1-9]\d*$/.test(id) && Boolean(record),
+  ).length;
   const practiceClears = countTruthyRecords(practiceRecords);
   const teachReadCount = countTruthyRecords(teachRead);
   const worldProfile = readJson<Record<string, unknown>>(SK.WILD_PROFILE, {});

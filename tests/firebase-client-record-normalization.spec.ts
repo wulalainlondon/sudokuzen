@@ -199,6 +199,34 @@ describe('firebase client record normalization', () => {
     });
   });
 
+  it('merges per-puzzle Duo bests separately from classic records', async () => {
+    writeJson(SK.DUO_PUZZLE_RECORDS, {
+      '-123456': { time: 60, stars: 3, replayHistory: [] },
+    });
+    Object.assign(gs as unknown as Record<string, unknown>, {
+      db: makeProfileDb({
+        records: {},
+        speedRecords: {},
+        achievements: {},
+        settings: {},
+        journey: {
+          duoPuzzleRecords: {
+            '-123456': { time: 40, stars: 2, replayHistory: [] },
+            '-654321': { time: 50, stars: 3, replayHistory: [] },
+          },
+        },
+      }),
+    });
+
+    await hydratePlayerProfileFromCloud();
+
+    expect(readJson(SK.DUO_PUZZLE_RECORDS, {})).toEqual({
+      '-123456': { time: 60, stars: 3, replayHistory: [] },
+      '-654321': { time: 50, stars: 3, replayHistory: [] },
+    });
+    expect(readJson(SK.RECORDS, {})).toEqual({});
+  });
+
   it('merges Duo snapshots without rolling back newer local match progress', async () => {
     writeJson(SK.DUO_PROFILE, {
       playCount: { 'tierII-standard': 90 },

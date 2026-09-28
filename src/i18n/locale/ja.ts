@@ -531,6 +531,7 @@ export const ja: Widen<Locale> = {
     connectionFailed: '接続失敗。ロビーに戻って再参加してください',
     connectionError: '接続エラー、再試行してください',
     roomSyncFailed: 'ルーム同期失敗（ゲームは正常に開始されました）',
+    puzzleMismatch: '双方の問題が異なります。ゲームを更新して再試行してください',
     opponentFinished: '⚡ {alias} が完了！{time}{stars} — 頑張れ！',
     localCompleteTitle: 'チャレンジ完了',
     localCompleteWaiting: 'スコア送信済み・最終判定を待っています',

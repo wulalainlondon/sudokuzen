@@ -119,7 +119,7 @@ export function checkWin(): void {
     if (gs.isGhostMode) unlockAchievement('ghost_win');
     checkAllAchievements();
   }, 1000);
-  if (!policy.useSubmissionValidation) {
+  if (!gs.isDuoMode && !policy.useSubmissionValidation) {
     submitFirstClear(gs.currentLevel!.id, gs.seconds, earnedValue).then(() =>
       loadLevelLeaderboard(gs.currentLevel!.id),
     );

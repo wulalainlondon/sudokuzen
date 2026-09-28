@@ -181,9 +181,16 @@ function pump(raw: string): void {
     if (msg.you) gs.duoRole = msg.you; // server-authoritative（見上方註解）
     const d = mapToDuoRoomData(msg.state);
     gs.duoRoomData = d;
-    if (gs.duoRole) handleDuoSnapshot(d);
+    if (gs.duoRole) {
+      gs.duoMyReady = gs.duoRole === 'host' ? d.hostReady : d.guestReady;
+      handleDuoSnapshot(d);
+    }
   } else if (msg.type === 'error') {
     console.warn('[duoWs] server error:', msg.code, msg.message);
+    if (msg.code === 'puzzle_mismatch' || msg.code === 'puzzle_fingerprint_required') {
+      gs.duoMyReady = false;
+      showFeedback(t('duoRuntime.puzzleMismatch'), 'error');
+    }
   }
 }
 
@@ -507,8 +514,8 @@ export async function duoWsResumeRoom(roomId: string, role: Role): Promise<boole
   }
 }
 
-export function duoWsReady(ready: boolean): void {
-  send({ type: 'ready', ready });
+export function duoWsReady(ready: boolean, puzzleFingerprint?: string): void {
+  send({ type: 'ready', ready, puzzleFingerprint });
 }
 
 export function duoWsProgress(filled: number): void {
@@ -535,8 +542,8 @@ export function duoWsCc(update: Partial<CcFields>): void {
   send({ type: 'cc', update });
 }
 
-export function duoWsAbort(): void {
-  send({ type: 'abort' });
+export function duoWsAbort(reason?: 'puzzle_unavailable'): void {
+  send({ type: 'abort', reason });
 }
 
 export function duoWsRematch(): void {

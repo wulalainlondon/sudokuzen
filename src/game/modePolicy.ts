@@ -58,5 +58,6 @@ export function getSaveKeyForCurrentMode(levelId: number): string {
 export function getRecordsStorageKeyForLevelList(isPractice: boolean): string {
   if (isPractice) return SK.PRACTICE_RECORDS;
   const mode = resolvePlayMode();
+  if (mode === 'duo') return SK.DUO_PUZZLE_RECORDS;
   return mode === 'speedrun' ? SK.SPEED_RECORDS : SK.RECORDS;
 }

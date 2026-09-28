@@ -68,6 +68,7 @@ const PROFILE_SYNC_KEYS: Set<string> = new Set([
   SK.TECHNIQUES_USED,
   SK.WILD_PROFILE,
   SK.DUO_RECORDS,
+  SK.DUO_PUZZLE_RECORDS,
   SK.DUO_PROFILE,
   SK.ACHIEVEMENTS,
   SK.LAST_LEVEL,
@@ -607,6 +608,7 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
     techniquesUsed: readJson<string[]>(SK.TECHNIQUES_USED, []),
     wildProfile: readJson<Record<string, unknown>>(SK.WILD_PROFILE, {}),
     duoRecords: readJson<Record<string, unknown>>(SK.DUO_RECORDS, {}),
+    duoPuzzleRecords: normalizeRecordMap(readJson<Record<string, unknown>>(SK.DUO_PUZZLE_RECORDS, {}), 'classic'),
     duoProfile: readJson<Record<string, unknown>>(SK.DUO_PROFILE, {}),
   };
   const settings = readLocalSettings();
@@ -790,6 +792,15 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
     if (JSON.stringify(readJson(SK.DUO_RECORDS, {})) !== JSON.stringify(mergedDuoRecords)) {
       writeJson(SK.DUO_RECORDS, mergedDuoRecords);
     }
+    const localDuoPuzzleRecords = normalizeRecordMap(
+      readJson<Record<string, unknown>>(SK.DUO_PUZZLE_RECORDS, {}),
+      'classic',
+    );
+    const remoteDuoPuzzleRecords = normalizeRecordMap(journey.duoPuzzleRecords, 'classic');
+    const mergedDuoPuzzleRecords = mergeRecordMaps(localDuoPuzzleRecords, remoteDuoPuzzleRecords, 'classic');
+    if (JSON.stringify(localDuoPuzzleRecords) !== JSON.stringify(mergedDuoPuzzleRecords)) {
+      writeJson(SK.DUO_PUZZLE_RECORDS, mergedDuoPuzzleRecords);
+    }
     const mergedDuoProfile = mergeDuoProfiles(
       readJson<Record<string, unknown>>(SK.DUO_PROFILE, {}),
       journey.duoProfile,
@@ -850,6 +861,13 @@ export function renderLeaderboard(el: HTMLElement | null, rows: LeaderboardRow[]
 }
 
 export async function loadLevelLeaderboard(levelId: number): Promise<void> {
+  // Duo puzzles have their own per-puzzle records. Legacy Duo IDs were reused
+  // across tiers, so the classic first-clear board would compare different boards.
+  if (gs.isDuoMode) {
+    renderLeaderboard(gs.leaderboardListEl, []);
+    renderLeaderboard(document.getElementById('win-leaderboard-list'), []);
+    return;
+  }
   if (!gs.firebaseReady || !gs.db) {
     renderLeaderboard(gs.leaderboardListEl, []);
     renderLeaderboard(document.getElementById('win-leaderboard-list'), []);

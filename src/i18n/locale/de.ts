@@ -537,6 +537,7 @@ export const de: Widen<Locale> = {
     connectionFailed: 'Verbindung verloren — zur Lobby zurückkehren und erneut beitreten',
     connectionError: 'Verbindungsfehler, bitte erneut versuchen',
     roomSyncFailed: 'Raumsynchronisation fehlgeschlagen (Spiel normal gestartet)',
+    puzzleMismatch: 'Die Rätsel unterscheiden sich. Bitte das Spiel aktualisieren und erneut versuchen',
     opponentFinished: '\u26A1 {alias} fertig! {time}{stars} \u2014 Weitermachen!',
     localCompleteTitle: 'Herausforderung geschafft',
     localCompleteWaiting: 'Ergebnis gesendet · warte auf die Entscheidung',

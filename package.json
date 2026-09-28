@@ -9,8 +9,9 @@
     "build:data": "node scripts/build-data.mjs",
     "validate:teach": "node scripts/validate-teach-data.mjs",
     "validate:teach:ci": "TEACH_VALIDATE_STRICT=1 node scripts/validate-teach-data.mjs",
+    "validate:duo": "node scripts/validate-duo-puzzles.mjs",
     "dev": "npm run sync:version && vite",
-    "build": "npm run sync:version && npm run validate:teach && npm run build:teach && npm run build:data && vite build",
+    "build": "npm run sync:version && npm run validate:teach && npm run build:teach && npm run build:data && npm run validate:duo && vite build",
     "build:firebase": "DEPLOY_TARGET=firebase npm run build && node scripts/prepare-pages-dist.mjs && node scripts/smoke-test.mjs",
     "ios:prepare": "npm run build && npx cap sync ios && node scripts/verify-ios-release.mjs",
     "ios:archive:unsigned": "xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -destination generic/platform=iOS CODE_SIGNING_ALLOWED=NO archive -archivePath build/SudokuZen.xcarchive",
@@ -38,8 +39,8 @@
     "test:e2e:duo": "npx playwright test e2e/duo-sync.spec.ts",
     "test:e2e:duo-live": "npx playwright test --config playwright.live.config.ts",
     "test:e2e:replay": "npx playwright test e2e/replay-end-to-end.spec.ts",
-    "check": "npm run validate:teach && npm run typecheck && npm run lint && npm run format:check && npm test",
-    "check:ci": "npm run validate:teach:ci && npm run typecheck && npm run lint && npm run format:check && npm test",
+    "check": "npm run validate:teach && npm run validate:duo && npm run typecheck && npm run lint && npm run format:check && npm test",
+    "check:ci": "npm run validate:teach:ci && npm run validate:duo && npm run typecheck && npm run lint && npm run format:check && npm test",
     "check:release": "npm run check && npm --prefix functions run lint && npm --prefix functions run build && npm --prefix duo-party run check"
   },
   "lint-staged": {

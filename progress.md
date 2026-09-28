@@ -212,3 +212,5 @@ TODO / handoff (current):
 - 2026-07-30 Steven 的 V12 iPhone 錄影確認「建房按鈕轉圈後仍留在大廳，自己的等待房逐次增加」；正式 Firestore breadcrumb 與 Durable Object 都證明房已建立，但 host heartbeat 只停在建立當下，約 32 秒後房間因離線關閉。
 - 前端原本只處理 direct `roomState` 已進入 `pump()`、但一次性 waiter 錯過的競態；若 direct ack frame 完全遺失，會關閉 socket 並留下孤兒房。現在 create/join 逾時會在同一 roomId 以 Firebase ownerUid 驗證的 `hello` 重認領，不會再建立第二間房。
 - 同輪精準測試發現舊 `gs.duoRoomData` 可在新隨機 roomId 被誤採納；新增 `_lastStateRoomId`，快照房號必須與目前 socket 房號完全一致。漏 ack 恢復與跨房殘留拒絕回歸已加入，精準 8/8、完整 release gate 51 files / 326 tests、Worker Phase 3 QA 23/23 通過。
+
+- 2026-09-28 Duo 題庫修復：13 shard 重新計算穩定唯一題目 ID／候選中繼資料，去除 10 題重複，T00 技法與型別校正；最終 2,776 題皆有唯一解、正確解答與唯一 ID。新增唯讀驗證器並納入 build/check，舊覆寫產生器加顯式危險旗標。Duo 載入缺 shard 時不再採用／快取部分題庫；準備時雙端傳盤面指紋，Worker 不同盤面拒絕倒數；開局載入失敗可重設未落子的回合。Duo 題目最佳紀錄改用獨立 storage/cloud map，不再寫單人首通榜；舊負 ID 從單人統計排除。乾淨發布工作樹 /tmp/sudoku-duo-lobby-release-20260925-v2 完整 check 71 檔／425 tests、Worker 26 tests、正式 build/smoke/perf 通過。Chromium 雙端從大廳建房／加入／準備／開局，雙方盤面、種子、ID 與指紋一致，實際棋盤截圖已檢視；證據 output/duo-bank-fix-20260928/。

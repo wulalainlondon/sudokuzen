@@ -39,14 +39,14 @@ export type ClientMsg =
   | { type: 'create'; room: RoomConfig; player: PlayerInfo; idToken?: string }
   | { type: 'join'; player: PlayerInfo; idToken?: string }
   | { type: 'hello'; player: PlayerInfo; role: Role; idToken?: string }
-  | { type: 'ready'; ready: boolean }
+  | { type: 'ready'; ready: boolean; puzzleFingerprint?: string }
   | { type: 'progress'; filled: number }
   | { type: 'finish'; timeSec: number; stars: number; moves?: MoveRecord[] }
   | { type: 'surrender'; moves?: MoveRecord[] }
   | { type: 'specBoard'; board: string; version: number }
   | { type: 'bomb'; cells: number[] }
   | { type: 'cc'; update: Partial<CcFields> }
-  | { type: 'abort' }
+  | { type: 'abort'; reason?: 'puzzle_unavailable' }
   | { type: 'rematch' }
   | { type: 'leave' }
   | { type: 'closeResult' }

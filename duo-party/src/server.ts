@@ -43,6 +43,8 @@ interface RoomState extends PublicRoomState {
   // 權威身分（驗證後綁定，不對外廣播）—— 重連認領座位時須相符
   hostOwnerUid: string | null;
   guestOwnerUid: string | null;
+  hostPuzzleFingerprint: string | null;
+  guestPuzzleFingerprint: string | null;
 }
 
 /**
@@ -130,7 +132,7 @@ export class GameRoom extends Server<Env> {
       case 'cc':
         return this.handleCc(connection, msg);
       case 'abort':
-        return this.handleAbort(connection);
+        return this.handleAbort(connection, msg);
       case 'rematch':
         return this.handleRematch(connection);
       case 'leave':
@@ -193,6 +195,8 @@ export class GameRoom extends Server<Env> {
       presenceCheckAt: null,
       hostOwnerUid: uid,
       guestOwnerUid: null,
+      hostPuzzleFingerprint: null,
+      guestPuzzleFingerprint: null,
     };
     conn.setState({ role: 'host', playerId: msg.player.id, ownerUid: uid, lastSeenAt: now });
     this.sendStateTo(conn); // direct：帶 you 讓 client 認領 host 角色
@@ -250,9 +254,36 @@ export class GameRoom extends Server<Env> {
     }
     const slot = role === 'host' ? this.room.host : this.room.guest;
     if (!slot) return;
+    const fingerprint = msg.ready ? msg.puzzleFingerprint : null;
+    if (msg.ready && !(typeof fingerprint === 'string' && /^p81:[0-9]{81}$/.test(fingerprint))) {
+      if (this.env.AUTH_REQUIRED !== 'false') {
+        this.err(conn, 'puzzle_fingerprint_required', 'Update the game to start this room');
+        this.sendStateTo(conn);
+        return;
+      }
+    }
+    const trustedFingerprint = fingerprint || (this.env.AUTH_REQUIRED === 'false' ? 'local-qa' : null);
+    if (role === 'host') this.room.hostPuzzleFingerprint = msg.ready ? trustedFingerprint : null;
+    else this.room.guestPuzzleFingerprint = msg.ready ? trustedFingerprint : null;
     slot.ready = msg.ready;
 
     const bothReady = !!this.room.host?.ready && !!this.room.guest?.ready;
+    if (bothReady && this.room.hostPuzzleFingerprint !== this.room.guestPuzzleFingerprint) {
+      this.room.host!.ready = false;
+      this.room.guest!.ready = false;
+      this.room.hostPuzzleFingerprint = null;
+      this.room.guestPuzzleFingerprint = null;
+      if (this.room.status === 'countdown') await this.cancelCountdown();
+      this.broadcast(
+        JSON.stringify({
+          type: 'error',
+          code: 'puzzle_mismatch',
+          message: 'Players loaded different puzzles',
+        } satisfies ServerMsg),
+      );
+      await this.commit();
+      return;
+    }
     if (this.room.status === 'waiting' && bothReady) {
       await this.startCountdown();
     } else if (this.room.status === 'countdown' && !bothReady) {
@@ -379,11 +410,32 @@ export class GameRoom extends Server<Env> {
     await this.commit();
   }
 
-  private async handleAbort(conn: Connection<ConnState>): Promise<void> {
+  private async handleAbort(conn: Connection<ConnState>, msg: Extract<ClientMsg, { type: 'abort' }>): Promise<void> {
     if (!this.room || !conn.state?.role) return;
+    if (this.room.status === 'playing') {
+      const recentStart = this.room.startAt != null && Date.now() - this.room.startAt < 15_000;
+      const untouched =
+        !this.room.host?.progress &&
+        !this.room.guest?.progress &&
+        this.room.host?.finishTime == null &&
+        this.room.guest?.finishTime == null;
+      if (msg.reason !== 'puzzle_unavailable' || !recentStart || !untouched) {
+        return this.err(conn, 'abort_expired', 'Round is already in progress');
+      }
+      this.room.status = 'waiting';
+      this.room.countdownStartedAt = null;
+      this.room.countdownEndAt = null;
+      this.room.startAt = null;
+      this.room.presenceCheckAt = null;
+      this.room.forfeitHostAt = null;
+      this.room.forfeitGuestAt = null;
+      this.room.cc = null;
+    }
     if (this.room.status === 'countdown') await this.cancelCountdown();
     if (this.room.host) this.room.host.ready = false;
     if (this.room.guest) this.room.guest.ready = false;
+    this.room.hostPuzzleFingerprint = null;
+    this.room.guestPuzzleFingerprint = null;
     await this.commit();
   }
 
@@ -403,6 +455,8 @@ export class GameRoom extends Server<Env> {
     resetSlot(this.room.guest);
     this.room.status = 'waiting';
     this.room.puzzleSeed = Math.floor(Math.random() * 1_000_000_000);
+    this.room.hostPuzzleFingerprint = null;
+    this.room.guestPuzzleFingerprint = null;
     this.room.countdownStartedAt = null;
     this.room.startAt = null;
     this.room.specBoardState = null;
@@ -561,6 +615,8 @@ export class GameRoom extends Server<Env> {
     if (!this.room) return;
     this.room.guest = null;
     if (this.room.host) this.room.host.ready = false;
+    this.room.hostPuzzleFingerprint = null;
+    this.room.guestPuzzleFingerprint = null;
     this.room.status = 'waiting';
     this.room.countdownStartedAt = null;
     this.room.startAt = null;
@@ -604,6 +660,8 @@ export class GameRoom extends Server<Env> {
       const canStart =
         !!this.room.host?.ready &&
         !!this.room.guest?.ready &&
+        !!this.room.hostPuzzleFingerprint &&
+        this.room.hostPuzzleFingerprint === this.room.guestPuzzleFingerprint &&
         this.room.host.online !== false &&
         this.room.guest.online !== false;
       this.room.status = canStart ? 'playing' : 'waiting';

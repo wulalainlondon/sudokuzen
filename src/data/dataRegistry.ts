@@ -123,6 +123,7 @@ async function fetchShard(name: string, mode: GameMode): Promise<LevelData[]> {
     const meta = manifest.shards[name];
     const url = resolveDataPath(meta.file) + `?v=${meta.hash || manifest.version}`;
     const compact = await fetchJsonWithTimeout<CompactLevel[]>(url);
+    if (!Array.isArray(compact) || compact.length !== meta.count) throw new Error(`incomplete shard: ${name}`);
     const expanded = compact.map((c) => expandLevel(c, mode));
     _shardCache.set(name, expanded);
     return expanded;

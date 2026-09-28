@@ -90,7 +90,9 @@ export function clearGameStatus(levelId: number): void {
 
 export function saveProgress(): number {
   const recordsKey = getRecordsStorageKeyForLevelList(false);
-  const replayHistory = sanitizeReplayHistory(gs.actionHistory);
+  // Duo replay comes from the room result, not the single-player action log.
+  // Keep per-puzzle cloud bests small enough to fit the player profile.
+  const replayHistory = gs.isDuoMode ? [] : sanitizeReplayHistory(gs.actionHistory);
   if (getModePolicy().useSubmissionValidation) {
     const records = readJson<Record<string, unknown>>(recordsKey, {});
     const existing = records[gs.currentLevel!.id];

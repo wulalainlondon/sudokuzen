@@ -143,6 +143,7 @@ describe('saveProgress', () => {
   beforeEach(() => {
     localStorage.clear();
     gs.isSpeedrunMode = false;
+    gs.isDuoMode = false;
     gs.currentLevel = makeLevelData(10);
     gs.seconds = 200;
     gs.errors = 0;
@@ -156,6 +157,14 @@ describe('saveProgress', () => {
     expect(stars).toBe(3);
     const records = readJson<Record<string, unknown>>(SK.RECORDS, {});
     expect(toClassicLevelRecord(records[10])?.stars).toBe(3);
+  });
+
+  it('keeps Duo puzzle bests separate from normal level records', () => {
+    gs.isDuoMode = true;
+    gs.currentLevel = makeLevelData(-123456);
+    saveProgress();
+    expect(readJson<Record<string, unknown>>(SK.RECORDS, {})).toEqual({});
+    expect(toClassicLevelRecord(readJson<Record<string, unknown>>(SK.DUO_PUZZLE_RECORDS, {})[-123456])?.stars).toBe(3);
   });
 
   it('1 error = 2 stars', () => {

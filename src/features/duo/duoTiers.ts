@@ -1,7 +1,7 @@
 // Duo tier & mode definitions, independent puzzle pool (duo-T*.json shards)
 
 import type { LevelData } from '../../game/state';
-import { loadDuoShard } from '../../data/dataRegistry';
+import { getDataManifest, loadDuoShard } from '../../data/dataRegistry';
 
 // ── Tier definitions ─────────────────────────────────────────────────
 
@@ -97,7 +97,14 @@ export async function loadDuoTierPuzzles(tierId: string): Promise<LevelData[]> {
   const tier = DUO_TIER_MAP.get(tierId);
   if (!tier) return [];
 
+  const manifest = await getDataManifest();
+  if (!manifest) return [];
+  const expectedCounts = tier.shardKeys.map((key) => manifest.shards[`duo-${key}`]?.count);
+  if (expectedCounts.some((count) => !Number.isInteger(count) || !count || count <= 0)) return [];
   const results = await Promise.all(tier.shardKeys.map((k) => loadDuoShard(k)));
+  // A partial pool changes seed % pool.length and can give the two players
+  // different boards. Never cache or play from incomplete tier data.
+  if (results.some((shard, index) => shard.length !== expectedCounts[index])) return [];
   const pool = results.flat();
   if (pool.length) _tierPuzzleCache.set(tierId, pool);
   return pool;
@@ -110,4 +117,8 @@ export async function pickDuoPuzzle(tierId: string, seed: number): Promise<Level
   if (!pool.length) return null;
   const idx = ((seed % pool.length) + pool.length) % pool.length;
   return pool[idx];
+}
+
+export function duoPuzzleFingerprint(level: LevelData): string {
+  return `p81:${level.puzzle.join('')}`;
 }

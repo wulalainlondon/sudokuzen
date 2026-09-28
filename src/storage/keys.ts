@@ -15,6 +15,7 @@ export const SK = {
   TEACH_READ: 'sudoku_teach_read',
   PRACTICE_DONE: 'sudoku_practice_done',
   DUO_RECORDS: 'sudoku_duo_records',
+  DUO_PUZZLE_RECORDS: 'sudoku_duo_puzzle_records_v1',
   DUO_PROFILE: 'sudoku_duo_profile_v2',
   APP_VERSION: 'sudoku_app_version',
   STORAGE_VERSION: 'sudoku_storage_version',

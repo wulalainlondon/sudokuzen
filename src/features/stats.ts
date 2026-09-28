@@ -323,6 +323,7 @@ export function computeStats() {
   let fastestLevel: (typeof levels)[number] | null = null;
 
   for (const [id, rec] of Object.entries(records)) {
+    if (!/^[1-9]\d*$/.test(id)) continue;
     const parsed = toClassicLevelRecord(rec);
     if (!parsed) continue;
     const time = parsed.time;

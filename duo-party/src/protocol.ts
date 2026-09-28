@@ -42,14 +42,14 @@ export type ClientMsg =
   | { type: 'create'; room: RoomConfig; player: PlayerInfo; idToken?: string }
   | { type: 'join'; player: PlayerInfo; idToken?: string }
   | { type: 'hello'; player: PlayerInfo; role: Role; idToken?: string } // 重連認領座位
-  | { type: 'ready'; ready: boolean }
+  | { type: 'ready'; ready: boolean; puzzleFingerprint?: string }
   | { type: 'progress'; filled: number }
   | { type: 'finish'; timeSec: number; stars: number; moves?: MoveRecord[] }
   | { type: 'surrender'; moves?: MoveRecord[] }
   | { type: 'specBoard'; board: string; version: number } // 被觀看方同步盤面
   | { type: 'bomb'; cells: number[] } // 觀戰方丟炸彈
   | { type: 'cc'; update: Partial<CcFields> } // Chess Clock 回合更新
-  | { type: 'abort' }
+  | { type: 'abort'; reason?: 'puzzle_unavailable' }
   | { type: 'rematch' }
   | { type: 'leave' }
   | { type: 'closeResult' }

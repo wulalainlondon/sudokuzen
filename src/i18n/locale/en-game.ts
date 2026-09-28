@@ -35,6 +35,7 @@ export const enGame = {
     connectionFailed: 'Connection lost — return to lobby and rejoin',
     connectionError: 'Connection error, please retry',
     roomSyncFailed: 'Room sync failed (game started normally)',
+    puzzleMismatch: 'Players loaded different puzzles. Update the game and try again',
     opponentFinished: '\u26A1 {alias} finished! {time}{stars} \u2014 keep going!',
     localCompleteTitle: 'Challenge Complete',
     localCompleteWaiting: 'Score submitted · awaiting final result',

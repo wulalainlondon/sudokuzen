@@ -24,7 +24,7 @@ import {
   getLastStaleGuestPruneMs,
   getActiveDuoRoomId,
 } from './duoRoom';
-import { pickDuoPuzzle, loadDuoTierPuzzles, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
+import { pickDuoPuzzle, loadDuoTierPuzzles, duoPuzzleFingerprint, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import {
   loadDuoProfile,
   recordDuoMatch,
@@ -159,9 +159,10 @@ export function handleDuoSnapshot(d: DuoRoomData): void {
 
   if (d.status === 'waiting') {
     const returningForRematch = _duoResultShown && gs.isDuoMode;
+    const abortedBeforeInput = isDuoWsEnabled() && gs.isDuoMode && gs.duoRoundLaunched && !_duoResultShown;
     cancelLocalDuoCountdown();
     resetDuoProgressUI();
-    if (returningForRematch) void enterDuoRematchRoom();
+    if (returningForRematch || abortedBeforeInput) void enterDuoRematchRoom();
 
     // Host: prune stale guest
     const guestHb = Number(d.guestHeartbeatAtMs || 0);
@@ -446,8 +447,21 @@ export async function toggleDuoReady(): Promise<void> {
   if (isDuoWsEnabled()) {
     if (!gs.duoRole) return;
     const newReady = !gs.duoMyReady;
+    const roomId = getActiveDuoRoomId();
+    const room = gs.duoRoomData;
+    let fingerprint: string | undefined;
+    if (newReady) {
+      if (!roomId || !room?.tierId || !Number.isFinite(room.puzzleSeed)) return;
+      const level = await pickDuoPuzzle(room.tierId, room.puzzleSeed);
+      if (!level) {
+        showFeedback(t('duo.puzzleLoadFailed'), 'error');
+        return;
+      }
+      if (getActiveDuoRoomId() !== roomId || gs.duoRoomData?.puzzleSeed !== room.puzzleSeed) return;
+      fingerprint = duoPuzzleFingerprint(level);
+    }
     const { duoWsReady } = await import('./duoSocket');
-    duoWsReady(newReady);
+    duoWsReady(newReady, fingerprint);
     gs.duoMyReady = newReady;
     return;
   }
@@ -695,7 +709,12 @@ export async function launchDuoGame(): Promise<void> {
     gs.duoRoundLaunched = false;
     const roomId = getActiveDuoRoomId();
     if (roomId) {
-      await callDuoFunction('duoAbortGame', { roomId }).catch((e) => console.warn('[duo] duoAbortGame failed:', e));
+      if (isDuoWsEnabled()) {
+        const { duoWsAbort } = await import('./duoSocket');
+        duoWsAbort('puzzle_unavailable');
+      } else {
+        await callDuoFunction('duoAbortGame', { roomId }).catch((e) => console.warn('[duo] duoAbortGame failed:', e));
+      }
     }
     return;
   }
