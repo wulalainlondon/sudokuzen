@@ -74,6 +74,26 @@ const project = await readFile(path.join(root, 'ios/App/App.xcodeproj/project.pb
 const plist = await readFile(path.join(root, 'ios/App/App/Info.plist'), 'utf8');
 const privacy = await readFile(path.join(root, 'ios/App/App/PrivacyInfo.xcprivacy'), 'utf8');
 const firebaseRuntimeConfig = await readFile(path.join(root, 'ios/App/App/public/firebase-config.js'), 'utf8');
+const edition = JSON.parse(await readFile(path.join(publicDir, 'app-edition.json'), 'utf8'));
+const expected = JSON.parse(await readFile(path.join(root, 'config/app-editions.json'), 'utf8'));
+if (
+  edition.edition !== 'ios' ||
+  edition.projectId !== expected.ios.projectId ||
+  edition.duoHost !== expected.ios.duoHost ||
+  edition.protocolVersion !== 2
+) {
+  errors.push('iOS package must use its isolated production backend');
+}
+if (!firebaseRuntimeConfig.includes(expected.ios.projectId)) errors.push('Wrong iOS Firebase project');
+const legacyConfig = await readFile(path.join(publicDir, 'firebase-legacy-config.js'), 'utf8');
+if (
+  !legacyConfig.includes('window.SUDOKU_LEGACY_FIREBASE_CONFIG') ||
+  !legacyConfig.includes(expected.legacy.projectId)
+) {
+  errors.push('Original Firebase config missing for history recovery');
+}
+const localOverride = await readFile(path.join(publicDir, 'firebase-config.local.js'), 'utf8');
+if (/window\.|AUTH_REQUIRED|SUDOKU_DUO_WS/.test(localOverride)) errors.push('Debug runtime override in release bundle');
 
 if (!project.includes('PRODUCT_BUNDLE_IDENTIFIER = com.wulala.sudokuzen;')) errors.push('Unexpected bundle identifier');
 if (!project.includes('TARGETED_DEVICE_FAMILY = 1;')) errors.push('Release target must remain iPhone-only');

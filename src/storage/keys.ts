@@ -1,6 +1,11 @@
 // Phase 3 — Centralised localStorage key registry
 // Every key the app reads/writes lives here. No more magic strings scattered across modules.
 
+import { ACTIVE_EDITION } from '../platform/appEdition';
+
+const competitiveKey = (legacy: string): string =>
+  ACTIVE_EDITION === 'legacy' ? legacy : `${legacy}_${ACTIVE_EDITION}`;
+
 export const SK = {
   PLAYER_ID: 'sudoku_player_id',
   LEGACY_PLAYER_ID: 'sudoku_legacy_player_id',
@@ -14,9 +19,9 @@ export const SK = {
   ACHIEVEMENTS: 'sudoku_achievements',
   TEACH_READ: 'sudoku_teach_read',
   PRACTICE_DONE: 'sudoku_practice_done',
-  DUO_RECORDS: 'sudoku_duo_records',
-  DUO_PUZZLE_RECORDS: 'sudoku_duo_puzzle_records_v1',
-  DUO_PROFILE: 'sudoku_duo_profile_v2',
+  DUO_RECORDS: competitiveKey('sudoku_duo_records'),
+  DUO_PUZZLE_RECORDS: competitiveKey('sudoku_duo_puzzle_records_v1'),
+  DUO_PROFILE: competitiveKey('sudoku_duo_profile_v2'),
   APP_VERSION: 'sudoku_app_version',
   STORAGE_VERSION: 'sudoku_storage_version',
   TOTAL_ELIMINATIONS: 'sudoku_total_eliminations',

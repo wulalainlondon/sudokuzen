@@ -1,0 +1,5 @@
+{
+  "legacy": { "projectId": "sudokuzen-f2aa3", "duoHost": "duo-party.wulalainlondon.workers.dev" },
+  "pwa": { "projectId": "sudokuzen-f2aa3", "duoHost": "duo-pwa.wulalainlondon.workers.dev" },
+  "ios": { "projectId": "sudokuzen-ios-prod", "duoHost": "duo-ios.wulalainlondon.workers.dev" }
+}

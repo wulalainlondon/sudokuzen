@@ -1,6 +1,7 @@
+import { ACTIVE_EDITION } from '../../platform/appEdition';
 import type { CellData, MoveRecord } from '../../game/state';
 
-const DUO_ROUND_KEY = 'sudoku_duo_round_v1';
+const DUO_ROUND_KEY = ACTIVE_EDITION === 'legacy' ? 'sudoku_duo_round_v1' : `sudoku_duo_round_v1_${ACTIVE_EDITION}`;
 const SNAPSHOT_VERSION = 1;
 
 export interface DuoRoundSnapshot {

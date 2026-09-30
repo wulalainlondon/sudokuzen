@@ -7,10 +7,21 @@ import { closePreLevel } from '../../app/ui/uiOrchestrator';
 import { sanitizeHtml } from '../../shared/html/sanitize';
 import { getReplayHistory } from '../../shared/records/levelRecords';
 import type { ActionRecord } from '../../game/state';
+import { LegacyLeaderboard } from './LegacyLeaderboard';
 
 export function PreLevelModal(): ReactElement {
-  const { visible, displayName, techName, techTier, bestRecord, hasRecord, hasReplay, leaderboardHtml } =
-    usePreLevelStore();
+  const {
+    visible,
+    levelId,
+    isPractice,
+    displayName,
+    techName,
+    techTier,
+    bestRecord,
+    hasRecord,
+    hasReplay,
+    leaderboardHtml,
+  } = usePreLevelStore();
   const close = useCallback((reason: string = 'system') => closePreLevel(reason), []);
   const safeLeaderboardHtml = useMemo(() => sanitizeHtml(leaderboardHtml), [leaderboardHtml]);
 
@@ -72,6 +83,7 @@ export function PreLevelModal(): ReactElement {
               id="pre-level-leaderboard"
               dangerouslySetInnerHTML={{ __html: safeLeaderboardHtml }}
             />
+            {!isPractice && levelId !== null && <LegacyLeaderboard key={levelId} levelId={levelId} />}
           </div>
 
           <button className="resume-btn" id="pre-level-start-btn" onClick={handleStart}>

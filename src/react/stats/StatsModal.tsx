@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactElement } from 'react';
 import { useStatsStore } from './statsStore';
+import { EditionRecords } from './EditionRecords';
 import { ZenOverlay } from '../motion/ZenOverlay';
 import { ZenStagger } from '../motion/ZenStagger';
 import { t } from '../../i18n/t';
@@ -835,7 +836,12 @@ export function StatsModal(): ReactElement {
                 {t('stats.tabAchievements')}
               </button>
             </div>
-            {tab === 'overview' && stats && <OverviewTab stats={stats} />}
+            {tab === 'overview' && stats && (
+              <>
+                <EditionRecords />
+                <OverviewTab stats={stats} />
+              </>
+            )}
             {tab === 'learning' && learning && <LearningTab learning={learning} onOpenModule={handleOpenModule} />}
             {tab === 'achievement' && <AchievementTab achievements={achievements} records={achievementRecords} />}
             <button className="resume-btn" onClick={close}>

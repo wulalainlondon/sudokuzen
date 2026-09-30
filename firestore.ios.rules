@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function validAlias(name) {
+      return name is string
+        && name.size() >= 1
+        && name.size() <= 24
+        && name.matches('^[^<>&"\\\']+$');
+    }
+
+
+    // Versioned competitive realms. Only this project's edition is enabled.
+    function editionAllowed(edition) { return edition == 'ios'; }
+    function ownsPlayer(playerId) { return request.auth != null && playerId == 'p_' + request.auth.uid; }
+    match /editions/{edition}/player_profiles/{playerId} {
+      allow get: if editionAllowed(edition) && ownsPlayer(playerId);
+      allow list: if false;
+      allow create, update: if editionAllowed(edition) && ownsPlayer(playerId)
+          && request.resource.data.ownerUid == request.auth.uid
+          && request.resource.data.playerId == playerId
+          && validAlias(request.resource.data.alias)
+          && request.resource.data.achievements is map
+          && request.resource.data.achievements.size() <= 200;
+      allow delete: if editionAllowed(edition) && ownsPlayer(playerId);
+      match /game_saves/{saveKey} {
+        allow get, list, delete: if editionAllowed(edition) && ownsPlayer(playerId);
+        allow create, update: if editionAllowed(edition) && ownsPlayer(playerId)
+            && request.resource.data.ownerUid == request.auth.uid
+            && request.resource.data.playerId == playerId
+            && request.resource.data.key == saveKey
+            && request.resource.data.payload is map;
+      }
+      match /legacy_history/{chunkId} {
+        allow get, list, delete: if editionAllowed(edition) && ownsPlayer(playerId);
+        allow create, update: if editionAllowed(edition) && ownsPlayer(playerId)
+            && request.resource.data.ownerUid == request.auth.uid
+            && request.resource.data.playerId == playerId;
+      }
+    }
+    match /editions/{edition}/level_first_clears/{boardKey}/players/{playerId} {
+      allow read: if editionAllowed(edition);
+      allow create: if editionAllowed(edition) && ownsPlayer(playerId)
+          && boardKey.matches('^(classic|speed)_[0-9]+_[0-9]{81}$')
+          && request.resource.data.ownerUid == request.auth.uid
+          && request.resource.data.playerId == playerId
+          && request.resource.data.edition == edition
+          && request.resource.data.boardKey == boardKey
+          && request.resource.data.mode in ['classic', 'speed']
+          && request.resource.data.firstTimeSec is int && request.resource.data.firstTimeSec >= 0
+          && request.resource.data.firstStars is int && request.resource.data.firstStars >= 0 && request.resource.data.firstStars <= 3
+          && request.resource.data.firstSubmissions is int && request.resource.data.firstSubmissions >= 0
+          && validAlias(request.resource.data.alias)
+          && getAfter(/databases/$(database)/documents/editions/$(edition)/score_owners/$(playerId)/entries/$(boardKey)).data.ownerUid == request.auth.uid;
+      allow update: if false;
+      allow delete: if editionAllowed(edition) && ownsPlayer(playerId);
+    }
+    match /editions/{edition}/score_owners/{playerId}/entries/{boardKey} {
+      allow get, list, delete: if editionAllowed(edition) && ownsPlayer(playerId);
+      allow create: if editionAllowed(edition) && ownsPlayer(playerId)
+          && request.resource.data.ownerUid == request.auth.uid
+          && request.resource.data.playerId == playerId
+          && request.resource.data.boardKey == boardKey
+          && getAfter(/databases/$(database)/documents/editions/$(edition)/level_first_clears/$(boardKey)/players/$(playerId)).data.ownerUid == request.auth.uid;
+      allow update: if false;
+    }
+    match /editions/{edition}/presence/{playerId} {
+      allow read: if editionAllowed(edition);
+      allow create, update: if editionAllowed(edition) && ownsPlayer(playerId)
+          && request.resource.data.ownerUid == request.auth.uid && request.resource.data.playerId == playerId;
+      allow delete: if editionAllowed(edition) && ownsPlayer(playerId);
+    }
+    match /editions/{edition}/duo_ws_rooms/{roomId} {
+      function validLobby() {
+        return request.resource.data.roomId == roomId
+          && request.resource.data.hostId == 'p_' + request.auth.uid
+          && request.resource.data.hostOwnerUid == request.auth.uid
+          && validAlias(request.resource.data.hostAlias)
+          && request.resource.data.tierId is string && request.resource.data.modeId is string
+          && request.resource.data.status == 'waiting' && request.resource.data.transport == 'ws'
+          && request.resource.data.hostHeartbeatAtMs is number;
+      }
+      allow read: if editionAllowed(edition);
+      allow create: if editionAllowed(edition) && request.auth != null && validLobby();
+      allow update: if editionAllowed(edition) && request.auth != null
+          && resource.data.hostOwnerUid == request.auth.uid && validLobby();
+      allow delete: if editionAllowed(edition) && request.auth != null && (
+          resource.data.hostOwnerUid == request.auth.uid
+          || resource.data.hostHeartbeatAtMs < request.time.toMillis() - 120000);
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -8,6 +8,20 @@ import { jaMentor } from './ja-mentor';
 type Widen<T> = { [K in keyof T]?: T[K] extends string ? string : Widen<T[K]> };
 
 export const ja: Widen<Locale> = {
+  edition: {
+    legacyBoard: '分離前のランキング',
+    legacyBoardNote:
+      '以前の PWA と iOS の成績を含みます。問題が変更されている場合があるため、履歴として参照してください。',
+    pwa: 'PWA 版',
+    ios: 'iOS 版',
+    currentStats: '{edition} の対戦成績',
+    score: '{wins} 勝 · {losses} 敗 · {draws} 引き分け',
+    separate: '同じ版のプレイヤーと対戦します。新しい成績とランキングは版ごとに集計されます。',
+    legacyHistory: '分離前の対戦履歴',
+    preserved: '以前の成績、リプレイ、解放済みモードを保持します。ソロの進行状況と自己ベストは引き継がれます。',
+    exportHistory: '以前の対戦履歴をエクスポート',
+  },
+
   // ── App chrome ──────────────────────────────────────────────────────
   app: {
     title: 'SUDOKU ZEN',

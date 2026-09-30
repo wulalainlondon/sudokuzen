@@ -10,6 +10,7 @@ import { type DuoRoomSummary } from './duoRoom';
 import { saveScroll, restoreScroll } from '../../shared/ui/scrollMemory';
 import { canOpenJourneyMode, getJourneyLockMessage } from '../journey';
 import { renderDuoConnectionState, type DuoConnectionState } from './duoConnectionUi';
+import { ACTIVE_EDITION } from '../../platform/appEdition';
 
 type ConnState = DuoConnectionState;
 const LOBBY_POLL_MS = 6_000;
@@ -262,6 +263,17 @@ function hydrateLabels(): void {
   const joinBtnTextEl = document.getElementById('duo-join-btn-text');
   const joinBtnSubEl = document.getElementById('duo-join-btn-sub');
   if (titleEl) titleEl.textContent = t('duo.lobbyTitle');
+  if (titleEl && ACTIVE_EDITION !== 'legacy') {
+    titleEl.textContent += ` · ${t(ACTIVE_EDITION === 'ios' ? 'edition.ios' : 'edition.pwa')}`;
+    let note = document.getElementById('duo-edition-note');
+    if (!note) {
+      note = document.createElement('p');
+      note.id = 'duo-edition-note';
+      note.className = 'duo-rule-desc';
+      titleEl.parentElement?.insertAdjacentElement('afterend', note);
+    }
+    note.textContent = t('edition.separate');
+  }
   if (backBtnEl) backBtnEl.textContent = t('nav.back');
   if (createBtnTextEl) createBtnTextEl.textContent = t('duo.createRoom');
   if (createBtnSubEl) createBtnSubEl.textContent = t('duo.createSub');

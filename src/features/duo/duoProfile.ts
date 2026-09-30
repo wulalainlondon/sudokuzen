@@ -1,3 +1,4 @@
+import { ACTIVE_EDITION } from '../../platform/appEdition';
 // Duo profile — local progression, tier/mode unlock, win tracking
 
 import { SK, readJson, writeJson } from '../../storage/keys';
@@ -8,6 +9,7 @@ import { DUO_TIERS, DUO_MODES } from './duoTiers';
 export interface DuoProfile {
   /** Play counts keyed as "tierI-standard", etc. */
   playCount: Record<string, number>;
+  legacyPlayCount?: Record<string, number>;
   wins: number;
   losses: number;
   draws: number;
@@ -18,7 +20,8 @@ export interface DuoProfile {
 }
 
 const PROFILE_KEY = SK.DUO_PROFILE;
-const RECORDED_ROOMS_KEY = 'sudoku_duo_recorded_rooms_v1';
+const RECORDED_ROOMS_KEY =
+  ACTIVE_EDITION === 'legacy' ? 'sudoku_duo_recorded_rooms_v1' : `sudoku_duo_recorded_rooms_v1_${ACTIVE_EDITION}`;
 
 function emptyProfile(): DuoProfile {
   return { playCount: {}, wins: 0, losses: 0, draws: 0, currentStreak: 0, bestStreak: 0, rivals: {} };
@@ -51,6 +54,11 @@ export function loadDuoProfile(): DuoProfile {
   }
   return {
     playCount,
+    ...(raw.legacyPlayCount
+      ? {
+          legacyPlayCount: Object.fromEntries(Object.entries(raw.legacyPlayCount).map(([k, v]) => [k, finiteCount(v)])),
+        }
+      : {}),
     wins: finiteCount(raw.wins),
     losses: finiteCount(raw.losses),
     draws: finiteCount(raw.draws),
@@ -115,7 +123,8 @@ export function recordDuoMatch(
 function totalPlaysForTier(p: DuoProfile, tierId: string): number {
   let sum = 0;
   for (const mode of DUO_MODES) {
-    sum += p.playCount[playCountKey(tierId, mode.id)] || 0;
+    const key = playCountKey(tierId, mode.id);
+    sum += (p.playCount[key] || 0) + (p.legacyPlayCount?.[key] || 0);
   }
   return sum;
 }
@@ -123,7 +132,8 @@ function totalPlaysForTier(p: DuoProfile, tierId: string): number {
 function totalPlaysForMode(p: DuoProfile, modeId: string): number {
   let sum = 0;
   for (const tier of DUO_TIERS) {
-    sum += p.playCount[playCountKey(tier.id, modeId)] || 0;
+    const key = playCountKey(tier.id, modeId);
+    sum += (p.playCount[key] || 0) + (p.legacyPlayCount?.[key] || 0);
   }
   return sum;
 }

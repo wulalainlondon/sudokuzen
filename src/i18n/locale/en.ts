@@ -9,6 +9,20 @@ import { enGame } from './en-game';
 type Widen<T> = { [K in keyof T]?: T[K] extends string ? string : Widen<T[K]> };
 
 export const en: Widen<Locale> = {
+  edition: {
+    legacyBoard: 'Leaderboard before separation',
+    legacyBoardNote:
+      'Includes previous PWA and iOS scores. Some puzzles may have changed; these rows are historical references.',
+    pwa: 'PWA edition',
+    ios: 'iOS edition',
+    currentStats: '{edition} Duo record',
+    score: '{wins} wins · {losses} losses · {draws} draws',
+    separate: 'Play against people using the same edition. New records and leaderboards are separate.',
+    legacyHistory: 'Duo history before separation',
+    preserved: 'Previous records, replays and unlocked modes are kept. Solo progress and personal bests continue.',
+    exportHistory: 'Export previous Duo records',
+  },
+
   // ── Merge mentor dialogue & game strings ─────────────────────────────
   ...enMentor,
   ...enGame,

@@ -20,5 +20,17 @@
     "AUTH_REQUIRED": "true"
   },
 
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  "env": {
+    "pwa": {
+      "name": "duo-pwa",
+      "durable_objects": { "bindings": [{ "name": "GameRoom", "class_name": "GameRoom" }] },
+      "vars": { "PROJECT_ID": "sudokuzen-f2aa3", "AUTH_REQUIRED": "true", "EDITION": "pwa" }
+    },
+    "ios": {
+      "name": "duo-ios",
+      "durable_objects": { "bindings": [{ "name": "GameRoom", "class_name": "GameRoom" }] },
+      "vars": { "PROJECT_ID": "sudokuzen-ios-prod", "AUTH_REQUIRED": "true", "EDITION": "ios" }
+    }
+  }
 }

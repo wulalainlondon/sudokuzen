@@ -1,13 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+// @ts-expect-error Build helper is intentionally shared with Node release scripts.
+import { appEditionPlugin, selectedEdition } from './scripts/app-edition-build.mjs';
 
 const deployTarget = process.env.DEPLOY_TARGET;
 const base = deployTarget === 'github-pages' ? '/sudokuzen/' : '/';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  define: mode === 'test' ? {} : { 'import.meta.env.VITE_APP_EDITION': JSON.stringify(selectedEdition()) },
   base,
-  plugins: [react()],
+  plugins: mode === 'test' ? [react()] : [react(), appEditionPlugin(__dirname)],
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
@@ -75,4 +78,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

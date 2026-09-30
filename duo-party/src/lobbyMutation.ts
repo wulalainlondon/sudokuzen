@@ -13,6 +13,7 @@ export async function handleLobbyMutationRequest(
   headers: Headers,
   verify: VerifyToken = verifyFirebaseIdToken,
   upstreamFetch: typeof fetch = fetch,
+  collectionPath = 'duo_ws_rooms',
 ): Promise<Response> {
   if (request.method === 'OPTIONS') {
     headers.set('Access-Control-Allow-Methods', 'PUT, PATCH, DELETE, OPTIONS');
@@ -77,7 +78,7 @@ export async function handleLobbyMutationRequest(
       : { fields: { hostHeartbeatAtMs: heartbeat, updatedAt: updated } };
   const endpoint =
     `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}` +
-    `/databases/(default)/documents/duo_ws_rooms/${roomId}`;
+    `/databases/(default)/documents/${collectionPath}/${roomId}`;
   const url =
     request.method === 'PATCH'
       ? `${endpoint}?updateMask.fieldPaths=hostHeartbeatAtMs&updateMask.fieldPaths=updatedAt&currentDocument.exists=true`

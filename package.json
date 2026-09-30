@@ -13,7 +13,7 @@
     "dev": "npm run sync:version && vite",
     "build": "npm run sync:version && npm run validate:teach && npm run build:teach && npm run build:data && npm run validate:duo && vite build",
     "build:firebase": "DEPLOY_TARGET=firebase npm run build && node scripts/prepare-pages-dist.mjs && node scripts/smoke-test.mjs",
-    "ios:prepare": "npm run build && node scripts/prepare-pages-dist.mjs && npx cap sync ios && node scripts/verify-ios-release.mjs",
+    "ios:prepare": "APP_EDITION=ios npm run build && node scripts/prepare-pages-dist.mjs && npx cap sync ios && node scripts/verify-ios-release.mjs",
     "ios:archive:unsigned": "xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -destination generic/platform=iOS CODE_SIGNING_ALLOWED=NO archive -archivePath build/SudokuZen.xcarchive",
     "ios:archive:app-store": "node scripts/archive-ios-app-store.mjs",
     "ios:screenshots": "node scripts/capture-app-store-screenshots.mjs",

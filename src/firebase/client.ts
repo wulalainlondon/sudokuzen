@@ -1,3 +1,6 @@
+import { readEditionMigration, getLegacyHistory, markLegacyCloudImported } from '../platform/editionMigration';
+import { ACTIVE_EDITION, editionCollection } from '../platform/appEdition';
+import { leaderboardKey } from '../platform/leaderboardScope';
 // Firebase initialisation, leaderboard, and player identity
 
 import { gs } from '../game/state';
@@ -15,6 +18,10 @@ import {
   firebaseServerTimestamp,
   getAuthUid,
   initAnonymousAuth,
+  getLegacyProfileDb,
+  getLegacyLeaderboardDb,
+  signOutLegacySession,
+  deleteCurrentAuthUser,
 } from './runtime';
 import { escapeHtml } from '../shared/html/escape';
 import { sanitizeReplayHistory } from '../shared/records/levelRecords';
@@ -40,6 +47,7 @@ type GenericRecordMap = Record<string, ClassicRecord | SpeedRecord>;
 
 interface CloudDuoProfile {
   playCount: Record<string, number>;
+  legacyPlayCount?: Record<string, number>;
   wins: number;
   losses: number;
   draws: number;
@@ -48,12 +56,14 @@ interface CloudDuoProfile {
   rivals: Record<string, { wins: number; losses: number }>;
 }
 
-interface LeaderboardRow {
+export interface LeaderboardRow {
   playerId: string;
   alias: string;
   title?: string;
   firstTimeSec: number;
   firstStars: number;
+  firstSubmissions?: number;
+  mode?: 'classic' | 'speed';
 }
 const SAVE_KEY_PATTERN = /^sudoku_(speed_)?save_(\d+)$/;
 const PROFILE_SAVE_SUBCOLLECTION = 'game_saves';
@@ -81,6 +91,11 @@ let _progressSyncTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingSaveSyncTimers = new Map<string, ReturnType<typeof setTimeout>>();
 let _bridgeInstalled = false;
 let _hydrateComplete = false;
+let _hydratePromise: Promise<void> | null = null;
+
+export function isPlayerCloudHydrated(): boolean {
+  return _hydrateComplete;
+}
 
 function isIsoDay(value: unknown): value is string {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -131,7 +146,14 @@ function normalizeLeaderboardRow(raw: unknown): LeaderboardRow | null {
   const firstTimeSec = Math.max(0, toInt(obj.firstTimeSec));
   const firstStars = Math.min(3, Math.max(0, toInt(obj.firstStars)));
   const title = typeof obj.title === 'string' ? normalizeAlias(obj.title) : undefined;
-  return { playerId, alias, title, firstTimeSec, firstStars };
+  return {
+    playerId,
+    alias,
+    title,
+    firstTimeSec,
+    firstStars,
+    ...(obj.mode === 'speed' ? { mode: 'speed', firstSubmissions: Math.max(1, toInt(obj.firstSubmissions, 1)) } : {}),
+  };
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -220,6 +242,10 @@ function normalizeDuoProfile(raw: unknown): CloudDuoProfile {
   }
 
   const rivals: CloudDuoProfile['rivals'] = {};
+  const legacyPlayCount: Record<string, number> = {};
+  if (isPlainObject(profile.legacyPlayCount)) {
+    for (const [key, value] of Object.entries(profile.legacyPlayCount)) legacyPlayCount[key] = nonNegativeInt(value);
+  }
   if (isPlainObject(profile.rivals)) {
     for (const [alias, record] of Object.entries(profile.rivals)) {
       if (!alias || !isPlainObject(record)) continue;
@@ -232,6 +258,7 @@ function normalizeDuoProfile(raw: unknown): CloudDuoProfile {
 
   return {
     playCount,
+    ...(Object.keys(legacyPlayCount).length ? { legacyPlayCount } : {}),
     wins: nonNegativeInt(profile.wins),
     losses: nonNegativeInt(profile.losses),
     draws: nonNegativeInt(profile.draws),
@@ -254,6 +281,10 @@ function mergeDuoProfiles(localRaw: unknown, remoteRaw: unknown): CloudDuoProfil
   }
 
   const rivals = { ...remote.rivals };
+  const legacyPlayCount = { ...remote.legacyPlayCount };
+  for (const [key, count] of Object.entries(local.legacyPlayCount || {})) {
+    legacyPlayCount[key] = Math.max(count, legacyPlayCount[key] || 0);
+  }
   for (const [alias, record] of Object.entries(local.rivals)) {
     const remoteRecord = rivals[alias];
     rivals[alias] = {
@@ -268,6 +299,7 @@ function mergeDuoProfiles(localRaw: unknown, remoteRaw: unknown): CloudDuoProfil
 
   return {
     playCount,
+    ...(Object.keys(legacyPlayCount).length ? { legacyPlayCount } : {}),
     wins: Math.max(local.wins, remote.wins),
     losses: Math.max(local.losses, remote.losses),
     draws: Math.max(local.draws, remote.draws),
@@ -368,7 +400,7 @@ async function _setPresenceDoc(): Promise<void> {
   const ownerUid = getAuthUid() || (await initAnonymousAuth());
   if (!ownerUid) return;
   try {
-    await gs.db!.collection(PRESENCE_COLLECTION).doc(_presenceDocId).set({
+    await gs.db!.collection(editionCollection(PRESENCE_COLLECTION)).doc(_presenceDocId).set({
       playerId: _presenceDocId,
       ownerUid,
       timestamp: firebaseServerTimestamp(),
@@ -425,7 +457,7 @@ export async function initPresence(): Promise<void> {
 // (getOnlineCount with ONLINE_COUNT_CACHE_MS) to avoid N² read amplification.
 export function subscribeOnlineCount(callback: (count: number) => void): () => void {
   if (!gs.firebaseReady || !gs.db) return () => {};
-  const unsub = gs.db.collection(PRESENCE_COLLECTION).onSnapshot(
+  const unsub = gs.db.collection(editionCollection(PRESENCE_COLLECTION)).onSnapshot(
     (snap) => {
       const cutoff = Date.now() - PRESENCE_TTL_MS;
       const count = snap.docs.filter((doc) => {
@@ -483,7 +515,9 @@ export async function initFirebase(): Promise<boolean> {
 export function bindPlayerIdentityToAuth(ownerUid: string): string {
   const playerId = `p_${ownerUid}`;
   const existingPlayerId = localStorage.getItem(SK.PLAYER_ID);
-  if (existingPlayerId && existingPlayerId !== playerId) {
+  const migration = readEditionMigration();
+  const changesEditionIdentity = migration?.localPrepared && ACTIVE_EDITION !== 'legacy';
+  if (existingPlayerId && existingPlayerId !== playerId && !changesEditionIdentity) {
     localStorage.setItem(SK.LEGACY_PLAYER_ID, existingPlayerId);
   }
   localStorage.setItem(SK.PLAYER_ID, playerId);
@@ -542,7 +576,7 @@ export async function mergeCloudAchievements(localAchievements: AchievementMap):
   const { playerId, alias } = getPlayerIdentity();
   const ownerUid = getAuthUid() || (await initAnonymousAuth());
   if (!ownerUid) return null;
-  const docRef = gs.db!.collection('player_profiles').doc(playerId);
+  const docRef = gs.db!.collection(editionCollection('player_profiles')).doc(playerId);
 
   try {
     const doc = await docRef.get();
@@ -573,7 +607,7 @@ export async function syncAchievementsToCloud(achievements: AchievementMap): Pro
   const ownerUid = getAuthUid() || (await initAnonymousAuth());
   if (!ownerUid) return;
   const sanitized = sanitizeAchievementMap(achievements);
-  const docRef = gs.db!.collection('player_profiles').doc(playerId);
+  const docRef = gs.db!.collection(editionCollection('player_profiles')).doc(playerId);
   try {
     await docRef.set(
       {
@@ -590,14 +624,14 @@ export async function syncAchievementsToCloud(achievements: AchievementMap): Pro
   }
 }
 
-export async function syncPlayerProgressToCloud(): Promise<void> {
-  if (!gs.firebaseReady || !gs.db) return;
-  if (localStorage.getItem('sudoku_e2e_mode') === '1') return;
+export async function syncPlayerProgressToCloud(): Promise<boolean> {
+  if (!gs.firebaseReady || !gs.db) return false;
+  if (localStorage.getItem('sudoku_e2e_mode') === '1') return false;
   // Block sync until hydrate finishes, to prevent overwriting cloud data with empty localStorage
-  if (!_hydrateComplete) return;
+  if (!_hydrateComplete) return false;
   const { playerId, alias } = getPlayerIdentity();
   const ownerUid = getAuthUid() || (await initAnonymousAuth());
-  if (!ownerUid) return;
+  if (!ownerUid) return false;
   const records = normalizeRecordMap(readJson<Record<string, unknown>>(SK.RECORDS, {}), 'classic');
   const speedRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.SPEED_RECORDS, {}), 'speed');
   const practiceRecords = readJson<Record<string, unknown>>(SK.PRACTICE_RECORDS, {});
@@ -613,7 +647,7 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
   };
   const settings = readLocalSettings();
   try {
-    await gs.db!.collection('player_profiles').doc(playerId).set(
+    await gs.db!.collection(editionCollection('player_profiles')).doc(playerId).set(
       {
         playerId,
         ownerUid,
@@ -628,8 +662,10 @@ export async function syncPlayerProgressToCloud(): Promise<void> {
       },
       { merge: true },
     );
+    return true;
   } catch (e) {
     console.warn('sync player progress failed:', e);
+    return false;
   }
 }
 
@@ -685,17 +721,22 @@ export async function syncSaveToCloud(saveKey: string, payload: Record<string, u
   const ownerUid = getAuthUid() || (await initAnonymousAuth());
   if (!ownerUid) return;
   try {
-    await gs.db!.collection('player_profiles').doc(playerId).collection(PROFILE_SAVE_SUBCOLLECTION).doc(saveKey).set(
-      {
-        key: saveKey,
-        playerId,
-        ownerUid,
-        alias,
-        payload,
-        updatedAt: firebaseServerTimestamp(),
-      },
-      { merge: true },
-    );
+    await gs
+      .db!.collection(editionCollection('player_profiles'))
+      .doc(playerId)
+      .collection(PROFILE_SAVE_SUBCOLLECTION)
+      .doc(saveKey)
+      .set(
+        {
+          key: saveKey,
+          playerId,
+          ownerUid,
+          alias,
+          payload,
+          updatedAt: firebaseServerTimestamp(),
+        },
+        { merge: true },
+      );
   } catch (e) {
     console.warn('sync save failed:', e);
   }
@@ -727,7 +768,7 @@ export async function deleteSaveFromCloud(saveKey: string): Promise<void> {
   const { playerId } = getPlayerIdentity();
   try {
     await gs.db
-      .collection('player_profiles')
+      .collection(editionCollection('player_profiles'))
       .doc(playerId)
       .collection(PROFILE_SAVE_SUBCOLLECTION)
       .doc(saveKey)
@@ -737,60 +778,158 @@ export async function deleteSaveFromCloud(saveKey: string): Promise<void> {
   }
 }
 
-export async function hydratePlayerProfileFromCloud(): Promise<void> {
-  if (!gs.firebaseReady || !gs.db) return;
+function writeMigrationJson(key: string, value: unknown): void {
+  // A failed local write must leave migration pending, never falsely complete.
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function mergeLegacyHistoryIntoLocal(journey: Record<string, unknown>): void {
+  const archive = getLegacyHistory();
+  const profile = mergeDuoProfiles(archive.duoProfile, journey.duoProfile);
+  writeMigrationJson('sudoku_duo_profile_v2', profile);
+  writeMigrationJson('sudoku_duo_records', mergeLegacyDuoRecords(archive.duoRecords, journey.duoRecords));
+  writeMigrationJson(
+    'sudoku_duo_puzzle_records_v1',
+    mergeRecordMaps(
+      normalizeRecordMap(archive.duoPuzzleRecords, 'classic'),
+      normalizeRecordMap(journey.duoPuzzleRecords, 'classic'),
+      'classic',
+    ),
+  );
+  const current = normalizeDuoProfile(readJson(SK.DUO_PROFILE, {}));
+  const legacyPlayCount = { ...current.legacyPlayCount };
+  for (const [key, count] of Object.entries(profile.playCount)) {
+    legacyPlayCount[key] = Math.max(count, legacyPlayCount[key] || 0);
+  }
+  writeMigrationJson(SK.DUO_PROFILE, { ...current, legacyPlayCount });
+}
+
+let legacySourceRecovered = false;
+async function importLegacyProfileFromCloud(): Promise<void> {
+  const migration = readEditionMigration();
+  if (!migration || migration.cloudImported || ACTIVE_EDITION === 'legacy') return;
+  if (!migration.sourcePlayerId) {
+    legacySourceRecovered = true;
+    return;
+  }
+  const sourceDb = await getLegacyProfileDb(migration.sourcePlayerId);
+  if (!sourceDb) return; // Preserve retry eligibility if original auth is unavailable.
+  const ref = sourceDb.collection('player_profiles').doc(migration.sourcePlayerId);
+  const doc = await ref.get();
+  if (doc.exists) {
+    mergeProfileIntoLocal(doc.data() || {}, true);
+    const saves = await ref.collection(PROFILE_SAVE_SUBCOLLECTION).get();
+    for (const saveDoc of saves.docs) {
+      const data = saveDoc.data() || {};
+      const key = typeof data.key === 'string' ? data.key : saveDoc.id;
+      if (SAVE_KEY_PATTERN.test(key) && isPlainObject(data.payload) && localStorage.getItem(key) === null) {
+        writeJson(key, data.payload);
+      }
+    }
+  }
+  legacySourceRecovered = true;
+}
+
+async function persistLegacyHistoryToCloud(): Promise<void> {
+  const migration = readEditionMigration();
+  if (!migration || migration.cloudImported || !gs.db || ACTIVE_EDITION === 'legacy') return;
+  if (!(await syncPlayerProgressToCloud())) return;
   const { playerId } = getPlayerIdentity();
-  const ownerUid = getAuthUid() || (await initAnonymousAuth());
+  const ownerUid = getAuthUid();
   if (!ownerUid) return;
-  const docRef = gs.db!.collection('player_profiles').doc(playerId);
   try {
-    const doc = await docRef.get();
-    if (!doc.exists) {
-      scheduleProgressSync(50);
-      return;
+    // Strings avoid Firestore depth/index limits for old replay payloads. Each
+    // document is below 1 MiB even with four-byte Unicode characters.
+    const json = JSON.stringify(getLegacyHistory());
+    const chunks = Math.ceil(json.length / 200_000);
+    const archive = gs.db.collection(editionCollection('player_profiles')).doc(playerId).collection('legacy_history');
+    for (let index = 0; index < chunks; index++) {
+      await archive.doc(`part_${String(index).padStart(5, '0')}`).set({
+        ownerUid,
+        playerId,
+        index,
+        payload: json.slice(index * 200_000, (index + 1) * 200_000),
+      });
     }
-    const data = doc.data() || {};
+    await archive.doc('summary').set({
+      ownerUid,
+      playerId,
+      version: 1,
+      chunks,
+      sourceProject: migration.sourceProject,
+      sourceRecovered: legacySourceRecovered,
+      updatedAt: firebaseServerTimestamp(),
+    });
+    // An interrupted/offline transfer remains retryable. Never remove source data.
+    if (legacySourceRecovered) markLegacyCloudImported();
+  } catch (error) {
+    console.warn('Legacy history backup remains pending:', error);
+  }
+}
 
-    const localRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.RECORDS, {}), 'classic');
-    const remoteRecords = normalizeRecordMap(data.records, 'classic');
-    const mergedRecords = mergeRecordMaps(localRecords, remoteRecords, 'classic');
-    if (JSON.stringify(localRecords) !== JSON.stringify(mergedRecords)) writeJson(SK.RECORDS, mergedRecords);
+async function restoreLegacyHistoryFromCloud(playerId: string): Promise<void> {
+  if (ACTIVE_EDITION === 'legacy' || !gs.db) return;
+  const ref = gs.db.collection(editionCollection('player_profiles')).doc(playerId).collection('legacy_history');
+  const summary = await ref.doc('summary').get();
+  if (!summary.exists) return;
+  const count = summary.data()?.chunks;
+  if (!Number.isInteger(count) || Number(count) < 1 || Number(count) > 200) return;
+  const parts: string[] = [];
+  for (let index = 0; index < Number(count); index++) {
+    const part = await ref.doc(`part_${String(index).padStart(5, '0')}`).get();
+    const payload = part.data()?.payload;
+    if (typeof payload !== 'string') throw new Error('Incomplete legacy history backup');
+    parts.push(payload);
+  }
+  const history: unknown = JSON.parse(parts.join(''));
+  if (isPlainObject(history)) mergeLegacyHistoryIntoLocal(history);
+}
 
-    const localSpeedRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.SPEED_RECORDS, {}), 'speed');
-    const remoteSpeedRecords = normalizeRecordMap(data.speedRecords, 'speed');
-    const mergedSpeedRecords = mergeRecordMaps(localSpeedRecords, remoteSpeedRecords, 'speed');
-    if (JSON.stringify(localSpeedRecords) !== JSON.stringify(mergedSpeedRecords))
-      writeJson(SK.SPEED_RECORDS, mergedSpeedRecords);
+function mergeProfileIntoLocal(data: Record<string, unknown>, legacy = false): void {
+  const store = legacy ? writeMigrationJson : writeJson;
+  const localRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.RECORDS, {}), 'classic');
+  const remoteRecords = normalizeRecordMap(data.records, 'classic');
+  const mergedRecords = mergeRecordMaps(localRecords, remoteRecords, 'classic');
+  if (JSON.stringify(localRecords) !== JSON.stringify(mergedRecords)) store(SK.RECORDS, mergedRecords);
 
-    const localAchievements = sanitizeAchievementMap(readJson<AchievementMap>(SK.ACHIEVEMENTS, {}));
-    const remoteAchievements = sanitizeAchievementMap(data.achievements);
-    const mergedAchievements = mergeAchievementMaps(localAchievements, remoteAchievements);
-    if (!sameAchievementMaps(localAchievements, mergedAchievements)) writeJson(SK.ACHIEVEMENTS, mergedAchievements);
+  const localSpeedRecords = normalizeRecordMap(readJson<Record<string, unknown>>(SK.SPEED_RECORDS, {}), 'speed');
+  const remoteSpeedRecords = normalizeRecordMap(data.speedRecords, 'speed');
+  const mergedSpeedRecords = mergeRecordMaps(localSpeedRecords, remoteSpeedRecords, 'speed');
+  if (JSON.stringify(localSpeedRecords) !== JSON.stringify(mergedSpeedRecords))
+    store(SK.SPEED_RECORDS, mergedSpeedRecords);
 
-    applyRemoteSettingsIfMissing(data.settings);
-    if (isPlainObject(data.practiceRecords) && localStorage.getItem(SK.PRACTICE_RECORDS) === null) {
-      writeJson(SK.PRACTICE_RECORDS, data.practiceRecords);
-    }
-    const journey = isPlainObject(data.journey) ? data.journey : {};
-    const journeyKeys: Array<[string, unknown]> = [
-      [SK.TEACH_READ, journey.teachRead],
-      [SK.PRACTICE_DONE, journey.practiceDone],
-      [SK.TECHNIQUES_USED, journey.techniquesUsed],
-    ];
-    for (const [key, value] of journeyKeys) {
-      if (value != null && localStorage.getItem(key) === null) writeJson(key, value);
-    }
-    if (isPlainObject(journey.wildProfile)) {
-      const localWild = readJson<Partial<WildProfile>>(SK.WILD_PROFILE, {});
-      const mergedWild = mergeWildProfiles(journey.wildProfile as Partial<WildProfile>, localWild);
-      if (JSON.stringify(localWild) !== JSON.stringify(mergedWild)) writeJson(SK.WILD_PROFILE, mergedWild);
-    }
+  const localAchievements = sanitizeAchievementMap(readJson<AchievementMap>(SK.ACHIEVEMENTS, {}));
+  const remoteAchievements = sanitizeAchievementMap(data.achievements);
+  const mergedAchievements = mergeAchievementMaps(localAchievements, remoteAchievements);
+  if (!sameAchievementMaps(localAchievements, mergedAchievements)) store(SK.ACHIEVEMENTS, mergedAchievements);
+
+  applyRemoteSettingsIfMissing(data.settings);
+  if (isPlainObject(data.practiceRecords) && localStorage.getItem(SK.PRACTICE_RECORDS) === null) {
+    store(SK.PRACTICE_RECORDS, data.practiceRecords);
+  }
+  const journey = isPlainObject(data.journey) ? data.journey : {};
+  const journeyKeys: Array<[string, unknown]> = [
+    [SK.TEACH_READ, journey.teachRead],
+    [SK.PRACTICE_DONE, journey.practiceDone],
+    [SK.TECHNIQUES_USED, journey.techniquesUsed],
+  ];
+  for (const [key, value] of journeyKeys) {
+    if (value != null && localStorage.getItem(key) === null) store(key, value);
+  }
+  if (isPlainObject(journey.wildProfile)) {
+    const localWild = readJson<Partial<WildProfile>>(SK.WILD_PROFILE, {});
+    const mergedWild = mergeWildProfiles(journey.wildProfile as Partial<WildProfile>, localWild);
+    if (JSON.stringify(localWild) !== JSON.stringify(mergedWild)) store(SK.WILD_PROFILE, mergedWild);
+  }
+  if (legacy) {
+    mergeLegacyHistoryIntoLocal(journey);
+  } else {
     const mergedDuoRecords = mergeLegacyDuoRecords(
       readJson<Record<string, unknown>>(SK.DUO_RECORDS, {}),
       journey.duoRecords,
     );
     if (JSON.stringify(readJson(SK.DUO_RECORDS, {})) !== JSON.stringify(mergedDuoRecords)) {
-      writeJson(SK.DUO_RECORDS, mergedDuoRecords);
+      store(SK.DUO_RECORDS, mergedDuoRecords);
     }
     const localDuoPuzzleRecords = normalizeRecordMap(
       readJson<Record<string, unknown>>(SK.DUO_PUZZLE_RECORDS, {}),
@@ -799,17 +938,43 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
     const remoteDuoPuzzleRecords = normalizeRecordMap(journey.duoPuzzleRecords, 'classic');
     const mergedDuoPuzzleRecords = mergeRecordMaps(localDuoPuzzleRecords, remoteDuoPuzzleRecords, 'classic');
     if (JSON.stringify(localDuoPuzzleRecords) !== JSON.stringify(mergedDuoPuzzleRecords)) {
-      writeJson(SK.DUO_PUZZLE_RECORDS, mergedDuoPuzzleRecords);
+      store(SK.DUO_PUZZLE_RECORDS, mergedDuoPuzzleRecords);
     }
     const mergedDuoProfile = mergeDuoProfiles(
       readJson<Record<string, unknown>>(SK.DUO_PROFILE, {}),
       journey.duoProfile,
     );
     if (JSON.stringify(readJson(SK.DUO_PROFILE, {})) !== JSON.stringify(mergedDuoProfile)) {
-      writeJson(SK.DUO_PROFILE, mergedDuoProfile);
+      store(SK.DUO_PROFILE, mergedDuoProfile);
     }
+  }
+}
 
-    const saveSnap = await docRef.collection(PROFILE_SAVE_SUBCOLLECTION).get();
+export async function hydratePlayerProfileFromCloud(): Promise<void> {
+  if (_hydratePromise) return _hydratePromise;
+  _hydratePromise = hydratePlayerProfileInternal().finally(() => {
+    _hydratePromise = null;
+  });
+  return _hydratePromise;
+}
+
+async function hydratePlayerProfileInternal(): Promise<void> {
+  if (!gs.firebaseReady || !gs.db) return;
+  _hydrateComplete = false;
+  const { playerId } = getPlayerIdentity();
+  const ownerUid = getAuthUid() || (await initAnonymousAuth());
+  if (!ownerUid) return;
+  const docRef = gs.db!.collection(editionCollection('player_profiles')).doc(playerId);
+  let hydrated = false;
+  try {
+    const doc = await docRef.get({ source: 'server' });
+    await importLegacyProfileFromCloud().catch((error) => console.warn('Legacy cloud import remains pending:', error));
+    const data = doc.exists ? doc.data() || {} : {};
+
+    mergeProfileIntoLocal(data);
+    if (doc.exists && ACTIVE_EDITION !== 'legacy') await restoreLegacyHistoryFromCloud(playerId);
+
+    const saveSnap = doc.exists ? await docRef.collection(PROFILE_SAVE_SUBCOLLECTION).get() : { docs: [] };
     saveSnap.docs.forEach((saveDoc: FirestoreDoc) => {
       const saveData = saveDoc.data() || {};
       const key = typeof saveData.key === 'string' ? saveData.key : saveDoc.id;
@@ -819,6 +984,7 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
       }
     });
 
+    hydrated = true;
     scheduleProgressSync(80);
     for (const key of Object.keys(localStorage)) {
       if (!SAVE_KEY_PATTERN.test(key)) continue;
@@ -828,19 +994,101 @@ export async function hydratePlayerProfileFromCloud(): Promise<void> {
   } catch (e) {
     console.warn('hydrate player profile failed:', e);
   } finally {
-    _hydrateComplete = true;
+    _hydrateComplete = hydrated;
   }
+  if (hydrated) await persistLegacyHistoryToCloud();
 }
 
 export async function deletePlayerData(): Promise<void> {
   const { playerId, alias } = getPlayerIdentity();
   const legacyPlayerId = localStorage.getItem(SK.LEGACY_PLAYER_ID);
-  await callDuoFunction('deletePlayerData', { playerId, alias, legacyPlayerId });
+  if (ACTIVE_EDITION === 'legacy') {
+    await callDuoFunction('deletePlayerData', { playerId, alias, legacyPlayerId });
+  } else {
+    if (!gs.db) throw new Error('Cloud storage unavailable');
+    const ownerUid = getAuthUid() || (await initAnonymousAuth());
+    if (!ownerUid || playerId !== `p_${ownerUid}`) throw new Error('Authenticated account required for deletion');
+    const wasHydrated = _hydrateComplete;
+    try {
+      gs.firebaseReady = false;
+      // Stop local writes before removing data; every path is inside this realm.
+      if (_progressSyncTimer) clearTimeout(_progressSyncTimer);
+      for (const timer of pendingSaveSyncTimers.values()) clearTimeout(timer);
+      pendingSaveSyncTimers.clear();
+      _hydrateComplete = false;
+      await gs.db.waitForPendingWrites?.();
+      const profile = gs.db.collection(editionCollection('player_profiles')).doc(playerId);
+      for (const collection of [PROFILE_SAVE_SUBCOLLECTION, 'legacy_history']) {
+        const snap = await profile.collection(collection).get();
+        for (const doc of snap.docs) await doc.ref.delete();
+      }
+      const scores = gs.db.collection(editionCollection('score_owners')).doc(playerId).collection('entries');
+      const snap = await scores.get();
+      for (const doc of snap.docs) {
+        // Use the owner's entry ID, never a document path supplied by profile data.
+        await gs.db
+          .collection(editionCollection('level_first_clears'))
+          .doc(doc.id)
+          .collection('players')
+          .doc(playerId)
+          .delete();
+        await doc.ref.delete();
+      }
+      const rooms = await gs.db
+        .collection(editionCollection('duo_ws_rooms'))
+        .where('hostOwnerUid', '==', ownerUid)
+        .get();
+      for (const doc of rooms.docs) await doc.ref.delete();
+      const presence = gs.db.collection(editionCollection('presence')).doc(playerId);
+      if ((await presence.get()).exists) await presence.delete();
+      if ((await profile.get()).exists) await profile.delete();
+      await deleteCurrentAuthUser();
+      await signOutLegacySession().catch((error) => console.warn('Original session sign-out pending:', error));
+    } catch (error) {
+      gs.firebaseReady = true;
+      _hydrateComplete = wasHydrated;
+      throw error;
+    }
+  }
   localStorage.clear();
   window.location.reload();
 }
 
 // ── Leaderboard ─────────────────────────────────────────────────────
+
+export async function loadLegacyLeaderboard(levelId: number): Promise<LeaderboardRow[]> {
+  const db = await getLegacyLeaderboardDb();
+  if (!db) return [];
+  const snap = await db
+    .collection('level_first_clears')
+    .doc(String(levelId))
+    .collection('players')
+    .orderBy('firstTimeSec', 'asc')
+    .limit(3)
+    .get();
+  return snap.docs.map((doc) => normalizeLeaderboardRow(doc.data())).filter((row): row is LeaderboardRow => !!row);
+}
+
+function currentLeaderboardKey(levelId: number): string | null {
+  const level =
+    getAllLevels().find((l) => l.id === levelId) || (gs.currentLevel?.id === levelId ? gs.currentLevel : null);
+  return leaderboardKey(levelId, level?.puzzle, gs.isSpeedrunMode ? 'speed' : 'classic');
+}
+
+function leaderboardQuery(levelId: number) {
+  const key = currentLeaderboardKey(levelId);
+  if (!key || !gs.db) return null;
+  const players = gs.db.collection(editionCollection('level_first_clears')).doc(key).collection('players');
+  return ACTIVE_EDITION !== 'legacy' && gs.isSpeedrunMode
+    ? players.orderBy('firstSubmissions', 'asc').orderBy('firstTimeSec', 'asc').limit(3)
+    : players.orderBy('firstTimeSec', 'asc').limit(3);
+}
+
+function leaderboardScore(row: LeaderboardRow): string {
+  return row.mode === 'speed'
+    ? `${t('levelGrid.speedrunSubmissions', { submissions: String(row.firstSubmissions || 1) })}  ${formatSeconds(row.firstTimeSec)}`
+    : `${formatSeconds(row.firstTimeSec)}  ${'★'.repeat(row.firstStars)}`;
+}
 
 export function renderLeaderboard(el: HTMLElement | null, rows: LeaderboardRow[]): void {
   if (!el) return;
@@ -855,7 +1103,7 @@ export function renderLeaderboard(el: HTMLElement | null, rows: LeaderboardRow[]
   el.innerHTML = rows
     .map((r, i) => {
       const titleStr = r.title ? escapeHtml(r.title) : '';
-      return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${formatSeconds(r.firstTimeSec)}  ${'★'.repeat(r.firstStars)}`;
+      return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${leaderboardScore(r)}`;
     })
     .join('<br>');
 }
@@ -873,15 +1121,9 @@ export async function loadLevelLeaderboard(levelId: number): Promise<void> {
     renderLeaderboard(document.getElementById('win-leaderboard-list'), []);
     return;
   }
-  const db = gs.db;
   try {
-    const snap = await db
-      .collection('level_first_clears')
-      .doc(String(levelId))
-      .collection('players')
-      .orderBy('firstTimeSec', 'asc')
-      .limit(3)
-      .get();
+    const query = leaderboardQuery(levelId);
+    const snap = query ? await query.get() : { docs: [] };
     const rows = snap.docs
       .map((d: FirestoreDoc) => normalizeLeaderboardRow(d.data()))
       .filter((row): row is LeaderboardRow => !!row);
@@ -903,15 +1145,9 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
     if (_plEl) _plEl.textContent = t('firebase.disabled');
     return;
   }
-  const db = gs.db;
   try {
-    const snap = await db
-      .collection('level_first_clears')
-      .doc(String(levelId))
-      .collection('players')
-      .orderBy('firstTimeSec', 'asc')
-      .limit(3)
-      .get();
+    const query = leaderboardQuery(levelId);
+    const snap = query ? await query.get() : { docs: [] };
     const rows = snap.docs
       .map((d: FirestoreDoc) => normalizeLeaderboardRow(d.data()))
       .filter((row): row is LeaderboardRow => !!row);
@@ -921,9 +1157,9 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
           .map((r: LeaderboardRow, i: number) => {
             const timeStr = formatSeconds(r.firstTimeSec);
             const titleStr = r.title ? escapeHtml(r.title) : '';
-            if (gs.isSpeedrunMode)
+            if (gs.isSpeedrunMode && ACTIVE_EDITION === 'legacy')
               return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${timeStr} ${t('miscRuntime.speedrunClassic')}`;
-            return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${timeStr}  ${'★'.repeat(r.firstStars)}`;
+            return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${leaderboardScore(r)}`;
           })
           .join('<br>');
     const _plEl = document.getElementById('pre-level-leaderboard');
@@ -946,7 +1182,11 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
   const ownerUid = getAuthUid() || (await initAnonymousAuth());
   if (!ownerUid) return;
   const levels = getAllLevels();
-  const level = levels.find((l) => l.id === levelId) || gs.currentLevel || null;
+  const level = levels.find((l) => l.id === levelId) || (gs.currentLevel?.id === levelId ? gs.currentLevel : null);
+  const boardKey = currentLeaderboardKey(levelId);
+  if (!boardKey || !gs.db || gs.isDuoMode) return;
+  const mode = gs.isSpeedrunMode ? 'speed' : 'classic';
+  const firstSubmissions = mode === 'speed' ? gs.submissionCount + 1 : 0;
   const levelVersion = gs.appVersion || 'legacy-unknown';
   const levelSnapshot = level
     ? {
@@ -961,7 +1201,11 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
         puzzleHash: Array.isArray(level.puzzle) ? `p81:${level.puzzle.join('')}` : null,
       }
     : null;
-  const docRef = gs.db!.collection('level_first_clears').doc(String(levelId)).collection('players').doc(playerId);
+  const docRef = gs.db
+    .collection(editionCollection('level_first_clears'))
+    .doc(boardKey)
+    .collection('players')
+    .doc(playerId);
   try {
     await gs.db!.runTransaction(async (tx: FirestoreTransaction) => {
       const doc = await tx.get(docRef);
@@ -973,11 +1217,27 @@ export async function submitFirstClear(levelId: number, clearSec: number, clearS
         alias,
         title,
         firstTimeSec: clearSec,
-        firstStars: clearStars,
+        firstStars: mode === 'speed' ? 0 : clearStars,
+        ...(ACTIVE_EDITION === 'legacy'
+          ? {}
+          : {
+              edition: ACTIVE_EDITION,
+              mode,
+              boardKey,
+              firstSubmissions,
+            }),
         levelVersion,
         levelSnapshot,
         createdAt: firebaseServerTimestamp(),
       });
+      if (ACTIVE_EDITION !== 'legacy') {
+        const ownerRef = gs
+          .db!.collection(editionCollection('score_owners'))
+          .doc(playerId)
+          .collection('entries')
+          .doc(boardKey);
+        tx.set(ownerRef, { ownerUid, playerId, boardKey, createdAt: firebaseServerTimestamp() });
+      }
     });
   } catch (e) {
     console.warn('submit first clear failed:', e);

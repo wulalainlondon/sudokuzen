@@ -38,6 +38,9 @@ class Client {
     });
   }
   send(obj) {
+    if (process.env.QA_EDITION && ['create', 'join', 'hello'].includes(obj.type)) {
+      obj = { ...obj, edition: process.env.QA_EDITION, protocolVersion: 2 };
+    }
     this.ws.send(JSON.stringify(obj));
   }
   waitFor(pred, ms = 8000) {
@@ -283,10 +286,7 @@ async function main() {
     const guest2 = new Client(roomId, 'guest-replacement');
     await guest2.open();
     guest2.send({ type: 'hello', player: GUEST_P, role: 'guest' });
-    await guest2.waitFor(
-      (m) => m.type === 'roomState' && m.you === 'guest' && m.state.guest?.online === true,
-      4000,
-    );
+    await guest2.waitFor((m) => m.type === 'roomState' && m.you === 'guest' && m.state.guest?.online === true, 4000);
     guest.close();
     await sleep(2200);
     const st = host.latest();

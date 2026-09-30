@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { getBuildAssetGraph } from './build-asset-graph.mjs';
+import { editionBuildFiles } from './app-edition-build.mjs';
 
 const root = process.cwd();
 const distDir = path.join(root, 'dist');
@@ -53,20 +54,18 @@ fs.writeFileSync(swPath, swSource.replace('/* __BUILD_ASSETS__ */ []', JSON.stri
 // CI and local release tooling generate the runtime Firebase config under public/.
 // Prefer it over the root placeholder so prepare-pages-dist does not overwrite a
 // valid Vite-copied production config with an intentionally credential-free stub.
-const firebaseConfigCandidates = [
-  path.join(root, 'public', 'firebase-config.js'),
-  path.join(root, 'firebase-config.js'),
-];
-const firebaseConfigSource = firebaseConfigCandidates.find((candidate) => fs.existsSync(candidate));
-if (!firebaseConfigSource) {
-  throw new Error('firebase-config.js is missing');
+const builtEdition = JSON.parse(fs.readFileSync(path.join(distDir, 'app-edition.json'), 'utf8')).edition;
+for (const [name, source] of Object.entries(editionBuildFiles(root, builtEdition))) {
+  fs.writeFileSync(path.join(distDir, name), source);
 }
-fs.copyFileSync(firebaseConfigSource, path.join(distDir, 'firebase-config.js'));
+// Build inputs for another edition do not belong in the distributed package.
+fs.rmSync(path.join(distDir, 'firebase-config.ios.js'), { force: true });
+if (builtEdition !== 'ios') fs.rmSync(path.join(distDir, 'firebase-legacy-config.js'), { force: true });
 
 // Keep an optional local override script path to avoid runtime 404.
 const localConfig = path.join(root, 'firebase-config.local.js');
 const localDest = path.join(distDir, 'firebase-config.local.js');
-if (fs.existsSync(localConfig)) {
+if (process.env.ALLOW_LOCAL_FIREBASE_CONFIG === '1' && fs.existsSync(localConfig)) {
   fs.copyFileSync(localConfig, localDest);
 } else {
   fs.writeFileSync(localDest, '// local firebase override (optional)\n', 'utf8');

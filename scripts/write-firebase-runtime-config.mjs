@@ -11,7 +11,8 @@ if (!inputArg || !outputArg) {
 
 const inputPath = resolve(inputArg);
 const outputPath = resolve(outputArg);
-const source = JSON.parse(await readFile(inputPath, 'utf8'));
+const input = JSON.parse(await readFile(inputPath, 'utf8'));
+const source = input.result?.sdkConfig ?? input.sdkConfig ?? input;
 const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
 const missing = requiredKeys.filter((key) => typeof source[key] !== 'string' || source[key].length === 0);
 if (missing.length > 0) {

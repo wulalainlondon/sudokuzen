@@ -8,6 +8,21 @@ import { deMentor } from './de-mentor';
 type Widen<T> = { [K in keyof T]?: T[K] extends string ? string : Widen<T[K]> };
 
 export const de: Widen<Locale> = {
+  edition: {
+    legacyBoard: 'Rangliste vor der Trennung',
+    legacyBoardNote:
+      'Enthält frühere PWA- und iOS-Ergebnisse. Einige Rätsel können sich geändert haben; die Einträge dienen als Rückblick.',
+    pwa: 'PWA-Version',
+    ios: 'iOS-Version',
+    currentStats: 'Duo-Bilanz der {edition}',
+    score: '{wins} Siege · {losses} Niederlagen · {draws} Unentschieden',
+    separate: 'Spiele gegen Personen mit derselben Version. Neue Ergebnisse und Ranglisten werden getrennt geführt.',
+    legacyHistory: 'Duo-Verlauf vor der Trennung',
+    preserved:
+      'Frühere Ergebnisse, Wiederholungen und freigeschaltete Modi bleiben erhalten. Solo-Fortschritt und persönliche Bestzeiten werden übernommen.',
+    exportHistory: 'Frühere Duo-Ergebnisse exportieren',
+  },
+
   // ── Merge mentor dialogue ─────────────────────────────────────────
   ...deMentor,
 

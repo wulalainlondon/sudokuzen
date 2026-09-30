@@ -1,5 +1,6 @@
 import type { SudokuWindow } from '../facade/windowTypes';
 import type { FirestoreDbLike } from '../game/state';
+import { ACTIVE_EDITION, TARGET_EDITION, assertEditionProject, LEGACY_PROJECT_ID } from '../platform/appEdition';
 
 interface FirestoreNamespace {
   (): FirestoreDbLike;
@@ -10,27 +11,38 @@ interface FirestoreNamespace {
 interface FirebaseUser {
   uid: string;
   getIdToken(forceRefresh?: boolean): Promise<string>;
+  delete(): Promise<void>;
 }
 
 interface FirebaseAuth {
   currentUser: FirebaseUser | null;
   signInAnonymously(): Promise<{ user: { uid: string } | null }>;
   onAuthStateChanged(cb: (user: { uid: string } | null) => void): () => void;
+  signOut?(): Promise<void>;
 }
 
 interface FirebaseFunctions {
   httpsCallable(name: string): (data?: unknown) => Promise<{ data: unknown }>;
 }
 
+interface FirebaseAppCompat {
+  name: string;
+  options: Record<string, string>;
+  auth(): FirebaseAuth;
+  firestore(): FirestoreDbLike;
+  functions(): FirebaseFunctions;
+}
+
 export interface FirebaseCompat {
   apps: unknown[];
-  initializeApp(config: Record<string, string>): void;
+  initializeApp(config: Record<string, string>, name?: string): FirebaseAppCompat | void;
   firestore: FirestoreNamespace;
   auth(): FirebaseAuth;
   functions(): FirebaseFunctions;
 }
 
 let _firebaseCompat: FirebaseCompat | null = null;
+let _legacyApp: FirebaseAppCompat | null = null;
 let _firebaseInitPromise: Promise<FirebaseCompat | null> | null = null;
 let _firebaseConfigLoadPromise: Promise<void> | null = null;
 let _authUid: string | null = null;
@@ -103,11 +115,14 @@ function appendScript(src: string, optional = false): Promise<void> {
 }
 
 async function ensureFirebaseConfigLoaded(): Promise<void> {
-  if ((window as SudokuWindow).SUDOKU_FIREBASE_CONFIG) return;
+  const globals = window as SudokuWindow & { SUDOKU_LEGACY_FIREBASE_CONFIG?: Record<string, string> };
+  if (globals.SUDOKU_FIREBASE_CONFIG && (TARGET_EDITION !== 'ios' || globals.SUDOKU_LEGACY_FIREBASE_CONFIG)) return;
   if (_firebaseConfigLoadPromise) return _firebaseConfigLoadPromise;
   _firebaseConfigLoadPromise = (async () => {
-    await appendScript(resolvePublicPath('firebase-config.js'));
-    await appendScript(resolvePublicPath('firebase-config.local.js'), true);
+    if (!globals.SUDOKU_FIREBASE_CONFIG) await appendScript(resolvePublicPath('firebase-config.js'));
+    if (TARGET_EDITION === 'ios') await appendScript(resolvePublicPath('firebase-legacy-config.js'));
+    if (!import.meta.env.PROD || TARGET_EDITION === 'legacy')
+      await appendScript(resolvePublicPath('firebase-config.local.js'), true);
   })().finally(() => {
     _firebaseConfigLoadPromise = null;
   });
@@ -122,7 +137,42 @@ export async function ensureFirebaseRuntime(): Promise<FirebaseCompat | null> {
     await ensureFirebaseConfigLoaded();
     const win = window as SudokuWindow;
     if (!win.SUDOKU_FIREBASE_CONFIG) return null;
-    _firebaseCompat = await loadSdk();
+    const sdk = await loadSdk();
+    if (TARGET_EDITION === 'legacy') {
+      _firebaseCompat = sdk;
+    } else {
+      const legacyConfig = (win as SudokuWindow & { SUDOKU_LEGACY_FIREBASE_CONFIG?: Record<string, string> })
+        .SUDOKU_LEGACY_FIREBASE_CONFIG;
+      const config =
+        ACTIVE_EDITION === 'legacy' ? (legacyConfig ?? win.SUDOKU_FIREBASE_CONFIG) : win.SUDOKU_FIREBASE_CONFIG;
+      if (!config) throw new Error('Missing original Firebase configuration for room recovery');
+      if (ACTIVE_EDITION === 'legacy' && config.projectId !== LEGACY_PROJECT_ID)
+        throw new Error('Original Firebase project mismatch');
+      assertEditionProject(config);
+      const originalConfig = legacyConfig ?? (TARGET_EDITION === 'pwa' ? config : null);
+      if (originalConfig?.projectId === LEGACY_PROJECT_ID) {
+        _legacyApp =
+          (sdk.apps as FirebaseAppCompat[]).find((a) => a.name === '[DEFAULT]') ??
+          (sdk.initializeApp(originalConfig) as FirebaseAppCompat);
+      }
+      const name = ACTIVE_EDITION === 'legacy' ? '[DEFAULT]' : `sudoku-${ACTIVE_EDITION}`;
+      const clientApp =
+        (sdk.apps as FirebaseAppCompat[]).find((a) => a.name === name) ??
+        (sdk.initializeApp(config, name) as FirebaseAppCompat);
+      if (clientApp.options.projectId !== config.projectId)
+        throw new Error('Firebase app belongs to a different edition');
+      const firestore = clientApp.firestore.bind(clientApp) as FirestoreNamespace;
+      firestore.FieldValue = sdk.firestore.FieldValue;
+      firestore.Timestamp = sdk.firestore.Timestamp;
+      _firebaseCompat = {
+        ...sdk,
+        apps: sdk.apps,
+        initializeApp: sdk.initializeApp.bind(sdk),
+        firestore,
+        auth: clientApp.auth.bind(clientApp),
+        functions: clientApp.functions.bind(clientApp),
+      };
+    }
     _sdkFailureUrl = null;
     _sdkLoadFailed = false;
     return _firebaseCompat;
@@ -177,6 +227,49 @@ export async function initAnonymousAuth(): Promise<string | null> {
 
 export function getAuthUid(): string | null {
   return _authUid;
+}
+
+/** Recover only the original authenticated identity; never create an old account. */
+export async function getLegacyProfileDb(sourcePlayerId: string | null): Promise<FirestoreDbLike | null> {
+  if (!sourcePlayerId || !_legacyApp || ACTIVE_EDITION === 'legacy') return null;
+  const auth = _legacyApp.auth();
+  if (!auth.currentUser) {
+    await new Promise<void>((resolve) => {
+      const observer = { unsubscribe: () => {} };
+      const timer = setTimeout(() => {
+        observer.unsubscribe();
+        resolve();
+      }, 4000);
+      observer.unsubscribe = auth.onAuthStateChanged(() =>
+        queueMicrotask(() => {
+          clearTimeout(timer);
+          observer.unsubscribe();
+          resolve();
+        }),
+      );
+    });
+  }
+  if (!auth.currentUser || `p_${auth.currentUser.uid}` !== sourcePlayerId) return null;
+  return _legacyApp.firestore();
+}
+
+/** Original leaderboards are public and are exposed only as historical rows. */
+export async function getLegacyLeaderboardDb(): Promise<FirestoreDbLike | null> {
+  await ensureFirebaseRuntime();
+  return _legacyApp?.firestore() ?? null;
+}
+
+export async function signOutLegacySession(): Promise<void> {
+  if (_legacyApp && ACTIVE_EDITION !== 'legacy') await _legacyApp.auth().signOut?.();
+}
+
+export async function deleteCurrentAuthUser(): Promise<void> {
+  const fb = await ensureFirebaseRuntime();
+  const user = fb?.auth().currentUser;
+  if (!user) throw new Error('Authenticated account required for deletion');
+  await user.delete();
+  _authUid = null;
+  _authReady = null;
 }
 
 // 取得 Firebase ID token（Cloudflare Worker 端驗身分用）。確保已匿名登入後回 token。

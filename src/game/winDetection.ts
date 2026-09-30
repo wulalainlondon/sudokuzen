@@ -19,6 +19,7 @@ import {
 } from './coreUiBridge';
 import { updateCellDisplay, getUnitIndices, isUnitComplete, updateNumpadState } from './board';
 import { loadLevelLeaderboard, submitFirstClear } from '../firebase/client';
+import { ACTIVE_EDITION } from '../platform/appEdition';
 import { checkAllAchievements, unlockAchievement } from '../features/stats';
 import { clearGameStatus, saveProgress } from './persistence';
 import { toClassicLevelRecord } from '../shared/records/levelRecords';
@@ -119,10 +120,11 @@ export function checkWin(): void {
     if (gs.isGhostMode) unlockAchievement('ghost_win');
     checkAllAchievements();
   }, 1000);
-  if (!gs.isDuoMode && !policy.useSubmissionValidation) {
-    submitFirstClear(gs.currentLevel!.id, gs.seconds, earnedValue).then(() =>
-      loadLevelLeaderboard(gs.currentLevel!.id),
-    );
+  if (!gs.isDuoMode && (!policy.useSubmissionValidation || ACTIVE_EDITION !== 'legacy')) {
+    const levelId = gs.currentLevel!.id;
+    submitFirstClear(levelId, gs.seconds, earnedValue).then(() => {
+      if (gs.currentLevel?.id === levelId) return loadLevelLeaderboard(levelId);
+    });
   }
 }
 

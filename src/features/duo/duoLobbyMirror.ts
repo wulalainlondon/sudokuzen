@@ -1,3 +1,4 @@
+import { editionCollection } from '../../platform/appEdition';
 // Duo WebSocket 房間的大廳「麵包屑」——讓 Cloudflare DO 房間能被現有大廳發現。
 //
 // DO 才是遊戲狀態的權威來源；這裡只在 Firestore 的 duo_ws_rooms 寫一筆輕量
@@ -71,7 +72,7 @@ function renderPublicationState(): void {
 }
 
 function wsLobbyDoc(roomId: string) {
-  return gs.db!.collection(WS_LOBBY_COLLECTION).doc(roomId);
+  return gs.db!.collection(editionCollection(WS_LOBBY_COLLECTION)).doc(roomId);
 }
 
 function wantsRoom(roomId: string): boolean {
@@ -489,7 +490,7 @@ async function listWaitingWsRoomsViaRest(limit: number): Promise<DuoRoomSummary[
       if (config.apiKey) params.set('key', config.apiKey);
       const firestoreEndpoint =
         `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}` +
-        `/databases/(default)/documents/${WS_LOBBY_COLLECTION}?${params}`;
+        `/databases/(default)/documents/${editionCollection(WS_LOBBY_COLLECTION)}?${params}`;
       response = await fetch(firestoreEndpoint, { cache: 'no-store', signal: controller.signal });
     }
     if (!response.ok) throw new Error(`Lobby REST ${response.status}`);
@@ -511,7 +512,7 @@ export async function listWaitingWsRooms(limit = 20, opts: { force?: boolean } =
   const restRead = opts.force ? listWaitingWsRoomsViaRest(limit) : null;
   let sdkTimer: ReturnType<typeof setTimeout> | undefined;
   try {
-    const query = gs.db.collection(WS_LOBBY_COLLECTION).orderBy('updatedAt', 'desc').limit(limit);
+    const query = gs.db.collection(editionCollection(WS_LOBBY_COLLECTION)).orderBy('updatedAt', 'desc').limit(limit);
     // iOS standalone PWA can keep a stale Firestore query snapshot after a
     // background/offline transition. A player-triggered refresh must bypass
     // that cache, otherwise a healthy room can disappear until the SDK

@@ -1,3 +1,5 @@
+import { mustTransitionEdition, scheduleEditionTransition } from '../../platform/appEdition';
+import { editionCollection } from '../../platform/appEdition';
 // Duo room CRUD — Firebase room management extracted from duo.ts
 // All room creation, joining, subscribing, cleanup, and heartbeat logic lives here.
 
@@ -104,7 +106,7 @@ export function getActiveDuoRoomId(): string | null {
 export function duoRoomRef(roomId?: string) {
   const id = roomId || _activeRoomId;
   if (!id) throw new Error('duoRoomRef: no room id');
-  return gs.db!.collection(DUO_ROOMS_COLLECTION).doc(id);
+  return gs.db!.collection(editionCollection(DUO_ROOMS_COLLECTION)).doc(id);
 }
 
 function docToSummary(roomId: string, d: DuoRoomData): DuoRoomSummary {
@@ -167,7 +169,7 @@ export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } 
     try {
       bumpDuoMetric('roomReadOps');
       const orderedSnap = await db
-        .collection(DUO_ROOMS_COLLECTION)
+        .collection(editionCollection(DUO_ROOMS_COLLECTION))
         .where('status', '==', 'waiting')
         .orderBy('updatedAt', 'desc')
         .limit(limit)
@@ -179,7 +181,7 @@ export async function listWaitingDuoRooms(limit = 20, opts: { force?: boolean } 
       try {
         bumpDuoMetric('roomReadOps');
         const fallbackSnap = await db
-          .collection(DUO_ROOMS_COLLECTION)
+          .collection(editionCollection(DUO_ROOMS_COLLECTION))
           .where('status', '==', 'waiting')
           .limit(limit * 2)
           .get();
@@ -281,7 +283,7 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
   try {
     bumpDuoMetric('roomReadOps');
     const countdownSnap = await db
-      .collection(DUO_ROOMS_COLLECTION)
+      .collection(editionCollection(DUO_ROOMS_COLLECTION))
       .where('status', '==', 'countdown')
       .orderBy('updatedAt', 'asc')
       .limit(30)
@@ -308,7 +310,7 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
 
     bumpDuoMetric('roomReadOps');
     const orderedSnap = await db
-      .collection(DUO_ROOMS_COLLECTION)
+      .collection(editionCollection(DUO_ROOMS_COLLECTION))
       .where('status', '==', 'waiting')
       .orderBy('updatedAt', 'asc')
       .limit(30)
@@ -341,7 +343,7 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
 
     bumpDuoMetric('roomReadOps');
     const finishedSnap = await db
-      .collection(DUO_ROOMS_COLLECTION)
+      .collection(editionCollection(DUO_ROOMS_COLLECTION))
       .where('status', '==', 'finished')
       .orderBy('updatedAt', 'asc')
       .limit(30)
@@ -367,6 +369,10 @@ export async function cleanupStaleDuoRooms(force = false): Promise<void> {
 // ── Create room ──────────────────────────────────────────────────────
 
 export async function createDuoRoom(tierId: string, modeId: string): Promise<string | null> {
+  if (mustTransitionEdition()) {
+    scheduleEditionTransition();
+    return null;
+  }
   const { alias } = getPlayerIdentity();
   if (!alias) return null;
 
@@ -409,6 +415,10 @@ export async function createDuoRoom(tierId: string, modeId: string): Promise<str
 // ── Join room ────────────────────────────────────────────────────────
 
 export async function joinDuoRoom(roomId: string): Promise<boolean> {
+  if (mustTransitionEdition()) {
+    scheduleEditionTransition();
+    return false;
+  }
   if (!roomId) return false;
   const { alias } = getPlayerIdentity();
 

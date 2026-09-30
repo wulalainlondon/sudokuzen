@@ -144,7 +144,7 @@ export function SettingsModal(): ReactElement {
   }, [isDark]);
 
   const deleteData = useCallback(async () => {
-    if (!window.confirm('確定刪除所有裝置與雲端進度？此動作無法復原。')) return;
+    if (!window.confirm('確定刪除此版本的裝置與雲端進度？此動作無法復原，另一版本不受影響。')) return;
     setDeleting(true);
     try {
       const { deletePlayerData } = await import('../../firebase/client');

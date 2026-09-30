@@ -23,7 +23,7 @@ export interface FirestoreTransaction {
 }
 
 export interface FirestoreDocRef {
-  get(): Promise<FirestoreDoc>;
+  get(options?: { source?: 'default' | 'server' | 'cache' }): Promise<FirestoreDoc>;
   set(data: Record<string, unknown>, options?: { merge?: boolean }): Promise<void>;
   update(data: Record<string, unknown>): Promise<void>;
   delete(): Promise<void>;

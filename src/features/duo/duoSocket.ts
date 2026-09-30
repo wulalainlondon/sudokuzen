@@ -1,3 +1,4 @@
+import { ACTIVE_EDITION, editionEnvelope } from '../../platform/appEdition';
 // Duo WebSocket 傳輸層（Cloudflare Durable Objects / partyserver）。
 //
 // 設計：把 DO 廣播的 roomState 映射成現有的 DuoRoomData，餵進既有的
@@ -163,6 +164,13 @@ function pump(raw: string): void {
     return;
   }
 
+  if (
+    msg.type === 'roomState' &&
+    ACTIVE_EDITION !== 'legacy' &&
+    (msg.state.edition !== ACTIVE_EDITION || msg.state.protocolVersion !== 2)
+  )
+    return;
+
   // 先結算一次性等待者（create/join 的回應）
   for (let i = _waiters.length - 1; i >= 0; i--) {
     if (_waiters[i].pred(msg)) {
@@ -253,7 +261,7 @@ async function recoverAuthoritativeSeat(roomId: string, role: Role): Promise<boo
   if (adoptAuthoritativeSeat(roomId, role)) return true;
 
   const idToken = (await getFirebaseIdToken()) ?? undefined;
-  const hello: ClientMsg = { type: 'hello', player: playerInfo(), role, idToken };
+  const hello: ClientMsg = { type: 'hello', player: playerInfo(), role, idToken, ...editionEnvelope() };
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const res = await request(
@@ -375,7 +383,7 @@ async function reclaimSeat(): Promise<'ok' | 'failed' | 'timeout'> {
   const idToken = (await getFirebaseIdToken()) ?? undefined;
   try {
     const res = await request(
-      { ..._reconnectMsg, idToken },
+      { ..._reconnectMsg, idToken, ...editionEnvelope() },
       (m) => (m.type === 'roomState' && m.you === role) || (m.type === 'error' && m.code === 'reclaim_failed'),
       6000,
     );
@@ -439,7 +447,7 @@ export async function duoWsCreateRoom(tierId: string, modeId: string): Promise<s
     const idToken = (await getFirebaseIdToken()) ?? undefined;
     if (adoptAuthoritativeSeat(roomId, 'host')) return roomId;
     const res = await request(
-      { type: 'create', room: { tierId, modeId }, player: playerInfo(), idToken },
+      { type: 'create', room: { tierId, modeId }, player: playerInfo(), idToken, ...editionEnvelope() },
       (m) => (m.type === 'roomState' && m.you === 'host') || m.type === 'error',
     );
     if (res.type === 'error') {
@@ -466,7 +474,7 @@ export async function duoWsJoinRoom(roomId: string): Promise<boolean> {
     const idToken = (await getFirebaseIdToken()) ?? undefined;
     if (adoptAuthoritativeSeat(roomId, 'guest')) return true;
     const res = await request(
-      { type: 'join', player: playerInfo(), idToken },
+      { type: 'join', player: playerInfo(), idToken, ...editionEnvelope() },
       (m) => (m.type === 'roomState' && m.you === 'guest') || m.type === 'error',
     );
     if (res.type === 'error') {
@@ -493,7 +501,7 @@ export async function duoWsResumeRoom(roomId: string, role: Role): Promise<boole
     await waitOpen(socket);
     const idToken = (await getFirebaseIdToken()) ?? undefined;
     if (adoptAuthoritativeSeat(roomId, role)) return true;
-    const hello: ClientMsg = { type: 'hello', player: playerInfo(), role, idToken };
+    const hello: ClientMsg = { type: 'hello', player: playerInfo(), role, idToken, ...editionEnvelope() };
     const res = await request(
       hello,
       (m) => (m.type === 'roomState' && m.you === role) || (m.type === 'error' && m.code === 'reclaim_failed'),

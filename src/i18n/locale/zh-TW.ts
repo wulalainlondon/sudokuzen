@@ -2,6 +2,19 @@
 // All user-visible strings in the app.
 
 export const zhTW = {
+  edition: {
+    legacyBoard: '分流前歷史榜',
+    legacyBoardNote: '舊榜含 PWA 與 iOS 成績，部分題目可能已更新，僅供歷史查閱。',
+    pwa: 'PWA 版',
+    ios: 'iOS 版',
+    currentStats: '{edition} 雙人戰績',
+    score: '{wins} 勝 · {losses} 敗 · {draws} 平手',
+    separate: '僅與相同版本的玩家對戰，排行榜與新戰績分開累計。',
+    legacyHistory: '分流前雙人歷史',
+    preserved: '舊戰績、回放與已解鎖模式保留；單人進度與最佳紀錄延續。',
+    exportHistory: '匯出舊雙人紀錄',
+  },
+
   // ── App chrome ──────────────────────────────────────────────────────
   app: {
     title: 'SUDOKU ZEN',

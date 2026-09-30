@@ -39,9 +39,23 @@ export interface CcFields {
 
 // ── client → server ──────────────────────────────────────────
 export type ClientMsg =
-  | { type: 'create'; room: RoomConfig; player: PlayerInfo; idToken?: string }
-  | { type: 'join'; player: PlayerInfo; idToken?: string }
-  | { type: 'hello'; player: PlayerInfo; role: Role; idToken?: string } // 重連認領座位
+  | {
+      type: 'create';
+      room: RoomConfig;
+      player: PlayerInfo;
+      idToken?: string;
+      edition?: 'pwa' | 'ios';
+      protocolVersion?: number;
+    }
+  | { type: 'join'; player: PlayerInfo; idToken?: string; edition?: 'pwa' | 'ios'; protocolVersion?: number }
+  | {
+      type: 'hello';
+      player: PlayerInfo;
+      role: Role;
+      idToken?: string;
+      edition?: 'pwa' | 'ios';
+      protocolVersion?: number;
+    } // 重連認領座位
   | { type: 'ready'; ready: boolean; puzzleFingerprint?: string }
   | { type: 'progress'; filled: number }
   | { type: 'finish'; timeSec: number; stars: number; moves?: MoveRecord[] }
@@ -72,6 +86,8 @@ export interface PlayerSlot {
 }
 
 export interface PublicRoomState {
+  edition?: 'pwa' | 'ios';
+  protocolVersion?: number;
   roomId: string;
   status: RoomStatus;
   tierId: string | null;

@@ -76,6 +76,7 @@ export interface LegacyPracticeState {
 export interface FirestoreDbLike {
   collection(name: string): FirestoreCollectionRef;
   runTransaction<T>(fn: (tx: FirestoreTransaction) => Promise<T>): Promise<T>;
+  waitForPendingWrites?(): Promise<void>;
 }
 
 export interface AchievementToastItem {

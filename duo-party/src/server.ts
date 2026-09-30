@@ -13,6 +13,7 @@ interface Env {
   // Firebase 身分驗證：PROJECT_ID 用於驗 aud/iss；AUTH_REQUIRED='false' 關閉驗證（本機測試）
   PROJECT_ID?: string;
   AUTH_REQUIRED?: string;
+  EDITION?: 'pwa' | 'ios';
 }
 
 // PartyServer stores Connection.state as a WebSocket serialized attachment when
@@ -103,6 +104,12 @@ export class GameRoom extends Server<Env> {
     } catch {
       return this.err(connection, 'bad_json', 'Invalid message');
     }
+    if (['create', 'join', 'hello'].includes(msg.type) && this.env.EDITION) {
+      const envelope = msg as { edition?: string; protocolVersion?: number };
+      if (envelope.edition !== this.env.EDITION || envelope.protocolVersion !== 2) {
+        return this.err(connection, 'edition_mismatch', 'Room belongs to a different app edition');
+      }
+    }
 
     // 任何已綁定座位的訊息都刷新 lastSeen；若該座位先前被 presence 輪詢誤判離線
     // （連線其實沒死、只是短暫卡頓），收到訊息即恢復 online 並取消沒收。
@@ -173,6 +180,7 @@ export class GameRoom extends Server<Env> {
     const now = Date.now();
     this.room = {
       roomId: this.name,
+      ...(this.env.EDITION ? { edition: this.env.EDITION, protocolVersion: 2 } : {}),
       status: 'waiting',
       tierId: msg.room.tierId,
       modeId: msg.room.modeId,
@@ -813,6 +821,7 @@ function toPublic(r: RoomState): PublicRoomState {
   // moves 只在雙方都完成（replay 即將顯示）時才帶上，避免觀戰期間每幀廣播 ~75KB
   const bothFinished = r.host?.finishTime != null && r.guest?.finishTime != null;
   return {
+    ...(r.edition ? { edition: r.edition, protocolVersion: r.protocolVersion } : {}),
     roomId: r.roomId,
     status: r.status,
     tierId: r.tierId,
@@ -869,7 +878,7 @@ async function handleLobbyRequest(request: Request, env: Env): Promise<Response>
   });
   const endpoint =
     `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}` +
-    `/databases/(default)/documents/${LOBBY_COLLECTION}?${params}`;
+    `/databases/(default)/documents/${env.EDITION ? `editions/${env.EDITION}/` : ''}${LOBBY_COLLECTION}?${params}`;
   try {
     const upstream = await fetch(endpoint, {
       headers: { Accept: 'application/json' },
@@ -890,7 +899,14 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === '/lobby') return handleLobbyRequest(request, env);
     if (url.pathname.startsWith('/lobby/'))
-      return handleLobbyMutationRequest(request, env.PROJECT_ID || '', lobbyCorsHeaders(request));
+      return handleLobbyMutationRequest(
+        request,
+        env.PROJECT_ID || '',
+        lobbyCorsHeaders(request),
+        undefined,
+        undefined,
+        env.EDITION ? `editions/${env.EDITION}/${LOBBY_COLLECTION}` : LOBBY_COLLECTION,
+      );
     return (
       (await routePartykitRequest(request, env, { locationHint: 'apac' })) || new Response('Not found', { status: 404 })
     );

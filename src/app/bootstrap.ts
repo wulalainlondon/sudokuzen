@@ -1,3 +1,4 @@
+import { prepareEditionMigration } from '../platform/editionMigration';
 import { APP_VERSION } from '../config/version';
 import { enforceAppVersion, registerServiceWorkerUpdateFlow } from '../pwa/swUpdate';
 import { bootLegacyRuntime } from './legacyRuntime';
@@ -14,7 +15,12 @@ import { selectCell } from '../game/board';
 import * as replay from '../features/replay';
 import { getCurrentEncounter, isWildActive, onWildComplete, getWildProfile } from '../features/wild/wildController';
 import { deferMentorIntro } from '../features/wild/mentorController';
-import { hydratePlayerProfileFromCloud, installPlayerCloudSyncBridge, whenFirebaseReady } from '../firebase/client';
+import {
+  hydratePlayerProfileFromCloud,
+  installPlayerCloudSyncBridge,
+  isPlayerCloudHydrated,
+  whenFirebaseReady,
+} from '../firebase/client';
 import type { SudokuWindow } from '../facade/windowTypes';
 import {
   openDuoLobby,
@@ -42,6 +48,7 @@ export function bootstrapApp(): void {
   try {
     if (isNativeApp()) document.documentElement.classList.add('native-app');
 
+    prepareEditionMigration();
     runStorageMigrations([createTeachSelectionMigration(), createLegacySaveSanitizationMigration()]);
 
     window.__pwaRuntime = {
@@ -74,9 +81,16 @@ export function bootstrapApp(): void {
       // overwriting the remote profile.
       hydratePlayerProfileFromCloud().finally(() => {
         installPlayerCloudSyncBridge();
+        if (!isPlayerCloudHydrated()) cloudSetupStarted = false;
       });
     };
     window.addEventListener('sudoku:firebase-ready', setupCloud);
+    window.addEventListener('online', () => {
+      cloudSetupStarted = false;
+      void whenFirebaseReady().then((ready) => {
+        if (ready) setupCloud();
+      });
+    });
     void whenFirebaseReady().then((ready) => {
       if (ready) setupCloud();
     });
