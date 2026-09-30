@@ -1,6 +1,7 @@
 import { access, readFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 
 const root = process.cwd();
 const required = [
@@ -10,6 +11,7 @@ const required = [
   'ios/App/App/public/credits.html',
   'ios/App/App/public/firebase-config.js',
   'ios/App/App/public/firebase-config.local.js',
+  'ios/App/App/public/firebase-sdk-manifest.json',
   'node_modules/@capacitor/ios/Capacitor/Capacitor/PrivacyInfo.xcprivacy',
   'node_modules/@capacitor/ios/CapacitorCordova/CapacitorCordova/PrivacyInfo.xcprivacy',
 ];
@@ -20,6 +22,51 @@ for (const file of required) {
     await access(path.join(root, file));
   } catch {
     errors.push(`Missing ${file}`);
+  }
+}
+
+if (errors.length) {
+  console.error(`iOS release verification failed:\n- ${errors.join('\n- ')}`);
+  process.exit(1);
+}
+
+const publicDir = path.join(root, 'ios/App/App/public');
+const versionSource = await readFile(path.join(root, 'src/config/version.ts'), 'utf8');
+const version = versionSource.match(/APP_VERSION\s*=\s*['"]([^'"]+)['"]/)?.[1];
+const bundledHtml = await readFile(path.join(publicDir, 'index.html'), 'utf8');
+if (!version || !bundledHtml.includes(`var INLINE_VER = '${version}'`)) {
+  errors.push('Bundled game version does not match source');
+}
+const sdkManifest = JSON.parse(await readFile(path.join(publicDir, 'firebase-sdk-manifest.json'), 'utf8'));
+if (!Array.isArray(sdkManifest.files) || !sdkManifest.files.length || !sdkManifest.app) {
+  errors.push('Firebase recovery SDK manifest is incomplete');
+} else {
+  for (const file of new Set([sdkManifest.app, ...sdkManifest.files])) {
+    try {
+      await access(path.join(publicDir, file));
+    } catch {
+      errors.push(`Missing bundled Firebase recovery module: ${file}`);
+    }
+  }
+}
+const bundledManifest = JSON.parse(await readFile(path.join(publicDir, 'data/manifest.json'), 'utf8'));
+const sourceManifest = JSON.parse(await readFile(path.join(root, 'public/data/manifest.json'), 'utf8'));
+if (bundledManifest.version !== sourceManifest.version) errors.push('Bundled puzzle manifest is stale');
+for (let index = 0; index <= 12; index++) {
+  const name = `duo-T${String(index).padStart(2, '0')}`;
+  const meta = bundledManifest.shards[name];
+  if (!meta) {
+    errors.push(`Missing Duo shard metadata: ${name}`);
+    continue;
+  }
+  try {
+    const bytes = await readFile(path.join(publicDir, 'data', meta.file));
+    const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 16);
+    if (hash !== meta.hash || JSON.parse(bytes.toString('utf8')).length !== meta.count) {
+      errors.push(`Bundled Duo shard does not match manifest: ${name}`);
+    }
+  } catch {
+    errors.push(`Missing or invalid bundled Duo shard: ${name}`);
   }
 }
 

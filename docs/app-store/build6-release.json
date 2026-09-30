@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "bd2e62b23e90021a03eb5ef9e644c323bfe2f768",
+  "appStore": {
+    "checked_at": "2026-09-30T08:48:33Z",
+    "app_id": "6794248919",
+    "version": "1.0",
+    "build": "6",
+    "build_state": "VALID",
+    "app_state": "WAITING_FOR_REVIEW",
+    "release_type": "MANUAL",
+    "submission_state": "WAITING_FOR_REVIEW",
+    "submitted_date": "2026-09-30T08:44:19.467Z",
+    "submission_id": "fd6c73a6-d3ec-44ab-aa88-c6082eb34dda"
+  },
+  "binary": {
+    "version": "1.0",
+    "build": "6",
+    "bundleId": "com.wulala.sudokuzen",
+    "webVersion": "2026.09.28-V1",
+    "dataVersion": "58637847ce2ad62f",
+    "duoPuzzleCount": 2776,
+    "all27ShardHashesValid": true,
+    "getTaskAllow": false,
+    "sdk": "iphoneos26.5",
+    "minimumOS": "15.0",
+    "sha256": "69225c5acfac906a03fb52999883f0c767716fdf35e3fa6bf4938eb90ee35e81",
+    "sizeBytes": 5002374,
+    "signatureVerified": true,
+    "puzzleFingerprintPresent": true,
+    "privacyManifestsVerified": true
+  },
+  "validation": {
+    "unitTestsPassed": 425,
+    "nativeTouchXCTestPassed": true,
+    "simulatorStartupAndGameXCTestPassed": true,
+    "nativeSoloCompletionAndLegacyRecoveryPassed": true,
+    "nativeWorldColdRestartPreservedProgress": true,
+    "nativeDuoHostAndGuestGamesPassed": 2,
+    "duoRecordsSeparated": true,
+    "forfeitRightOfSudokuTitle": true,
+    "originalDeviceRecordsPreserved": true,
+    "testRoomsRemovedFromLobby": true
+  }
+}
