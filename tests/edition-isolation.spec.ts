@@ -187,13 +187,26 @@ describe('edition isolation and preservation', () => {
       'player_profiles/p_old-owner': {
         records: { 7: { time: 70, stars: 3 } },
         achievements: {},
-        journey: { duoProfile: { wins: 9, losses: 2, playCount: { 'tier0-standard': 12 } } },
+        practiceRecords: { 701: { time: 50, stars: 3, techKey: 'naked_single' } },
+        journey: {
+          teachRead: { cloudLesson: true },
+          practiceDone: { cloudPractice: true },
+          techniquesUsed: ['hidden_single'],
+          duoProfile: { wins: 9, losses: 2, playCount: { 'tier0-standard': 12 } },
+        },
       },
     });
     fixture.legacyDb = source.db;
     const target = memoryDb();
     const { migration, SK, gs, client } = await setup();
     migration.prepareEditionMigration();
+    localStorage.setItem(SK.TEACH_READ, JSON.stringify({ localLesson: true }));
+    localStorage.setItem(SK.PRACTICE_DONE, JSON.stringify({ localPractice: true }));
+    localStorage.setItem(SK.TECHNIQUES_USED, JSON.stringify(['naked_single']));
+    localStorage.setItem(
+      SK.PRACTICE_RECORDS,
+      JSON.stringify({ 702: { time: 60, stars: 3, techKey: 'hidden_single' } }),
+    );
     client.bindPlayerIdentityToAuth('new-owner');
     Object.assign(gs, { firebaseReady: true, db: target.db });
     const archivePath = 'editions/ios/player_profiles/p_new-owner/legacy_history/part_00000';
@@ -209,6 +222,17 @@ describe('edition isolation and preservation', () => {
       legacyPlayCount: { 'tier0-standard': 12 },
     });
     expect(JSON.parse(localStorage.getItem(SK.RECORDS)!)[7]).toMatchObject({ time: 70, stars: 3 });
+    expect(JSON.parse(localStorage.getItem(SK.PRACTICE_RECORDS)!)[701]).toMatchObject({
+      stars: 3,
+      techKey: 'naked_single',
+    });
+    expect(JSON.parse(localStorage.getItem(SK.PRACTICE_RECORDS)!)[702]).toMatchObject({
+      stars: 3,
+      techKey: 'hidden_single',
+    });
+    expect(JSON.parse(localStorage.getItem(SK.TEACH_READ)!)).toEqual({ localLesson: true, cloudLesson: true });
+    expect(JSON.parse(localStorage.getItem(SK.PRACTICE_DONE)!)).toEqual({ localPractice: true, cloudPractice: true });
+    expect(JSON.parse(localStorage.getItem(SK.TECHNIQUES_USED)!)).toEqual(['naked_single', 'hidden_single']);
     expect(JSON.parse(String(target.data.get(archivePath)?.payload)).duoProfile.wins).toBe(9);
     expect(source.deleted).toHaveLength(0);
     expect([...target.data.keys()].every((key) => key.startsWith('editions/ios/'))).toBe(true);

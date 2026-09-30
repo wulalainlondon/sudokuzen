@@ -37,6 +37,7 @@ interface ClassicRecord {
   time: number;
   stars: number;
   replayHistory: unknown[];
+  techKey?: string;
 }
 interface SpeedRecord {
   time: number;
@@ -174,7 +175,12 @@ function normalizeClassicRecord(raw: unknown): ClassicRecord | null {
   const time = Math.max(0, toInt(raw.time));
   const stars = Math.min(3, Math.max(1, toInt(raw.stars, 1)));
   const replayHistory = sanitizeReplayHistory(raw.replayHistory);
-  return { time, stars, replayHistory };
+  return {
+    time,
+    stars,
+    replayHistory,
+    ...(typeof raw.techKey === 'string' && raw.techKey.length <= 64 ? { techKey: raw.techKey } : {}),
+  };
 }
 
 function normalizeSpeedRecord(raw: unknown): SpeedRecord | null {
@@ -904,18 +910,27 @@ function mergeProfileIntoLocal(data: Record<string, unknown>, legacy = false): v
   if (!sameAchievementMaps(localAchievements, mergedAchievements)) store(SK.ACHIEVEMENTS, mergedAchievements);
 
   applyRemoteSettingsIfMissing(data.settings);
-  if (isPlainObject(data.practiceRecords) && localStorage.getItem(SK.PRACTICE_RECORDS) === null) {
-    store(SK.PRACTICE_RECORDS, data.practiceRecords);
-  }
+  const localPractice = normalizeRecordMap(readJson(SK.PRACTICE_RECORDS, {}), 'classic');
+  const mergedPractice = mergeRecordMaps(localPractice, normalizeRecordMap(data.practiceRecords, 'classic'), 'classic');
+  if (JSON.stringify(localPractice) !== JSON.stringify(mergedPractice)) store(SK.PRACTICE_RECORDS, mergedPractice);
   const journey = isPlainObject(data.journey) ? data.journey : {};
   const journeyKeys: Array<[string, unknown]> = [
     [SK.TEACH_READ, journey.teachRead],
     [SK.PRACTICE_DONE, journey.practiceDone],
-    [SK.TECHNIQUES_USED, journey.techniquesUsed],
   ];
   for (const [key, value] of journeyKeys) {
-    if (value != null && localStorage.getItem(key) === null) store(key, value);
+    if (!isPlainObject(value)) continue;
+    const local = readJson<Record<string, boolean>>(key, {});
+    const merged = { ...local };
+    for (const [id, completed] of Object.entries(value)) if (completed === true) merged[id] = true;
+    if (JSON.stringify(local) !== JSON.stringify(merged)) store(key, merged);
   }
+  const localTechniques = readJson<string[]>(SK.TECHNIQUES_USED, []);
+  const remoteTechniques = Array.isArray(journey.techniquesUsed) ? journey.techniquesUsed : [];
+  const techniques = [
+    ...new Set([...localTechniques, ...remoteTechniques].filter((value): value is string => typeof value === 'string')),
+  ];
+  if (JSON.stringify(localTechniques) !== JSON.stringify(techniques)) store(SK.TECHNIQUES_USED, techniques);
   if (isPlainObject(journey.wildProfile)) {
     const localWild = readJson<Partial<WildProfile>>(SK.WILD_PROFILE, {});
     const mergedWild = mergeWildProfiles(journey.wildProfile as Partial<WildProfile>, localWild);
