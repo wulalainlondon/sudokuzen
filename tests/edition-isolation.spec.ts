@@ -15,6 +15,7 @@ vi.mock('../src/firebase/runtime', () => ({
   ensureFirebaseRuntime: async () => null,
   firebaseServerTimestamp: () => 123,
   getLegacyProfileDb: async () => fixture.legacyDb,
+  getLegacyLeaderboardDb: async () => fixture.legacyDb,
   callDuoFunction: vi.fn(),
   deleteCurrentAuthUser: fixture.deleteAuth,
   signOutLegacySession: fixture.signOutLegacy,
@@ -236,6 +237,85 @@ describe('edition isolation and preservation', () => {
     expect(JSON.parse(String(target.data.get(archivePath)?.payload)).duoProfile.wins).toBe(9);
     expect(source.deleted).toHaveLength(0);
     expect([...target.data.keys()].every((key) => key.startsWith('editions/ios/'))).toBe(true);
+  });
+
+  it('PWA retains local and cloud history plus already-played new games across repeated hydration', async () => {
+    vi.stubEnv('VITE_APP_EDITION', 'pwa');
+    localStorage.setItem('sudoku_player_id', 'p_old-owner');
+    localStorage.setItem('sudoku_player_alias', 'Tester');
+    localStorage.setItem('sudoku_duo_profile_v2', JSON.stringify({ wins: 7, currentStreak: 3, bestStreak: 5 }));
+    const source = memoryDb({
+      'player_profiles/p_old-owner': {
+        records: {},
+        achievements: {},
+        journey: { duoProfile: { wins: 9, currentStreak: 4, bestStreak: 6 } },
+      },
+    });
+    fixture.legacyDb = source.db;
+    const target = memoryDb({
+      'editions/pwa/player_profiles/p_new-owner': {
+        journey: { duoProfile: { wins: 2, currentStreak: 2, bestStreak: 2 } },
+      },
+    });
+    const { migration, gs, client } = await setup();
+    migration.prepareEditionMigration();
+    client.bindPlayerIdentityToAuth('new-owner');
+    Object.assign(gs, { firebaseReady: true, db: target.db });
+    await client.hydratePlayerProfileFromCloud();
+    const { getLifetimeDuoProfile } = await import('../src/features/duo/duoProfile');
+    expect(getLifetimeDuoProfile()).toMatchObject({ wins: 11, currentStreak: 6, bestStreak: 6 });
+    await client.hydratePlayerProfileFromCloud();
+    expect(getLifetimeDuoProfile().wins).toBe(11);
+    const saved = target.data.get('editions/pwa/player_profiles/p_new-owner')!;
+    expect(saved.journey).toMatchObject({ duoProfile: { wins: 2 }, pwaBaselineProfile: { wins: 9 } });
+    expect(source.deleted).toHaveLength(0);
+  });
+
+  it('PWA restores a retained baseline from its own new cloud profile and shows the original board beside the new puzzle board', async () => {
+    vi.stubEnv('VITE_APP_EDITION', 'pwa');
+    localStorage.setItem('sudoku_player_id', 'p_new-owner');
+    localStorage.setItem('sudoku_player_alias', 'Tester');
+    const key = `classic_7_${fixture.puzzle.join('')}`;
+    const source = memoryDb({
+      'level_first_clears/7/players/p_original': {
+        playerId: 'p_original',
+        alias: 'Old player',
+        firstTimeSec: 120,
+        firstStars: 3,
+      },
+    });
+    fixture.legacyDb = source.db;
+    const target = memoryDb({
+      'editions/pwa/player_profiles/p_new-owner': {
+        journey: {
+          duoProfile: { wins: 2 },
+          pwaBaselineProfile: { wins: 7, losses: 2, bestStreak: 5 },
+        },
+      },
+      [`editions/pwa/level_first_clears/${key}/players/p_new-owner`]: {
+        playerId: 'p_new-owner',
+        alias: 'New player',
+        firstTimeSec: 60,
+        firstStars: 3,
+      },
+    });
+    const { migration, gs, client } = await setup();
+    migration.prepareEditionMigration();
+    Object.assign(gs, { firebaseReady: true, db: target.db, isSpeedrunMode: false, isDuoMode: false });
+    await client.hydratePlayerProfileFromCloud();
+    const { getLifetimeDuoProfile } = await import('../src/features/duo/duoProfile');
+    expect(getLifetimeDuoProfile()).toMatchObject({ wins: 9, losses: 2, bestStreak: 5 });
+    document.body.innerHTML = '<div id="pre-level-leaderboard"></div><div id="win-leaderboard-list"></div>';
+    await client.loadPreLevelLeaderboard(7);
+    const html = document.getElementById('pre-level-leaderboard')!.innerHTML;
+    expect(html).toContain('Old player');
+    expect(html).toContain('New player');
+    expect(html).toContain('pwa-existing-board');
+    expect(html).toContain('pwa-current-board');
+    expect(html.indexOf('Old player')).toBeLessThan(html.indexOf('New player'));
+    await client.loadLevelLeaderboard(7);
+    expect(document.getElementById('win-leaderboard-list')!.innerHTML).toContain('Old player');
+    expect(source.deleted).toHaveLength(0);
   });
 
   it('keeps first clear immutable per board and creates an owner catalog atomically', async () => {

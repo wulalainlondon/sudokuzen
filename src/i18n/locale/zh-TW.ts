@@ -3,6 +3,12 @@
 
 export const zhTW = {
   edition: {
+    pwaContinues: '延續既有 PWA 戰績，分流後的對局接續累計。iOS 戰績獨立。',
+    pwaHistoryIncluded: '這些舊戰績已計入上方累計；原始紀錄與回放保留，可匯出備份。',
+    existingBoard: '既有首通榜 TOP 3',
+    existingBoardNote: '保留分流前榜單，此後 iOS 成績獨立。部分題目已更新，舊榜與目前盤面榜分開顯示。',
+    currentBoard: '目前盤面榜 TOP 3',
+
     legacyBoard: '分流前歷史榜',
     legacyBoardNote: '舊榜含 PWA 與 iOS 成績，部分題目可能已更新，僅供歷史查閱。',
     pwa: 'PWA 版',

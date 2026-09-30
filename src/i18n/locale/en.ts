@@ -10,6 +10,14 @@ type Widen<T> = { [K in keyof T]?: T[K] extends string ? string : Widen<T[K]> };
 
 export const en: Widen<Locale> = {
   edition: {
+    pwaContinues: 'Your existing PWA record continues with new matches. iOS records are separate.',
+    pwaHistoryIncluded:
+      'These past results are included in the total above. Original records and replays are retained for export.',
+    existingBoard: 'Existing first-clear TOP 3',
+    existingBoardNote:
+      'The pre-separation board is retained. New iOS results are separate. Some puzzles have changed, so the current puzzle has its own board.',
+    currentBoard: 'Current puzzle TOP 3',
+
     legacyBoard: 'Leaderboard before separation',
     legacyBoardNote:
       'Includes previous PWA and iOS scores. Some puzzles may have changed; these rows are historical references.',

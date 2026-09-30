@@ -1,3 +1,4 @@
+import { readContinuingRecords } from '../platform/pwaDuoRecords';
 // Game save/load/clear — extracted from core.ts
 
 import { gs, type ActionRecord } from './state';
@@ -95,7 +96,7 @@ export function saveProgress(): number {
   const replayHistory = gs.isDuoMode ? [] : sanitizeReplayHistory(gs.actionHistory);
   if (getModePolicy().useSubmissionValidation) {
     const records = readJson<Record<string, unknown>>(recordsKey, {});
-    const existing = records[gs.currentLevel!.id];
+    const existing = readContinuingRecords(recordsKey)[gs.currentLevel!.id];
     const existingRec = toSpeedLevelRecord(existing);
     const currentSubs = gs.submissionCount + 1;
     const shouldUpdate =
@@ -109,7 +110,7 @@ export function saveProgress(): number {
     return currentSubs;
   } else {
     const records = readJson<Record<string, unknown>>(recordsKey, {});
-    const existing = records[gs.currentLevel!.id];
+    const existing = readContinuingRecords(recordsKey)[gs.currentLevel!.id];
     const existingRec = toClassicLevelRecord(existing);
     const earnedStars = Math.max(1, 3 - gs.errors);
     const shouldUpdate =

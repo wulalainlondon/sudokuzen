@@ -139,7 +139,7 @@ vi.mock('../src/features/titles', () => ({
   getEquippedTitleDisplay: () => '',
 }));
 vi.mock('../src/features/duo/duoProfile', () => ({
-  loadDuoProfile: () => ({ wins: 0 }),
+  getLifetimeDuoProfile: () => ({ wins: 0 }),
 }));
 vi.mock('../src/features/duo/duoGame', () => ({
   handleDuoSnapshot: vi.fn(),

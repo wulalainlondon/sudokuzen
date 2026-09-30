@@ -221,3 +221,15 @@ TODO / handoff (current):
 2026-09-30 Platform isolation (active): user requested PWA / iOS Duo and solo scoreboard separation, then authorized implementation. Isolated worktree based on 6b1adb5; original dirty workspace preserved. New iOS Firebase project sudokuzen-ios-prod, asia-east1 Firestore and anonymous Auth enabled on Spark (no billing linked, no anonymous auto-deletion). PWA / iOS have stable edition namespaces, independent Worker environments, protocol edition validation and leaderboard keys by mode + complete puzzle fingerprint. Previous Duo records retained separately and chunked cloud backup being implemented; earned unlocks and solo progress retained. Original in-flight rooms stay on their original server until completed, then reload into the new edition. Build 6 review untouched. NEXT: security negative tests, migration/leaderboard tests, browser gameplay, deploy new realms only, physical native QA, signed Build 7 and reviewed replacement submission.
 
 Platform isolation verification (2026-09-30): new PWA/iOS Workers and Firestore namespaces deployed; old Worker unchanged. 31 real production security assertions passed and temporary QA accounts/documents cleaned. Two local realms: 24 protocol/isolation assertions and 26 lifecycle assertions per realm passed. Chromium and WebKit each passed PWA/iOS mobile history export, retained unlocks, legacy leaderboard and complete two-client Duo games; prior wins stay 7 while new records count exactly one result. Whole source check passed 434 tests; performance budget passed. iPhone 11 native Build 6 data and complete WebKit storage backed up before upgrade (no active room). New native build number is 7; signed archive, device upgrade, publishing and review replacement still pending.
+
+
+Current prompt (2026-10-01): 保留 PWA 舊戰績並接續累計，iOS 維持獨立；開始實作。
+
+- 使用乾淨 worktree `/tmp/sudoku-platform-isolation-20260930`，分支 `fix/pwa-history-continuity-20261001`，保留原工作區未提交的修改。
+- PWA 使用保留的舊基準與分流後計數計算累計勝敗、連勝、對手戰績與解鎖，沒有將舊勝敗反覆寫入新計數。
+- 跨分流的最佳連勝保留；輸掉／和局後仍歸零。最佳紀錄與回放採讀取時擇優，避免大量資料複製。
+- 原 UID 的舊雲端資料以自有原始 Auth 讀取；新玩家檔案保存 PWA 舊基準，舊歷史以內容雜湊避免不必要的重寫。
+- 既有 PWA 首通榜在準備／暫停／通關畫面直接顯示，另列目前盤面榜，保留舊名次並避免不同題目混排。
+- 已通過 442 tests / 74 files、TypeScript、lint、format、Chromium / WebKit 四個雙人流程；確認舊 7 勝 + 新 2 勝 = 9 勝，重新載入不重複。
+- 正式 Firebase 已驗證：舊 7 + 新 2 = 9，補回雲端舊 9 後 = 11，新計數仍為 2；重整後總數與歷史雜湊穩定，原始來源與舊榜未改寫。測試帳號／資料已清理。
+- 28 個瀏覽器 smoke tests、正式建置與效能預算通過；目前準備發布 PWA，iOS Build 7 維持原審查版本。

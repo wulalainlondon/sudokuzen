@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { chromium, webkit } from 'playwright';
 
-const output = 'output/edition-isolation/ui';
+const output = 'output/pwa-history-continuity-20261001/ui';
 fs.mkdirSync(output, { recursive: true });
 const runtimeFixture = `
 import { editionProject } from '/src/platform/appEdition.ts';
@@ -22,13 +22,24 @@ export const firebaseServerTimestamp = () => ({ toMillis: () => Date.now() });
 export const firebaseTimestampFromMillis = n => ({ toMillis: () => n });
 export const callDuoFunction = async () => ({});
 export const getLegacyProfileDb = async () => null;
-export const getLegacyLeaderboardDb = async () => null;
+const legacyQuery = {
+ get: async () => ({docs: [{data: () => ({playerId:'p_old_board', alias:'舊榜玩家', firstTimeSec:88, firstStars:3})}]}),
+ orderBy: () => legacyQuery, limit: () => legacyQuery, collection: () => legacyQuery, doc: () => legacyQuery
+};
+export const getLegacyLeaderboardDb = async () => legacyQuery;
 export const signOutLegacySession = async () => {};
 export const deleteCurrentAuthUser = async () => {};
 export const hasFirebaseSdkLoadFailure = () => false;
 export const getFirebaseSdkFailureUrl = () => null;
 `;
-const originalProfile = { wins: 7, losses: 2, draws: 1, playCount: { 'tier0-standard': 12 } };
+const originalProfile = {
+  wins: 7,
+  losses: 2,
+  draws: 1,
+  currentStreak: 3,
+  bestStreak: 5,
+  playCount: { 'tier0-standard': 12 },
+};
 const evidence = [];
 for (const [name, engine] of [
   ['chromium', chromium],
@@ -53,7 +64,19 @@ for (const [name, engine] of [
           localStorage.setItem('sudoku_player_id', 'p_original_' + edition + '_' + role);
           localStorage.setItem('sudoku_legacy_player_id', 'old_journey');
           localStorage.setItem('sudoku_duo_profile_v2', JSON.stringify(originalProfile));
-          localStorage.setItem('duo_ws_host', 'localhost:' + (edition === 'ios' ? '8796' : '8795'));
+          localStorage.setItem(
+            'sudoku_duo_profile_v2_' + edition,
+            JSON.stringify({
+              wins: 2,
+              losses: 0,
+              draws: 0,
+              currentStreak: 2,
+              bestStreak: 2,
+              playCount: { 'tier0-standard': 2 },
+              legacyPlayCount: originalProfile.playCount,
+            }),
+          );
+          localStorage.setItem('duo_ws_host', 'localhost:' + (edition === 'ios' ? '8896' : '8895'));
         },
         { edition, role, originalProfile },
       );
@@ -74,7 +97,7 @@ for (const [name, engine] of [
       const text = await card.innerText();
       assert(text.includes(edition === 'ios' ? 'iOS 版' : 'PWA 版'));
       assert(text.includes('7 勝 · 2 敗 · 1 平手'));
-      assert(text.includes('0 勝 · 0 敗 · 0 平手'));
+      assert(text.includes(edition === 'pwa' ? '9 勝 · 2 敗 · 1 平手' : '2 勝 · 0 敗 · 0 平手'));
       await page.screenshot({ path: `${output}/${name}-${edition}-history.png` });
       const download = page.waitForEvent('download');
       await card.getByRole('button', { name: '匯出舊雙人紀錄' }).click();
@@ -92,11 +115,20 @@ for (const [name, engine] of [
         edition,
       );
       assert.equal(persisted.old.wins, 7);
-      assert.equal(persisted.current.wins, 0);
+      assert.equal(persisted.current.wins, 2);
       await page.locator('#stage-map .stage-node:not(.locked)').first().click();
       await page.locator('#level-list .level-item:not(.locked)').first().click();
-      await page.locator('#pre-level-modal summary').click();
-      assert((await page.locator('#pre-level-modal details').innerText()).includes('舊榜含 PWA 與 iOS 成績'));
+      if (edition === 'pwa') {
+        await page
+          .getByTestId('pwa-existing-board')
+          .getByText(/舊榜玩家/)
+          .waitFor();
+        assert((await page.getByTestId('pwa-existing-board').innerText()).includes('既有首通榜'));
+        assert(await page.getByTestId('pwa-current-board').isVisible());
+      } else {
+        await page.locator('#pre-level-modal summary').click();
+        assert((await page.locator('#pre-level-modal details').innerText()).includes('舊榜含 PWA 與 iOS 成績'));
+      }
       await page.screenshot({ path: `${output}/${name}-${edition}-legacy-board.png` });
       await page.locator('#pre-level-modal .back-btn-light').click();
       for (const item of pages[edition]) {
@@ -159,12 +191,19 @@ for (const [name, engine] of [
         (edition) => ({
           oldWins: JSON.parse(localStorage.getItem('sudoku_duo_profile_v2')).wins,
           profile: JSON.parse(localStorage.getItem('sudoku_duo_profile_v2_' + edition)),
+          resultText: document.querySelector('#duo-result-record')?.textContent,
           roomStatus: window.__e2e.gs.duoRoomData.status,
         }),
         edition,
       );
       assert.equal(result.oldWins, 7);
-      assert.equal(result.profile.wins + result.profile.losses + result.profile.draws, 1);
+      const base = edition === 'pwa' ? originalProfile : { wins: 0, losses: 0, draws: 0 };
+      assert(
+        result.resultText.includes(
+          `${base.wins + result.profile.wins}W ${base.losses + result.profile.losses}L ${base.draws + result.profile.draws}D`,
+        ),
+      );
+      assert.equal(result.profile.wins + result.profile.losses + result.profile.draws, 3);
       for (const current of [page, guest])
         await current.evaluate(async () => {
           const socket = await import('/src/features/duo/duoSocket.ts');

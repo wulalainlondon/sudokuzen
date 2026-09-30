@@ -13,7 +13,7 @@ import { gs, type DuoRoomData } from '../../game/state';
 import { getPlayerIdentity } from '../../firebase/client';
 import { getFirebaseIdToken } from '../../firebase/runtime';
 import { getEquippedTitleDisplay } from '../titles';
-import { loadDuoProfile } from './duoProfile';
+import { getLifetimeDuoProfile } from './duoProfile';
 import { handleDuoSnapshot } from './duoGame';
 import { getDuoWsHost } from './duoTransport';
 import { showFeedback } from '../../ui/feedback';
@@ -96,7 +96,12 @@ const _waiters: Waiter[] = [];
 
 function playerInfo(): PlayerInfo {
   const { playerId, alias } = getPlayerIdentity();
-  return { id: playerId, alias: alias || 'Player', title: getEquippedTitleDisplay(), wins: loadDuoProfile().wins };
+  return {
+    id: playerId,
+    alias: alias || 'Player',
+    title: getEquippedTitleDisplay(),
+    wins: getLifetimeDuoProfile().wins,
+  };
 }
 
 function tsObj(ms: number | null): { toMillis: () => number; seconds: number } | null {

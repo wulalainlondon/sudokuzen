@@ -17,7 +17,7 @@ import { t } from '../../i18n/t';
 import { getEquippedTitleDisplay } from '../titles';
 import type { FirestoreDoc, FirestoreSnap } from '../../firebase/types';
 import { bumpDuoMetric } from './duoMetrics';
-import { loadDuoProfile } from './duoProfile';
+import { getLifetimeDuoProfile } from './duoProfile';
 import { isDuoWsEnabled } from './duoTransport';
 import {
   clearStoredDuoSession,
@@ -396,7 +396,7 @@ export async function createDuoRoom(tierId: string, modeId: string): Promise<str
       tierId,
       modeId,
       alias,
-      wins: loadDuoProfile().wins,
+      wins: getLifetimeDuoProfile().wins,
       titleDisplay: getEquippedTitleDisplay(),
     });
     const { roomId } = result;
@@ -438,7 +438,7 @@ export async function joinDuoRoom(roomId: string): Promise<boolean> {
     const result = await callDuoFunction<{ role: 'host' | 'guest'; hostReady: boolean }>('duoJoinRoom', {
       roomId,
       alias,
-      wins: loadDuoProfile().wins,
+      wins: getLifetimeDuoProfile().wins,
       titleDisplay: getEquippedTitleDisplay(),
     });
     setActiveDuoRole(result.role);

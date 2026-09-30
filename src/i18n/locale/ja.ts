@@ -9,6 +9,13 @@ type Widen<T> = { [K in keyof T]?: T[K] extends string ? string : Widen<T[K]> };
 
 export const ja: Widen<Locale> = {
   edition: {
+    pwaContinues: 'これまでの PWA 成績に新しい対戦結果を加算します。iOS の成績は別集計です。',
+    pwaHistoryIncluded: 'この過去の成績は上の累計に含まれます。元の記録とリプレイは保持され、書き出せます。',
+    existingBoard: '既存の初回クリア TOP 3',
+    existingBoardNote:
+      '分離前のランキングを保持します。今後の iOS 成績は別集計です。一部の問題は更新されているため、現在の盤面とは別に表示します。',
+    currentBoard: '現在の盤面 TOP 3',
+
     legacyBoard: '分離前のランキング',
     legacyBoardNote:
       '以前の PWA と iOS の成績を含みます。問題が変更されている場合があるため、履歴として参照してください。',

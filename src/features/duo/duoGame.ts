@@ -27,6 +27,7 @@ import {
 import { pickDuoPuzzle, loadDuoTierPuzzles, duoPuzzleFingerprint, DUO_TIER_MAP, DUO_MODE_MAP } from './duoTiers';
 import {
   loadDuoProfile,
+  getLifetimeDuoProfile,
   recordDuoMatch,
   checkNewUnlocks,
   markDuoRoomResultRecorded,
@@ -392,7 +393,7 @@ export function updateDuoRoomUI(d: DuoRoomData): void {
   const roomStats = document.getElementById('duo-room-stats');
   const roomStatsContent = document.getElementById('duo-room-stats-content');
   if (d.guestId) {
-    const profile = loadDuoProfile();
+    const profile = getLifetimeDuoProfile();
     if (preStreak) {
       preStreak.textContent = '';
       if (profile.currentStreak >= 2) {
@@ -1100,11 +1101,13 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   // Check for new unlocks
   const unlocks = checkNewUnlocks(beforeSnapshot, profileAfter);
 
+  const lifetimeProfile = getLifetimeDuoProfile(profileAfter);
+
   // Build content HTML
   let contentHtml = '';
 
-  if (profileAfter.currentStreak >= 2) {
-    contentHtml += `<div id="duo-result-streak"><div class="duo-streak-badge">${t('duoRuntime.streakBadgeExcl', { holder: '你', count: String(profileAfter.currentStreak) })}</div></div>`;
+  if (lifetimeProfile.currentStreak >= 2) {
+    contentHtml += `<div id="duo-result-streak"><div class="duo-streak-badge">${t('duoRuntime.streakBadgeExcl', { holder: '你', count: String(lifetimeProfile.currentStreak) })}</div></div>`;
   }
 
   const hostForfeited = hTime === DUO_FORFEIT_TIME;
@@ -1163,7 +1166,7 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   }
 
   // Stats
-  contentHtml += `<div class="duo-result-record" id="duo-result-record">${t('duoRuntime.historyRecord')}<span>${profileAfter.wins}W ${profileAfter.losses}L ${profileAfter.draws}D</span></div>`;
+  contentHtml += `<div class="duo-result-record" id="duo-result-record">${t('duoRuntime.historyRecord')}<span>${lifetimeProfile.wins}W ${lifetimeProfile.losses}L ${lifetimeProfile.draws}D</span></div>`;
 
   // Unlock notification
   if (unlocks.newTiers.length || unlocks.newModes.length) {

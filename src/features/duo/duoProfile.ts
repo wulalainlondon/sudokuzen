@@ -27,8 +27,8 @@ function emptyProfile(): DuoProfile {
   return { playCount: {}, wins: 0, losses: 0, draws: 0, currentStreak: 0, bestStreak: 0, rivals: {} };
 }
 
-export function loadDuoProfile(): DuoProfile {
-  const raw = readJson<Partial<DuoProfile>>(PROFILE_KEY, {});
+function normalizeProfile(input: unknown): DuoProfile {
+  const raw = input && typeof input === 'object' && !Array.isArray(input) ? (input as Partial<DuoProfile>) : {};
   const defaults = emptyProfile();
   const finiteCount = (value: unknown): number => {
     const count = Number(value);
@@ -64,6 +64,44 @@ export function loadDuoProfile(): DuoProfile {
     draws: finiteCount(raw.draws),
     currentStreak: finiteCount(raw.currentStreak),
     bestStreak: finiteCount(raw.bestStreak),
+    rivals,
+  };
+}
+
+// Keep the stored realm profile as post-separation results. Older PWA clients
+// still write that format, so summing the retained baseline on read is both
+// backward compatible and idempotent across reloads and cloud retries.
+export function loadDuoProfile(): DuoProfile {
+  return normalizeProfile(readJson<Partial<DuoProfile>>(PROFILE_KEY, {}));
+}
+
+export function getLifetimeDuoProfile(current = loadDuoProfile()): DuoProfile {
+  if (ACTIVE_EDITION !== 'pwa') return current;
+  const legacy = normalizeProfile(readJson<Partial<DuoProfile>>('sudoku_duo_profile_v2', {}));
+  const playCount = { ...current.playCount };
+  for (const key of new Set([...Object.keys(legacy.playCount), ...Object.keys(current.legacyPlayCount || {})])) {
+    playCount[key] =
+      (current.playCount[key] || 0) + Math.max(legacy.playCount[key] || 0, current.legacyPlayCount?.[key] || 0);
+  }
+  const rivals = { ...current.rivals };
+  for (const [alias, record] of Object.entries(legacy.rivals)) {
+    rivals[alias] = {
+      wins: record.wins + (current.rivals[alias]?.wins || 0),
+      losses: record.losses + (current.rivals[alias]?.losses || 0),
+    };
+  }
+  const results = current.wins + current.losses + current.draws;
+  // Only an uninterrupted run of new wins can extend the old winning streak.
+  // A post-separation loss/draw must keep the streak reset, including on reload.
+  const currentStreak =
+    results === current.currentStreak ? legacy.currentStreak + current.currentStreak : current.currentStreak;
+  return {
+    playCount,
+    wins: legacy.wins + current.wins,
+    losses: legacy.losses + current.losses,
+    draws: legacy.draws + current.draws,
+    currentStreak,
+    bestStreak: Math.max(legacy.bestStreak, current.bestStreak, currentStreak),
     rivals,
   };
 }
@@ -114,6 +152,11 @@ export function recordDuoMatch(
     else if (result === 'loss') profile.rivals[opponentAlias].losses++;
   }
 
+  if (ACTIVE_EDITION === 'pwa') {
+    // Best streak is monotonic, so persist a streak that crosses the boundary
+    // before a later loss resets currentStreak. No additive counter is copied.
+    profile.bestStreak = getLifetimeDuoProfile(profile).bestStreak;
+  }
   saveDuoProfile(profile);
   return profile;
 }

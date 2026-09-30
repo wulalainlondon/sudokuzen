@@ -650,6 +650,11 @@ export async function syncPlayerProgressToCloud(): Promise<boolean> {
     duoRecords: readJson<Record<string, unknown>>(SK.DUO_RECORDS, {}),
     duoPuzzleRecords: normalizeRecordMap(readJson<Record<string, unknown>>(SK.DUO_PUZZLE_RECORDS, {}), 'classic'),
     duoProfile: readJson<Record<string, unknown>>(SK.DUO_PROFILE, {}),
+    ...(ACTIVE_EDITION === 'pwa'
+      ? {
+          pwaBaselineProfile: normalizeDuoProfile(readJson('sudoku_duo_profile_v2', {})),
+        }
+      : {}),
   };
   const settings = readLocalSettings();
   try {
@@ -702,7 +707,7 @@ export function installPlayerCloudSyncBridge(): void {
       scheduleProgressSync();
       return;
     }
-    if (isProfileSyncKey(key)) scheduleProgressSync();
+    if (isProfileSyncKey(key) || (ACTIVE_EDITION === 'pwa' && key === 'sudoku_duo_profile_v2')) scheduleProgressSync();
   };
 
   proto.removeItem = function removeItemPatched(this: Storage, key: string): void {
@@ -713,7 +718,7 @@ export function installPlayerCloudSyncBridge(): void {
       scheduleProgressSync();
       return;
     }
-    if (isProfileSyncKey(key)) scheduleProgressSync();
+    if (isProfileSyncKey(key) || (ACTIVE_EDITION === 'pwa' && key === 'sudoku_duo_profile_v2')) scheduleProgressSync();
   };
 
   _bridgeInstalled = true;
@@ -813,7 +818,7 @@ function mergeLegacyHistoryIntoLocal(journey: Record<string, unknown>): void {
 let legacySourceRecovered = false;
 async function importLegacyProfileFromCloud(): Promise<void> {
   const migration = readEditionMigration();
-  if (!migration || migration.cloudImported || ACTIVE_EDITION === 'legacy') return;
+  if (!migration || ACTIVE_EDITION === 'legacy' || (migration.cloudImported && ACTIVE_EDITION !== 'pwa')) return;
   if (!migration.sourcePlayerId) {
     legacySourceRecovered = true;
     return;
@@ -821,7 +826,7 @@ async function importLegacyProfileFromCloud(): Promise<void> {
   const sourceDb = await getLegacyProfileDb(migration.sourcePlayerId);
   if (!sourceDb) return; // Preserve retry eligibility if original auth is unavailable.
   const ref = sourceDb.collection('player_profiles').doc(migration.sourcePlayerId);
-  const doc = await ref.get();
+  const doc = await ref.get({ source: 'server' });
   if (doc.exists) {
     mergeProfileIntoLocal(doc.data() || {}, true);
     const saves = await ref.collection(PROFILE_SAVE_SUBCOLLECTION).get();
@@ -838,7 +843,8 @@ async function importLegacyProfileFromCloud(): Promise<void> {
 
 async function persistLegacyHistoryToCloud(): Promise<void> {
   const migration = readEditionMigration();
-  if (!migration || migration.cloudImported || !gs.db || ACTIVE_EDITION === 'legacy') return;
+  if (!migration || !gs.db || ACTIVE_EDITION === 'legacy' || (migration.cloudImported && ACTIVE_EDITION !== 'pwa'))
+    return;
   if (!(await syncPlayerProgressToCloud())) return;
   const { playerId } = getPlayerIdentity();
   const ownerUid = getAuthUid();
@@ -847,8 +853,21 @@ async function persistLegacyHistoryToCloud(): Promise<void> {
     // Strings avoid Firestore depth/index limits for old replay payloads. Each
     // document is below 1 MiB even with four-byte Unicode characters.
     const json = JSON.stringify(getLegacyHistory());
+    const digest =
+      ACTIVE_EDITION === 'pwa' && globalThis.crypto?.subtle
+        ? Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(json))))
+            .map((byte) => byte.toString(16).padStart(2, '0'))
+            .join('')
+        : null;
     const chunks = Math.ceil(json.length / 200_000);
     const archive = gs.db.collection(editionCollection('player_profiles')).doc(playerId).collection('legacy_history');
+    if (digest) {
+      const summary = await archive.doc('summary').get({ source: 'server' });
+      if (summary.exists && summary.data()?.contentHash === digest) {
+        if (legacySourceRecovered) markLegacyCloudImported();
+        return;
+      }
+    }
     for (let index = 0; index < chunks; index++) {
       await archive.doc(`part_${String(index).padStart(5, '0')}`).set({
         ownerUid,
@@ -864,6 +883,7 @@ async function persistLegacyHistoryToCloud(): Promise<void> {
       chunks,
       sourceProject: migration.sourceProject,
       sourceRecovered: legacySourceRecovered,
+      ...(digest ? { contentHash: digest } : {}),
       updatedAt: firebaseServerTimestamp(),
     });
     // An interrupted/offline transfer remains retryable. Never remove source data.
@@ -939,6 +959,12 @@ function mergeProfileIntoLocal(data: Record<string, unknown>, legacy = false): v
   if (legacy) {
     mergeLegacyHistoryIntoLocal(journey);
   } else {
+    if (ACTIVE_EDITION === 'pwa' && isPlainObject(journey.pwaBaselineProfile)) {
+      writeMigrationJson(
+        'sudoku_duo_profile_v2',
+        mergeDuoProfiles(readJson('sudoku_duo_profile_v2', {}), journey.pwaBaselineProfile),
+      );
+    }
     const mergedDuoRecords = mergeLegacyDuoRecords(
       readJson<Record<string, unknown>>(SK.DUO_RECORDS, {}),
       journey.duoRecords,
@@ -1011,7 +1037,10 @@ async function hydratePlayerProfileInternal(): Promise<void> {
   } finally {
     _hydrateComplete = hydrated;
   }
-  if (hydrated) await persistLegacyHistoryToCloud();
+  if (hydrated) {
+    await persistLegacyHistoryToCloud();
+    window.dispatchEvent(new Event('sudoku:profile-hydrated'));
+  }
 }
 
 export async function deletePlayerData(): Promise<void> {
@@ -1105,22 +1134,39 @@ function leaderboardScore(row: LeaderboardRow): string {
     : `${formatSeconds(row.firstTimeSec)}  ${'★'.repeat(row.firstStars)}`;
 }
 
-export function renderLeaderboard(el: HTMLElement | null, rows: LeaderboardRow[]): void {
-  if (!el) return;
-  if (!gs.firebaseReady) {
-    el.textContent = t('firebase.disabled');
-    return;
-  }
-  if (!rows.length) {
-    el.textContent = t('firebase.noRecords');
-    return;
-  }
-  el.innerHTML = rows
+function leaderboardRowsHtml(rows: LeaderboardRow[]): string {
+  if (!rows.length) return t('firebase.noRecords');
+  return rows
     .map((r, i) => {
       const titleStr = r.title ? escapeHtml(r.title) : '';
       return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${leaderboardScore(r)}`;
     })
     .join('<br>');
+}
+
+export function renderLeaderboard(el: HTMLElement | null, rows: LeaderboardRow[]): void {
+  if (!el) return;
+  el.innerHTML = gs.firebaseReady ? leaderboardRowsHtml(rows) : t('firebase.disabled');
+}
+
+async function leaderboardHtml(levelId: number): Promise<string> {
+  const query = leaderboardQuery(levelId);
+  const current = query
+    ? query
+        .get()
+        .then((snap) =>
+          snap.docs
+            .map((doc: FirestoreDoc) => normalizeLeaderboardRow(doc.data()))
+            .filter((row): row is LeaderboardRow => !!row),
+        )
+    : Promise.resolve([] as LeaderboardRow[]);
+  if (ACTIVE_EDITION !== 'pwa') return leaderboardRowsHtml(await current);
+  // Old boards are still the same immutable public records. Do not merge ranks
+  // with a new fingerprint: some old level IDs now refer to different puzzles.
+  const [old, next] = await Promise.allSettled([loadLegacyLeaderboard(levelId), current]);
+  const oldHtml = old.status === 'fulfilled' ? leaderboardRowsHtml(old.value) : t('firebase.loadFailed');
+  const nextHtml = next.status === 'fulfilled' ? leaderboardRowsHtml(next.value) : t('firebase.loadFailed');
+  return `<div data-testid="pwa-existing-board"><strong>${t('edition.existingBoard')}</strong><br>${oldHtml}<p style="font-size:12px;color:var(--text-light);margin:6px 0 12px">${t('edition.existingBoardNote')}</p></div><div data-testid="pwa-current-board"><strong>${t('edition.currentBoard')}</strong><br>${nextHtml}</div>`;
 }
 
 export async function loadLevelLeaderboard(levelId: number): Promise<void> {
@@ -1137,16 +1183,10 @@ export async function loadLevelLeaderboard(levelId: number): Promise<void> {
     return;
   }
   try {
-    const query = leaderboardQuery(levelId);
-    const snap = query ? await query.get() : { docs: [] };
-    const rows = snap.docs
-      .map((d: FirestoreDoc) => normalizeLeaderboardRow(d.data()))
-      .filter((row): row is LeaderboardRow => !!row);
-    renderLeaderboard(gs.leaderboardListEl, rows);
-    renderLeaderboard(document.getElementById('win-leaderboard-list'), rows);
-    // Also update React win store leaderboard
+    const html = await leaderboardHtml(levelId);
+    if (gs.leaderboardListEl) gs.leaderboardListEl.innerHTML = html;
     const winEl = document.getElementById('win-leaderboard-list');
-    if (winEl) renderLeaderboard(winEl, rows);
+    if (winEl) winEl.innerHTML = html;
   } catch (e) {
     console.warn('load leaderboard failed:', e);
     renderLeaderboard(gs.leaderboardListEl, []);
@@ -1161,22 +1201,7 @@ export async function loadPreLevelLeaderboard(levelId: number): Promise<void> {
     return;
   }
   try {
-    const query = leaderboardQuery(levelId);
-    const snap = query ? await query.get() : { docs: [] };
-    const rows = snap.docs
-      .map((d: FirestoreDoc) => normalizeLeaderboardRow(d.data()))
-      .filter((row): row is LeaderboardRow => !!row);
-    const html = !rows.length
-      ? t('firebase.noRecords')
-      : rows
-          .map((r: LeaderboardRow, i: number) => {
-            const timeStr = formatSeconds(r.firstTimeSec);
-            const titleStr = r.title ? escapeHtml(r.title) : '';
-            if (gs.isSpeedrunMode && ACTIVE_EDITION === 'legacy')
-              return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${timeStr} ${t('miscRuntime.speedrunClassic')}`;
-            return `${i + 1}. ${escapeHtml(r.alias)}${titleStr}  ${leaderboardScore(r)}`;
-          })
-          .join('<br>');
+    const html = await leaderboardHtml(levelId);
     const _plEl = document.getElementById('pre-level-leaderboard');
     if (_plEl) _plEl.innerHTML = html;
     // Also update React pre-level store

@@ -9,6 +9,14 @@ type Widen<T> = { [K in keyof T]?: T[K] extends string ? string : Widen<T[K]> };
 
 export const de: Widen<Locale> = {
   edition: {
+    pwaContinues: 'Die bisherige PWA-Bilanz wird mit neuen Partien fortgesetzt. iOS-Ergebnisse werden separat gezählt.',
+    pwaHistoryIncluded:
+      'Diese früheren Ergebnisse sind in der Summe oben enthalten. Ursprüngliche Rekorde und Wiederholungen bleiben für den Export erhalten.',
+    existingBoard: 'Bisherige Erstabschlüsse: TOP 3',
+    existingBoardNote:
+      'Die Rangliste vor der Trennung bleibt erhalten. Neue iOS-Ergebnisse werden separat gezählt. Einige Rätsel wurden geändert und haben eine eigene aktuelle Rangliste.',
+    currentBoard: 'Aktuelles Rätsel: TOP 3',
+
     legacyBoard: 'Rangliste vor der Trennung',
     legacyBoardNote:
       'Enthält frühere PWA- und iOS-Ergebnisse. Einige Rätsel können sich geändert haben; die Einträge dienen als Rückblick.',

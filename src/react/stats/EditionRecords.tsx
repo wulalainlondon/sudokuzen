@@ -1,12 +1,22 @@
+import { useEffect, useReducer } from 'react';
 import { ACTIVE_EDITION } from '../../platform/appEdition';
 import { getLegacyHistory } from '../../platform/editionMigration';
-import { loadDuoProfile } from '../../features/duo/duoProfile';
+import { getLifetimeDuoProfile } from '../../features/duo/duoProfile';
 import { t } from '../../i18n/t';
 
 export function EditionRecords() {
+  const [, refresh] = useReducer((revision: number) => revision + 1, 0);
+  useEffect(() => {
+    window.addEventListener('sudoku:profile-hydrated', refresh);
+    window.addEventListener('storage', refresh);
+    return () => {
+      window.removeEventListener('sudoku:profile-hydrated', refresh);
+      window.removeEventListener('storage', refresh);
+    };
+  }, []);
   if (ACTIVE_EDITION === 'legacy') return null;
   const history = getLegacyHistory();
-  const profile = loadDuoProfile();
+  const profile = getLifetimeDuoProfile();
   const old = history.duoProfile as Record<string, unknown> | undefined;
   const count = (value: unknown) => String(Math.max(0, Math.floor(Number(value) || 0)));
   const edition = t(ACTIVE_EDITION === 'ios' ? 'edition.ios' : 'edition.pwa');
@@ -25,10 +35,14 @@ export function EditionRecords() {
       <p>
         {t('edition.score', { wins: count(profile.wins), losses: count(profile.losses), draws: count(profile.draws) })}
       </p>
-      <p style={{ fontSize: 13, color: 'var(--text-light)', margin: '8px 0 16px' }}>{t('edition.separate')}</p>
+      <p style={{ fontSize: 13, color: 'var(--text-light)', margin: '8px 0 16px' }}>
+        {t(ACTIVE_EDITION === 'pwa' ? 'edition.pwaContinues' : 'edition.separate')}
+      </p>
       <h3 className="stats-section-title">{t('edition.legacyHistory')}</h3>
       <p>{t('edition.score', { wins: count(old?.wins), losses: count(old?.losses), draws: count(old?.draws) })}</p>
-      <p style={{ fontSize: 13, color: 'var(--text-light)', margin: '8px 0' }}>{t('edition.preserved')}</p>
+      <p style={{ fontSize: 13, color: 'var(--text-light)', margin: '8px 0' }}>
+        {t(ACTIVE_EDITION === 'pwa' ? 'edition.pwaHistoryIncluded' : 'edition.preserved')}
+      </p>
       <button className="stats-tab-btn" onClick={exportHistory}>
         {t('edition.exportHistory')}
       </button>

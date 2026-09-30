@@ -1,5 +1,6 @@
 // Level selection screen, stage map, progression
 
+import { readContinuingRecords } from '../platform/pwaDuoRecords';
 import { gs, type LevelData, type ActionRecord } from '../game/state';
 import { getAllLevels, hasTeachModule } from '../data/dataRegistry';
 import { SK, readJson } from '../storage/keys';
@@ -135,7 +136,7 @@ export function renderStageMap(): void {
   const levels = getAllLevels();
   const tierMap = buildVisibleTierMap(levels);
   const recordsKey = getRecordsStorageKeyForLevelList(false);
-  const records = readJson<Record<string, unknown>>(recordsKey, {});
+  const records = readContinuingRecords(recordsKey);
   const tiers = getDifficultyTiers();
   const unlockState = getRealmUnlockState();
   map.innerHTML = '';
@@ -192,7 +193,7 @@ export function enterTier(tierName: string): void {
   document.getElementById('tier-view')!.classList.remove('hidden');
 
   const recordsKey = getRecordsStorageKeyForLevelList(false);
-  const records = readJson<Record<string, unknown>>(recordsKey, {});
+  const records = readContinuingRecords(recordsKey);
   const levels = getAllLevels();
   const tierMap = buildVisibleTierMap(levels);
   const tierLevels = tierMap.get(tierName) || [];
@@ -234,7 +235,7 @@ export function renderLevelGrid(): void {
   }
 
   const recordsKey = getRecordsStorageKeyForLevelList(false);
-  const records = readJson<Record<string, unknown>>(recordsKey, {});
+  const records = readContinuingRecords(recordsKey);
   const list = document.getElementById('level-list');
   if (!list) return;
   const unlockState = getRealmUnlockState();
@@ -332,7 +333,7 @@ export function showPreLevelModal(levelId: number, ignoreTierLock = false, exter
   const techTier = level.techTier || '';
   const isPractice = level.mode === 'practice';
   const recKey = getRecordsStorageKeyForLevelList(isPractice);
-  const records = readJson<Record<string, unknown>>(recKey, {});
+  const records = readContinuingRecords(recKey);
   const record = records[levelId];
   const classicRecord = toClassicLevelRecord(record);
   const speedRecord = toSpeedLevelRecord(record);

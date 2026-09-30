@@ -7,7 +7,7 @@ import { t } from '../../i18n/t';
 export function LegacyLeaderboard({ levelId }: { levelId: number }) {
   const [rows, setRows] = useState<LeaderboardRow[] | null>(null);
   const [failed, setFailed] = useState(false);
-  if (ACTIVE_EDITION === 'legacy') return null;
+  if (ACTIVE_EDITION !== 'ios') return null;
   return (
     <details
       style={{ fontSize: 13, marginTop: 8 }}

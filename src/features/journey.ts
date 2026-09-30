@@ -2,6 +2,7 @@ import { t } from '../i18n/t';
 import { SK, readJson } from '../storage/keys';
 import { getAllLevels } from '../data/dataRegistry';
 import { toClassicLevelRecord } from '../shared/records/levelRecords';
+import { getLifetimeDuoProfile } from './duo/duoProfile';
 import { isNativeApp } from '../platform/nativeApp';
 
 export type JourneyMode = 'practice' | 'world' | 'duo';
@@ -101,7 +102,7 @@ export function getJourneyState(): JourneyState {
   const worldProfile = readJson<Record<string, unknown>>(SK.WILD_PROFILE, {});
   const worldLevel = Math.max(1, Number(worldProfile.iqLevel) || 1);
   const worldEncounters = Math.max(0, Number(worldProfile.totalEncounters) || 0);
-  const duoProfile = readJson<{ playCount?: Record<string, number> }>(SK.DUO_PROFILE, {});
+  const duoProfile = getLifetimeDuoProfile();
   const profileDuoPlays = Object.values(duoProfile.playCount || {}).reduce(
     (sum, count) => sum + Math.max(0, Number(count) || 0),
     0,
