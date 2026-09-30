@@ -1,0 +1,53 @@
+{
+  "releasedAt": "2026-09-30",
+  "webVersion": "2026.09.30-V2",
+  "featureCommit": "8e0a468f01b0b39c18ce6efa6d96b6742083882e",
+  "editions": {
+    "pwa": {
+      "firebaseProject": "sudokuzen-f2aa3",
+      "authApp": "sudoku-pwa",
+      "worker": "duo-pwa"
+    },
+    "ios": {
+      "firebaseProject": "sudokuzen-ios-prod",
+      "authApp": "sudoku-ios",
+      "worker": "duo-ios"
+    }
+  },
+  "web": {
+    "firebase": "https://sudokuzen-f2aa3.web.app/",
+    "githubPages": "https://wulalainlondon.github.io/sudokuzen/",
+    "bothLiveVersionVerified": true,
+    "bothOfflineLevelLaunchPassed": true,
+    "physicalSafariEditionVerified": true
+  },
+  "validation": {
+    "unitTestsPassed": 434,
+    "productionBackendIsolationAssertionsPassed": 31,
+    "browserUiScenariosPassed": 4,
+    "nativeHostGuestRoundsPassed": 2,
+    "physicalReleaseNotesAndCellInputPassed": true,
+    "simulatorReleaseGameplayPassed": true,
+    "originalDeviceDataRestored": true
+  },
+  "appStore": {
+    "version": "1.0",
+    "build": "7",
+    "buildState": "VALID",
+    "versionState": "WAITING_FOR_REVIEW",
+    "releaseType": "MANUAL",
+    "submissionId": "8d2de787-3b21-4c24-a005-6f8d7fb5d817",
+    "submittedDate": "2026-09-30T15:32:24.699Z",
+    "lastChecked": "2026-09-30T15:32:59Z",
+    "locales": [
+      "zh-Hant",
+      "en-US",
+      "ja",
+      "de-DE"
+    ],
+    "screenshotCount": 20,
+    "allMetadataAndScreenshotChecksumsVerified": true,
+    "reviewDetailsPreserved": true
+  },
+  "ipaSha256": "9802cfeace0bd4c8c3f9b0169c446044c521fcea8f0064734c1518b29be0c30a"
+}

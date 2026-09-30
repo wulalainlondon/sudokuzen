@@ -30,6 +30,11 @@ jobs:
 
       - run: npm ci --legacy-peer-deps
 
+      - name: Create Firebase test config
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+        run: node scripts/write-ci-firebase-config.mjs
+
       - name: Install Playwright Browser
         run: npx playwright install --with-deps chromium
 
