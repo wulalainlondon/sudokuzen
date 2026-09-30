@@ -1,0 +1,32 @@
+{
+  "version": "2026.10.01-V1",
+  "sourceCommit": "dbd74511ec07c3a7ff65779815740ec2c9c1a150",
+  "pwaPublished": true,
+  "retainedOldPlusNewStats": true,
+  "existingBoardsVisible": true,
+  "iosBuildUnchanged": "1.0 (7)",
+  "unitTestsPassed": 442,
+  "browserSmokeTestsPassed": 28,
+  "uiEditionScenariosPassed": 4,
+  "productionFirebaseMigrationVerified": true,
+  "live": {
+    "firebase": {
+      "url": "https://sudokuzen-f2aa3.web.app/",
+      "version": "v2026.10.01-V1",
+      "cumulativeOldAndNewVerified": true,
+      "offlineLevelLaunch": true,
+      "errors": []
+    },
+    "pages": {
+      "url": "https://wulalainlondon.github.io/sudokuzen/",
+      "version": "v2026.10.01-V1",
+      "cumulativeOldAndNewVerified": true,
+      "offlineLevelLaunch": true,
+      "errors": []
+    }
+  },
+  "ciRun": 36793407969,
+  "ciSucceeded": true,
+  "pagesRun": 36793408082,
+  "firebasePreviewRun": 36793408005
+}

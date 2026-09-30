@@ -232,4 +232,6 @@ Current prompt (2026-10-01): 保留 PWA 舊戰績並接續累計，iOS 維持獨
 - 既有 PWA 首通榜在準備／暫停／通關畫面直接顯示，另列目前盤面榜，保留舊名次並避免不同題目混排。
 - 已通過 442 tests / 74 files、TypeScript、lint、format、Chromium / WebKit 四個雙人流程；確認舊 7 勝 + 新 2 勝 = 9 勝，重新載入不重複。
 - 正式 Firebase 已驗證：舊 7 + 新 2 = 9，補回雲端舊 9 後 = 11，新計數仍為 2；重整後總數與歷史雜湊穩定，原始來源與舊榜未改寫。測試帳號／資料已清理。
-- 28 個瀏覽器 smoke tests、正式建置與效能預算通過；目前準備發布 PWA，iOS Build 7 維持原審查版本。
+- 28 個瀏覽器 smoke tests、正式建置與效能預算通過。PWA 已發布 `2026.10.01-V1`；Firebase Hosting 與 GitHub Pages 都已實測舊 7 勝 + 新 2 勝顯示 9 勝、離線開局及 Service Worker 更新，零頁面／HTTP 錯誤。
+- CI、Pages、Firebase Preview 與 CodeQL 全成功，來源 commit `dbd74511ec07c3a7ff65779815740ec2c9c1a150`；iOS Build 7 維持原審查版本，本次沒有更換 binary。
+- 本次工作完成；沒有待處理的產品修正。
