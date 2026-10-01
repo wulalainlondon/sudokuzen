@@ -1,4 +1,5 @@
 import { getAudioSettings } from './audioSettings';
+import { isNativeApp } from '../platform/nativeApp';
 import { musicTrack, type MusicMode, type MusicTrack } from '../music/catalog';
 import { selectedMusic } from '../music/collection';
 
@@ -163,7 +164,10 @@ async function requestTrack(track: MusicTrack, preview: boolean): Promise<void> 
       const controller = new AbortController();
       fetchController = controller;
       const response = await fetch(`${import.meta.env.BASE_URL}${track.file}`, { signal: controller.signal });
-      if (!response.ok) throw new Error('音樂載入失敗，請確認連線後再試一次');
+      // Capacitor's local media scheme supplies bytes with status 0 on iOS.
+      const bundledMedia =
+        isNativeApp() && response.status === 0 && response.url.startsWith('capacitor://localhost/sounds/bgm/');
+      if (!response.ok && !bundledMedia) throw new Error('音樂載入失敗，請確認連線後再試一次');
       const data = await response.arrayBuffer();
       if (token !== generation) return;
       decoded = await ctx.decodeAudioData(data);

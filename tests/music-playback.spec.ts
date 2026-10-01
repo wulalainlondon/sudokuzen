@@ -190,4 +190,34 @@ describe('audio-clock looping and transitions', () => {
     expect(bgm.getBgmPlaybackState().trackId).toBe('nine-lights');
     expect(old.stops).toHaveLength(0);
   });
+  it('decodes status-zero media from the native Capacitor bundle', async () => {
+    vi.stubGlobal('Capacitor', { isNativePlatform: () => true });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 0,
+        url: 'capacitor://localhost/sounds/bgm/pipa-battle.mp3',
+        arrayBuffer: async () => new ArrayBuffer(2),
+      }),
+    );
+    bgm.previewBgm('pipa-battle');
+    await playing('pipa-battle');
+    expect(bgm.getBgmPlaybackState().error).toBeNull();
+  });
+  it('rejects status-zero network responses even inside the native shell', async () => {
+    vi.stubGlobal('Capacitor', { isNativePlatform: () => true });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 0,
+        url: 'https://other.test/music.mp3',
+        arrayBuffer: async () => new ArrayBuffer(2),
+      }),
+    );
+    bgm.previewBgm('hidden-lines');
+    await vi.waitFor(() => expect(bgm.getBgmPlaybackState().error).toContain('音樂載入失敗'));
+    expect(bgm.getBgmPlaybackState().trackId).toBeNull();
+  });
 });

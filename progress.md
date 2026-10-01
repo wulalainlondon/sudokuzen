@@ -247,3 +247,5 @@ Current prompt (2026-10-01): 依建議接入十二首 BGM、舊紀錄解鎖、�
 - iOS當日讀回：1.0 Build7 VALID、WAITING_FOR_REVIEW。待Build8完成驗證後才替換。
 
 Music verification: 452 unit tests passed using NODE_OPTIONS=--no-experimental-webstorage (Node 26 global storage conflicts with jsdom). Chrome/WebKit each decoded all 12 actual MP3s, verified adjacent-sample wrap with no silent gap, 15-second preview restoration and mute. Phone collection screenshot inspected. Moved collection CSS into lazy Settings chunk to retain existing CSS budget. iOS Build 8 planned; original Build 7 review remains untouched.
+
+Native Build 8 QA found Capacitor bundled MP3 fetch returns status 0, ok=false, with complete valid audio bytes. Added a narrow native capacitor://localhost/sounds/bgm/ exception, preserving rejection for failed HTTP/opaque network responses. Actual trusted taps unlock AudioContext. The candidate was not uploaded; original Build 7 review remains unchanged. Rebuilding candidate after regression checks.
