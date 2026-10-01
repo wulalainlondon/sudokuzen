@@ -1,0 +1,102 @@
+{
+  "ipa": {
+    "build": 8,
+    "version": "1.0",
+    "gameVersion": "2026.10.01-V3",
+    "sourceHead": "b832b2571bcc1565a20b2c8dc989c9e12073442e",
+    "bundle": "com.wulala.sudokuzen",
+    "musicTracks": 12,
+    "musicHashesVerified": true,
+    "nonExemptEncryption": false,
+    "iosBackendVerified": true,
+    "ipaSha256": "c41faa05c55991829905d542a14c769402aebb92549eb5319f1aa868eef33ad9"
+  },
+  "native": {
+    "loops": 12,
+    "transitions": true,
+    "previewRestored": true,
+    "muted": true,
+    "restored": true,
+    "trustedContexts": [
+      {
+        "state": "running",
+        "rate": 48000,
+        "time": 50.077333333333335
+      }
+    ],
+    "releaseTrustedTap": true
+  },
+  "dataPreservation": {
+    "originalKeys": 17,
+    "finalKeys": 18,
+    "retainedDataKeysUnchanged": 15,
+    "changedVersionKeys": [
+      "sudoku_inline_ver"
+    ],
+    "addedKeys": [
+      "sudoku_music_collection_v1_ios"
+    ],
+    "e2eFlagAbsent": true,
+    "nativeDataPreserved": true
+  },
+  "pwa": {
+    "version": "2026.10.01-V3",
+    "firebaseLive": true,
+    "githubPagesLive": true,
+    "githubCiPassed": true,
+    "liveOfflineDefaultsDecoded": 3
+  },
+  "checks": {
+    "unitTests": 455,
+    "gameplayTests": 28,
+    "decodedTracksPerEngine": 12,
+    "engines": [
+      "Chromium",
+      "WebKit",
+      "native iPhone11 WKWebView"
+    ],
+    "offlineMusicBeforeAndAfterUpdate": true,
+    "cssPerfBudgetPassed": true,
+    "note": "One candidate-tracking long-press fixture failed under a loaded run; isolated retry and full 28-test rerun passed."
+  },
+  "store": {
+    "checked_at": "2026-10-01T07:37:16Z",
+    "app_id": "6794248919",
+    "version_id": "008bcd96-e304-4d08-aee4-8afd8d141111",
+    "build": "8",
+    "build_state": "VALID",
+    "version_state": "WAITING_FOR_REVIEW",
+    "release_type": "MANUAL",
+    "localizations": {
+      "zh-Hant": {
+        "name": "SudokuZen 數獨修行",
+        "screenshot_count": 5,
+        "checksums_verified": true
+      },
+      "en-US": {
+        "name": "SudokuZen: Learn Sudoku",
+        "screenshot_count": 5,
+        "checksums_verified": true
+      },
+      "ja": {
+        "name": "SudokuZen 数独修行",
+        "screenshot_count": 5,
+        "checksums_verified": true
+      },
+      "de-DE": {
+        "name": "SudokuZen: Sudoku lernen",
+        "screenshot_count": 5,
+        "checksums_verified": true
+      }
+    },
+    "review_notes_unchanged": true,
+    "review_contact_unchanged": true,
+    "submission_id": "b9dda547-802e-45e3-a1c7-2002d4b141fc",
+    "submission_state": "WAITING_FOR_REVIEW",
+    "submitted_date": "2026-10-01T07:36:47.464Z"
+  },
+  "evidence": {
+    "pwa": "/tmp/sudoku-music-release-20261001/output/music-release-20261001",
+    "ios": "/tmp/sudoku-music-ios-build8-20261001/output/music-build8-20261001"
+  }
+}
