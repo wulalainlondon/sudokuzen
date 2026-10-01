@@ -235,3 +235,15 @@ Current prompt (2026-10-01): 保留 PWA 舊戰績並接續累計，iOS 維持獨
 - 28 個瀏覽器 smoke tests、正式建置與效能預算通過。PWA 已發布 `2026.10.01-V1`；Firebase Hosting 與 GitHub Pages 都已實測舊 7 勝 + 新 2 勝顯示 9 勝、離線開局及 Service Worker 更新，零頁面／HTTP 錯誤。
 - CI、Pages、Firebase Preview 與 CodeQL 全成功，來源 commit `dbd74511ec07c3a7ff65779815740ec2c9c1a150`；iOS Build 7 維持原審查版本，本次沒有更換 binary。
 - 本次工作完成；沒有待處理的產品修正。
+
+Current prompt (2026-10-01): 依建議接入十二首 BGM、舊紀錄解鎖、收藏及各模式選曲，確認循環與切歌過渡，更新 PWA 及 iOS。
+
+- 從 main a5aede5 建立獨立工作樹 /tmp/sudoku-music-release-20261001；原工作區既有未提交內容保持原狀。
+- 三首初始曲：一般《九格微光》、世界《弈間回聲》、雙人《先手之間》。世界《星霧棋境》IQ5；雙人解鎖門檻3場、首次勝利、5/10/20/30/50/80場。
+- 以循環樂譜連續合成取中間周期，製作有內容雜湊的十二首 MP3；不直接重播試聽版的淡出。
+- 新播放器改為 AudioBufferSource 的音訊時鐘循環，MP3解碼接縫20ms重疊，切歌先載入完成再450ms淡入/淡出；待瀏覽器與原生驗證。
+- 收藏與選曲依平台保存並納入該平台的雲端 profile；不重寫原勝敗、世界、最佳成績或解鎖紀錄。
+- 已讀 develop-web-game、agent-browser、react-best-practices；後續跑對應實際遊戲測試、核對畫面。
+- iOS當日讀回：1.0 Build7 VALID、WAITING_FOR_REVIEW。待Build8完成驗證後才替換。
+
+Music verification: 452 unit tests passed using NODE_OPTIONS=--no-experimental-webstorage (Node 26 global storage conflicts with jsdom). Chrome/WebKit each decoded all 12 actual MP3s, verified adjacent-sample wrap with no silent gap, 15-second preview restoration and mute. Phone collection screenshot inspected. Moved collection CSS into lazy Settings chunk to retain existing CSS budget. iOS Build 8 planned; original Build 7 review remains untouched.

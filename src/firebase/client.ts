@@ -5,6 +5,7 @@ import { leaderboardKey } from '../platform/leaderboardScope';
 
 import { gs } from '../game/state';
 import { SK, readJson, writeJson } from '../storage/keys';
+import { getMusicCollection, mergeMusicCollections } from '../music/collection';
 import { formatSeconds, normalizeAlias, ALIAS_MIN_LEN } from '../game/utils';
 import { showFeedback } from '../ui/feedback';
 import { getAllLevels } from '../data/dataRegistry';
@@ -87,6 +88,7 @@ const PROFILE_SYNC_KEYS: Set<string> = new Set([
   SK.SKILL_MODE,
   SK.THEME,
   SK.PLAYER_TITLE,
+  SK.MUSIC_COLLECTION,
 ]);
 let _progressSyncTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingSaveSyncTimers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -650,6 +652,7 @@ export async function syncPlayerProgressToCloud(): Promise<boolean> {
     duoRecords: readJson<Record<string, unknown>>(SK.DUO_RECORDS, {}),
     duoPuzzleRecords: normalizeRecordMap(readJson<Record<string, unknown>>(SK.DUO_PUZZLE_RECORDS, {}), 'classic'),
     duoProfile: readJson<Record<string, unknown>>(SK.DUO_PROFILE, {}),
+    musicCollection: getMusicCollection(),
     ...(ACTIVE_EDITION === 'pwa'
       ? {
           pwaBaselineProfile: normalizeDuoProfile(readJson('sudoku_duo_profile_v2', {})),
@@ -934,6 +937,9 @@ function mergeProfileIntoLocal(data: Record<string, unknown>, legacy = false): v
   const mergedPractice = mergeRecordMaps(localPractice, normalizeRecordMap(data.practiceRecords, 'classic'), 'classic');
   if (JSON.stringify(localPractice) !== JSON.stringify(mergedPractice)) store(SK.PRACTICE_RECORDS, mergedPractice);
   const journey = isPlainObject(data.journey) ? data.journey : {};
+  if (isPlainObject(journey.musicCollection)) {
+    store(SK.MUSIC_COLLECTION, mergeMusicCollections(getMusicCollection(), journey.musicCollection));
+  }
   const journeyKeys: Array<[string, unknown]> = [
     [SK.TEACH_READ, journey.teachRead],
     [SK.PRACTICE_DONE, journey.practiceDone],

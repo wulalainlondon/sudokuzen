@@ -1,0 +1,7920 @@
+{
+  "version": "aurora.music/v1",
+  "id": "nine-combo-production-loop",
+  "title": "九格連擊（循環版）",
+  "style": "Puzzle Arcade",
+  "bpm": 150,
+  "seed": 101303,
+  "key": {
+    "root": "D",
+    "scale": "major"
+  },
+  "loop": true,
+  "tracks": [
+    {
+      "id": "Lead",
+      "name": "連擊主題",
+      "preset": "Cartridge Hero",
+      "role": "lead",
+      "gain": -4,
+      "pan": -0.1,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 3,
+        "delay.mix": 0.05,
+        "reverb.mix": 0.08,
+        "filter.cutoff": 2800,
+        "aenv.r": 0.1,
+        "drive.mix": 0.12
+      }
+    },
+    {
+      "id": "Reply",
+      "name": "晶光顫音琴",
+      "preset": "Midnight Vibraphone",
+      "role": "lead",
+      "gain": -2,
+      "pan": 0.2,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 4,
+        "delay.mix": 0.04,
+        "reverb.mix": 0.13
+      }
+    },
+    {
+      "id": "Keys",
+      "name": "棋格鋼琴",
+      "preset": "Felt Lullaby",
+      "role": "keys",
+      "gain": -7,
+      "pan": 0,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 5,
+        "noise.level": 0.05,
+        "reverb.mix": 0.14
+      }
+    },
+    {
+      "id": "Bass",
+      "name": "連擊低音",
+      "preset": "Walnut Upright",
+      "role": "bass",
+      "gain": -7,
+      "pan": 0,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 2,
+        "reverb.mix": 0.04
+      }
+    },
+    {
+      "id": "Kick",
+      "name": "短大鼓",
+      "preset": "Anvil Kick",
+      "role": "drums",
+      "gain": -10,
+      "pan": 0,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 3,
+        "reverb.mix": 0.02
+      }
+    },
+    {
+      "id": "Snare",
+      "name": "俐落小鼓",
+      "preset": "Cobalt Snare",
+      "role": "drums",
+      "gain": -13,
+      "pan": 0.08,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 3,
+        "reverb.mix": 0.045
+      }
+    },
+    {
+      "id": "Hat",
+      "name": "拍點沙鈴",
+      "preset": "Sandstorm Shaker",
+      "role": "drums",
+      "gain": -18,
+      "pan": 0.2,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 3,
+        "reverb.mix": 0.02
+      }
+    }
+  ],
+  "sections": [
+    {
+      "name": "交鋒",
+      "bars": 12,
+      "clips": [
+        {
+          "track": "Lead",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 47.385,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 74,
+              "vel": 0.575,
+              "dur": 0.385
+            },
+            {
+              "beat": 0.502036,
+              "type": "on",
+              "note": 69,
+              "vel": 0.584,
+              "dur": 0.385
+            },
+            {
+              "beat": 1.002574,
+              "type": "on",
+              "note": 71,
+              "vel": 0.595,
+              "dur": 0.385
+            },
+            {
+              "beat": 2.002425,
+              "type": "on",
+              "note": 76,
+              "vel": 0.578,
+              "dur": 0.385
+            },
+            {
+              "beat": 2.502064,
+              "type": "on",
+              "note": 74,
+              "vel": 0.582,
+              "dur": 0.385
+            },
+            {
+              "beat": 3.00197,
+              "type": "on",
+              "note": 78,
+              "vel": 0.59,
+              "dur": 0.385
+            },
+            {
+              "beat": 3.50112,
+              "type": "on",
+              "note": 76,
+              "vel": 0.613,
+              "dur": 0.385
+            },
+            {
+              "beat": 3.999802,
+              "type": "on",
+              "note": 74,
+              "vel": 0.567,
+              "dur": 0.385
+            },
+            {
+              "beat": 5.002642,
+              "type": "on",
+              "note": 69,
+              "vel": 0.574,
+              "dur": 0.385
+            },
+            {
+              "beat": 5.498161,
+              "type": "on",
+              "note": 71,
+              "vel": 0.577,
+              "dur": 0.385
+            },
+            {
+              "beat": 6.000428,
+              "type": "on",
+              "note": 74,
+              "vel": 0.575,
+              "dur": 0.385
+            },
+            {
+              "beat": 6.497599,
+              "type": "on",
+              "note": 76,
+              "vel": 0.585,
+              "dur": 0.385
+            },
+            {
+              "beat": 6.996795,
+              "type": "on",
+              "note": 78,
+              "vel": 0.605,
+              "dur": 0.385
+            },
+            {
+              "beat": 7.996891,
+              "type": "on",
+              "note": 79,
+              "vel": 0.579,
+              "dur": 0.385
+            },
+            {
+              "beat": 8.496279,
+              "type": "on",
+              "note": 78,
+              "vel": 0.585,
+              "dur": 0.385
+            },
+            {
+              "beat": 8.997665,
+              "type": "on",
+              "note": 76,
+              "vel": 0.606,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.496955,
+              "type": "on",
+              "note": 74,
+              "vel": 0.609,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.99853,
+              "type": "on",
+              "note": 71,
+              "vel": 0.566,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.998523,
+              "type": "on",
+              "note": 69,
+              "vel": 0.601,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.49781,
+              "type": "on",
+              "note": 71,
+              "vel": 0.611,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.997586,
+              "type": "on",
+              "note": 76,
+              "vel": 0.585,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.498169,
+              "type": "on",
+              "note": 78,
+              "vel": 0.596,
+              "dur": 0.385
+            },
+            {
+              "beat": 13.003993,
+              "type": "on",
+              "note": 76,
+              "vel": 0.613,
+              "dur": 0.385
+            },
+            {
+              "beat": 13.500084,
+              "type": "on",
+              "note": 74,
+              "vel": 0.593,
+              "dur": 0.385
+            },
+            {
+              "beat": 14.000506,
+              "type": "on",
+              "note": 69,
+              "vel": 0.57,
+              "dur": 0.885
+            },
+            {
+              "beat": 15.002709,
+              "type": "on",
+              "note": 74,
+              "vel": 0.578,
+              "dur": 0.385
+            },
+            {
+              "beat": 16.000977,
+              "type": "on",
+              "note": 81,
+              "vel": 0.608,
+              "dur": 0.385
+            },
+            {
+              "beat": 16.99902,
+              "type": "on",
+              "note": 78,
+              "vel": 0.612,
+              "dur": 0.385
+            },
+            {
+              "beat": 17.501499,
+              "type": "on",
+              "note": 76,
+              "vel": 0.604,
+              "dur": 0.385
+            },
+            {
+              "beat": 18.002463,
+              "type": "on",
+              "note": 74,
+              "vel": 0.58,
+              "dur": 0.385
+            },
+            {
+              "beat": 18.498287,
+              "type": "on",
+              "note": 71,
+              "vel": 0.587,
+              "dur": 0.385
+            },
+            {
+              "beat": 18.996607,
+              "type": "on",
+              "note": 69,
+              "vel": 0.599,
+              "dur": 0.385
+            },
+            {
+              "beat": 20.000215,
+              "type": "on",
+              "note": 71,
+              "vel": 0.61,
+              "dur": 0.385
+            },
+            {
+              "beat": 20.503994,
+              "type": "on",
+              "note": 74,
+              "vel": 0.575,
+              "dur": 0.385
+            },
+            {
+              "beat": 20.998273,
+              "type": "on",
+              "note": 76,
+              "vel": 0.581,
+              "dur": 0.385
+            },
+            {
+              "beat": 21.496357,
+              "type": "on",
+              "note": 78,
+              "vel": 0.593,
+              "dur": 0.385
+            },
+            {
+              "beat": 21.998156,
+              "type": "on",
+              "note": 81,
+              "vel": 0.604,
+              "dur": 0.885
+            },
+            {
+              "beat": 22.997352,
+              "type": "on",
+              "note": 78,
+              "vel": 0.568,
+              "dur": 0.385
+            },
+            {
+              "beat": 23.502113,
+              "type": "on",
+              "note": 76,
+              "vel": 0.612,
+              "dur": 0.385
+            },
+            {
+              "beat": 24.002734,
+              "type": "on",
+              "note": 79,
+              "vel": 0.584,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.0018,
+              "type": "on",
+              "note": 78,
+              "vel": 0.605,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.503177,
+              "type": "on",
+              "note": 76,
+              "vel": 0.568,
+              "dur": 0.385
+            },
+            {
+              "beat": 26.001737,
+              "type": "on",
+              "note": 74,
+              "vel": 0.603,
+              "dur": 0.385
+            },
+            {
+              "beat": 26.501166,
+              "type": "on",
+              "note": 71,
+              "vel": 0.576,
+              "dur": 0.385
+            },
+            {
+              "beat": 26.996964,
+              "type": "on",
+              "note": 69,
+              "vel": 0.59,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.499938,
+              "type": "on",
+              "note": 71,
+              "vel": 0.577,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.003502,
+              "type": "on",
+              "note": 76,
+              "vel": 0.602,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.496805,
+              "type": "on",
+              "note": 74,
+              "vel": 0.598,
+              "dur": 0.385
+            },
+            {
+              "beat": 29.00194,
+              "type": "on",
+              "note": 78,
+              "vel": 0.597,
+              "dur": 0.385
+            },
+            {
+              "beat": 29.497727,
+              "type": "on",
+              "note": 76,
+              "vel": 0.611,
+              "dur": 0.385
+            },
+            {
+              "beat": 30.00131,
+              "type": "on",
+              "note": 74,
+              "vel": 0.583,
+              "dur": 0.885
+            },
+            {
+              "beat": 31.997687,
+              "type": "on",
+              "note": 74,
+              "vel": 0.593,
+              "dur": 0.385
+            },
+            {
+              "beat": 32.498124,
+              "type": "on",
+              "note": 69,
+              "vel": 0.588,
+              "dur": 0.385
+            },
+            {
+              "beat": 33.002901,
+              "type": "on",
+              "note": 71,
+              "vel": 0.605,
+              "dur": 0.385
+            },
+            {
+              "beat": 34.001676,
+              "type": "on",
+              "note": 76,
+              "vel": 0.569,
+              "dur": 0.385
+            },
+            {
+              "beat": 34.499572,
+              "type": "on",
+              "note": 74,
+              "vel": 0.587,
+              "dur": 0.385
+            },
+            {
+              "beat": 35.001168,
+              "type": "on",
+              "note": 78,
+              "vel": 0.593,
+              "dur": 0.385
+            },
+            {
+              "beat": 35.499045,
+              "type": "on",
+              "note": 76,
+              "vel": 0.61,
+              "dur": 0.385
+            },
+            {
+              "beat": 35.999079,
+              "type": "on",
+              "note": 74,
+              "vel": 0.612,
+              "dur": 0.385
+            },
+            {
+              "beat": 37.001959,
+              "type": "on",
+              "note": 69,
+              "vel": 0.605,
+              "dur": 0.385
+            },
+            {
+              "beat": 37.50201,
+              "type": "on",
+              "note": 71,
+              "vel": 0.568,
+              "dur": 0.385
+            },
+            {
+              "beat": 37.999649,
+              "type": "on",
+              "note": 74,
+              "vel": 0.595,
+              "dur": 0.385
+            },
+            {
+              "beat": 38.50169,
+              "type": "on",
+              "note": 76,
+              "vel": 0.582,
+              "dur": 0.385
+            },
+            {
+              "beat": 38.998783,
+              "type": "on",
+              "note": 78,
+              "vel": 0.57,
+              "dur": 0.385
+            },
+            {
+              "beat": 39.999915,
+              "type": "on",
+              "note": 79,
+              "vel": 0.593,
+              "dur": 0.385
+            },
+            {
+              "beat": 40.50046,
+              "type": "on",
+              "note": 78,
+              "vel": 0.614,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.001505,
+              "type": "on",
+              "note": 76,
+              "vel": 0.598,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.500601,
+              "type": "on",
+              "note": 74,
+              "vel": 0.609,
+              "dur": 0.385
+            },
+            {
+              "beat": 42.002451,
+              "type": "on",
+              "note": 71,
+              "vel": 0.576,
+              "dur": 0.385
+            },
+            {
+              "beat": 42.99929,
+              "type": "on",
+              "note": 69,
+              "vel": 0.591,
+              "dur": 0.385
+            },
+            {
+              "beat": 43.497556,
+              "type": "on",
+              "note": 71,
+              "vel": 0.582,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.001209,
+              "type": "on",
+              "note": 76,
+              "vel": 0.584,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.501524,
+              "type": "on",
+              "note": 78,
+              "vel": 0.598,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.998879,
+              "type": "on",
+              "note": 76,
+              "vel": 0.614,
+              "dur": 0.385
+            },
+            {
+              "beat": 45.496915,
+              "type": "on",
+              "note": 74,
+              "vel": 0.593,
+              "dur": 0.385
+            },
+            {
+              "beat": 46.00365,
+              "type": "on",
+              "note": 69,
+              "vel": 0.612,
+              "dur": 0.885
+            },
+            {
+              "beat": 47.002997,
+              "type": "on",
+              "note": 74,
+              "vel": 0.594,
+              "dur": 0.385
+            }
+          ]
+        },
+        {
+          "track": "Reply",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 47.385,
+          "events": [
+            {
+              "beat": 7.996617,
+              "type": "on",
+              "note": 69,
+              "vel": 0.48,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.001897,
+              "type": "on",
+              "note": 71,
+              "vel": 0.455,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.496781,
+              "type": "on",
+              "note": 74,
+              "vel": 0.499,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.003751,
+              "type": "on",
+              "note": 76,
+              "vel": 0.494,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.00259,
+              "type": "on",
+              "note": 74,
+              "vel": 0.462,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.499874,
+              "type": "on",
+              "note": 71,
+              "vel": 0.502,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.00338,
+              "type": "on",
+              "note": 69,
+              "vel": 0.47,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.496213,
+              "type": "on",
+              "note": 71,
+              "vel": 0.473,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.999933,
+              "type": "on",
+              "note": 74,
+              "vel": 0.495,
+              "dur": 0.385
+            },
+            {
+              "beat": 13.997546,
+              "type": "on",
+              "note": 76,
+              "vel": 0.486,
+              "dur": 0.885
+            },
+            {
+              "beat": 15.001237,
+              "type": "on",
+              "note": 74,
+              "vel": 0.501,
+              "dur": 0.385
+            },
+            {
+              "beat": 23.996337,
+              "type": "on",
+              "note": 69,
+              "vel": 0.461,
+              "dur": 0.385
+            },
+            {
+              "beat": 24.997909,
+              "type": "on",
+              "note": 71,
+              "vel": 0.476,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.499842,
+              "type": "on",
+              "note": 74,
+              "vel": 0.493,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.997483,
+              "type": "on",
+              "note": 76,
+              "vel": 0.499,
+              "dur": 0.385
+            },
+            {
+              "beat": 26.997238,
+              "type": "on",
+              "note": 74,
+              "vel": 0.493,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.501959,
+              "type": "on",
+              "note": 71,
+              "vel": 0.456,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.003256,
+              "type": "on",
+              "note": 69,
+              "vel": 0.472,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.497344,
+              "type": "on",
+              "note": 71,
+              "vel": 0.459,
+              "dur": 0.385
+            },
+            {
+              "beat": 29.003571,
+              "type": "on",
+              "note": 74,
+              "vel": 0.499,
+              "dur": 0.385
+            },
+            {
+              "beat": 29.997284,
+              "type": "on",
+              "note": 76,
+              "vel": 0.456,
+              "dur": 0.885
+            },
+            {
+              "beat": 30.996964,
+              "type": "on",
+              "note": 74,
+              "vel": 0.461,
+              "dur": 0.385
+            },
+            {
+              "beat": 39.996274,
+              "type": "on",
+              "note": 69,
+              "vel": 0.481,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.000267,
+              "type": "on",
+              "note": 71,
+              "vel": 0.473,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.499999,
+              "type": "on",
+              "note": 74,
+              "vel": 0.488,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.997656,
+              "type": "on",
+              "note": 76,
+              "vel": 0.458,
+              "dur": 0.385
+            },
+            {
+              "beat": 43.0013,
+              "type": "on",
+              "note": 74,
+              "vel": 0.476,
+              "dur": 0.385
+            },
+            {
+              "beat": 43.49668,
+              "type": "on",
+              "note": 71,
+              "vel": 0.48,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.000192,
+              "type": "on",
+              "note": 69,
+              "vel": 0.483,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.50223,
+              "type": "on",
+              "note": 71,
+              "vel": 0.496,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.999135,
+              "type": "on",
+              "note": 74,
+              "vel": 0.476,
+              "dur": 0.385
+            },
+            {
+              "beat": 46.003044,
+              "type": "on",
+              "note": 76,
+              "vel": 0.491,
+              "dur": 0.885
+            },
+            {
+              "beat": 47.002038,
+              "type": "on",
+              "note": 74,
+              "vel": 0.457,
+              "dur": 0.385
+            }
+          ]
+        },
+        {
+          "track": "Keys",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 47.4,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.452
+            },
+            {
+              "beat": 0.008848,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.414
+            },
+            {
+              "beat": 0.015783,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.421
+            },
+            {
+              "beat": 1.753255,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.356
+            },
+            {
+              "beat": 1.760827,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.348
+            },
+            {
+              "beat": 1.764525,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.364
+            },
+            {
+              "beat": 3.002215,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.376
+            },
+            {
+              "beat": 3.012644,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.384
+            },
+            {
+              "beat": 3.02111,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.363
+            },
+            {
+              "beat": 3.996433,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.437
+            },
+            {
+              "beat": 4.006472,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.439
+            },
+            {
+              "beat": 4.014622,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.394
+            },
+            {
+              "beat": 5.753099,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.377
+            },
+            {
+              "beat": 5.755171,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.367
+            },
+            {
+              "beat": 5.769396,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.334
+            },
+            {
+              "beat": 6.996748,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.389
+            },
+            {
+              "beat": 7.009463,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.364
+            },
+            {
+              "beat": 7.020589,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.34
+            },
+            {
+              "beat": 7.996128,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.421
+            },
+            {
+              "beat": 8.009126,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.424
+            },
+            {
+              "beat": 8.016932,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.437
+            },
+            {
+              "beat": 9.749622,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.394
+            },
+            {
+              "beat": 9.757514,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.359
+            },
+            {
+              "beat": 9.770076,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.356
+            },
+            {
+              "beat": 11.001715,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.401
+            },
+            {
+              "beat": 11.010265,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.38
+            },
+            {
+              "beat": 11.018812,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.374
+            },
+            {
+              "beat": 11.999359,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.431
+            },
+            {
+              "beat": 12.006127,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.416
+            },
+            {
+              "beat": 12.018978,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.416
+            },
+            {
+              "beat": 13.750688,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.382
+            },
+            {
+              "beat": 13.760561,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.377
+            },
+            {
+              "beat": 13.764987,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.356
+            },
+            {
+              "beat": 15.002243,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.385
+            },
+            {
+              "beat": 15.010415,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.39
+            },
+            {
+              "beat": 15.020838,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.339
+            },
+            {
+              "beat": 16.003481,
+              "type": "on",
+              "note": 59,
+              "dur": 0.68,
+              "vel": 0.459
+            },
+            {
+              "beat": 16.008099,
+              "type": "on",
+              "note": 62,
+              "dur": 0.671,
+              "vel": 0.427
+            },
+            {
+              "beat": 16.01558,
+              "type": "on",
+              "note": 69,
+              "dur": 0.662,
+              "vel": 0.433
+            },
+            {
+              "beat": 17.750635,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.398
+            },
+            {
+              "beat": 17.762459,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.356
+            },
+            {
+              "beat": 17.769674,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.359
+            },
+            {
+              "beat": 19.00239,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.391
+            },
+            {
+              "beat": 19.006447,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.382
+            },
+            {
+              "beat": 19.014197,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.357
+            },
+            {
+              "beat": 20.002387,
+              "type": "on",
+              "note": 59,
+              "dur": 0.68,
+              "vel": 0.437
+            },
+            {
+              "beat": 20.009701,
+              "type": "on",
+              "note": 62,
+              "dur": 0.671,
+              "vel": 0.446
+            },
+            {
+              "beat": 20.018847,
+              "type": "on",
+              "note": 69,
+              "dur": 0.662,
+              "vel": 0.427
+            },
+            {
+              "beat": 21.749411,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.376
+            },
+            {
+              "beat": 21.762452,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.351
+            },
+            {
+              "beat": 21.771544,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.376
+            },
+            {
+              "beat": 23.001212,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.367
+            },
+            {
+              "beat": 23.010567,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.353
+            },
+            {
+              "beat": 23.018322,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.367
+            },
+            {
+              "beat": 23.999142,
+              "type": "on",
+              "note": 52,
+              "dur": 0.68,
+              "vel": 0.43
+            },
+            {
+              "beat": 24.010383,
+              "type": "on",
+              "note": 55,
+              "dur": 0.671,
+              "vel": 0.408
+            },
+            {
+              "beat": 24.020888,
+              "type": "on",
+              "note": 59,
+              "dur": 0.662,
+              "vel": 0.436
+            },
+            {
+              "beat": 25.749509,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.363
+            },
+            {
+              "beat": 25.762455,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.346
+            },
+            {
+              "beat": 25.768521,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.377
+            },
+            {
+              "beat": 26.998315,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.401
+            },
+            {
+              "beat": 27.00601,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.346
+            },
+            {
+              "beat": 27.01728,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.356
+            },
+            {
+              "beat": 27.996021,
+              "type": "on",
+              "note": 52,
+              "dur": 0.68,
+              "vel": 0.441
+            },
+            {
+              "beat": 28.005633,
+              "type": "on",
+              "note": 55,
+              "dur": 0.671,
+              "vel": 0.413
+            },
+            {
+              "beat": 28.017079,
+              "type": "on",
+              "note": 59,
+              "dur": 0.662,
+              "vel": 0.403
+            },
+            {
+              "beat": 29.751766,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.394
+            },
+            {
+              "beat": 29.757838,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.385
+            },
+            {
+              "beat": 29.7667,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.37
+            },
+            {
+              "beat": 30.998173,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.403
+            },
+            {
+              "beat": 31.01231,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.359
+            },
+            {
+              "beat": 31.016121,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.375
+            },
+            {
+              "beat": 31.997824,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.455
+            },
+            {
+              "beat": 32.011602,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.42
+            },
+            {
+              "beat": 32.015782,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.434
+            },
+            {
+              "beat": 33.75383,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.398
+            },
+            {
+              "beat": 33.756925,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.382
+            },
+            {
+              "beat": 33.76758,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.338
+            },
+            {
+              "beat": 34.999701,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.381
+            },
+            {
+              "beat": 35.007232,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.356
+            },
+            {
+              "beat": 35.018078,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.375
+            },
+            {
+              "beat": 36.001002,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.462
+            },
+            {
+              "beat": 36.006262,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.44
+            },
+            {
+              "beat": 36.020159,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.404
+            },
+            {
+              "beat": 37.750751,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.403
+            },
+            {
+              "beat": 37.755143,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.382
+            },
+            {
+              "beat": 37.766643,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.352
+            },
+            {
+              "beat": 38.997102,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.397
+            },
+            {
+              "beat": 39.006124,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.376
+            },
+            {
+              "beat": 39.016346,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.339
+            },
+            {
+              "beat": 40.002425,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.443
+            },
+            {
+              "beat": 40.010582,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.421
+            },
+            {
+              "beat": 40.014674,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.398
+            },
+            {
+              "beat": 41.749487,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.404
+            },
+            {
+              "beat": 41.76084,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.347
+            },
+            {
+              "beat": 41.76539,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.331
+            },
+            {
+              "beat": 43.002438,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.395
+            },
+            {
+              "beat": 43.012777,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.344
+            },
+            {
+              "beat": 43.017655,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.333
+            },
+            {
+              "beat": 44.003645,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.423
+            },
+            {
+              "beat": 44.012354,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.414
+            },
+            {
+              "beat": 44.016208,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.425
+            },
+            {
+              "beat": 45.747855,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.374
+            },
+            {
+              "beat": 45.762054,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.391
+            },
+            {
+              "beat": 45.770672,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.34
+            },
+            {
+              "beat": 46.996102,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.395
+            },
+            {
+              "beat": 47.007261,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.362
+            },
+            {
+              "beat": 47.01721,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.356
+            }
+          ]
+        },
+        {
+          "track": "Bass",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 46.88,
+          "events": [
+            {
+              "beat": 0.016609,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.554
+            },
+            {
+              "beat": 2.503621,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.381
+            },
+            {
+              "beat": 4.017985,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.557
+            },
+            {
+              "beat": 6.503241,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.387
+            },
+            {
+              "beat": 8.01632,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.563
+            },
+            {
+              "beat": 10.503872,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.411
+            },
+            {
+              "beat": 12.020948,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.527
+            },
+            {
+              "beat": 14.496641,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.403
+            },
+            {
+              "beat": 16.017915,
+              "type": "on",
+              "note": 43,
+              "dur": 0.7,
+              "vel": 0.552
+            },
+            {
+              "beat": 18.500148,
+              "type": "on",
+              "note": 50,
+              "dur": 0.38,
+              "vel": 0.404
+            },
+            {
+              "beat": 20.01754,
+              "type": "on",
+              "note": 43,
+              "dur": 0.7,
+              "vel": 0.545
+            },
+            {
+              "beat": 22.501179,
+              "type": "on",
+              "note": 50,
+              "dur": 0.38,
+              "vel": 0.388
+            },
+            {
+              "beat": 24.017286,
+              "type": "on",
+              "note": 33,
+              "dur": 0.7,
+              "vel": 0.559
+            },
+            {
+              "beat": 26.499687,
+              "type": "on",
+              "note": 40,
+              "dur": 0.38,
+              "vel": 0.391
+            },
+            {
+              "beat": 28.020545,
+              "type": "on",
+              "note": 33,
+              "dur": 0.7,
+              "vel": 0.55
+            },
+            {
+              "beat": 30.502783,
+              "type": "on",
+              "note": 40,
+              "dur": 0.38,
+              "vel": 0.392
+            },
+            {
+              "beat": 32.020887,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.549
+            },
+            {
+              "beat": 34.496816,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.384
+            },
+            {
+              "beat": 36.018992,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.541
+            },
+            {
+              "beat": 38.503713,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.399
+            },
+            {
+              "beat": 40.021046,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.53
+            },
+            {
+              "beat": 42.49924,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.404
+            },
+            {
+              "beat": 44.021353,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.537
+            },
+            {
+              "beat": 46.496688,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.378
+            }
+          ]
+        },
+        {
+          "track": "Kick",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 46.89,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.557
+            },
+            {
+              "beat": 2.501974,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.561
+            },
+            {
+              "beat": 3.99826,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.596
+            },
+            {
+              "beat": 6.749036,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.586
+            },
+            {
+              "beat": 8.003632,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.601
+            },
+            {
+              "beat": 10.496549,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.602
+            },
+            {
+              "beat": 12.000647,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.596
+            },
+            {
+              "beat": 14.747983,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.563
+            },
+            {
+              "beat": 16.001537,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.574
+            },
+            {
+              "beat": 18.498802,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.603
+            },
+            {
+              "beat": 20.002183,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.576
+            },
+            {
+              "beat": 22.753058,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.585
+            },
+            {
+              "beat": 23.996297,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.58
+            },
+            {
+              "beat": 26.503595,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.563
+            },
+            {
+              "beat": 27.999468,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.602
+            },
+            {
+              "beat": 30.749071,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.577
+            },
+            {
+              "beat": 32.003259,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.605
+            },
+            {
+              "beat": 34.498468,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.581
+            },
+            {
+              "beat": 36.001782,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.564
+            },
+            {
+              "beat": 38.751956,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.571
+            },
+            {
+              "beat": 39.9967,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.563
+            },
+            {
+              "beat": 42.499851,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.568
+            },
+            {
+              "beat": 44.000414,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.595
+            },
+            {
+              "beat": 46.748541,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.591
+            }
+          ]
+        },
+        {
+          "track": "Snare",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 47.83,
+          "events": [
+            {
+              "beat": 0.99665,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.448
+            },
+            {
+              "beat": 3.002085,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.46
+            },
+            {
+              "beat": 5.000093,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.467
+            },
+            {
+              "beat": 6.998647,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.439
+            },
+            {
+              "beat": 9.003155,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.465
+            },
+            {
+              "beat": 11.00267,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.46
+            },
+            {
+              "beat": 13.002853,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.456
+            },
+            {
+              "beat": 14.998003,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.459
+            },
+            {
+              "beat": 15.746762,
+              "type": "on",
+              "note": 38,
+              "dur": 0.08,
+              "vel": 0.251
+            },
+            {
+              "beat": 16.997437,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.452
+            },
+            {
+              "beat": 19.003499,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.471
+            },
+            {
+              "beat": 21.002756,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.479
+            },
+            {
+              "beat": 22.997437,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.441
+            },
+            {
+              "beat": 25.000672,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.467
+            },
+            {
+              "beat": 26.998293,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.449
+            },
+            {
+              "beat": 28.999519,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.454
+            },
+            {
+              "beat": 30.998263,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.44
+            },
+            {
+              "beat": 31.753694,
+              "type": "on",
+              "note": 38,
+              "dur": 0.08,
+              "vel": 0.266
+            },
+            {
+              "beat": 33.002103,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.46
+            },
+            {
+              "beat": 34.999663,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.46
+            },
+            {
+              "beat": 36.996428,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.449
+            },
+            {
+              "beat": 38.997017,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.484
+            },
+            {
+              "beat": 40.999822,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.471
+            },
+            {
+              "beat": 42.998858,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.456
+            },
+            {
+              "beat": 45.00041,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.475
+            },
+            {
+              "beat": 46.999473,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.464
+            },
+            {
+              "beat": 47.752873,
+              "type": "on",
+              "note": 38,
+              "dur": 0.08,
+              "vel": 0.231
+            }
+          ]
+        },
+        {
+          "track": "Hat",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 47.565,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.241
+            },
+            {
+              "beat": 0.496162,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.3
+            },
+            {
+              "beat": 1.001097,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.259
+            },
+            {
+              "beat": 1.498143,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.328
+            },
+            {
+              "beat": 2.000385,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.246
+            },
+            {
+              "beat": 2.501947,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.293
+            },
+            {
+              "beat": 3.003548,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.229
+            },
+            {
+              "beat": 3.501572,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.332
+            },
+            {
+              "beat": 4.000195,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.262
+            },
+            {
+              "beat": 4.496542,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.321
+            },
+            {
+              "beat": 4.999234,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.26
+            },
+            {
+              "beat": 5.502034,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.332
+            },
+            {
+              "beat": 6.003618,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.227
+            },
+            {
+              "beat": 6.503343,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.29
+            },
+            {
+              "beat": 7.002335,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.245
+            },
+            {
+              "beat": 7.49803,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.288
+            },
+            {
+              "beat": 7.999753,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.238
+            },
+            {
+              "beat": 8.502402,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.318
+            },
+            {
+              "beat": 9.003428,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.242
+            },
+            {
+              "beat": 9.496108,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.325
+            },
+            {
+              "beat": 9.999796,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.246
+            },
+            {
+              "beat": 10.498429,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.289
+            },
+            {
+              "beat": 10.997093,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.237
+            },
+            {
+              "beat": 11.496549,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.321
+            },
+            {
+              "beat": 11.998126,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.241
+            },
+            {
+              "beat": 12.503575,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.292
+            },
+            {
+              "beat": 13.003361,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.248
+            },
+            {
+              "beat": 13.497264,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.296
+            },
+            {
+              "beat": 14.001862,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.23
+            },
+            {
+              "beat": 14.496905,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.323
+            },
+            {
+              "beat": 15.002875,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.245
+            },
+            {
+              "beat": 15.500392,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.309
+            },
+            {
+              "beat": 15.999261,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.252
+            },
+            {
+              "beat": 16.496502,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.32
+            },
+            {
+              "beat": 16.99863,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.252
+            },
+            {
+              "beat": 17.502151,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.313
+            },
+            {
+              "beat": 17.997242,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.239
+            },
+            {
+              "beat": 18.501044,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.335
+            },
+            {
+              "beat": 18.996577,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.23
+            },
+            {
+              "beat": 19.50006,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.316
+            },
+            {
+              "beat": 19.997181,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.227
+            },
+            {
+              "beat": 20.498719,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.311
+            },
+            {
+              "beat": 20.999566,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.248
+            },
+            {
+              "beat": 21.50366,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.318
+            },
+            {
+              "beat": 22.001122,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.22
+            },
+            {
+              "beat": 22.49711,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.314
+            },
+            {
+              "beat": 22.999032,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.233
+            },
+            {
+              "beat": 23.498041,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.313
+            },
+            {
+              "beat": 24.003806,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.256
+            },
+            {
+              "beat": 24.502696,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.314
+            },
+            {
+              "beat": 24.997251,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.265
+            },
+            {
+              "beat": 25.497944,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.323
+            },
+            {
+              "beat": 25.998976,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.238
+            },
+            {
+              "beat": 26.502498,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.314
+            },
+            {
+              "beat": 27.003215,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.265
+            },
+            {
+              "beat": 27.500062,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.327
+            },
+            {
+              "beat": 27.998435,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.238
+            },
+            {
+              "beat": 28.503266,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.316
+            },
+            {
+              "beat": 28.999032,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.257
+            },
+            {
+              "beat": 29.499089,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.303
+            },
+            {
+              "beat": 30.003176,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.218
+            },
+            {
+              "beat": 30.501856,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.326
+            },
+            {
+              "beat": 31.000163,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.216
+            },
+            {
+              "beat": 31.497379,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.304
+            },
+            {
+              "beat": 31.998882,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.262
+            },
+            {
+              "beat": 32.497856,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.334
+            },
+            {
+              "beat": 32.99908,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.239
+            },
+            {
+              "beat": 33.499677,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.327
+            },
+            {
+              "beat": 33.999423,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.223
+            },
+            {
+              "beat": 34.503719,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.317
+            },
+            {
+              "beat": 34.998227,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.243
+            },
+            {
+              "beat": 35.497547,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.325
+            },
+            {
+              "beat": 35.998007,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.216
+            },
+            {
+              "beat": 36.497366,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.288
+            },
+            {
+              "beat": 37.00018,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.25
+            },
+            {
+              "beat": 37.498944,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.302
+            },
+            {
+              "beat": 37.997594,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.234
+            },
+            {
+              "beat": 38.502527,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.331
+            },
+            {
+              "beat": 39.001919,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.264
+            },
+            {
+              "beat": 39.503029,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.296
+            },
+            {
+              "beat": 40.003265,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.219
+            },
+            {
+              "beat": 40.500384,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.321
+            },
+            {
+              "beat": 41.003798,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.258
+            },
+            {
+              "beat": 41.502209,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.285
+            },
+            {
+              "beat": 41.999757,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.227
+            },
+            {
+              "beat": 42.501277,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.326
+            },
+            {
+              "beat": 42.997635,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.226
+            },
+            {
+              "beat": 43.498628,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.305
+            },
+            {
+              "beat": 44.000732,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.241
+            },
+            {
+              "beat": 44.498604,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.33
+            },
+            {
+              "beat": 45.002079,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.256
+            },
+            {
+              "beat": 45.502434,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.304
+            },
+            {
+              "beat": 45.998092,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.25
+            },
+            {
+              "beat": 46.49717,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.295
+            },
+            {
+              "beat": 47.00003,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.219
+            },
+            {
+              "beat": 47.502675,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.315
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "讀盤",
+      "bars": 8,
+      "clips": [
+        {
+          "track": "Lead",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 7.385,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 69,
+              "vel": 0.478,
+              "dur": 0.385
+            },
+            {
+              "beat": 1.003928,
+              "type": "on",
+              "note": 71,
+              "vel": 0.476,
+              "dur": 0.385
+            },
+            {
+              "beat": 1.501797,
+              "type": "on",
+              "note": 74,
+              "vel": 0.504,
+              "dur": 0.385
+            },
+            {
+              "beat": 1.996486,
+              "type": "on",
+              "note": 76,
+              "vel": 0.475,
+              "dur": 0.385
+            },
+            {
+              "beat": 2.998416,
+              "type": "on",
+              "note": 74,
+              "vel": 0.479,
+              "dur": 0.385
+            },
+            {
+              "beat": 3.500108,
+              "type": "on",
+              "note": 71,
+              "vel": 0.504,
+              "dur": 0.385
+            },
+            {
+              "beat": 3.99859,
+              "type": "on",
+              "note": 69,
+              "vel": 0.471,
+              "dur": 0.385
+            },
+            {
+              "beat": 4.500989,
+              "type": "on",
+              "note": 71,
+              "vel": 0.469,
+              "dur": 0.385
+            },
+            {
+              "beat": 5.00251,
+              "type": "on",
+              "note": 74,
+              "vel": 0.498,
+              "dur": 0.385
+            },
+            {
+              "beat": 6.00216,
+              "type": "on",
+              "note": 76,
+              "vel": 0.469,
+              "dur": 0.885
+            },
+            {
+              "beat": 7.002844,
+              "type": "on",
+              "note": 74,
+              "vel": 0.488,
+              "dur": 0.385
+            }
+          ]
+        },
+        {
+          "track": "Reply",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 23.385,
+          "events": [
+            {
+              "beat": 15.9966,
+              "type": "on",
+              "note": 69,
+              "vel": 0.433,
+              "dur": 0.385
+            },
+            {
+              "beat": 16.996617,
+              "type": "on",
+              "note": 71,
+              "vel": 0.427,
+              "dur": 0.385
+            },
+            {
+              "beat": 17.49987,
+              "type": "on",
+              "note": 74,
+              "vel": 0.433,
+              "dur": 0.385
+            },
+            {
+              "beat": 18.003737,
+              "type": "on",
+              "note": 76,
+              "vel": 0.438,
+              "dur": 0.385
+            },
+            {
+              "beat": 18.99942,
+              "type": "on",
+              "note": 74,
+              "vel": 0.412,
+              "dur": 0.385
+            },
+            {
+              "beat": 19.501046,
+              "type": "on",
+              "note": 71,
+              "vel": 0.426,
+              "dur": 0.385
+            },
+            {
+              "beat": 19.999159,
+              "type": "on",
+              "note": 69,
+              "vel": 0.431,
+              "dur": 0.385
+            },
+            {
+              "beat": 20.499465,
+              "type": "on",
+              "note": 71,
+              "vel": 0.409,
+              "dur": 0.385
+            },
+            {
+              "beat": 21.001039,
+              "type": "on",
+              "note": 74,
+              "vel": 0.435,
+              "dur": 0.385
+            },
+            {
+              "beat": 22.003119,
+              "type": "on",
+              "note": 76,
+              "vel": 0.444,
+              "dur": 0.885
+            },
+            {
+              "beat": 23.000671,
+              "type": "on",
+              "note": 74,
+              "vel": 0.437,
+              "dur": 0.385
+            }
+          ]
+        },
+        {
+          "track": "Keys",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.3,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 57,
+              "dur": 7.3,
+              "vel": 0.385
+            },
+            {
+              "beat": 0.007241,
+              "type": "on",
+              "note": 61,
+              "dur": 7.2909999999999995,
+              "vel": 0.355
+            },
+            {
+              "beat": 0.016588,
+              "type": "on",
+              "note": 64,
+              "dur": 7.282,
+              "vel": 0.361
+            },
+            {
+              "beat": 7.997319,
+              "type": "on",
+              "note": 54,
+              "dur": 7.3,
+              "vel": 0.368
+            },
+            {
+              "beat": 8.006663,
+              "type": "on",
+              "note": 57,
+              "dur": 7.2909999999999995,
+              "vel": 0.335
+            },
+            {
+              "beat": 8.015397,
+              "type": "on",
+              "note": 62,
+              "dur": 7.282,
+              "vel": 0.327
+            },
+            {
+              "beat": 15.997745,
+              "type": "on",
+              "note": 59,
+              "dur": 7.3,
+              "vel": 0.371
+            },
+            {
+              "beat": 16.00558,
+              "type": "on",
+              "note": 62,
+              "dur": 7.2909999999999995,
+              "vel": 0.373
+            },
+            {
+              "beat": 16.02123,
+              "type": "on",
+              "note": 69,
+              "dur": 7.282,
+              "vel": 0.329
+            },
+            {
+              "beat": 24.000434,
+              "type": "on",
+              "note": 52,
+              "dur": 7.3,
+              "vel": 0.363
+            },
+            {
+              "beat": 24.008802,
+              "type": "on",
+              "note": 55,
+              "dur": 7.2909999999999995,
+              "vel": 0.38
+            },
+            {
+              "beat": 24.017491,
+              "type": "on",
+              "note": 59,
+              "dur": 7.282,
+              "vel": 0.335
+            }
+          ]
+        },
+        {
+          "track": "Bass",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 28.72,
+          "events": [
+            {
+              "beat": 0.016643,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.52
+            },
+            {
+              "beat": 4.019557,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.554
+            },
+            {
+              "beat": 8.016056,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.546
+            },
+            {
+              "beat": 12.020201,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.559
+            },
+            {
+              "beat": 16.023082,
+              "type": "on",
+              "note": 43,
+              "dur": 0.7,
+              "vel": 0.548
+            },
+            {
+              "beat": 20.021932,
+              "type": "on",
+              "note": 43,
+              "dur": 0.7,
+              "vel": 0.523
+            },
+            {
+              "beat": 24.023128,
+              "type": "on",
+              "note": 33,
+              "dur": 0.7,
+              "vel": 0.56
+            },
+            {
+              "beat": 28.018898,
+              "type": "on",
+              "note": 33,
+              "dur": 0.7,
+              "vel": 0.537
+            }
+          ]
+        },
+        {
+          "track": "Kick",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 24.14,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.353
+            },
+            {
+              "beat": 7.997184,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.374
+            },
+            {
+              "beat": 15.997277,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.377
+            },
+            {
+              "beat": 23.99887,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.347
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "連招",
+      "bars": 12,
+      "clips": [
+        {
+          "track": "Lead",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 46.885,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 81,
+              "vel": 0.644,
+              "dur": 0.385
+            },
+            {
+              "beat": 1.003652,
+              "type": "on",
+              "note": 78,
+              "vel": 0.657,
+              "dur": 0.385
+            },
+            {
+              "beat": 1.502561,
+              "type": "on",
+              "note": 76,
+              "vel": 0.662,
+              "dur": 0.385
+            },
+            {
+              "beat": 2.00378,
+              "type": "on",
+              "note": 74,
+              "vel": 0.642,
+              "dur": 0.385
+            },
+            {
+              "beat": 2.497607,
+              "type": "on",
+              "note": 71,
+              "vel": 0.626,
+              "dur": 0.385
+            },
+            {
+              "beat": 2.998128,
+              "type": "on",
+              "note": 69,
+              "vel": 0.629,
+              "dur": 0.385
+            },
+            {
+              "beat": 3.996267,
+              "type": "on",
+              "note": 71,
+              "vel": 0.618,
+              "dur": 0.385
+            },
+            {
+              "beat": 4.496444,
+              "type": "on",
+              "note": 74,
+              "vel": 0.653,
+              "dur": 0.385
+            },
+            {
+              "beat": 4.996873,
+              "type": "on",
+              "note": 76,
+              "vel": 0.639,
+              "dur": 0.385
+            },
+            {
+              "beat": 5.50052,
+              "type": "on",
+              "note": 78,
+              "vel": 0.649,
+              "dur": 0.385
+            },
+            {
+              "beat": 6.000363,
+              "type": "on",
+              "note": 81,
+              "vel": 0.623,
+              "dur": 0.885
+            },
+            {
+              "beat": 6.997152,
+              "type": "on",
+              "note": 78,
+              "vel": 0.622,
+              "dur": 0.385
+            },
+            {
+              "beat": 7.496858,
+              "type": "on",
+              "note": 76,
+              "vel": 0.646,
+              "dur": 0.385
+            },
+            {
+              "beat": 8.002814,
+              "type": "on",
+              "note": 79,
+              "vel": 0.631,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.002471,
+              "type": "on",
+              "note": 78,
+              "vel": 0.657,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.50387,
+              "type": "on",
+              "note": 76,
+              "vel": 0.618,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.003592,
+              "type": "on",
+              "note": 74,
+              "vel": 0.625,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.503138,
+              "type": "on",
+              "note": 71,
+              "vel": 0.649,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.996259,
+              "type": "on",
+              "note": 69,
+              "vel": 0.655,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.501764,
+              "type": "on",
+              "note": 71,
+              "vel": 0.633,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.998455,
+              "type": "on",
+              "note": 76,
+              "vel": 0.625,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.502682,
+              "type": "on",
+              "note": 74,
+              "vel": 0.664,
+              "dur": 0.385
+            },
+            {
+              "beat": 13.002167,
+              "type": "on",
+              "note": 78,
+              "vel": 0.656,
+              "dur": 0.385
+            },
+            {
+              "beat": 13.497969,
+              "type": "on",
+              "note": 76,
+              "vel": 0.628,
+              "dur": 0.385
+            },
+            {
+              "beat": 14.003282,
+              "type": "on",
+              "note": 74,
+              "vel": 0.629,
+              "dur": 0.885
+            },
+            {
+              "beat": 16.000341,
+              "type": "on",
+              "note": 74,
+              "vel": 0.628,
+              "dur": 0.385
+            },
+            {
+              "beat": 16.50019,
+              "type": "on",
+              "note": 69,
+              "vel": 0.638,
+              "dur": 0.385
+            },
+            {
+              "beat": 16.997592,
+              "type": "on",
+              "note": 71,
+              "vel": 0.659,
+              "dur": 0.385
+            },
+            {
+              "beat": 17.997842,
+              "type": "on",
+              "note": 76,
+              "vel": 0.639,
+              "dur": 0.385
+            },
+            {
+              "beat": 18.499583,
+              "type": "on",
+              "note": 74,
+              "vel": 0.617,
+              "dur": 0.385
+            },
+            {
+              "beat": 19.002121,
+              "type": "on",
+              "note": 78,
+              "vel": 0.65,
+              "dur": 0.385
+            },
+            {
+              "beat": 19.500522,
+              "type": "on",
+              "note": 76,
+              "vel": 0.643,
+              "dur": 0.385
+            },
+            {
+              "beat": 19.999525,
+              "type": "on",
+              "note": 74,
+              "vel": 0.621,
+              "dur": 0.385
+            },
+            {
+              "beat": 21.000701,
+              "type": "on",
+              "note": 69,
+              "vel": 0.646,
+              "dur": 0.385
+            },
+            {
+              "beat": 21.497037,
+              "type": "on",
+              "note": 71,
+              "vel": 0.623,
+              "dur": 0.385
+            },
+            {
+              "beat": 21.996722,
+              "type": "on",
+              "note": 74,
+              "vel": 0.659,
+              "dur": 0.385
+            },
+            {
+              "beat": 22.500959,
+              "type": "on",
+              "note": 76,
+              "vel": 0.652,
+              "dur": 0.385
+            },
+            {
+              "beat": 22.998205,
+              "type": "on",
+              "note": 78,
+              "vel": 0.626,
+              "dur": 0.385
+            },
+            {
+              "beat": 24.000856,
+              "type": "on",
+              "note": 79,
+              "vel": 0.644,
+              "dur": 0.385
+            },
+            {
+              "beat": 24.502865,
+              "type": "on",
+              "note": 78,
+              "vel": 0.636,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.001893,
+              "type": "on",
+              "note": 76,
+              "vel": 0.624,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.500324,
+              "type": "on",
+              "note": 74,
+              "vel": 0.623,
+              "dur": 0.385
+            },
+            {
+              "beat": 26.000348,
+              "type": "on",
+              "note": 71,
+              "vel": 0.665,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.003289,
+              "type": "on",
+              "note": 69,
+              "vel": 0.658,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.501671,
+              "type": "on",
+              "note": 71,
+              "vel": 0.643,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.99787,
+              "type": "on",
+              "note": 76,
+              "vel": 0.655,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.501717,
+              "type": "on",
+              "note": 78,
+              "vel": 0.625,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.99776,
+              "type": "on",
+              "note": 76,
+              "vel": 0.657,
+              "dur": 0.385
+            },
+            {
+              "beat": 29.500698,
+              "type": "on",
+              "note": 74,
+              "vel": 0.636,
+              "dur": 0.385
+            },
+            {
+              "beat": 30.002264,
+              "type": "on",
+              "note": 69,
+              "vel": 0.661,
+              "dur": 0.885
+            },
+            {
+              "beat": 31.001841,
+              "type": "on",
+              "note": 74,
+              "vel": 0.628,
+              "dur": 0.385
+            },
+            {
+              "beat": 32.000852,
+              "type": "on",
+              "note": 81,
+              "vel": 0.641,
+              "dur": 0.385
+            },
+            {
+              "beat": 33.001892,
+              "type": "on",
+              "note": 78,
+              "vel": 0.639,
+              "dur": 0.385
+            },
+            {
+              "beat": 33.498513,
+              "type": "on",
+              "note": 76,
+              "vel": 0.654,
+              "dur": 0.385
+            },
+            {
+              "beat": 33.99776,
+              "type": "on",
+              "note": 74,
+              "vel": 0.662,
+              "dur": 0.385
+            },
+            {
+              "beat": 34.496035,
+              "type": "on",
+              "note": 71,
+              "vel": 0.63,
+              "dur": 0.385
+            },
+            {
+              "beat": 35.000832,
+              "type": "on",
+              "note": 69,
+              "vel": 0.655,
+              "dur": 0.385
+            },
+            {
+              "beat": 35.99619,
+              "type": "on",
+              "note": 71,
+              "vel": 0.662,
+              "dur": 0.385
+            },
+            {
+              "beat": 36.497945,
+              "type": "on",
+              "note": 74,
+              "vel": 0.657,
+              "dur": 0.385
+            },
+            {
+              "beat": 37.001406,
+              "type": "on",
+              "note": 76,
+              "vel": 0.654,
+              "dur": 0.385
+            },
+            {
+              "beat": 37.502627,
+              "type": "on",
+              "note": 78,
+              "vel": 0.659,
+              "dur": 0.385
+            },
+            {
+              "beat": 38.002278,
+              "type": "on",
+              "note": 81,
+              "vel": 0.624,
+              "dur": 0.885
+            },
+            {
+              "beat": 38.99849,
+              "type": "on",
+              "note": 78,
+              "vel": 0.649,
+              "dur": 0.385
+            },
+            {
+              "beat": 39.497143,
+              "type": "on",
+              "note": 76,
+              "vel": 0.628,
+              "dur": 0.385
+            },
+            {
+              "beat": 40.003325,
+              "type": "on",
+              "note": 79,
+              "vel": 0.657,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.000937,
+              "type": "on",
+              "note": 78,
+              "vel": 0.625,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.499139,
+              "type": "on",
+              "note": 76,
+              "vel": 0.656,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.996678,
+              "type": "on",
+              "note": 74,
+              "vel": 0.618,
+              "dur": 0.385
+            },
+            {
+              "beat": 42.503824,
+              "type": "on",
+              "note": 71,
+              "vel": 0.617,
+              "dur": 0.385
+            },
+            {
+              "beat": 43.001166,
+              "type": "on",
+              "note": 69,
+              "vel": 0.639,
+              "dur": 0.385
+            },
+            {
+              "beat": 43.503632,
+              "type": "on",
+              "note": 71,
+              "vel": 0.616,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.002178,
+              "type": "on",
+              "note": 76,
+              "vel": 0.627,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.499582,
+              "type": "on",
+              "note": 74,
+              "vel": 0.634,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.9986,
+              "type": "on",
+              "note": 78,
+              "vel": 0.63,
+              "dur": 0.385
+            },
+            {
+              "beat": 45.502012,
+              "type": "on",
+              "note": 76,
+              "vel": 0.655,
+              "dur": 0.385
+            },
+            {
+              "beat": 45.997761,
+              "type": "on",
+              "note": 74,
+              "vel": 0.643,
+              "dur": 0.885
+            }
+          ]
+        },
+        {
+          "track": "Reply",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 47.385,
+          "events": [
+            {
+              "beat": 7.996606,
+              "type": "on",
+              "note": 69,
+              "vel": 0.499,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.00029,
+              "type": "on",
+              "note": 71,
+              "vel": 0.491,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.496854,
+              "type": "on",
+              "note": 74,
+              "vel": 0.481,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.002419,
+              "type": "on",
+              "note": 76,
+              "vel": 0.457,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.997114,
+              "type": "on",
+              "note": 74,
+              "vel": 0.47,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.500029,
+              "type": "on",
+              "note": 71,
+              "vel": 0.493,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.998233,
+              "type": "on",
+              "note": 69,
+              "vel": 0.49,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.499543,
+              "type": "on",
+              "note": 71,
+              "vel": 0.485,
+              "dur": 0.385
+            },
+            {
+              "beat": 13.001585,
+              "type": "on",
+              "note": 74,
+              "vel": 0.486,
+              "dur": 0.385
+            },
+            {
+              "beat": 14.003155,
+              "type": "on",
+              "note": 76,
+              "vel": 0.458,
+              "dur": 0.885
+            },
+            {
+              "beat": 15.001053,
+              "type": "on",
+              "note": 74,
+              "vel": 0.503,
+              "dur": 0.385
+            },
+            {
+              "beat": 23.996912,
+              "type": "on",
+              "note": 69,
+              "vel": 0.473,
+              "dur": 0.385
+            },
+            {
+              "beat": 24.99797,
+              "type": "on",
+              "note": 71,
+              "vel": 0.467,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.50189,
+              "type": "on",
+              "note": 74,
+              "vel": 0.498,
+              "dur": 0.385
+            },
+            {
+              "beat": 26.003267,
+              "type": "on",
+              "note": 76,
+              "vel": 0.477,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.003281,
+              "type": "on",
+              "note": 74,
+              "vel": 0.456,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.498588,
+              "type": "on",
+              "note": 71,
+              "vel": 0.497,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.998895,
+              "type": "on",
+              "note": 69,
+              "vel": 0.5,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.499564,
+              "type": "on",
+              "note": 71,
+              "vel": 0.474,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.99962,
+              "type": "on",
+              "note": 74,
+              "vel": 0.476,
+              "dur": 0.385
+            },
+            {
+              "beat": 29.998665,
+              "type": "on",
+              "note": 76,
+              "vel": 0.471,
+              "dur": 0.885
+            },
+            {
+              "beat": 31.00045,
+              "type": "on",
+              "note": 74,
+              "vel": 0.468,
+              "dur": 0.385
+            },
+            {
+              "beat": 39.997574,
+              "type": "on",
+              "note": 69,
+              "vel": 0.487,
+              "dur": 0.385
+            },
+            {
+              "beat": 40.997661,
+              "type": "on",
+              "note": 71,
+              "vel": 0.483,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.496212,
+              "type": "on",
+              "note": 74,
+              "vel": 0.503,
+              "dur": 0.385
+            },
+            {
+              "beat": 41.999292,
+              "type": "on",
+              "note": 76,
+              "vel": 0.457,
+              "dur": 0.385
+            },
+            {
+              "beat": 43.001525,
+              "type": "on",
+              "note": 74,
+              "vel": 0.494,
+              "dur": 0.385
+            },
+            {
+              "beat": 43.498236,
+              "type": "on",
+              "note": 71,
+              "vel": 0.483,
+              "dur": 0.385
+            },
+            {
+              "beat": 43.996598,
+              "type": "on",
+              "note": 69,
+              "vel": 0.465,
+              "dur": 0.385
+            },
+            {
+              "beat": 44.49985,
+              "type": "on",
+              "note": 71,
+              "vel": 0.484,
+              "dur": 0.385
+            },
+            {
+              "beat": 45.003461,
+              "type": "on",
+              "note": 74,
+              "vel": 0.49,
+              "dur": 0.385
+            },
+            {
+              "beat": 45.999083,
+              "type": "on",
+              "note": 76,
+              "vel": 0.481,
+              "dur": 0.885
+            },
+            {
+              "beat": 46.997726,
+              "type": "on",
+              "note": 74,
+              "vel": 0.502,
+              "dur": 0.385
+            }
+          ]
+        },
+        {
+          "track": "Keys",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 47.4,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.419
+            },
+            {
+              "beat": 0.011172,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.439
+            },
+            {
+              "beat": 0.017391,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.416
+            },
+            {
+              "beat": 1.748374,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.388
+            },
+            {
+              "beat": 1.761926,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.36
+            },
+            {
+              "beat": 1.767329,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.359
+            },
+            {
+              "beat": 2.998425,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.373
+            },
+            {
+              "beat": 3.007834,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.353
+            },
+            {
+              "beat": 3.015961,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.344
+            },
+            {
+              "beat": 3.99781,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.436
+            },
+            {
+              "beat": 4.007662,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.404
+            },
+            {
+              "beat": 4.016791,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.417
+            },
+            {
+              "beat": 5.74699,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.374
+            },
+            {
+              "beat": 5.756829,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.375
+            },
+            {
+              "beat": 5.764719,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.339
+            },
+            {
+              "beat": 6.998572,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.363
+            },
+            {
+              "beat": 7.006214,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.369
+            },
+            {
+              "beat": 7.014259,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.345
+            },
+            {
+              "beat": 8.000647,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.454
+            },
+            {
+              "beat": 8.006862,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.421
+            },
+            {
+              "beat": 8.021074,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.401
+            },
+            {
+              "beat": 9.750592,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.383
+            },
+            {
+              "beat": 9.755635,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.344
+            },
+            {
+              "beat": 9.767577,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.339
+            },
+            {
+              "beat": 11.002725,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.397
+            },
+            {
+              "beat": 11.007519,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.366
+            },
+            {
+              "beat": 11.017997,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.333
+            },
+            {
+              "beat": 12.001947,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.452
+            },
+            {
+              "beat": 12.009472,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.437
+            },
+            {
+              "beat": 12.016724,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.417
+            },
+            {
+              "beat": 13.750431,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.397
+            },
+            {
+              "beat": 13.759175,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.351
+            },
+            {
+              "beat": 13.771575,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.347
+            },
+            {
+              "beat": 14.999665,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.361
+            },
+            {
+              "beat": 15.005269,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.36
+            },
+            {
+              "beat": 15.015528,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.345
+            },
+            {
+              "beat": 15.999446,
+              "type": "on",
+              "note": 59,
+              "dur": 0.68,
+              "vel": 0.439
+            },
+            {
+              "beat": 16.008106,
+              "type": "on",
+              "note": 62,
+              "dur": 0.671,
+              "vel": 0.442
+            },
+            {
+              "beat": 16.016148,
+              "type": "on",
+              "note": 69,
+              "dur": 0.662,
+              "vel": 0.427
+            },
+            {
+              "beat": 17.746291,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.365
+            },
+            {
+              "beat": 17.755457,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.39
+            },
+            {
+              "beat": 17.770441,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.342
+            },
+            {
+              "beat": 19.001062,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.361
+            },
+            {
+              "beat": 19.010944,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.344
+            },
+            {
+              "beat": 19.014003,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.357
+            },
+            {
+              "beat": 20.001124,
+              "type": "on",
+              "note": 59,
+              "dur": 0.68,
+              "vel": 0.418
+            },
+            {
+              "beat": 20.008182,
+              "type": "on",
+              "note": 62,
+              "dur": 0.671,
+              "vel": 0.422
+            },
+            {
+              "beat": 20.014887,
+              "type": "on",
+              "note": 69,
+              "dur": 0.662,
+              "vel": 0.396
+            },
+            {
+              "beat": 21.747323,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.39
+            },
+            {
+              "beat": 21.755118,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.344
+            },
+            {
+              "beat": 21.764339,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.362
+            },
+            {
+              "beat": 23.00274,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.361
+            },
+            {
+              "beat": 23.0059,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.354
+            },
+            {
+              "beat": 23.020609,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.358
+            },
+            {
+              "beat": 24.002182,
+              "type": "on",
+              "note": 52,
+              "dur": 0.68,
+              "vel": 0.453
+            },
+            {
+              "beat": 24.006486,
+              "type": "on",
+              "note": 55,
+              "dur": 0.671,
+              "vel": 0.442
+            },
+            {
+              "beat": 24.014514,
+              "type": "on",
+              "note": 59,
+              "dur": 0.662,
+              "vel": 0.403
+            },
+            {
+              "beat": 25.746112,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.363
+            },
+            {
+              "beat": 25.755803,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.353
+            },
+            {
+              "beat": 25.765833,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.365
+            },
+            {
+              "beat": 26.996281,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.401
+            },
+            {
+              "beat": 27.011239,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.376
+            },
+            {
+              "beat": 27.019054,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.342
+            },
+            {
+              "beat": 28.002196,
+              "type": "on",
+              "note": 52,
+              "dur": 0.68,
+              "vel": 0.434
+            },
+            {
+              "beat": 28.005513,
+              "type": "on",
+              "note": 55,
+              "dur": 0.671,
+              "vel": 0.434
+            },
+            {
+              "beat": 28.015901,
+              "type": "on",
+              "note": 59,
+              "dur": 0.662,
+              "vel": 0.411
+            },
+            {
+              "beat": 29.749119,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.388
+            },
+            {
+              "beat": 29.761078,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.389
+            },
+            {
+              "beat": 29.768874,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.355
+            },
+            {
+              "beat": 31.000624,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.389
+            },
+            {
+              "beat": 31.009253,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.382
+            },
+            {
+              "beat": 31.019448,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.365
+            },
+            {
+              "beat": 31.999413,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.437
+            },
+            {
+              "beat": 32.010333,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.438
+            },
+            {
+              "beat": 32.020934,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.391
+            },
+            {
+              "beat": 33.746118,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.387
+            },
+            {
+              "beat": 33.758696,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.349
+            },
+            {
+              "beat": 33.769354,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.356
+            },
+            {
+              "beat": 35.002581,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.357
+            },
+            {
+              "beat": 35.010485,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.393
+            },
+            {
+              "beat": 35.014954,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.38
+            },
+            {
+              "beat": 36.002077,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.433
+            },
+            {
+              "beat": 36.012016,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.435
+            },
+            {
+              "beat": 36.02002,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.433
+            },
+            {
+              "beat": 37.746541,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.402
+            },
+            {
+              "beat": 37.756432,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.355
+            },
+            {
+              "beat": 37.769641,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.347
+            },
+            {
+              "beat": 39.000386,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.405
+            },
+            {
+              "beat": 39.005086,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.373
+            },
+            {
+              "beat": 39.01965,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.331
+            },
+            {
+              "beat": 40.001498,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.431
+            },
+            {
+              "beat": 40.007633,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.43
+            },
+            {
+              "beat": 40.015386,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.422
+            },
+            {
+              "beat": 41.751786,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.395
+            },
+            {
+              "beat": 41.755824,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.357
+            },
+            {
+              "beat": 41.769399,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.334
+            },
+            {
+              "beat": 43.000534,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.399
+            },
+            {
+              "beat": 43.007697,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.35
+            },
+            {
+              "beat": 43.014663,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.351
+            },
+            {
+              "beat": 43.997842,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.434
+            },
+            {
+              "beat": 44.008451,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.429
+            },
+            {
+              "beat": 44.019574,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.409
+            },
+            {
+              "beat": 45.751396,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.37
+            },
+            {
+              "beat": 45.762098,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.367
+            },
+            {
+              "beat": 45.768971,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.336
+            },
+            {
+              "beat": 46.99699,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.369
+            },
+            {
+              "beat": 47.011077,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.354
+            },
+            {
+              "beat": 47.017787,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.363
+            }
+          ]
+        },
+        {
+          "track": "Bass",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 46.88,
+          "events": [
+            {
+              "beat": 0.016629,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.548
+            },
+            {
+              "beat": 2.496722,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.411
+            },
+            {
+              "beat": 4.022157,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.545
+            },
+            {
+              "beat": 6.499562,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.388
+            },
+            {
+              "beat": 8.019586,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.524
+            },
+            {
+              "beat": 10.499654,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.406
+            },
+            {
+              "beat": 12.020354,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.523
+            },
+            {
+              "beat": 14.498433,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.383
+            },
+            {
+              "beat": 16.018358,
+              "type": "on",
+              "note": 43,
+              "dur": 0.7,
+              "vel": 0.563
+            },
+            {
+              "beat": 18.50097,
+              "type": "on",
+              "note": 50,
+              "dur": 0.38,
+              "vel": 0.405
+            },
+            {
+              "beat": 20.018434,
+              "type": "on",
+              "note": 43,
+              "dur": 0.7,
+              "vel": 0.544
+            },
+            {
+              "beat": 22.501152,
+              "type": "on",
+              "note": 50,
+              "dur": 0.38,
+              "vel": 0.376
+            },
+            {
+              "beat": 24.016288,
+              "type": "on",
+              "note": 33,
+              "dur": 0.7,
+              "vel": 0.542
+            },
+            {
+              "beat": 26.501155,
+              "type": "on",
+              "note": 40,
+              "dur": 0.38,
+              "vel": 0.382
+            },
+            {
+              "beat": 28.020635,
+              "type": "on",
+              "note": 33,
+              "dur": 0.7,
+              "vel": 0.56
+            },
+            {
+              "beat": 30.50149,
+              "type": "on",
+              "note": 40,
+              "dur": 0.38,
+              "vel": 0.399
+            },
+            {
+              "beat": 32.01622,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.54
+            },
+            {
+              "beat": 34.501119,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.378
+            },
+            {
+              "beat": 36.017465,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.521
+            },
+            {
+              "beat": 38.496456,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.401
+            },
+            {
+              "beat": 40.01657,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.554
+            },
+            {
+              "beat": 42.501114,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.408
+            },
+            {
+              "beat": 44.0216,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.531
+            },
+            {
+              "beat": 46.497061,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.424
+            }
+          ]
+        },
+        {
+          "track": "Kick",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 46.89,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.601
+            },
+            {
+              "beat": 2.498096,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.59
+            },
+            {
+              "beat": 4.003377,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.598
+            },
+            {
+              "beat": 6.751385,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.585
+            },
+            {
+              "beat": 7.99733,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.556
+            },
+            {
+              "beat": 10.503788,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.601
+            },
+            {
+              "beat": 12.002799,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.564
+            },
+            {
+              "beat": 14.74755,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.603
+            },
+            {
+              "beat": 15.996409,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.569
+            },
+            {
+              "beat": 18.503535,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.557
+            },
+            {
+              "beat": 20.001039,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.593
+            },
+            {
+              "beat": 22.74618,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.588
+            },
+            {
+              "beat": 23.998807,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.575
+            },
+            {
+              "beat": 26.502168,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.565
+            },
+            {
+              "beat": 28.003148,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.588
+            },
+            {
+              "beat": 30.748663,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.604
+            },
+            {
+              "beat": 32.001048,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.601
+            },
+            {
+              "beat": 34.496417,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.571
+            },
+            {
+              "beat": 36.000897,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.602
+            },
+            {
+              "beat": 38.750386,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.572
+            },
+            {
+              "beat": 39.997173,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.56
+            },
+            {
+              "beat": 42.496952,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.599
+            },
+            {
+              "beat": 43.998519,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.561
+            },
+            {
+              "beat": 46.750235,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.556
+            }
+          ]
+        },
+        {
+          "track": "Snare",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 47.83,
+          "events": [
+            {
+              "beat": 0.996676,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.442
+            },
+            {
+              "beat": 3.000757,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.479
+            },
+            {
+              "beat": 5.000197,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.48
+            },
+            {
+              "beat": 7.002842,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.482
+            },
+            {
+              "beat": 9.000196,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.45
+            },
+            {
+              "beat": 10.997154,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.479
+            },
+            {
+              "beat": 13.002634,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.453
+            },
+            {
+              "beat": 15.00189,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.449
+            },
+            {
+              "beat": 15.753231,
+              "type": "on",
+              "note": 38,
+              "dur": 0.08,
+              "vel": 0.239
+            },
+            {
+              "beat": 16.996966,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.456
+            },
+            {
+              "beat": 18.998499,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.453
+            },
+            {
+              "beat": 21.000125,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.46
+            },
+            {
+              "beat": 23.000139,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.484
+            },
+            {
+              "beat": 25.003831,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.457
+            },
+            {
+              "beat": 27.00118,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.451
+            },
+            {
+              "beat": 29.000001,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.44
+            },
+            {
+              "beat": 30.998675,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.47
+            },
+            {
+              "beat": 31.75339,
+              "type": "on",
+              "note": 38,
+              "dur": 0.08,
+              "vel": 0.249
+            },
+            {
+              "beat": 32.998549,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.476
+            },
+            {
+              "beat": 35.002423,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.479
+            },
+            {
+              "beat": 36.996565,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.437
+            },
+            {
+              "beat": 39.002676,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.479
+            },
+            {
+              "beat": 40.997345,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.482
+            },
+            {
+              "beat": 42.996568,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.456
+            },
+            {
+              "beat": 45.001162,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.453
+            },
+            {
+              "beat": 47.003764,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.482
+            },
+            {
+              "beat": 47.751339,
+              "type": "on",
+              "note": 38,
+              "dur": 0.08,
+              "vel": 0.239
+            }
+          ]
+        },
+        {
+          "track": "Hat",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 47.565,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.235
+            },
+            {
+              "beat": 0.502382,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.328
+            },
+            {
+              "beat": 1.001477,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.249
+            },
+            {
+              "beat": 1.496227,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.294
+            },
+            {
+              "beat": 2.002939,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.235
+            },
+            {
+              "beat": 2.501286,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.319
+            },
+            {
+              "beat": 3.000204,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.233
+            },
+            {
+              "beat": 3.502007,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.315
+            },
+            {
+              "beat": 4.001032,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.264
+            },
+            {
+              "beat": 4.499525,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.334
+            },
+            {
+              "beat": 5.001099,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.218
+            },
+            {
+              "beat": 5.497159,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.327
+            },
+            {
+              "beat": 6.002643,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.22
+            },
+            {
+              "beat": 6.500844,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.309
+            },
+            {
+              "beat": 7.002662,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.221
+            },
+            {
+              "beat": 7.499828,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.316
+            },
+            {
+              "beat": 8.003596,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.257
+            },
+            {
+              "beat": 8.498093,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.297
+            },
+            {
+              "beat": 9.003125,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.227
+            },
+            {
+              "beat": 9.498478,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.286
+            },
+            {
+              "beat": 9.997177,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.258
+            },
+            {
+              "beat": 10.499264,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.318
+            },
+            {
+              "beat": 11.00227,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.247
+            },
+            {
+              "beat": 11.501635,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.314
+            },
+            {
+              "beat": 11.996033,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.225
+            },
+            {
+              "beat": 12.498805,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.29
+            },
+            {
+              "beat": 13.002575,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.217
+            },
+            {
+              "beat": 13.500349,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.321
+            },
+            {
+              "beat": 13.998457,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.265
+            },
+            {
+              "beat": 14.498328,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.322
+            },
+            {
+              "beat": 15.002769,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.229
+            },
+            {
+              "beat": 15.496626,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.296
+            },
+            {
+              "beat": 16.003487,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.226
+            },
+            {
+              "beat": 16.496484,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.33
+            },
+            {
+              "beat": 17.003152,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.222
+            },
+            {
+              "beat": 17.497568,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.322
+            },
+            {
+              "beat": 17.996211,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.245
+            },
+            {
+              "beat": 18.502178,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.318
+            },
+            {
+              "beat": 19.002517,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.247
+            },
+            {
+              "beat": 19.498248,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.302
+            },
+            {
+              "beat": 19.99846,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.216
+            },
+            {
+              "beat": 20.502789,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.299
+            },
+            {
+              "beat": 20.996127,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.238
+            },
+            {
+              "beat": 21.503467,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.292
+            },
+            {
+              "beat": 21.99902,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.222
+            },
+            {
+              "beat": 22.496561,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.291
+            },
+            {
+              "beat": 22.999088,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.236
+            },
+            {
+              "beat": 23.501535,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.293
+            },
+            {
+              "beat": 24.001628,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.233
+            },
+            {
+              "beat": 24.496824,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.318
+            },
+            {
+              "beat": 25.00347,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.221
+            },
+            {
+              "beat": 25.501281,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.329
+            },
+            {
+              "beat": 26.001467,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.26
+            },
+            {
+              "beat": 26.496371,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.322
+            },
+            {
+              "beat": 26.999368,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.218
+            },
+            {
+              "beat": 27.496802,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.294
+            },
+            {
+              "beat": 27.996097,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.229
+            },
+            {
+              "beat": 28.498787,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.303
+            },
+            {
+              "beat": 29.002627,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.244
+            },
+            {
+              "beat": 29.498283,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.328
+            },
+            {
+              "beat": 30.00329,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.242
+            },
+            {
+              "beat": 30.501649,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.287
+            },
+            {
+              "beat": 31.00155,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.244
+            },
+            {
+              "beat": 31.501331,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.286
+            },
+            {
+              "beat": 32.002396,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.244
+            },
+            {
+              "beat": 32.502041,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.285
+            },
+            {
+              "beat": 33.000643,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.238
+            },
+            {
+              "beat": 33.501335,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.298
+            },
+            {
+              "beat": 33.99971,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.244
+            },
+            {
+              "beat": 34.50157,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.301
+            },
+            {
+              "beat": 34.999834,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.243
+            },
+            {
+              "beat": 35.501387,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.304
+            },
+            {
+              "beat": 36.002934,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.236
+            },
+            {
+              "beat": 36.503396,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.299
+            },
+            {
+              "beat": 36.998398,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.22
+            },
+            {
+              "beat": 37.498917,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.291
+            },
+            {
+              "beat": 38.001854,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.253
+            },
+            {
+              "beat": 38.503533,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.325
+            },
+            {
+              "beat": 38.99654,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.241
+            },
+            {
+              "beat": 39.503808,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.309
+            },
+            {
+              "beat": 40.001189,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.237
+            },
+            {
+              "beat": 40.497556,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.334
+            },
+            {
+              "beat": 40.9965,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.239
+            },
+            {
+              "beat": 41.500095,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.285
+            },
+            {
+              "beat": 42.001176,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.256
+            },
+            {
+              "beat": 42.500137,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.333
+            },
+            {
+              "beat": 42.999012,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.222
+            },
+            {
+              "beat": 43.497583,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.32
+            },
+            {
+              "beat": 43.996563,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.229
+            },
+            {
+              "beat": 44.498885,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.314
+            },
+            {
+              "beat": 44.9999,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.25
+            },
+            {
+              "beat": 45.498817,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.316
+            },
+            {
+              "beat": 45.99851,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.224
+            },
+            {
+              "beat": 46.503422,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.293
+            },
+            {
+              "beat": 47.002875,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.259
+            },
+            {
+              "beat": 47.500138,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.302
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "回應",
+      "bars": 8,
+      "clips": [
+        {
+          "track": "Lead",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 30.885,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 74,
+              "vel": 0.574,
+              "dur": 0.385
+            },
+            {
+              "beat": 0.49679,
+              "type": "on",
+              "note": 69,
+              "vel": 0.594,
+              "dur": 0.385
+            },
+            {
+              "beat": 0.998094,
+              "type": "on",
+              "note": 71,
+              "vel": 0.592,
+              "dur": 0.385
+            },
+            {
+              "beat": 2.000805,
+              "type": "on",
+              "note": 76,
+              "vel": 0.58,
+              "dur": 0.385
+            },
+            {
+              "beat": 2.497677,
+              "type": "on",
+              "note": 74,
+              "vel": 0.596,
+              "dur": 0.385
+            },
+            {
+              "beat": 2.996387,
+              "type": "on",
+              "note": 78,
+              "vel": 0.609,
+              "dur": 0.385
+            },
+            {
+              "beat": 3.498247,
+              "type": "on",
+              "note": 76,
+              "vel": 0.567,
+              "dur": 0.385
+            },
+            {
+              "beat": 4.002219,
+              "type": "on",
+              "note": 74,
+              "vel": 0.599,
+              "dur": 0.385
+            },
+            {
+              "beat": 5.001201,
+              "type": "on",
+              "note": 69,
+              "vel": 0.611,
+              "dur": 0.385
+            },
+            {
+              "beat": 5.502958,
+              "type": "on",
+              "note": 71,
+              "vel": 0.57,
+              "dur": 0.385
+            },
+            {
+              "beat": 6.001239,
+              "type": "on",
+              "note": 74,
+              "vel": 0.589,
+              "dur": 0.385
+            },
+            {
+              "beat": 6.49844,
+              "type": "on",
+              "note": 76,
+              "vel": 0.584,
+              "dur": 0.385
+            },
+            {
+              "beat": 7.000164,
+              "type": "on",
+              "note": 78,
+              "vel": 0.574,
+              "dur": 0.385
+            },
+            {
+              "beat": 7.997362,
+              "type": "on",
+              "note": 79,
+              "vel": 0.595,
+              "dur": 0.385
+            },
+            {
+              "beat": 8.498819,
+              "type": "on",
+              "note": 78,
+              "vel": 0.608,
+              "dur": 0.385
+            },
+            {
+              "beat": 8.999195,
+              "type": "on",
+              "note": 76,
+              "vel": 0.583,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.500586,
+              "type": "on",
+              "note": 74,
+              "vel": 0.574,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.999438,
+              "type": "on",
+              "note": 71,
+              "vel": 0.568,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.99992,
+              "type": "on",
+              "note": 69,
+              "vel": 0.602,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.50236,
+              "type": "on",
+              "note": 71,
+              "vel": 0.595,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.997291,
+              "type": "on",
+              "note": 76,
+              "vel": 0.578,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.497856,
+              "type": "on",
+              "note": 78,
+              "vel": 0.591,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.996399,
+              "type": "on",
+              "note": 76,
+              "vel": 0.588,
+              "dur": 0.385
+            },
+            {
+              "beat": 13.496012,
+              "type": "on",
+              "note": 74,
+              "vel": 0.582,
+              "dur": 0.385
+            },
+            {
+              "beat": 13.999712,
+              "type": "on",
+              "note": 69,
+              "vel": 0.566,
+              "dur": 0.885
+            },
+            {
+              "beat": 15.003382,
+              "type": "on",
+              "note": 74,
+              "vel": 0.595,
+              "dur": 0.385
+            },
+            {
+              "beat": 16.001898,
+              "type": "on",
+              "note": 81,
+              "vel": 0.615,
+              "dur": 0.385
+            },
+            {
+              "beat": 17.002253,
+              "type": "on",
+              "note": 78,
+              "vel": 0.591,
+              "dur": 0.385
+            },
+            {
+              "beat": 17.496677,
+              "type": "on",
+              "note": 76,
+              "vel": 0.585,
+              "dur": 0.385
+            },
+            {
+              "beat": 17.999722,
+              "type": "on",
+              "note": 74,
+              "vel": 0.611,
+              "dur": 0.385
+            },
+            {
+              "beat": 18.499037,
+              "type": "on",
+              "note": 71,
+              "vel": 0.583,
+              "dur": 0.385
+            },
+            {
+              "beat": 19.001047,
+              "type": "on",
+              "note": 69,
+              "vel": 0.566,
+              "dur": 0.385
+            },
+            {
+              "beat": 19.999851,
+              "type": "on",
+              "note": 71,
+              "vel": 0.584,
+              "dur": 0.385
+            },
+            {
+              "beat": 20.497155,
+              "type": "on",
+              "note": 74,
+              "vel": 0.6,
+              "dur": 0.385
+            },
+            {
+              "beat": 21.000084,
+              "type": "on",
+              "note": 76,
+              "vel": 0.582,
+              "dur": 0.385
+            },
+            {
+              "beat": 21.501783,
+              "type": "on",
+              "note": 78,
+              "vel": 0.573,
+              "dur": 0.385
+            },
+            {
+              "beat": 22.001073,
+              "type": "on",
+              "note": 81,
+              "vel": 0.586,
+              "dur": 0.885
+            },
+            {
+              "beat": 23.002513,
+              "type": "on",
+              "note": 78,
+              "vel": 0.604,
+              "dur": 0.385
+            },
+            {
+              "beat": 23.498766,
+              "type": "on",
+              "note": 76,
+              "vel": 0.567,
+              "dur": 0.385
+            },
+            {
+              "beat": 24.001624,
+              "type": "on",
+              "note": 79,
+              "vel": 0.588,
+              "dur": 0.385
+            },
+            {
+              "beat": 24.999152,
+              "type": "on",
+              "note": 78,
+              "vel": 0.588,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.502139,
+              "type": "on",
+              "note": 76,
+              "vel": 0.566,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.996466,
+              "type": "on",
+              "note": 74,
+              "vel": 0.567,
+              "dur": 0.385
+            },
+            {
+              "beat": 26.500001,
+              "type": "on",
+              "note": 71,
+              "vel": 0.603,
+              "dur": 0.385
+            },
+            {
+              "beat": 26.998984,
+              "type": "on",
+              "note": 69,
+              "vel": 0.575,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.497383,
+              "type": "on",
+              "note": 71,
+              "vel": 0.589,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.002648,
+              "type": "on",
+              "note": 76,
+              "vel": 0.606,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.503862,
+              "type": "on",
+              "note": 74,
+              "vel": 0.595,
+              "dur": 0.385
+            },
+            {
+              "beat": 29.002969,
+              "type": "on",
+              "note": 78,
+              "vel": 0.612,
+              "dur": 0.385
+            },
+            {
+              "beat": 29.496797,
+              "type": "on",
+              "note": 76,
+              "vel": 0.574,
+              "dur": 0.385
+            },
+            {
+              "beat": 30.001881,
+              "type": "on",
+              "note": 74,
+              "vel": 0.571,
+              "dur": 0.885
+            }
+          ]
+        },
+        {
+          "track": "Reply",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.385,
+          "events": [
+            {
+              "beat": 7.996654,
+              "type": "on",
+              "note": 69,
+              "vel": 0.474,
+              "dur": 0.385
+            },
+            {
+              "beat": 8.999151,
+              "type": "on",
+              "note": 71,
+              "vel": 0.502,
+              "dur": 0.385
+            },
+            {
+              "beat": 9.500302,
+              "type": "on",
+              "note": 74,
+              "vel": 0.505,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.001386,
+              "type": "on",
+              "note": 76,
+              "vel": 0.493,
+              "dur": 0.385
+            },
+            {
+              "beat": 10.997169,
+              "type": "on",
+              "note": 74,
+              "vel": 0.5,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.502269,
+              "type": "on",
+              "note": 71,
+              "vel": 0.476,
+              "dur": 0.385
+            },
+            {
+              "beat": 11.996253,
+              "type": "on",
+              "note": 69,
+              "vel": 0.49,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.5018,
+              "type": "on",
+              "note": 71,
+              "vel": 0.5,
+              "dur": 0.385
+            },
+            {
+              "beat": 12.996476,
+              "type": "on",
+              "note": 74,
+              "vel": 0.458,
+              "dur": 0.385
+            },
+            {
+              "beat": 14.001343,
+              "type": "on",
+              "note": 76,
+              "vel": 0.491,
+              "dur": 0.885
+            },
+            {
+              "beat": 15.000424,
+              "type": "on",
+              "note": 74,
+              "vel": 0.487,
+              "dur": 0.385
+            },
+            {
+              "beat": 23.999749,
+              "type": "on",
+              "note": 69,
+              "vel": 0.46,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.001039,
+              "type": "on",
+              "note": 71,
+              "vel": 0.483,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.498434,
+              "type": "on",
+              "note": 74,
+              "vel": 0.459,
+              "dur": 0.385
+            },
+            {
+              "beat": 25.999927,
+              "type": "on",
+              "note": 76,
+              "vel": 0.475,
+              "dur": 0.385
+            },
+            {
+              "beat": 26.999653,
+              "type": "on",
+              "note": 74,
+              "vel": 0.469,
+              "dur": 0.385
+            },
+            {
+              "beat": 27.497591,
+              "type": "on",
+              "note": 71,
+              "vel": 0.495,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.002712,
+              "type": "on",
+              "note": 69,
+              "vel": 0.473,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.496226,
+              "type": "on",
+              "note": 71,
+              "vel": 0.458,
+              "dur": 0.385
+            },
+            {
+              "beat": 28.996005,
+              "type": "on",
+              "note": 74,
+              "vel": 0.487,
+              "dur": 0.385
+            },
+            {
+              "beat": 29.997581,
+              "type": "on",
+              "note": 76,
+              "vel": 0.462,
+              "dur": 0.885
+            },
+            {
+              "beat": 30.999025,
+              "type": "on",
+              "note": 74,
+              "vel": 0.466,
+              "dur": 0.385
+            }
+          ]
+        },
+        {
+          "track": "Keys",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.400000000000002,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.447
+            },
+            {
+              "beat": 0.010104,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.441
+            },
+            {
+              "beat": 0.019259,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.417
+            },
+            {
+              "beat": 1.75189,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.358
+            },
+            {
+              "beat": 1.75743,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.384
+            },
+            {
+              "beat": 1.769114,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.342
+            },
+            {
+              "beat": 2.997088,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.384
+            },
+            {
+              "beat": 3.007368,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.364
+            },
+            {
+              "beat": 3.018543,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.35
+            },
+            {
+              "beat": 4.000698,
+              "type": "on",
+              "note": 57,
+              "dur": 0.68,
+              "vel": 0.432
+            },
+            {
+              "beat": 4.005156,
+              "type": "on",
+              "note": 61,
+              "dur": 0.671,
+              "vel": 0.452
+            },
+            {
+              "beat": 4.017464,
+              "type": "on",
+              "note": 64,
+              "dur": 0.662,
+              "vel": 0.393
+            },
+            {
+              "beat": 5.749969,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.384
+            },
+            {
+              "beat": 5.756574,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.377
+            },
+            {
+              "beat": 5.771952,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.366
+            },
+            {
+              "beat": 6.998142,
+              "type": "on",
+              "note": 57,
+              "dur": 0.4,
+              "vel": 0.362
+            },
+            {
+              "beat": 7.005081,
+              "type": "on",
+              "note": 61,
+              "dur": 0.391,
+              "vel": 0.375
+            },
+            {
+              "beat": 7.021381,
+              "type": "on",
+              "note": 64,
+              "dur": 0.382,
+              "vel": 0.337
+            },
+            {
+              "beat": 7.997309,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.42
+            },
+            {
+              "beat": 8.008701,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.407
+            },
+            {
+              "beat": 8.016199,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.431
+            },
+            {
+              "beat": 9.746434,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.396
+            },
+            {
+              "beat": 9.760108,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.385
+            },
+            {
+              "beat": 9.76602,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.349
+            },
+            {
+              "beat": 10.998503,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.403
+            },
+            {
+              "beat": 11.009592,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.363
+            },
+            {
+              "beat": 11.019813,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.38
+            },
+            {
+              "beat": 12.0021,
+              "type": "on",
+              "note": 54,
+              "dur": 0.68,
+              "vel": 0.422
+            },
+            {
+              "beat": 12.009947,
+              "type": "on",
+              "note": 57,
+              "dur": 0.671,
+              "vel": 0.447
+            },
+            {
+              "beat": 12.015207,
+              "type": "on",
+              "note": 62,
+              "dur": 0.662,
+              "vel": 0.434
+            },
+            {
+              "beat": 13.751941,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.392
+            },
+            {
+              "beat": 13.755125,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.344
+            },
+            {
+              "beat": 13.771077,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.37
+            },
+            {
+              "beat": 14.996904,
+              "type": "on",
+              "note": 54,
+              "dur": 0.4,
+              "vel": 0.359
+            },
+            {
+              "beat": 15.008228,
+              "type": "on",
+              "note": 57,
+              "dur": 0.391,
+              "vel": 0.389
+            },
+            {
+              "beat": 15.017271,
+              "type": "on",
+              "note": 62,
+              "dur": 0.382,
+              "vel": 0.36
+            },
+            {
+              "beat": 15.996307,
+              "type": "on",
+              "note": 59,
+              "dur": 0.68,
+              "vel": 0.428
+            },
+            {
+              "beat": 16.00975,
+              "type": "on",
+              "note": 62,
+              "dur": 0.671,
+              "vel": 0.44
+            },
+            {
+              "beat": 16.0193,
+              "type": "on",
+              "note": 69,
+              "dur": 0.662,
+              "vel": 0.399
+            },
+            {
+              "beat": 17.753505,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.395
+            },
+            {
+              "beat": 17.756623,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.392
+            },
+            {
+              "beat": 17.768635,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.362
+            },
+            {
+              "beat": 18.999657,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.38
+            },
+            {
+              "beat": 19.005345,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.355
+            },
+            {
+              "beat": 19.016247,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.342
+            },
+            {
+              "beat": 20.000942,
+              "type": "on",
+              "note": 59,
+              "dur": 0.68,
+              "vel": 0.424
+            },
+            {
+              "beat": 20.010587,
+              "type": "on",
+              "note": 62,
+              "dur": 0.671,
+              "vel": 0.438
+            },
+            {
+              "beat": 20.017791,
+              "type": "on",
+              "note": 69,
+              "dur": 0.662,
+              "vel": 0.418
+            },
+            {
+              "beat": 21.746381,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.366
+            },
+            {
+              "beat": 21.761023,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.39
+            },
+            {
+              "beat": 21.771147,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.36
+            },
+            {
+              "beat": 23.003843,
+              "type": "on",
+              "note": 59,
+              "dur": 0.4,
+              "vel": 0.383
+            },
+            {
+              "beat": 23.010599,
+              "type": "on",
+              "note": 62,
+              "dur": 0.391,
+              "vel": 0.376
+            },
+            {
+              "beat": 23.018834,
+              "type": "on",
+              "note": 69,
+              "dur": 0.382,
+              "vel": 0.351
+            },
+            {
+              "beat": 24.000205,
+              "type": "on",
+              "note": 52,
+              "dur": 0.68,
+              "vel": 0.423
+            },
+            {
+              "beat": 24.00636,
+              "type": "on",
+              "note": 55,
+              "dur": 0.671,
+              "vel": 0.441
+            },
+            {
+              "beat": 24.018774,
+              "type": "on",
+              "note": 59,
+              "dur": 0.662,
+              "vel": 0.415
+            },
+            {
+              "beat": 25.747017,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.372
+            },
+            {
+              "beat": 25.759442,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.385
+            },
+            {
+              "beat": 25.765289,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.358
+            },
+            {
+              "beat": 27.000194,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.365
+            },
+            {
+              "beat": 27.00728,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.347
+            },
+            {
+              "beat": 27.015678,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.352
+            },
+            {
+              "beat": 28.00316,
+              "type": "on",
+              "note": 52,
+              "dur": 0.68,
+              "vel": 0.451
+            },
+            {
+              "beat": 28.012103,
+              "type": "on",
+              "note": 55,
+              "dur": 0.671,
+              "vel": 0.425
+            },
+            {
+              "beat": 28.016937,
+              "type": "on",
+              "note": 59,
+              "dur": 0.662,
+              "vel": 0.435
+            },
+            {
+              "beat": 29.753417,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.373
+            },
+            {
+              "beat": 29.759104,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.347
+            },
+            {
+              "beat": 29.767602,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.363
+            },
+            {
+              "beat": 31.003608,
+              "type": "on",
+              "note": 52,
+              "dur": 0.4,
+              "vel": 0.357
+            },
+            {
+              "beat": 31.009325,
+              "type": "on",
+              "note": 55,
+              "dur": 0.391,
+              "vel": 0.389
+            },
+            {
+              "beat": 31.021233,
+              "type": "on",
+              "note": 59,
+              "dur": 0.382,
+              "vel": 0.373
+            }
+          ]
+        },
+        {
+          "track": "Bass",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 30.88,
+          "events": [
+            {
+              "beat": 0.016639,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.564
+            },
+            {
+              "beat": 2.500435,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.394
+            },
+            {
+              "beat": 4.021173,
+              "type": "on",
+              "note": 38,
+              "dur": 0.7,
+              "vel": 0.543
+            },
+            {
+              "beat": 6.498345,
+              "type": "on",
+              "note": 45,
+              "dur": 0.38,
+              "vel": 0.42
+            },
+            {
+              "beat": 8.017877,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.528
+            },
+            {
+              "beat": 10.498668,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.386
+            },
+            {
+              "beat": 12.021287,
+              "type": "on",
+              "note": 35,
+              "dur": 0.7,
+              "vel": 0.521
+            },
+            {
+              "beat": 14.498573,
+              "type": "on",
+              "note": 42,
+              "dur": 0.38,
+              "vel": 0.409
+            },
+            {
+              "beat": 16.01878,
+              "type": "on",
+              "note": 43,
+              "dur": 0.7,
+              "vel": 0.562
+            },
+            {
+              "beat": 18.500756,
+              "type": "on",
+              "note": 50,
+              "dur": 0.38,
+              "vel": 0.393
+            },
+            {
+              "beat": 20.019786,
+              "type": "on",
+              "note": 43,
+              "dur": 0.7,
+              "vel": 0.553
+            },
+            {
+              "beat": 22.499728,
+              "type": "on",
+              "note": 50,
+              "dur": 0.38,
+              "vel": 0.412
+            },
+            {
+              "beat": 24.017806,
+              "type": "on",
+              "note": 33,
+              "dur": 0.7,
+              "vel": 0.548
+            },
+            {
+              "beat": 26.500827,
+              "type": "on",
+              "note": 40,
+              "dur": 0.38,
+              "vel": 0.385
+            },
+            {
+              "beat": 28.023731,
+              "type": "on",
+              "note": 33,
+              "dur": 0.7,
+              "vel": 0.522
+            },
+            {
+              "beat": 30.500439,
+              "type": "on",
+              "note": 40,
+              "dur": 0.38,
+              "vel": 0.423
+            }
+          ]
+        },
+        {
+          "track": "Kick",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 30.89,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.567
+            },
+            {
+              "beat": 2.499979,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.576
+            },
+            {
+              "beat": 3.99739,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.584
+            },
+            {
+              "beat": 6.752672,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.599
+            },
+            {
+              "beat": 8.002761,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.573
+            },
+            {
+              "beat": 10.502047,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.604
+            },
+            {
+              "beat": 12.001807,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.597
+            },
+            {
+              "beat": 14.752893,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.584
+            },
+            {
+              "beat": 15.998928,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.589
+            },
+            {
+              "beat": 18.499424,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.557
+            },
+            {
+              "beat": 19.998533,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.597
+            },
+            {
+              "beat": 22.749453,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.591
+            },
+            {
+              "beat": 24.00053,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.579
+            },
+            {
+              "beat": 26.501074,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.603
+            },
+            {
+              "beat": 28.003044,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.564
+            },
+            {
+              "beat": 30.751607,
+              "type": "on",
+              "note": 36,
+              "dur": 0.14,
+              "vel": 0.582
+            }
+          ]
+        },
+        {
+          "track": "Snare",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.83,
+          "events": [
+            {
+              "beat": 0.996686,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.457
+            },
+            {
+              "beat": 2.996086,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.437
+            },
+            {
+              "beat": 5.003215,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.479
+            },
+            {
+              "beat": 7.003004,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.451
+            },
+            {
+              "beat": 9.002268,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.442
+            },
+            {
+              "beat": 10.996172,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.458
+            },
+            {
+              "beat": 13.003692,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.456
+            },
+            {
+              "beat": 15.001124,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.473
+            },
+            {
+              "beat": 15.753653,
+              "type": "on",
+              "note": 38,
+              "dur": 0.08,
+              "vel": 0.24
+            },
+            {
+              "beat": 16.996808,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.469
+            },
+            {
+              "beat": 18.999851,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.438
+            },
+            {
+              "beat": 20.998737,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.473
+            },
+            {
+              "beat": 23.001642,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.478
+            },
+            {
+              "beat": 25.002128,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.459
+            },
+            {
+              "beat": 27.002217,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.464
+            },
+            {
+              "beat": 29.001053,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.464
+            },
+            {
+              "beat": 30.997754,
+              "type": "on",
+              "note": 38,
+              "dur": 0.12,
+              "vel": 0.461
+            },
+            {
+              "beat": 31.748366,
+              "type": "on",
+              "note": 38,
+              "dur": 0.08,
+              "vel": 0.268
+            }
+          ]
+        },
+        {
+          "track": "Hat",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.565,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.251
+            },
+            {
+              "beat": 0.502167,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.297
+            },
+            {
+              "beat": 1.002225,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.245
+            },
+            {
+              "beat": 1.503507,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.316
+            },
+            {
+              "beat": 2.001007,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.219
+            },
+            {
+              "beat": 2.499446,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.292
+            },
+            {
+              "beat": 3.002903,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.23
+            },
+            {
+              "beat": 3.498552,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.3
+            },
+            {
+              "beat": 3.999336,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.222
+            },
+            {
+              "beat": 4.49717,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.298
+            },
+            {
+              "beat": 5.003615,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.231
+            },
+            {
+              "beat": 5.498459,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.326
+            },
+            {
+              "beat": 5.999335,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.253
+            },
+            {
+              "beat": 6.501861,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.324
+            },
+            {
+              "beat": 6.998161,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.229
+            },
+            {
+              "beat": 7.500558,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.334
+            },
+            {
+              "beat": 7.996262,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.261
+            },
+            {
+              "beat": 8.499543,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.318
+            },
+            {
+              "beat": 9.003239,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.256
+            },
+            {
+              "beat": 9.502155,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.295
+            },
+            {
+              "beat": 10.003537,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.223
+            },
+            {
+              "beat": 10.498088,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.33
+            },
+            {
+              "beat": 10.996791,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.227
+            },
+            {
+              "beat": 11.501899,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.307
+            },
+            {
+              "beat": 12.000024,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.245
+            },
+            {
+              "beat": 12.496456,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.307
+            },
+            {
+              "beat": 12.99721,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.224
+            },
+            {
+              "beat": 13.500249,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.33
+            },
+            {
+              "beat": 13.998122,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.251
+            },
+            {
+              "beat": 14.50229,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.325
+            },
+            {
+              "beat": 15.001169,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.218
+            },
+            {
+              "beat": 15.499276,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.286
+            },
+            {
+              "beat": 16.002801,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.24
+            },
+            {
+              "beat": 16.499721,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.293
+            },
+            {
+              "beat": 16.998266,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.245
+            },
+            {
+              "beat": 17.50199,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.309
+            },
+            {
+              "beat": 18.001074,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.225
+            },
+            {
+              "beat": 18.498921,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.296
+            },
+            {
+              "beat": 18.99624,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.264
+            },
+            {
+              "beat": 19.502661,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.296
+            },
+            {
+              "beat": 20.002944,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.232
+            },
+            {
+              "beat": 20.503049,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.295
+            },
+            {
+              "beat": 20.99955,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.259
+            },
+            {
+              "beat": 21.499759,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.329
+            },
+            {
+              "beat": 22.002152,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.233
+            },
+            {
+              "beat": 22.500303,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.319
+            },
+            {
+              "beat": 23.001598,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.222
+            },
+            {
+              "beat": 23.50213,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.295
+            },
+            {
+              "beat": 24.001408,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.238
+            },
+            {
+              "beat": 24.498685,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.306
+            },
+            {
+              "beat": 25.002882,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.252
+            },
+            {
+              "beat": 25.498172,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.325
+            },
+            {
+              "beat": 25.998803,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.25
+            },
+            {
+              "beat": 26.503033,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.287
+            },
+            {
+              "beat": 26.997441,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.256
+            },
+            {
+              "beat": 27.496133,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.324
+            },
+            {
+              "beat": 27.997157,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.249
+            },
+            {
+              "beat": 28.502572,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.299
+            },
+            {
+              "beat": 28.997914,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.251
+            },
+            {
+              "beat": 29.49868,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.322
+            },
+            {
+              "beat": 29.9988,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.252
+            },
+            {
+              "beat": 30.50094,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.299
+            },
+            {
+              "beat": 30.997813,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.247
+            },
+            {
+              "beat": 31.50331,
+              "type": "on",
+              "note": 55,
+              "dur": 0.065,
+              "vel": 0.295
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

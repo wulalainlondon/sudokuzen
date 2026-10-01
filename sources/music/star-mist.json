@@ -1,0 +1,1312 @@
+{
+  "version": "aurora.music/v1",
+  "id": "star-mist-production-loop",
+  "title": "星霧棋境（循環版）",
+  "style": "eastern",
+  "bpm": 62,
+  "seed": 100201,
+  "key": {
+    "root": "D",
+    "scale": "pentMajor"
+  },
+  "loop": true,
+  "tracks": [
+    {
+      "id": "Zheng",
+      "name": "古箏流光",
+      "preset": "Jade Guzheng",
+      "role": "arp",
+      "gain": -2,
+      "pan": -0.28,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 6,
+        "delay.mix": 0.1,
+        "reverb.mix": 0.26,
+        "filter2.cutoff": 7200,
+        "phys.brightness": 0.55
+      }
+    },
+    {
+      "id": "Dizi",
+      "name": "竹笛主題",
+      "preset": "Bamboo Dizi",
+      "role": "lead",
+      "gain": 0,
+      "pan": 0.16,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 3,
+        "delay.mix": 0.08,
+        "reverb.mix": 0.27,
+        "phys.brightness": 0.43
+      }
+    },
+    {
+      "id": "Pad",
+      "name": "雲霧底色",
+      "preset": "Zephyr",
+      "role": "pad",
+      "gain": -10,
+      "pan": 0,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 5,
+        "reverb.mix": 0.3,
+        "noise.level": 0.12
+      }
+    },
+    {
+      "id": "Cello",
+      "name": "遠山低弦",
+      "preset": "Rosewood Cello",
+      "role": "bass",
+      "gain": -5,
+      "pan": 0,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 2,
+        "reverb.mix": 0.18
+      }
+    },
+    {
+      "id": "Bell",
+      "name": "星點",
+      "preset": "Sugar Plum Celesta",
+      "role": "fx",
+      "gain": -9,
+      "pan": 0.3,
+      "params": {
+        "arp.on": false,
+        "voice.poly": 6,
+        "delay.mix": 0.09,
+        "reverb.mix": 0.32
+      }
+    }
+  ],
+  "sections": [
+    {
+      "name": "步入棋境",
+      "bars": 8,
+      "clips": [
+        {
+          "track": "Pad",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.7,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 57,
+              "dur": 7.7,
+              "vel": 0.346
+            },
+            {
+              "beat": 0.017917,
+              "type": "on",
+              "note": 62,
+              "dur": 7.684,
+              "vel": 0.342
+            },
+            {
+              "beat": 0.027822,
+              "type": "on",
+              "note": 64,
+              "dur": 7.668,
+              "vel": 0.337
+            },
+            {
+              "beat": 8.002021,
+              "type": "on",
+              "note": 59,
+              "dur": 7.7,
+              "vel": 0.392
+            },
+            {
+              "beat": 8.021786,
+              "type": "on",
+              "note": 62,
+              "dur": 7.684,
+              "vel": 0.358
+            },
+            {
+              "beat": 8.030582,
+              "type": "on",
+              "note": 69,
+              "dur": 7.668,
+              "vel": 0.359
+            },
+            {
+              "beat": 16.000683,
+              "type": "on",
+              "note": 54,
+              "dur": 7.7,
+              "vel": 0.391
+            },
+            {
+              "beat": 16.015702,
+              "type": "on",
+              "note": 57,
+              "dur": 7.684,
+              "vel": 0.358
+            },
+            {
+              "beat": 16.034167,
+              "type": "on",
+              "note": 62,
+              "dur": 7.668,
+              "vel": 0.369
+            },
+            {
+              "beat": 24.004228,
+              "type": "on",
+              "note": 52,
+              "dur": 7.7,
+              "vel": 0.358
+            },
+            {
+              "beat": 24.012187,
+              "type": "on",
+              "note": 57,
+              "dur": 7.684,
+              "vel": 0.367
+            },
+            {
+              "beat": 24.029885,
+              "type": "on",
+              "note": 62,
+              "dur": 7.668,
+              "vel": 0.362
+            }
+          ]
+        },
+        {
+          "track": "Cello",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 30.7,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 38,
+              "dur": 6.7,
+              "vel": 0.42
+            },
+            {
+              "beat": 8.004006,
+              "type": "on",
+              "note": 43,
+              "dur": 6.7,
+              "vel": 0.42
+            },
+            {
+              "beat": 16.005075,
+              "type": "on",
+              "note": 35,
+              "dur": 6.7,
+              "vel": 0.413
+            },
+            {
+              "beat": 24.001431,
+              "type": "on",
+              "note": 33,
+              "dur": 6.7,
+              "vel": 0.424
+            }
+          ]
+        },
+        {
+          "track": "Bell",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 18,
+          "events": [
+            {
+              "beat": 0.49407,
+              "type": "on",
+              "note": 74,
+              "dur": 1.5,
+              "vel": 0.353
+            },
+            {
+              "beat": 16.494885,
+              "type": "on",
+              "note": 74,
+              "dur": 1.5,
+              "vel": 0.349
+            }
+          ]
+        },
+        {
+          "track": "Zheng",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.55,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 50,
+              "dur": 1.5,
+              "vel": 0.509
+            },
+            {
+              "beat": 2.498898,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.452
+            },
+            {
+              "beat": 4.003163,
+              "type": "on",
+              "note": 50,
+              "dur": 1.5,
+              "vel": 0.478
+            },
+            {
+              "beat": 5.250682,
+              "type": "on",
+              "note": 57,
+              "dur": 1.1,
+              "vel": 0.411
+            },
+            {
+              "beat": 6.496355,
+              "type": "on",
+              "note": 64,
+              "dur": 1.05,
+              "vel": 0.454
+            },
+            {
+              "beat": 8.005197,
+              "type": "on",
+              "note": 55,
+              "dur": 1.5,
+              "vel": 0.485
+            },
+            {
+              "beat": 10.497053,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.435
+            },
+            {
+              "beat": 12.002241,
+              "type": "on",
+              "note": 55,
+              "dur": 1.5,
+              "vel": 0.504
+            },
+            {
+              "beat": 13.251442,
+              "type": "on",
+              "note": 59,
+              "dur": 1.1,
+              "vel": 0.423
+            },
+            {
+              "beat": 14.504931,
+              "type": "on",
+              "note": 69,
+              "dur": 1.05,
+              "vel": 0.462
+            },
+            {
+              "beat": 15.999929,
+              "type": "on",
+              "note": 47,
+              "dur": 1.5,
+              "vel": 0.503
+            },
+            {
+              "beat": 18.494844,
+              "type": "on",
+              "note": 57,
+              "dur": 1.05,
+              "vel": 0.428
+            },
+            {
+              "beat": 20.002479,
+              "type": "on",
+              "note": 47,
+              "dur": 1.5,
+              "vel": 0.471
+            },
+            {
+              "beat": 21.245882,
+              "type": "on",
+              "note": 54,
+              "dur": 1.1,
+              "vel": 0.419
+            },
+            {
+              "beat": 22.500843,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.427
+            },
+            {
+              "beat": 23.997869,
+              "type": "on",
+              "note": 45,
+              "dur": 1.5,
+              "vel": 0.481
+            },
+            {
+              "beat": 26.504034,
+              "type": "on",
+              "note": 57,
+              "dur": 1.05,
+              "vel": 0.421
+            },
+            {
+              "beat": 28.006475,
+              "type": "on",
+              "note": 45,
+              "dur": 1.5,
+              "vel": 0.482
+            },
+            {
+              "beat": 29.246246,
+              "type": "on",
+              "note": 52,
+              "dur": 1.1,
+              "vel": 0.407
+            },
+            {
+              "beat": 30.493776,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.432
+            }
+          ]
+        },
+        {
+          "track": "Dizi",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.88,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 74,
+              "vel": 0.522,
+              "dur": 1.88
+            },
+            {
+              "beat": 2.004836,
+              "type": "on",
+              "note": 69,
+              "vel": 0.561,
+              "dur": 1.88
+            },
+            {
+              "beat": 4.000949,
+              "type": "on",
+              "note": 71,
+              "vel": 0.521,
+              "dur": 1.88
+            },
+            {
+              "beat": 5.997612,
+              "type": "on",
+              "note": 76,
+              "vel": 0.518,
+              "dur": 1.88
+            },
+            {
+              "beat": 8.006547,
+              "type": "on",
+              "note": 74,
+              "vel": 0.553,
+              "dur": 2.88
+            },
+            {
+              "beat": 12.002812,
+              "type": "on",
+              "note": 69,
+              "vel": 0.546,
+              "dur": 2.88
+            },
+            {
+              "beat": 16.005479,
+              "type": "on",
+              "note": 71,
+              "vel": 0.563,
+              "dur": 1.88
+            },
+            {
+              "beat": 18.003464,
+              "type": "on",
+              "note": 74,
+              "vel": 0.551,
+              "dur": 1.88
+            },
+            {
+              "beat": 19.999284,
+              "type": "on",
+              "note": 76,
+              "vel": 0.552,
+              "dur": 1.88
+            },
+            {
+              "beat": 22.001507,
+              "type": "on",
+              "note": 78,
+              "vel": 0.523,
+              "dur": 1.88
+            },
+            {
+              "beat": 23.995302,
+              "type": "on",
+              "note": 76,
+              "vel": 0.53,
+              "dur": 1.88
+            },
+            {
+              "beat": 25.999849,
+              "type": "on",
+              "note": 71,
+              "vel": 0.517,
+              "dur": 1.88
+            },
+            {
+              "beat": 28.001541,
+              "type": "on",
+              "note": 69,
+              "vel": 0.559,
+              "dur": 1.88
+            },
+            {
+              "beat": 29.996013,
+              "type": "on",
+              "note": 74,
+              "vel": 0.555,
+              "dur": 1.88
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "星橋回聲",
+      "bars": 8,
+      "clips": [
+        {
+          "track": "Pad",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.7,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 59,
+              "dur": 7.7,
+              "vel": 0.362
+            },
+            {
+              "beat": 0.012347,
+              "type": "on",
+              "note": 62,
+              "dur": 7.684,
+              "vel": 0.382
+            },
+            {
+              "beat": 0.029302,
+              "type": "on",
+              "note": 66,
+              "dur": 7.668,
+              "vel": 0.339
+            },
+            {
+              "beat": 8.00084,
+              "type": "on",
+              "note": 54,
+              "dur": 7.7,
+              "vel": 0.36
+            },
+            {
+              "beat": 8.018519,
+              "type": "on",
+              "note": 57,
+              "dur": 7.684,
+              "vel": 0.38
+            },
+            {
+              "beat": 8.029008,
+              "type": "on",
+              "note": 62,
+              "dur": 7.668,
+              "vel": 0.341
+            },
+            {
+              "beat": 16.002107,
+              "type": "on",
+              "note": 59,
+              "dur": 7.7,
+              "vel": 0.389
+            },
+            {
+              "beat": 16.014787,
+              "type": "on",
+              "note": 62,
+              "dur": 7.684,
+              "vel": 0.382
+            },
+            {
+              "beat": 16.034894,
+              "type": "on",
+              "note": 69,
+              "dur": 7.668,
+              "vel": 0.368
+            },
+            {
+              "beat": 24.004362,
+              "type": "on",
+              "note": 52,
+              "dur": 7.7,
+              "vel": 0.371
+            },
+            {
+              "beat": 24.011239,
+              "type": "on",
+              "note": 57,
+              "dur": 7.684,
+              "vel": 0.383
+            },
+            {
+              "beat": 24.032068,
+              "type": "on",
+              "note": 62,
+              "dur": 7.668,
+              "vel": 0.344
+            }
+          ]
+        },
+        {
+          "track": "Cello",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 30.7,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 40,
+              "dur": 6.7,
+              "vel": 0.435
+            },
+            {
+              "beat": 8.004318,
+              "type": "on",
+              "note": 35,
+              "dur": 6.7,
+              "vel": 0.439
+            },
+            {
+              "beat": 16.000197,
+              "type": "on",
+              "note": 43,
+              "dur": 6.7,
+              "vel": 0.408
+            },
+            {
+              "beat": 23.998968,
+              "type": "on",
+              "note": 33,
+              "dur": 6.7,
+              "vel": 0.446
+            }
+          ]
+        },
+        {
+          "track": "Bell",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 18,
+          "events": [
+            {
+              "beat": 0.494085,
+              "type": "on",
+              "note": 76,
+              "dur": 1.5,
+              "vel": 0.369
+            },
+            {
+              "beat": 16.500379,
+              "type": "on",
+              "note": 76,
+              "dur": 1.5,
+              "vel": 0.359
+            }
+          ]
+        },
+        {
+          "track": "Zheng",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.55,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 52,
+              "dur": 1.5,
+              "vel": 0.486
+            },
+            {
+              "beat": 2.499629,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.451
+            },
+            {
+              "beat": 3.99937,
+              "type": "on",
+              "note": 52,
+              "dur": 1.5,
+              "vel": 0.484
+            },
+            {
+              "beat": 5.243847,
+              "type": "on",
+              "note": 59,
+              "dur": 1.1,
+              "vel": 0.398
+            },
+            {
+              "beat": 6.502843,
+              "type": "on",
+              "note": 66,
+              "dur": 1.05,
+              "vel": 0.434
+            },
+            {
+              "beat": 7.993955,
+              "type": "on",
+              "note": 47,
+              "dur": 1.5,
+              "vel": 0.49
+            },
+            {
+              "beat": 10.501846,
+              "type": "on",
+              "note": 57,
+              "dur": 1.05,
+              "vel": 0.419
+            },
+            {
+              "beat": 11.998052,
+              "type": "on",
+              "note": 47,
+              "dur": 1.5,
+              "vel": 0.486
+            },
+            {
+              "beat": 13.243468,
+              "type": "on",
+              "note": 54,
+              "dur": 1.1,
+              "vel": 0.421
+            },
+            {
+              "beat": 14.496671,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.443
+            },
+            {
+              "beat": 16.006273,
+              "type": "on",
+              "note": 55,
+              "dur": 1.5,
+              "vel": 0.51
+            },
+            {
+              "beat": 18.497571,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.445
+            },
+            {
+              "beat": 19.994899,
+              "type": "on",
+              "note": 55,
+              "dur": 1.5,
+              "vel": 0.476
+            },
+            {
+              "beat": 21.246087,
+              "type": "on",
+              "note": 59,
+              "dur": 1.1,
+              "vel": 0.422
+            },
+            {
+              "beat": 22.496526,
+              "type": "on",
+              "note": 69,
+              "dur": 1.05,
+              "vel": 0.435
+            },
+            {
+              "beat": 23.999444,
+              "type": "on",
+              "note": 45,
+              "dur": 1.5,
+              "vel": 0.509
+            },
+            {
+              "beat": 26.501336,
+              "type": "on",
+              "note": 57,
+              "dur": 1.05,
+              "vel": 0.44
+            },
+            {
+              "beat": 28.005277,
+              "type": "on",
+              "note": 45,
+              "dur": 1.5,
+              "vel": 0.472
+            },
+            {
+              "beat": 29.254037,
+              "type": "on",
+              "note": 52,
+              "dur": 1.1,
+              "vel": 0.401
+            },
+            {
+              "beat": 30.503407,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.457
+            }
+          ]
+        },
+        {
+          "track": "Dizi",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 30.88,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 71,
+              "vel": 0.541,
+              "dur": 1.88
+            },
+            {
+              "beat": 2.002439,
+              "type": "on",
+              "note": 74,
+              "vel": 0.538,
+              "dur": 1.88
+            },
+            {
+              "beat": 3.995818,
+              "type": "on",
+              "note": 76,
+              "vel": 0.534,
+              "dur": 2.88
+            },
+            {
+              "beat": 8.001241,
+              "type": "on",
+              "note": 78,
+              "vel": 0.526,
+              "dur": 1.88
+            },
+            {
+              "beat": 10.001383,
+              "type": "on",
+              "note": 76,
+              "vel": 0.555,
+              "dur": 1.88
+            },
+            {
+              "beat": 12.002678,
+              "type": "on",
+              "note": 74,
+              "vel": 0.546,
+              "dur": 2.88
+            },
+            {
+              "beat": 16.006215,
+              "type": "on",
+              "note": 76,
+              "vel": 0.532,
+              "dur": 1.88
+            },
+            {
+              "beat": 17.997467,
+              "type": "on",
+              "note": 71,
+              "vel": 0.527,
+              "dur": 1.88
+            },
+            {
+              "beat": 19.993878,
+              "type": "on",
+              "note": 69,
+              "vel": 0.563,
+              "dur": 1.88
+            },
+            {
+              "beat": 22.003194,
+              "type": "on",
+              "note": 66,
+              "vel": 0.528,
+              "dur": 1.88
+            },
+            {
+              "beat": 23.99741,
+              "type": "on",
+              "note": 64,
+              "vel": 0.555,
+              "dur": 1.88
+            },
+            {
+              "beat": 25.995597,
+              "type": "on",
+              "note": 69,
+              "vel": 0.539,
+              "dur": 1.88
+            },
+            {
+              "beat": 27.993353,
+              "type": "on",
+              "note": 74,
+              "vel": 0.546,
+              "dur": 2.88
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "術式流光",
+      "bars": 8,
+      "clips": [
+        {
+          "track": "Pad",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.7,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 57,
+              "dur": 7.7,
+              "vel": 0.378
+            },
+            {
+              "beat": 0.017364,
+              "type": "on",
+              "note": 62,
+              "dur": 7.684,
+              "vel": 0.362
+            },
+            {
+              "beat": 0.027748,
+              "type": "on",
+              "note": 64,
+              "dur": 7.668,
+              "vel": 0.332
+            },
+            {
+              "beat": 8.001428,
+              "type": "on",
+              "note": 59,
+              "dur": 7.7,
+              "vel": 0.354
+            },
+            {
+              "beat": 8.010472,
+              "type": "on",
+              "note": 62,
+              "dur": 7.684,
+              "vel": 0.38
+            },
+            {
+              "beat": 8.033249,
+              "type": "on",
+              "note": 69,
+              "dur": 7.668,
+              "vel": 0.369
+            },
+            {
+              "beat": 15.995772,
+              "type": "on",
+              "note": 54,
+              "dur": 7.7,
+              "vel": 0.35
+            },
+            {
+              "beat": 16.010665,
+              "type": "on",
+              "note": 57,
+              "dur": 7.684,
+              "vel": 0.368
+            },
+            {
+              "beat": 16.030564,
+              "type": "on",
+              "note": 62,
+              "dur": 7.668,
+              "vel": 0.354
+            },
+            {
+              "beat": 23.994736,
+              "type": "on",
+              "note": 52,
+              "dur": 7.7,
+              "vel": 0.386
+            },
+            {
+              "beat": 24.011901,
+              "type": "on",
+              "note": 57,
+              "dur": 7.684,
+              "vel": 0.368
+            },
+            {
+              "beat": 24.029238,
+              "type": "on",
+              "note": 62,
+              "dur": 7.668,
+              "vel": 0.349
+            }
+          ]
+        },
+        {
+          "track": "Cello",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 30.7,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 38,
+              "dur": 6.7,
+              "vel": 0.451
+            },
+            {
+              "beat": 8.004525,
+              "type": "on",
+              "note": 43,
+              "dur": 6.7,
+              "vel": 0.453
+            },
+            {
+              "beat": 16.005246,
+              "type": "on",
+              "note": 35,
+              "dur": 6.7,
+              "vel": 0.418
+            },
+            {
+              "beat": 24.002058,
+              "type": "on",
+              "note": 33,
+              "dur": 6.7,
+              "vel": 0.436
+            }
+          ]
+        },
+        {
+          "track": "Bell",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 18,
+          "events": [
+            {
+              "beat": 0.494105,
+              "type": "on",
+              "note": 74,
+              "dur": 1.5,
+              "vel": 0.333
+            },
+            {
+              "beat": 16.499644,
+              "type": "on",
+              "note": 74,
+              "dur": 1.5,
+              "vel": 0.351
+            }
+          ]
+        },
+        {
+          "track": "Zheng",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.55,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 50,
+              "dur": 1.5,
+              "vel": 0.511
+            },
+            {
+              "beat": 2.49953,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.446
+            },
+            {
+              "beat": 4.006262,
+              "type": "on",
+              "note": 50,
+              "dur": 1.5,
+              "vel": 0.487
+            },
+            {
+              "beat": 5.246942,
+              "type": "on",
+              "note": 57,
+              "dur": 1.1,
+              "vel": 0.413
+            },
+            {
+              "beat": 6.498019,
+              "type": "on",
+              "note": 64,
+              "dur": 1.05,
+              "vel": 0.436
+            },
+            {
+              "beat": 7.998791,
+              "type": "on",
+              "note": 55,
+              "dur": 1.5,
+              "vel": 0.466
+            },
+            {
+              "beat": 10.498964,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.425
+            },
+            {
+              "beat": 12.004773,
+              "type": "on",
+              "note": 55,
+              "dur": 1.5,
+              "vel": 0.512
+            },
+            {
+              "beat": 13.247003,
+              "type": "on",
+              "note": 59,
+              "dur": 1.1,
+              "vel": 0.397
+            },
+            {
+              "beat": 14.502517,
+              "type": "on",
+              "note": 69,
+              "dur": 1.05,
+              "vel": 0.444
+            },
+            {
+              "beat": 15.994365,
+              "type": "on",
+              "note": 47,
+              "dur": 1.5,
+              "vel": 0.466
+            },
+            {
+              "beat": 18.503136,
+              "type": "on",
+              "note": 57,
+              "dur": 1.05,
+              "vel": 0.463
+            },
+            {
+              "beat": 20.002559,
+              "type": "on",
+              "note": 47,
+              "dur": 1.5,
+              "vel": 0.493
+            },
+            {
+              "beat": 21.256458,
+              "type": "on",
+              "note": 54,
+              "dur": 1.1,
+              "vel": 0.415
+            },
+            {
+              "beat": 22.504327,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.458
+            },
+            {
+              "beat": 24.0033,
+              "type": "on",
+              "note": 45,
+              "dur": 1.5,
+              "vel": 0.503
+            },
+            {
+              "beat": 26.493747,
+              "type": "on",
+              "note": 57,
+              "dur": 1.05,
+              "vel": 0.425
+            },
+            {
+              "beat": 27.995497,
+              "type": "on",
+              "note": 45,
+              "dur": 1.5,
+              "vel": 0.472
+            },
+            {
+              "beat": 29.2437,
+              "type": "on",
+              "note": 52,
+              "dur": 1.1,
+              "vel": 0.404
+            },
+            {
+              "beat": 30.50601,
+              "type": "on",
+              "note": 62,
+              "dur": 1.05,
+              "vel": 0.439
+            }
+          ]
+        },
+        {
+          "track": "Dizi",
+          "kind": "events",
+          "repeat": false,
+          "patternBeats": 31.88,
+          "events": [
+            {
+              "beat": 0,
+              "type": "on",
+              "note": 74,
+              "vel": 0.581,
+              "dur": 1.88
+            },
+            {
+              "beat": 2.000096,
+              "type": "on",
+              "note": 69,
+              "vel": 0.603,
+              "dur": 1.88
+            },
+            {
+              "beat": 4.006596,
+              "type": "on",
+              "note": 71,
+              "vel": 0.577,
+              "dur": 1.88
+            },
+            {
+              "beat": 6.006228,
+              "type": "on",
+              "note": 76,
+              "vel": 0.616,
+              "dur": 1.88
+            },
+            {
+              "beat": 7.995776,
+              "type": "on",
+              "note": 74,
+              "vel": 0.608,
+              "dur": 2.88
+            },
+            {
+              "beat": 12.003202,
+              "type": "on",
+              "note": 69,
+              "vel": 0.605,
+              "dur": 2.88
+            },
+            {
+              "beat": 15.998862,
+              "type": "on",
+              "note": 71,
+              "vel": 0.614,
+              "dur": 1.88
+            },
+            {
+              "beat": 18.004627,
+              "type": "on",
+              "note": 74,
+              "vel": 0.588,
+              "dur": 1.88
+            },
+            {
+              "beat": 19.993647,
+              "type": "on",
+              "note": 76,
+              "vel": 0.617,
+              "dur": 1.88
+            },
+            {
+              "beat": 22.006462,
+              "type": "on",
+              "note": 78,
+              "vel": 0.58,
+              "dur": 1.88
+            },
+            {
+              "beat": 23.999681,
+              "type": "on",
+              "note": 76,
+              "vel": 0.608,
+              "dur": 1.88
+            },
+            {
+              "beat": 26.005564,
+              "type": "on",
+              "note": 71,
+              "vel": 0.616,
+              "dur": 1.88
+            },
+            {
+              "beat": 27.999733,
+              "type": "on",
+              "note": 69,
+              "vel": 0.606,
+              "dur": 1.88
+            },
+            {
+              "beat": 30.004791,
+              "type": "on",
+              "note": 74,
+              "vel": 0.618,
+              "dur": 1.88
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

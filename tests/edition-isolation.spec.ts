@@ -129,6 +129,27 @@ async function setup() {
 }
 
 describe('edition isolation and preservation', () => {
+  it('restores and saves edition-specific music choices without altering retained results', async () => {
+    const { SK, gs, client } = await setup();
+    localStorage.setItem(SK.PLAYER_ID, 'new-owner');
+    localStorage.setItem('sudoku_duo_profile_v2', JSON.stringify({ wins: 7, playCount: { a: 12 } }));
+    const oldHistory = localStorage.getItem('sudoku_duo_profile_v2');
+    localStorage.setItem(SK.MUSIC_COLLECTION, JSON.stringify({ favorites: ['nine-lights'], updatedAt: 10 }));
+    const db = memoryDb({
+      'editions/ios/player_profiles/new-owner': {
+        journey: { musicCollection: { favorites: [], selected: { duo: 'between-moves' }, updatedAt: 20 } },
+      },
+    });
+    Object.assign(gs, { firebaseReady: true, db: db.db, aliasInputEl: null });
+    await client.hydratePlayerProfileFromCloud();
+    const restored = JSON.parse(localStorage.getItem(SK.MUSIC_COLLECTION)!);
+    expect(restored).toMatchObject({ favorites: [], selected: { duo: 'between-moves' }, updatedAt: 20 });
+    await client.syncPlayerProgressToCloud();
+    expect(db.data.get('editions/ios/player_profiles/new-owner')?.journey).toMatchObject({ musicCollection: restored });
+    expect(localStorage.getItem('sudoku_duo_profile_v2')).toBe(oldHistory);
+    expect(localStorage.getItem('sudoku_music_collection_v1_pwa')).toBeNull();
+  });
+
   it('keeps original records and earned unlocks while new Duo counters start fresh', async () => {
     localStorage.setItem('sudoku_player_id', 'p_old-owner');
     localStorage.setItem('sudoku_duo_profile_v2', JSON.stringify({ wins: 7, playCount: { 'tier0-standard': 5 } }));

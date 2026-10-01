@@ -1,0 +1,134 @@
+[
+  {
+    "id": "nine-lights",
+    "title": "九格微光",
+    "bpm": 64,
+    "file": "sounds/bgm/nine-lights-f4756d10d13d.mp3",
+    "duration": 60,
+    "frames": 2880000,
+    "bytes": 1441221,
+    "hash": "f4756d10d13de44800144f8474e6fa4e5c9c6b981cefbd95a1096e445de1d81c",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "between-moves",
+    "title": "弈間回聲",
+    "bpm": 84,
+    "file": "sounds/bgm/between-moves-828e7e4e24fa.mp3",
+    "duration": 68.5714375,
+    "frames": 3291429,
+    "bytes": 1647429,
+    "hash": "828e7e4e24fabd165c31a7021118cf045ec14c41d269f1d46842ac3c15f53208",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "star-mist",
+    "title": "星霧棋境",
+    "bpm": 62,
+    "file": "sounds/bgm/star-mist-c37c6214eb57.mp3",
+    "duration": 92.90322916666666,
+    "frames": 4459355,
+    "bytes": 2230917,
+    "hash": "c37c6214eb57c79f44814009d38ca54b05f632eacb60591b140126dd840d0312",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "first-moves",
+    "title": "先手之間",
+    "bpm": 88,
+    "file": "sounds/bgm/first-moves-570b328f90b3.mp3",
+    "duration": 65.45454166666667,
+    "frames": 3141818,
+    "bytes": 1572549,
+    "hash": "570b328f90b3cf7657c2db4c48ccdeb078319a4e41c4db590b0c6a6372b972aa",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "hidden-lines",
+    "title": "暗線交鋒",
+    "bpm": 76,
+    "file": "sounds/bgm/hidden-lines-b47badb6e705.mp3",
+    "duration": 75.78947916666667,
+    "frames": 3637895,
+    "bytes": 1820229,
+    "hash": "b47badb6e7057145d1c7c36a179295aaedf0baf80f2274cf90c652263afde1f2",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "turning-board",
+    "title": "局勢翻轉",
+    "bpm": 92,
+    "file": "sounds/bgm/turning-board-9439afe34e28.mp3",
+    "duration": 62.6086875,
+    "frames": 3005217,
+    "bytes": 1504005,
+    "hash": "9439afe34e28503f676804158ff0d3dee342628f2c06f174b5fdb2635545c6a7",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "star-meeting",
+    "title": "星盤相逢",
+    "bpm": 82,
+    "file": "sounds/bgm/star-meeting-429e273fe066.mp3",
+    "duration": 70.24389583333334,
+    "frames": 3371707,
+    "bytes": 1687173,
+    "hash": "429e273fe066e0dba9193382d70bb42912f145da53644c5b5ef025e0eaed9636",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "step-pressure",
+    "title": "步步逼近",
+    "bpm": 130,
+    "file": "sounds/bgm/step-pressure-f12686a81823.mp3",
+    "duration": 73.84614583333334,
+    "frames": 3544615,
+    "bytes": 1773573,
+    "hash": "f12686a818231e2ac583003c4a24990c232bfe832bfc83c6483d8a2d9abf75ba",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "sigil-duel",
+    "title": "符陣交鋒",
+    "bpm": 140,
+    "file": "sounds/bgm/sigil-duel-b7972f63e28d.mp3",
+    "duration": 68.5714375,
+    "frames": 3291429,
+    "bytes": 1647429,
+    "hash": "b7972f63e28d5fea6e2cc4cc8aac8d9f8d77a74ae5163a9f900077d326c79f31",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "nine-combo",
+    "title": "九格連擊",
+    "bpm": 150,
+    "file": "sounds/bgm/nine-combo-84e734d0f7e6.mp3",
+    "duration": 64,
+    "frames": 3072000,
+    "bytes": 1537413,
+    "hash": "84e734d0f7e68d84a39603b8b0d4c8999206c3564b6240164ae374be2584dc64",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "pipa-battle",
+    "title": "破陣輪指",
+    "bpm": 140,
+    "file": "sounds/bgm/pipa-battle-39efd7e5e969.mp3",
+    "duration": 96,
+    "frames": 4608000,
+    "bytes": 2305221,
+    "hash": "39efd7e5e96927c3d28be55f470b7636307959799e254754ea0067aa14188e8a",
+    "loopOverlap": 0.02
+  },
+  {
+    "id": "shamisen-battle",
+    "title": "疾風對弈",
+    "bpm": 150,
+    "file": "sounds/bgm/shamisen-battle-f77eb9875bf4.mp3",
+    "duration": 89.6,
+    "frames": 4300800,
+    "bytes": 2152005,
+    "hash": "f77eb9875bf4d153bc3d83d10cba74cc7189510012e5092503b7bae4adc74d33",
+    "loopOverlap": 0.02
+  }
+]

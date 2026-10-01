@@ -126,6 +126,10 @@ try {
     if (disconnectNetwork) serverOffline = false;
     else await context.setOffline(false);
   };
+  const musicTracks = JSON.parse(fs.readFileSync(path.join(root, 'public/music-manifest.json'), 'utf8'));
+  const optionalMusic = musicTracks.tracks.find(track => !musicTracks.defaults.includes(track.id));
+  await page.evaluate(async file => { const response = await fetch(file); if (!response.ok) throw new Error('Unlocked music could not cache'); }, optionalMusic.file);
+  const offlineMusic = [...musicTracks.tracks.filter(track => musicTracks.defaults.includes(track.id)), optionalMusic].map(track => track.file);
   const playOffline = async (label, returnOnline = true) => {
     if (disconnectNetwork) serverOffline = true;
     else await context.setOffline(true);
@@ -134,6 +138,15 @@ try {
     await page.locator('#level-list .level-item:not(.locked)').first().click();
     await page.locator('#pre-level-start-btn').click();
     await page.locator('.game-container').waitFor({ state: 'visible' });
+    await page.evaluate(async files => {
+      for (const file of files) {
+        const response = await fetch(file);
+        if (!response.ok) throw new Error('Offline music missing: ' + file);
+        const ctx = new OfflineAudioContext(2, 48000, 48000);
+        const audio = await ctx.decodeAudioData(await response.arrayBuffer());
+        if (audio.length < 48000) throw new Error('Offline music invalid');
+      }
+    }, offlineMusic);
     const cell = page.locator('#grid .cell:not(.is-fixed)').first();
     await cell.tap();
     if (await page.locator('#note-toggle').getAttribute('aria-pressed') !== 'true') await page.locator('#note-toggle').tap();
@@ -182,7 +195,7 @@ try {
   if (!legacyDist) assert.equal(additionalNormalDownloadsOnUpgrade, 0, 'unchanged puzzle must not be downloaded during upgrade');
   await playOffline('after-upgrade');
   assert.deepEqual(errors, [], 'no unhandled runtime errors during offline play or upgrade');
-  const result = { browser: browserName, base, networkFailure: disconnectNetwork ? 'connection-reset' : 'browser-offline', firstInstallNavigations, offlinePlayBeforeUpgrade: !legacyDist, offlinePlayAfterUpgrade: true, activationBlockedByDuoSeat: true, additionalNormalDownloadsOnUpgrade, dataCachePreserved: !legacyDist, unrelatedCachePreserved: true, noLegacyPrecache: !legacyDist, legacyMigrationFrom: legacyDist ? versions[0] : null, manualReloadForLegacyMigration: !!legacyDist };
+  const result = { browser: browserName, base, networkFailure: disconnectNetwork ? 'connection-reset' : 'browser-offline', firstInstallNavigations, offlinePlayBeforeUpgrade: !legacyDist, offlinePlayAfterUpgrade: true, activationBlockedByDuoSeat: true, additionalNormalDownloadsOnUpgrade, dataCachePreserved: !legacyDist, offlineMusicDecoded: offlineMusic.length, musicCachePreserved: cacheNames.includes('sudoku-zen-music-v1'), unrelatedCachePreserved: true, noLegacyPrecache: !legacyDist, legacyMigrationFrom: legacyDist ? versions[0] : null, manualReloadForLegacyMigration: !!legacyDist };
   fs.writeFileSync(path.join(artifacts, 'result.json'), JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result));
   passed = true;

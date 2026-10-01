@@ -4,6 +4,7 @@ import { ZenOverlay } from '../motion/ZenOverlay';
 import { getAudioSettings, saveAudioSettings, type AudioSettings } from '../../game/audioSettings';
 import { getDocumentTheme, setDocumentTheme } from '../../game/coreUiBridge';
 import { SK } from '../../storage/keys';
+import { MusicLibrary } from './MusicLibrary';
 
 function VolumeSlider({
   value,
@@ -164,7 +165,7 @@ export function SettingsModal(): ReactElement {
 
   return (
     <ZenOverlay visible={visible} onClose={close} id="settings-modal" backdropCloseDelayMs={120}>
-      <div className="stats-panel" style={{ maxWidth: 340, width: '90vw' }}>
+      <div className="stats-panel" style={{ maxWidth: 420, width: '90vw', maxHeight: '85dvh', overflowY: 'auto' }}>
         <h2 style={{ marginBottom: 4 }}>設定</h2>
 
         {/* 主題 */}
@@ -196,6 +197,7 @@ export function SettingsModal(): ReactElement {
           onToggle={() => apply({ bgmEnabled: !settings.bgmEnabled })}
           onVolume={(v) => apply({ bgmVolume: v })}
         />
+        <MusicLibrary />
 
         <div
           style={{

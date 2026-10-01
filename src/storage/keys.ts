@@ -52,6 +52,7 @@ export const SK = {
   SFX_VOLUME: 'sudoku_sfx_volume',
   BGM_ENABLED: 'sudoku_bgm_enabled',
   BGM_VOLUME: 'sudoku_bgm_volume',
+  MUSIC_COLLECTION: competitiveKey('sudoku_music_collection_v1'),
 
   /** Returns the save-game key for a given level id. */
   save(levelId: number, speedrun: boolean): string {

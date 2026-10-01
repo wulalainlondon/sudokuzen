@@ -108,6 +108,7 @@ export function getLifetimeDuoProfile(current = loadDuoProfile()): DuoProfile {
 
 export function saveDuoProfile(p: DuoProfile): void {
   writeJson(PROFILE_KEY, p);
+  window.dispatchEvent(new Event('sudoku:progress-changed'));
 }
 
 export function markDuoRoomResultRecorded(roundKey: string): boolean {

@@ -17,6 +17,9 @@ function harness() {
     requests.push(url);
     if (state.offline) throw new Error('offline');
     const path = new URL(url).pathname;
+    if (path.endsWith('/music-manifest.json'))
+      return json({ defaults: ['test'], tracks: [{ id: 'test', file: 'sounds/bgm/test-0123456789ab.mp3' }] });
+    if (path.endsWith('.mp3')) return new Response('audio', { headers: { 'content-type': 'audio/mpeg' } });
     if (path.endsWith('/data/manifest.json'))
       return json({ version: 'all-data', shards: { normal: { file: 'normal.json', hash: state.hash } } });
     if (path.endsWith('/normal.json'))
@@ -132,6 +135,7 @@ describe('PWA offline shell and persistent content cache', () => {
     h.state.offline = true;
     expect((await worker.request('', undefined, true))?.status).toBe(200);
     expect((await worker.request('assets/app-A.js'))?.status).toBe(200);
+    expect(await (await worker.request('sounds/bgm/test-0123456789ab.mp3'))?.text()).toBe('audio');
     expect(await (await worker.request('data/normal.json?v=normal-one'))?.json()).toEqual({ value: 1 });
   });
 
@@ -146,7 +150,10 @@ describe('PWA offline shell and persistent content cache', () => {
     await second.lifecycle('activate');
     expect(h.requests.filter((url) => url.includes('/normal.json'))).toHaveLength(1);
     expect(h.requests.filter((url) => url.endsWith('/app-A.js'))).toHaveLength(1);
-    expect(await h.caches.keys()).toEqual(expect.arrayContaining(['unrelated-app', DATA_CACHE_NAME, 'sudoku-zen-v2']));
+    expect(h.requests.filter((url) => url.endsWith('.mp3'))).toHaveLength(1);
+    expect(await h.caches.keys()).toEqual(
+      expect.arrayContaining(['unrelated-app', DATA_CACHE_NAME, 'sudoku-zen-music-v1', 'sudoku-zen-v2']),
+    );
     expect(await h.caches.keys()).not.toContain('sudoku-zen-v1');
     h.state.hash = 'normal-two';
     h.state.value = 2;

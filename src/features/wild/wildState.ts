@@ -132,6 +132,7 @@ export function loadWildProfile(): WildProfile {
 
 export function saveWildProfile(profile: WildProfile): void {
   writeJson(SK.WILD_PROFILE, mergeWildProfiles(readJson<Partial<WildProfile>>(SK.WILD_PROFILE, {}), profile));
+  window.dispatchEvent(new Event('sudoku:progress-changed'));
 }
 
 // ── Wild Save (pause/resume) ────────────────────────────────────────

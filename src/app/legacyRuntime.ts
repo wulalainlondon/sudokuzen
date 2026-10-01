@@ -300,6 +300,8 @@ export function bootLegacyRuntime(appVersion: string): void {
 
   // 14. Android back button — route through navigation orchestrator.
   initBackHandler();
+  // Register audio-unlock gestures before the first game starts.
+  void import('../game/bgm');
 
   // 15. Show level screen once normal data is warm (or timeout fallback).
   // This avoids first-paint empty stage map -> second-paint filled map flicker.

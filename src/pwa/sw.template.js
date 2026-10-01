@@ -2,11 +2,14 @@ const CACHE_VERSION = '__APP_VERSION__';
 const CACHE_NAME = `sudoku-zen-${CACHE_VERSION}`;
 const DATA_CACHE_NAME = '__DATA_CACHE_NAME__';
 const DATA_CACHE_LIMIT = 256;
+const MUSIC_CACHE_NAME = 'sudoku-zen-music-v1';
+const MUSIC_CACHE_LIMIT = 24;
 const BUILD_ASSETS = /* __BUILD_ASSETS__ */ [];
 const ASSETS = [
   './',
   'index.html',
   'manifest.json',
+  'music-manifest.json',
   'data/manifest.json',
   'teach/manifest.json',
   'firebase-config.js',
@@ -27,6 +30,27 @@ function isDataShard(url) {
 
 function isBuildAsset(url) {
   return url.pathname.startsWith(`${scopePath}assets/`) && /\.(js|css)$/.test(url.pathname);
+}
+
+function isMusicAsset(url) {
+  return url.pathname.startsWith(`${scopePath}sounds/bgm/`)
+    && /-[a-f0-9]{12}\.mp3$/.test(url.pathname);
+}
+
+async function musicResponse(request, required = false) {
+  const cache = await caches.open(MUSIC_CACHE_NAME);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (!response.ok || response.headers.get('content-type')?.includes('text/html')) {
+    if (required) throw new Error('Missing offline music');
+    return response;
+  }
+  if (required) await cache.put(request, response.clone());
+  else await remember(cache, request, response);
+  const keys = await cache.keys();
+  await Promise.all(keys.slice(0, Math.max(0, keys.length - MUSIC_CACHE_LIMIT)).map(key => cache.delete(key)));
+  return response;
 }
 
 async function remember(cache, request, response) {
@@ -110,6 +134,10 @@ self.addEventListener('install', (event) => {
       await dataResponse(new Request(url), true);
     }
     await Promise.all(BUILD_ASSETS.map(file => immutableResponse(new Request(assetUrl(file), { priority: 'low' }), true)));
+    const musicManifest = await (await cache.match(assetUrl('music-manifest.json')))?.json();
+    const defaults = new Set(musicManifest?.defaults || []);
+    await Promise.all((musicManifest?.tracks || []).filter(track => defaults.has(track.id))
+      .map(track => musicResponse(new Request(assetUrl(track.file)), true)));
   })());
 });
 
@@ -117,7 +145,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const names = await caches.keys();
     await Promise.all(names.filter(name => name.startsWith('sudoku-zen-')
-      && name !== CACHE_NAME && name !== DATA_CACHE_NAME).map(name => caches.delete(name)));
+      && name !== CACHE_NAME && name !== DATA_CACHE_NAME && name !== MUSIC_CACHE_NAME).map(name => caches.delete(name)));
     await self.clients.claim();
   })());
 });
@@ -130,7 +158,9 @@ self.addEventListener('fetch', (event) => {
     || !url.pathname.startsWith(scopePath) || request.headers.has('range')
     || url.pathname.endsWith('/sw.js')) return;
 
-  if (isDataShard(url)) {
+  if (isMusicAsset(url)) {
+    event.respondWith(musicResponse(request));
+  } else if (isDataShard(url)) {
     event.respondWith(dataResponse(request));
   } else if (isBuildAsset(url)) {
     event.respondWith(immutableResponse(request));

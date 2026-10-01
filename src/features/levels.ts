@@ -444,6 +444,7 @@ export function showLevelScreen(returnToTier = false): void {
 }
 
 function _showLevelScreenInner(returnToTier: boolean): void {
+  void import('../game/bgm').then(({ stopBgm }) => stopBgm());
   const wasWildContext = gs.currentLevel?.source === 'wild' || gs.wildChallengeMode !== null;
   const practiceReturnTech = gs.practiceActiveTech;
   const currentTab = gs.currentTab;
