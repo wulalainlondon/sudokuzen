@@ -1,6 +1,6 @@
 # Duo 提前關房與認輸意圖修正（2026-10-03）
 
-已在隔離 worktree `/tmp/sudoku-duo-loser-forfeit-20261003` 實作。基準 main c75bdc8；尚未提交、推送或部署。原工作區保留原有未提交內容。正式 PWA 與 Worker 尚未套用本次修改。
+已在隔離 worktree `/tmp/sudoku-duo-loser-forfeit-20261003` 實作。基準 main c75bdc8；修正提交 `89cf10c` 已推 main，並於10月4日完成 PWA `2026.10.03-V2` 與 duo-pwa Worker 部署。原工作區保留原有未提交內容。版本於10月3日午夜前提交，部署完成時跨日，保留已提交的版本識別。
 
 ## 最終行為
 
@@ -30,3 +30,14 @@
 測試runner可由DUO_QA_PORT覆寫，避免占用其他任務的8794 port；原8794 server未停止。新QA第一次重賽斷言誤讀舊waiting訊息，已改以本局清空endReason的權威snapshot為條件並完整重跑通過。
 
 詳細測試輸出、腳本與截圖：`output/loser-forfeit-investigation/`。調查原始證據：`docs/duo-loser-forfeit-investigation-20261003.md`。
+
+
+## 正式發布驗證（10月4日）
+
+- Firebase與GitHub Pages的HTML及SW都讀回2026.10.03-V2，正式Duo bundle與受測建置SHA完全相同。
+- 正式Worker版本47716b69-6cb8-4413-bfde-cb436bcfd4d6，AUTH_REQUIRED=true、EDITION=pwa，預設斷線grace60秒。
+- 使用有效Firebase token的私有QA房，在host/guest兩種先完成身分分別leave後，剩餘玩家保持心跳等候65秒仍可完賽；未完成者leave只結束自己、重賽清除原因、主動surrender與60秒實際disconnect皆得到正確不同原因。5組正式情境通過，測試匿名身分已刪除、未發布任何公開大廳房。
+- 實際Firebase編譯JS的瀏覽器測試證明確認取消仍可填格、先完成者leave不影響對手、確認才送surrender、缺失成績房不增加loss；測試exports只在browser攔截回應中追加，沒有發布debug exports。此frontend測試後端為隔離localhost；真正正式backend另以有效tokens完整驗證。
+- 正式頁面保留測試seed：舊7勝+新2勝仍顯示9勝、一般關卡紀錄及音樂prefs不變。
+- 修正提交的CI、Pages、Firebase Preview全部成功。未部署iOS app binary、duo-ios或legacy worker。
+- 發布證據：docs/pwa-duo-round-exit-release-20261004.json。

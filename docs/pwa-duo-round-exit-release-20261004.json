@@ -1,0 +1,140 @@
+{
+  "releaseVersion": "2026.10.03-V2",
+  "verifiedAtUtc": "2026-10-03T16:05:24.938637+00:00",
+  "productCommit": "89cf10cc9788fd863a0440f088896d03fa4c9e01",
+  "scope": [
+    "PWA Firebase Hosting",
+    "PWA GitHub Pages",
+    "duo-pwa Worker"
+  ],
+  "worker": {
+    "name": "duo-pwa",
+    "versionId": "47716b69-6cb8-4413-bfde-cb436bcfd4d6",
+    "previousVersionId": "bcf6cc76-1523-44af-b6c1-ddaa6552e578",
+    "authRequired": true,
+    "edition": "pwa",
+    "productionGraceMs": 60000
+  },
+  "sites": [
+    {
+      "site": "https://sudokuzen-f2aa3.web.app/",
+      "htmlVersion": [
+        "2026.10.03-V2"
+      ],
+      "swVersion": [
+        "2026.10.03-V2"
+      ]
+    },
+    {
+      "site": "https://wulalainlondon.github.io/sudokuzen/",
+      "htmlVersion": [
+        "2026.10.03-V2"
+      ],
+      "swVersion": [
+        "2026.10.03-V2"
+      ]
+    },
+    {
+      "duoAsset": "feature-duo-BGNOQ-1N.js",
+      "sha256": "8a52481462561e1c9b627d3d04bed1c9aa70e9f1b269b224d90857c4e626c143",
+      "matchesBuiltArtifact": true
+    }
+  ],
+  "productionWorkerVerification": {
+    "worker": "wss://duo-pwa.wulalainlondon.workers.dev",
+    "defaultGraceMs": 60000,
+    "healthyWaitMs": 65000,
+    "report": [
+      {
+        "scenario": "host finished then closes/leaves",
+        "passed": true
+      },
+      {
+        "scenario": "host unfinished leaves; rematch retains seats and clears reasons",
+        "passed": true
+      },
+      {
+        "scenario": "guest finished then closes/leaves",
+        "passed": true
+      },
+      {
+        "scenario": "guest unfinished leaves; rematch retains seats and clears reasons",
+        "passed": true
+      },
+      {
+        "scenario": "explicit surrender and disconnect have distinct authoritative reasons",
+        "passed": true
+      }
+    ]
+  },
+  "liveCompiledFrontendVerification": {
+    "version": "2026.10.03-V2",
+    "site": "https://sudokuzen-f2aa3.web.app",
+    "frontend": "actual compiled live assets; test-only namespace exports appended in browser response",
+    "backend": "isolated local Worker, AUTH_REQUIRED false, grace10000",
+    "cancelledSurrender": true,
+    "finisherLeaveProtected": true,
+    "continuedRealNumberInput": true,
+    "confirmedReason": "surrender",
+    "incompleteResultDidNotRecordLoss": true,
+    "errors": []
+  },
+  "recordRetention": {
+    "version": "2026.10.03-V2",
+    "display": "PWA 版 雙人戰績\n\n9 勝 · 2 敗 · 1 平手\n\n延續既有 PWA 戰績，分流後的對局接續累計。iOS 戰績獨立。\n\n分流前雙人歷史\n\n7 勝 · 2 敗 · 1 平手\n\n這些舊戰績已計入上方累計；原始紀錄與回放保留，可匯出備份。\n\n匯出舊雙人紀錄",
+    "retained": true,
+    "oldWins": 7,
+    "currentWins": 2,
+    "totalWins": 9,
+    "musicPreserved": true
+  },
+  "github": [
+    {
+      "conclusion": "success",
+      "databaseId": 37135296623,
+      "headSha": "89cf10cc9788fd863a0440f088896d03fa4c9e01",
+      "name": "Deploy Firebase Preview",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 37135296390,
+      "headSha": "89cf10cc9788fd863a0440f088896d03fa4c9e01",
+      "name": "Push on main",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 37135296634,
+      "headSha": "89cf10cc9788fd863a0440f088896d03fa4c9e01",
+      "name": "Deploy GitHub Pages",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 37135296577,
+      "headSha": "89cf10cc9788fd863a0440f088896d03fa4c9e01",
+      "name": "CI",
+      "status": "completed"
+    }
+  ],
+  "validation": {
+    "unitTestsPassed": 467,
+    "localWorkerLegacyChecksPassed": 26,
+    "localWorkerNewScenarioGroupsPassed": 5,
+    "preReleaseBrowsers": [
+      "Chromium",
+      "WebKit"
+    ],
+    "buildFirebase": "passed",
+    "releaseAndPerformanceChecks": "passed",
+    "githubCiIncludingSmoke": "passed"
+  },
+  "qaPrivacy": "Only disposable isolated QA auth identities and private unpublished QA rooms used. QA auth deletion completed without error. No real player profile or result was edited.",
+  "limitations": [
+    "Historical Oct 2 incident cause remains unconfirmed.",
+    "Live frontend QA used exact served compiled assets with namespace exports appended only in the test browser response and an isolated local backend; actual production backend was separately tested with valid Firebase ID tokens and the full default grace.",
+    "No iOS application binary or duo-ios/legacy Worker deployment in this release."
+  ],
+  "versionDateNote": "Version was committed before the Asia/Taipei midnight date change; deployment finished Oct 4 while retaining committed Oct 3 V2 release identifier."
+}

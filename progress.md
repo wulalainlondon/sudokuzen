@@ -288,3 +288,13 @@ Current prompt (2026-10-03): 開始修正第二起未完成玩家被認輸問題
 - build:firebase/release:check pass；smoke27/28首輪通過，既有候選長按單獨重跑通過。
 - 尚未提交、推送或部署；詳細修正記錄docs/duo-round-exit-fix-20261003.md。
 - 最終交卷重連回歸在重啟隔離Vite後通過，正式build、467unit、Worker26+5組、兩瀏覽器退出/取消/中止測試已完成；多次HMR的測試module狀態干擾不可當產品回歸，測試時需使用fresh dev server或static build。
+
+
+Current prompt (2026-10-04): 使用者授權部署第二起對局退出／誤認輸修正。
+
+- 修正commit89cf10c經precommit467tests通過並推main，hook版本2026.10.03-V2（提交在TPE午夜前，發布跨日保留識別）。
+- duo-pwa Worker已部署47716b69-6cb8-4413-bfde-cb436bcfd4d6，AUTH_REQUIRED=true/EDITION=pwa；未部署duo-ios或legacy。
+- Firebase及Pages正式HTML/SW均V2、正式DuoJS SHA與受測artifact一致。
+- 正式backend有效FirebaseTokens/預設60s grace驗證5组exit scenarios通過，host/guest先完成leave後solver心跳65秒能完賽、單方leave與重賽、surrender/disconnect原因一致。2個臨時匿名QA身分已刪除，未寫公開lobby或真實玩家資料。
+- 正式compiled frontend以test-only response exports+local backend驗證取消與確認認輸／先完成leave／不完整room不記loss通過；正式records+收藏保留通過。
+- 修正提交CI（含e2e smoke）、Pages與Firebase Preview全成功。發布記錄docs/pwa-duo-round-exit-release-20261004.json。
