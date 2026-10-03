@@ -1,11 +1,14 @@
 import { spawn } from 'node:child_process';
 
+const qaPort = Number(process.env.DUO_QA_PORT || 8794);
 const wrangler = spawn(
   process.platform === 'win32' ? 'node_modules\\.bin\\wrangler.cmd' : './node_modules/.bin/wrangler',
   [
     'dev',
     '--port',
-    '8794',
+    String(qaPort),
+    '--inspector-port',
+    '0',
     '--var',
     'FORFEIT_GRACE_MS:1500',
     '--var',
@@ -23,7 +26,7 @@ const output = [];
 function capture(chunk) {
   const text = chunk.toString();
   output.push(text);
-  if (output.join('').includes('Ready on http://localhost:8794')) ready = true;
+  if (output.join('').includes(`Ready on http://localhost:${qaPort}`)) ready = true;
 }
 
 wrangler.stdout.on('data', capture);
@@ -43,10 +46,14 @@ if (!ready) {
   throw new Error('Timed out waiting for the local Duo worker');
 }
 
-const qa = spawn(process.execPath, ['src/phase3-qa.mjs', 'ws://localhost:8794'], {
-  stdio: 'inherit',
-});
-const qaCode = await new Promise((resolve) => qa.once('exit', resolve));
+let qaCode = 0;
+for (const script of ['src/phase3-qa.mjs', 'src/round-exit-qa.mjs']) {
+  const qa = spawn(process.execPath, [script, `ws://localhost:${qaPort}`], {
+    stdio: 'inherit',
+  });
+  qaCode = await new Promise((resolve) => qa.once('exit', resolve));
+  if (qaCode !== 0) break;
+}
 settled = true;
 wrangler.kill('SIGTERM');
 await new Promise((resolve) => {

@@ -750,7 +750,7 @@ export function pauseGame(): void {
       leaveBtn.textContent = t('duoRuntime.surrender');
       leaveBtn.onclick = () => {
         hidePauseScreen();
-        import('../features/duo/duoGame').then((m) => m.submitDuoFinish(9999, 0)).catch(() => {});
+        import('../features/duo/duoGame').then((m) => m.surrenderDuo()).catch(() => {});
       };
     } else {
       leaveBtn.textContent = isWild ? t('nav.tempLeaveEncounter') : t('nav.abandonLevel');

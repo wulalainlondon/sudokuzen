@@ -2,6 +2,7 @@
 // 必須與伺服器端 duo-party/src/protocol.ts 保持同步（手動）。
 
 export type Role = 'host' | 'guest';
+export type EndReason = 'surrender' | 'left' | 'disconnect';
 
 export interface PlayerInfo {
   id: string;
@@ -77,6 +78,7 @@ export interface PlayerSlot {
   progress: number;
   finishTime: number | null;
   stars: number | null;
+  endReason?: EndReason | null; // Optional for rooms and clients created before this field.
   online: boolean;
   moves: MoveRecord[] | null;
 }

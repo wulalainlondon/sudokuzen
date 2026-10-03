@@ -1,5 +1,14 @@
 import { Server, routePartykitRequest, type Connection, type WSMessage } from 'partyserver';
-import type { ClientMsg, ServerMsg, PublicRoomState, PlayerInfo, PlayerSlot, Role, MoveRecord } from './protocol';
+import type {
+  ClientMsg,
+  ServerMsg,
+  PublicRoomState,
+  PlayerInfo,
+  PlayerSlot,
+  Role,
+  MoveRecord,
+  EndReason,
+} from './protocol';
 import { verifyFirebaseIdToken } from './auth';
 import { handleLobbyMutationRequest } from './lobbyMutation';
 
@@ -320,6 +329,7 @@ export class GameRoom extends Server<Env> {
     const slot = role === 'host' ? this.room.host : this.room.guest;
     if (!slot || slot.finishTime != null) return; // 防重複提交
     slot.finishTime = Math.max(0, Math.floor(msg.timeSec));
+    slot.endReason = slot.finishTime === FORFEIT_TIME ? 'surrender' : null;
     slot.stars = Math.max(0, Math.min(3, Math.floor(msg.stars)));
     slot.moves = sanitizeMoves(msg.moves);
     // 完成的人不會被沒收
@@ -336,13 +346,13 @@ export class GameRoom extends Server<Env> {
   private async handleSurrender(
     conn: Connection<ConnState>,
     msg: Extract<ClientMsg, { type: 'surrender' }>,
+    reason: EndReason = 'surrender',
   ): Promise<void> {
     const role = conn.state?.role;
     if (!this.room || !role || this.room.status !== 'playing') return;
     const slot = role === 'host' ? this.room.host : this.room.guest;
     if (!slot || slot.finishTime != null) return;
-    slot.finishTime = FORFEIT_TIME;
-    slot.stars = 0;
+    this.markForfeit(slot, role, reason);
     slot.moves = sanitizeMoves(msg.moves);
     if (role === 'host') this.room.forfeitHostAt = null;
     else this.room.forfeitGuestAt = null;
@@ -456,6 +466,7 @@ export class GameRoom extends Server<Env> {
       slot.ready = false;
       slot.progress = 0;
       slot.finishTime = null;
+      slot.endReason = null;
       slot.stars = null;
       slot.moves = null;
     };
@@ -482,21 +493,50 @@ export class GameRoom extends Server<Env> {
   }
 
   private async handleLeave(conn: Connection<ConnState>): Promise<void> {
-    if (!this.room) return;
     const role = conn.state?.role;
-    if (role === 'guest') {
-      await this.releaseGuest();
-    } else if (role === 'host') {
-      this.room.status = 'finished';
-      await this.commit();
+    if (!this.room || !role) return;
+    if (this.room.status === 'playing') {
+      // Leaving can end only the sender's unfinished attempt. A finisher may
+      // detach without cancelling the opponent's board or removing either seat.
+      await this.handleSurrender(conn, { type: 'surrender' }, 'left');
+    } else if (this.room.status !== 'finished') {
+      if (role === 'guest') {
+        await this.releaseGuest();
+      } else {
+        this.room.status = 'finished';
+        this.room.countdownEndAt = null;
+        this.room.countdownStartedAt = null;
+        await this.rescheduleAlarm();
+        await this.commit();
+      }
     }
     conn.close();
   }
 
   private async handleCloseResult(conn: Connection<ConnState>): Promise<void> {
     if (!this.room || !conn.state?.role) return;
-    this.room.status = 'finished';
+    // Dismissing a local result is never authority to finish an active round.
+    // Late/stale clients must not turn the other player's missing time into a loss.
+    if (this.room.status !== 'finished') {
+      return this.err(conn, 'bad_state', 'The round has not finished');
+    }
     await this.commit();
+  }
+
+  private markForfeit(slot: PlayerSlot, role: Role, reason: EndReason): void {
+    slot.finishTime = FORFEIT_TIME;
+    slot.stars = 0;
+    slot.endReason = reason;
+    console.info(
+      JSON.stringify({
+        event: 'duo_attempt_ended',
+        roomId: this.room?.roomId,
+        puzzleSeed: this.room?.puzzleSeed,
+        role,
+        reason,
+        at: Date.now(),
+      }),
+    );
   }
 
   // ── presence：心跳 / 靜默斷線偵測 ───────────────────────────
@@ -706,16 +746,14 @@ export class GameRoom extends Server<Env> {
     if (this.room.forfeitHostAt != null && now >= this.room.forfeitHostAt) {
       this.room.forfeitHostAt = null;
       if (this.room.host && this.room.host.finishTime == null) {
-        this.room.host.finishTime = FORFEIT_TIME;
-        this.room.host.stars = 0;
+        this.markForfeit(this.room.host, 'host', 'disconnect');
       }
       changed = true;
     }
     if (this.room.forfeitGuestAt != null && now >= this.room.forfeitGuestAt) {
       this.room.forfeitGuestAt = null;
       if (this.room.guest && this.room.guest.finishTime == null) {
-        this.room.guest.finishTime = FORFEIT_TIME;
-        this.room.guest.stars = 0;
+        this.markForfeit(this.room.guest, 'guest', 'disconnect');
       }
       changed = true;
     }

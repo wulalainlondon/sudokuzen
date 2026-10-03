@@ -267,3 +267,24 @@ Current prompt (2026-10-03): user explicitly authorized fixing and deploying the
 PWA deployment complete (2026-10-03 20:45 Asia/Taipei): source commit 76494af published as 2026.10.03-V1 to Firebase Hosting and GitHub Pages. Both live endpoints, CI, Pages and Firebase preview read back successfully. Added cold host/guest resume proof: unclaimed public roomState cannot bypass authenticated hello; gameplay queues until a direct role-bearing response arrives. Current socket/epoch guards and wrong-room filtering prevent stale events from affecting new rooms. All 459 unit/type/lint/format checks and 28 gameplay smoke tests passed. Production-build Chromium and WebKit each verified finish queued before claim, 120-second result retained through 12-second offline wait against a 10-second local test grace, fresh socket hello on resume, and correct 120 vs180 result. Test-only exports were exposed through response interception, never shipped. Live Firebase code SHA256 matches tested feature-duo bundle; live Chromium client replay against isolated backend passed. Live retained-history fixture still shows old7 + new2 =9 wins, original normal records and music preferences unchanged. Server/Firestore/player results were not changed.
 
 QA limitations recorded: legacy local resilience publication test expects Firebase discovery writes while E2E mode disables Firebase, so its publication assertion is not a successful release check; its complete game/reload/rematch case passed on retry. Live WebKit HTTPS→local plain-WS replay cannot validate that fixture, so WebKit production-build verification used the isolated HTTP production preview. Public endpoints/version/hash and live Chromium replay succeeded. Historical Steven/mm event chain remains unverified (log API403); no retroactive match correction. Evidence output/finished-forfeit-investigation and docs/pwa-duo-authenticated-finish-release-20261003.json. Original dirty workspace preserved. Release task complete; no pending rollout TODO. Durable finish intent/receipt retry remains separate future hardening.
+
+
+Current prompt (2026-10-03): 調查第二起「對手已先完成、自己仍在解題卻被認輸」事件。
+
+- 僅調查，未改產品程式或部署；使用 clean origin/main c75bdc8 隔離 worktree。
+- 真實 Worker 重現 closeResult 無finished guard與host leave令整房finished，UI缺失成績替換9999；不能直接宣稱昨天根因。
+- 真實 Worker 重現unfinished OPEN但無訊息的presence沒收；正常guest heartbeat與host已完成斷線則guest可繼續並180秒結算。
+- 舊版固定底部認輸按鈕覆蓋5下緣，實際點擊數字5位置送finish9999；9/25已移位，昨日快取版本未知。現版三手機尺寸數字觸控與正常完賽通過。
+- 當局時間/暱稱/背景情況尚無補充；歷史observability權限限制沿用。
+- 詳細證據與後續修正建議：docs/duo-loser-forfeit-investigation-20261003.md，output/loser-forfeit-investigation。
+
+
+Current prompt (2026-10-03): 開始修正第二起未完成玩家被認輸問題。
+
+- 已修後端playing離房只影響自己、finished離房保留兩席與結果，closeResult限finished。
+- 已統一三處認輸入口確認與可選endReason，舊不完整WS結果不記勝敗。沒有變更儲存key或玩家資料。
+- 新增8項Vitest測試及永久Worker round-exit QA；check:ci 77 files/467 tests pass。Worker26既有QA及5組新退出測試 pass。
+- Chromium/WebKit真實房間確認取消認輸可解、host完成後leave對手超過測試grace仍可解、確認認輸才送surrender、缺失成績中止不記loss pass。
+- build:firebase/release:check pass；smoke27/28首輪通過，既有候選長按單獨重跑通過。
+- 尚未提交、推送或部署；詳細修正記錄docs/duo-round-exit-fix-20261003.md。
+- 最終交卷重連回歸在重啟隔離Vite後通過，正式build、467unit、Worker26+5組、兩瀏覽器退出/取消/中止測試已完成；多次HMR的測試module狀態干擾不可當產品回歸，測試時需使用fresh dev server或static build。

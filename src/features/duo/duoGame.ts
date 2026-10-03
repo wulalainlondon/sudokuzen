@@ -942,8 +942,7 @@ function showDuoOpponentFinished(alias: string, timeSec: number, stars: number |
     btn.type = 'button';
     btn.textContent = t('duoRuntime.forfeit');
     btn.onclick = async () => {
-      btn.remove();
-      await submitDuoFinish(9999, 0);
+      await surrenderDuo();
     };
     document.querySelector('.game-title-wrap')?.appendChild(btn);
   }
@@ -1042,7 +1041,8 @@ export function showDuoResult(d: DuoRoomData): void {
   const gTime = d.guestFinishTime;
   if (hTime == null || gTime == null) {
     if (d.status === 'finished') {
-      // One player abandoned — treat missing time as forfeit (9999)
+      // Legacy rooms use missing time for departures. A WS room without both
+      // authoritative attempts is interrupted, never an inferred surrender.
       const hFallback = hTime ?? 9999;
       const gFallback = gTime ?? 9999;
       _duoResultShown = true;
@@ -1050,7 +1050,7 @@ export function showDuoResult(d: DuoRoomData): void {
         clearTimeout(_duoResultRetryTimer);
         _duoResultRetryTimer = null;
       }
-      showDuoResultInner(d, hFallback, gFallback);
+      showDuoResultInner(d, hFallback, gFallback, isDuoWsEnabled());
       return;
     }
     if (!_duoResultRetryTimer) {
@@ -1069,9 +1069,9 @@ export function showDuoResult(d: DuoRoomData): void {
   showDuoResultInner(d, hTime, gTime);
 }
 
-function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void {
-  const hWin = hTime < gTime;
-  const gWin = gTime < hTime;
+function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number, incomplete = false): void {
+  const hWin = !incomplete && hTime < gTime;
+  const gWin = !incomplete && gTime < hTime;
 
   // Record match using new DuoProfile
   const profileBefore = loadDuoProfile();
@@ -1080,7 +1080,9 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   const modeId = d.modeId || 'standard';
   const myTime = gs.duoRole === 'host' ? hTime : gTime;
   const oppTime = gs.duoRole === 'host' ? gTime : hTime;
-  const outcome = classifyDuoOutcome(myTime, oppTime);
+  const outcome = incomplete
+    ? classifyDuoOutcome(DUO_FORFEIT_TIME, DUO_FORFEIT_TIME)
+    : classifyDuoOutcome(myTime, oppTime);
   const { iWon, isDraw, diffSec: diff } = outcome;
   const oppAlias = gs.duoRole === 'host' ? d.guestAlias || '' : d.hostAlias;
 
@@ -1113,7 +1115,22 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   const hostForfeited = hTime === DUO_FORFEIT_TIME;
   const guestForfeited = gTime === DUO_FORFEIT_TIME;
 
-  function makeCard(alias: string, time: number, stars: number | null, isWinner: boolean, forfeited: boolean): string {
+  function endReasonLabel(reason: DuoRoomData['hostEndReason']): string {
+    if (reason === 'disconnect') return t('duoRuntime.resultDisconnectedTime');
+    if (reason === 'left') return t('duoRuntime.resultLeftTime');
+    if (reason === 'surrender') return t('duoRuntime.forfeit');
+    return t('duoRuntime.resultForfeitTime');
+  }
+
+  function makeCard(
+    alias: string,
+    time: number,
+    stars: number | null,
+    isWinner: boolean,
+    forfeited: boolean,
+    reason: DuoRoomData['hostEndReason'],
+    missing: boolean,
+  ): string {
     const resultLabel =
       outcome.tier === 'abandoned'
         ? ''
@@ -1122,9 +1139,12 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
           : isDraw
             ? ''
             : `<div class="duo-result-label lose">${t('duoRuntime.resultLose')}</div>`;
-    const timeDisplay = forfeited
-      ? `<div class="duo-result-time forfeit">${t('duoRuntime.resultForfeitTime')}</div>`
-      : `<div class="duo-result-time">${formatSeconds(time)}</div>`;
+    const timeDisplay =
+      incomplete && missing
+        ? `<div class="duo-result-time">${t('duoRuntime.resultIncompleteTime')}</div>`
+        : forfeited
+          ? `<div class="duo-result-time forfeit">${endReasonLabel(reason)}</div>`
+          : `<div class="duo-result-time">${formatSeconds(time)}</div>`;
     const starsDisplay = forfeited
       ? ''
       : `<div class="duo-result-stars">${stars ? '\u2605'.repeat(stars) + '\u2606'.repeat(3 - stars) : ''}</div>`;
@@ -1137,7 +1157,7 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
     </div>`;
   }
 
-  contentHtml += `<div class="duo-result-cards" id="duo-result-cards">${makeCard(d.hostAlias, hTime, d.hostStars, hWin, hostForfeited)}${makeCard(d.guestAlias || '', gTime, d.guestStars, gWin, guestForfeited)}</div>`;
+  contentHtml += `<div class="duo-result-cards" id="duo-result-cards">${makeCard(d.hostAlias, hTime, d.hostStars, hWin, hostForfeited, d.hostEndReason, d.hostFinishTime == null)}${makeCard(d.guestAlias || '', gTime, d.guestStars, gWin, guestForfeited, d.guestEndReason, d.guestFinishTime == null)}</div>`;
 
   // Tier + mode info
   const tierLabel = DUO_TIER_MAP.get(tierId)?.label || tierId;
@@ -1145,13 +1165,18 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
   contentHtml += `<div class="duo-result-tier-mode">${tierLabel} · ${modeLabelStr}</div>`;
 
   if (outcome.tier === 'abandoned') {
-    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultAbandoned')}</div>`;
+    contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t(incomplete ? 'duoRuntime.resultIncomplete' : 'duoRuntime.resultAbandoned')}</div>`;
   } else if (isDraw) {
     contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${t('duoRuntime.resultDraw')}</div>`;
   } else if (hostForfeited || guestForfeited) {
     // One player forfeited — show that instead of a meaningless time diff
-    const forfeitText =
-      outcome.tier === 'forfeit-loss' ? t('duoRuntime.resultYouForfeit') : t('duoRuntime.resultOpponentForfeit');
+    const endedAlias = hostForfeited ? d.hostAlias : d.guestAlias || '';
+    const reason = hostForfeited ? d.hostEndReason : d.guestEndReason;
+    const forfeitText = reason
+      ? `${escapeHtml(endedAlias)}：${endReasonLabel(reason)}`
+      : outcome.tier === 'forfeit-loss'
+        ? t('duoRuntime.resultYouForfeit')
+        : t('duoRuntime.resultOpponentForfeit');
     contentHtml += `<div class="duo-result-diff" id="duo-result-diff">${forfeitText}</div>`;
   } else {
     const winnerAlias = hWin ? d.hostAlias : d.guestAlias || '';
@@ -1231,7 +1256,9 @@ function showDuoResultInner(d: DuoRoomData, hTime: number, gTime: number): void 
 
 export async function surrenderDuo(): Promise<void> {
   if (!gs.isDuoMode || _duoFinishSubmitted) return;
+  if (!confirm(t('duoRuntime.surrenderConfirm'))) return;
   _duoFinishSubmitted = true;
+  document.getElementById('duo-forfeit-btn')?.remove();
 
   if (isDuoWsEnabled()) {
     const { duoWsSurrender } = await import('./duoSocket');

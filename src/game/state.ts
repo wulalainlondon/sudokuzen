@@ -103,6 +103,7 @@ export interface DuoRoomData {
   hostReady: boolean;
   hostProgress: number;
   hostFinishTime: number | null;
+  hostEndReason?: 'surrender' | 'left' | 'disconnect' | null;
   hostStars: number | null;
   guestId: string | null;
   guestAlias: string | null;
@@ -110,6 +111,7 @@ export interface DuoRoomData {
   guestReady: boolean;
   guestProgress: number;
   guestFinishTime: number | null;
+  guestEndReason?: 'surrender' | 'left' | 'disconnect' | null;
   guestStars: number | null;
   startAt: { toMillis?: () => number; seconds?: number } | null;
   countdownStartedAt: { toMillis?: () => number; seconds?: number } | null;
