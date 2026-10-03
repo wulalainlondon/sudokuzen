@@ -38,6 +38,9 @@ let _reconnectMsg: ClientMsg | null = null;
 let _outbox: ClientMsg[] = [];
 // 連續認領逾時次數，超過上限視為連線失敗
 let _reclaimAttempts = 0;
+let _reclaiming = false;
+let _connectionEpoch = 0;
+let _claimedRole: Role | null = null;
 // 「重連中」掛太久（純斷網不回）的牆鐘上限計時器；超過則升級為 failed，避免無限轉圈
 let _reconnFailTimer: ReturnType<typeof setTimeout> | null = null;
 // 略長於 server 60s 沒收寬限期：超過此時間仍未連回，視為連線失敗
@@ -176,6 +179,8 @@ function pump(raw: string): void {
   )
     return;
 
+  if (msg.type === 'roomState' && msg.state.roomId !== _roomId) return;
+
   // 先結算一次性等待者（create/join 的回應）
   for (let i = _waiters.length - 1; i >= 0; i--) {
     if (_waiters[i].pred(msg)) {
@@ -191,9 +196,14 @@ function pump(raw: string): void {
     // 角色只由 create/join/hello 的 direct sendStateTo（帶 you）設定。
     // ⚠️ 勿改成 `gs.duoRole = msg.you ?? gs.duoRole` 之類——對局中的 you=null 廣播
     // 會把角色清空，導致下面 `if (gs.duoRole)` 為假、整盤停止更新。
-    if (msg.you) gs.duoRole = msg.you; // server-authoritative（見上方註解）
+    if (msg.you) {
+      gs.duoRole = msg.you;
+      _claimedRole = msg.you;
+      _reclaiming = false;
+    } // Only a direct authenticated response proves ownership of this socket.
     const d = mapToDuoRoomData(msg.state);
     gs.duoRoomData = d;
+    if (msg.you) flushOutbox();
     if (gs.duoRole) {
       gs.duoMyReady = gs.duoRole === 'host' ? d.hostReady : d.guestReady;
       handleDuoSnapshot(d);
@@ -240,7 +250,14 @@ function request(msg: ClientMsg, pred: (m: ServerMsg) => boolean, ms = 8000): Pr
  * we must not discard a seat that the server has already assigned.
  */
 function adoptAuthoritativeSeat(roomId: string, role: Role): boolean {
-  if (_roomId !== roomId || _lastStateRoomId !== roomId || gs.duoRole !== role || !gs.duoRoomData) return false;
+  if (
+    _claimedRole !== role ||
+    _roomId !== roomId ||
+    _lastStateRoomId !== roomId ||
+    gs.duoRole !== role ||
+    !gs.duoRoomData
+  )
+    return false;
   const { playerId } = getPlayerIdentity();
   const assignedPlayerId = role === 'host' ? gs.duoRoomData.hostId : gs.duoRoomData.guestId;
   if (!playerId || assignedPlayerId !== playerId) return false;
@@ -326,17 +343,23 @@ function connect(roomId: string): PartySocket {
   if (_socket && _roomId === roomId) return _socket;
   closeSocket();
   _roomId = roomId;
+  _reclaiming = true;
   _socket = new PartySocket({ host: getDuoWsHost(), party: PARTY, room: roomId });
-  _socket.addEventListener('message', (e) => pump((e as MessageEvent).data as string));
+  const socket = _socket;
+  socket.addEventListener('message', (e) => {
+    if (socket === _socket) pump((e as MessageEvent).data as string);
+  });
   // 自動重連後（每次 open）重送 hello 認領座位（帶新 token，舊的可能已過期）。
   // 初次 open 時 _reconnectMsg 尚為 null。
-  _socket.addEventListener('open', () => {
-    void onSocketOpen();
+  socket.addEventListener('open', () => {
+    if (socket === _socket) void onSocketOpen();
   });
   // 斷線 → 顯示重連中。partysocket 會自動重連。
   // 只掛 close：partysocket 的 error 必先觸發一次 close（_handleError→_disconnect→_handleClose），
   // 額外掛 error 會造成重複觸發，故省略。
-  _socket.addEventListener('close', onSocketClose);
+  socket.addEventListener('close', () => {
+    if (socket === _socket) onSocketClose();
+  });
   startPing();
   return _socket;
 }
@@ -344,12 +367,19 @@ function connect(roomId: string): PartySocket {
 // 重連後認領座位並等待伺服器 ack：成功才算連上；失敗（座位已被回收）= 終局，
 // 逾時則重試，超過上限視為連線失敗。避免認領沒回應時 client 卡在死局。
 async function onSocketOpen(): Promise<void> {
+  const socket = _socket;
+  const epoch = ++_connectionEpoch;
   if (!_reconnectMsg || _reconnectMsg.type !== 'hello') {
     notifyConn('connected');
     return;
   }
+  // An OPEN transport is not yet an authenticated seat on a new socket.
+  // Hold gameplay messages until hello is acknowledged, including finish.
+  _reclaiming = true;
   const r = await reclaimSeat();
+  if (epoch !== _connectionEpoch || socket !== _socket || _socket?.readyState !== WS_OPEN) return;
   if (r === 'ok') {
+    _reclaiming = false;
     _reclaimAttempts = 0;
     notifyConn('connected');
     flushOutbox();
@@ -377,6 +407,9 @@ async function onSocketOpen(): Promise<void> {
 }
 
 function onSocketClose(): void {
+  _connectionEpoch++;
+  _claimedRole = null;
+  if (_reconnectMsg) _reclaiming = true;
   // 尚未建立可重連的房（create/join 前）或已主動關閉 → 不顯示重連中
   if (!_reconnectMsg) return;
   notifyConn('reconnecting');
@@ -399,7 +432,11 @@ async function reclaimSeat(): Promise<'ok' | 'failed' | 'timeout'> {
 }
 
 function send(msg: ClientMsg): void {
-  if (_socket && _socket.readyState === WS_OPEN) {
+  if (
+    _socket &&
+    _socket.readyState === WS_OPEN &&
+    (!_reclaiming || msg.type === 'hello' || msg.type === 'create' || msg.type === 'join')
+  ) {
     _socket.send(JSON.stringify(msg));
     return;
   }
@@ -415,6 +452,9 @@ function flushOutbox(): void {
 }
 
 function closeSocket(): void {
+  _connectionEpoch++;
+  _reclaiming = false;
+  _claimedRole = null;
   // 先清重連狀態，避免 _socket.close() 同步觸發的 close 事件鑽過 onSocketClose 守衛、誤閃「重連中」
   _reconnectMsg = null;
   _outbox = [];

@@ -60,6 +60,7 @@ class ImmediateReplySocket extends EventTarget {
   dropNextRequest = false;
   dropCreateAckAfterApply = false;
   rejectHello = false;
+  holdHello = false;
   sentTypes: string[] = [];
   roomId: string;
 
@@ -73,6 +74,8 @@ class ImmediateReplySocket extends EventTarget {
     const request = JSON.parse(raw) as { type: string; role?: 'host' | 'guest' };
     if (request.type === 'ping' || request.type === 'leave') return;
     this.sentTypes.push(request.type);
+    if (request.type === 'hello' && this.holdHello) return;
+    if (request.type === 'finish') return;
     if (request.type === 'create' && this.dropCreateAckAfterApply) {
       this.dropCreateAckAfterApply = false;
       return;
@@ -112,6 +115,14 @@ class ImmediateReplySocket extends EventTarget {
     this.readyState = 3;
     this.dispatchEvent(new Event('close'));
     this.reconnect();
+  }
+
+  announceUnclaimedRoom(role: 'host' | 'guest'): void {
+    this.dispatchEvent(
+      new MessageEvent('message', {
+        data: JSON.stringify({ type: 'roomState', you: null, state: roomState(role, this.roomId) }),
+      }),
+    );
   }
 
   preconfirmSeatBeforeRequest(role: 'host' | 'guest'): void {
@@ -165,6 +176,54 @@ describe('duo WebSocket direct response ordering', () => {
     duoWsDisconnect();
     sockets.length = 0;
   });
+
+  it('keeps a finish queued until the reopened socket has reclaimed its seat', async () => {
+    const { duoWsCreateRoom, duoWsFinish } = await import('../src/features/duo/duoSocket');
+    await duoWsCreateRoom('tierII', 'standard');
+    const socket = sockets.at(-1)!;
+    socket.holdHello = true;
+    socket.simulateNetworkReconnect();
+    duoWsFinish(120, 3, []);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(socket.sentTypes).not.toContain('finish');
+    socket.dispatchEvent(
+      new MessageEvent('message', {
+        data: JSON.stringify({ type: 'roomState', you: 'host', state: roomState('host', socket.roomId) }),
+      }),
+    );
+    await vi.waitFor(() => expect(socket.sentTypes).toContain('finish'));
+  });
+
+  it('ignores a late close from the previous room instead of blocking the current room', async () => {
+    const { duoWsCreateRoom, duoWsFinish } = await import('../src/features/duo/duoSocket');
+    await duoWsCreateRoom('tierII', 'standard');
+    const previous = sockets.at(-1)!;
+    await duoWsCreateRoom('tierII', 'standard');
+    const current = sockets.at(-1)!;
+    previous.dispatchEvent(new Event('close'));
+    duoWsFinish(120, 3);
+    expect(current.sentTypes).toContain('finish');
+  });
+
+  it.each(['host', 'guest'] as const)(
+    'requires authenticated hello on a cold %s resume despite a public room snapshot',
+    async (role) => {
+      const { gs } = await import('../src/game/state');
+      gs.duoRole = role;
+      const { duoWsResumeRoom, duoWsFinish } = await import('../src/features/duo/duoSocket');
+      tokenControl.beforeResolve = () => {
+        const socket = sockets.at(-1)!;
+        socket.announceUnclaimedRoom(role);
+        duoWsFinish(120, 3);
+        expect(socket.sentTypes).not.toContain('finish');
+      };
+      await expect(duoWsResumeRoom('cold-resume-' + role, role)).resolves.toBe(true);
+      expect(sockets.at(-1)?.sentTypes).toContain('hello');
+      duoWsFinish(120, 3);
+      expect(sockets.at(-1)?.sentTypes).toContain('finish');
+    },
+  );
 
   it('enters a newly created room even when the server replies synchronously inside send()', async () => {
     const { duoWsCreateRoom } = await import('../src/features/duo/duoSocket');
