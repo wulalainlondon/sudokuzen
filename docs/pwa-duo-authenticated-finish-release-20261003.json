@@ -1,0 +1,130 @@
+{
+  "version": "2026.10.03-V1",
+  "sourceCommit": "76494afe9c0605fcff9a312390f5efc807a09f37",
+  "scope": "PWA client authenticated seat gating, reconnect and cold resume",
+  "changes": [
+    "Hold gameplay until current socket receives authenticated direct role",
+    "Require authenticated hello on cold resume instead of trusting public roomState",
+    "Ignore stale socket events and wrong-room snapshots"
+  ],
+  "unitTestsPassed": 459,
+  "gameplaySmokeTestsPassed": 28,
+  "productionBuildChromium": {
+    "before": {
+      "sent": [
+        "create",
+        "ready",
+        "progress"
+      ],
+      "finish": null
+    },
+    "cold": {
+      "resumed": true,
+      "helloDelta": 1,
+      "finish": 120
+    },
+    "result": {
+      "hostTime": 120,
+      "guestTime": 180
+    },
+    "errors": []
+  },
+  "productionBuildWebKit": {
+    "before": {
+      "sent": [
+        "create",
+        "ready",
+        "progress"
+      ],
+      "finish": null
+    },
+    "cold": {
+      "resumed": true,
+      "helloDelta": 1,
+      "finish": 120
+    },
+    "result": {
+      "hostTime": 120,
+      "guestTime": 180
+    },
+    "errors": []
+  },
+  "liveClientChromiumWithIsolatedBackend": {
+    "origin": "https://sudokuzen-f2aa3.web.app",
+    "backend": "isolated local PWA Worker",
+    "before": {
+      "sent": [
+        "create",
+        "ready",
+        "progress"
+      ],
+      "finish": null
+    },
+    "cold": {
+      "resumed": true,
+      "helloDelta": 1,
+      "finish": 120
+    },
+    "result": {
+      "hostTime": 120,
+      "guestTime": 180
+    },
+    "errors": []
+  },
+  "liveCode": {
+    "url": "https://sudokuzen-f2aa3.web.app/assets/feature-duo-BU5siYlI.js",
+    "sha256": "15d7b9926a1f4389405284885d242db43e6c979bb593c4cb17d4598f5da533f4",
+    "matchesTestedBuild": true
+  },
+  "retention": {
+    "version": "2026.10.03-V1",
+    "display": "PWA 版 雙人戰績9 勝 · 2 敗 · 1 平手延續既有 PWA 戰績，分流後的對局接續累計。iOS 戰績獨立。分流前雙人歷史7 勝 · 2 敗 · 1 平手這些舊戰績已計入上方累計；原始紀錄與回放保留，可匯出備份。匯出舊雙人紀錄",
+    "retained": true,
+    "oldWins": 7,
+    "currentWins": 2,
+    "totalWins": 9,
+    "musicPreserved": true
+  },
+  "hosting": [
+    "https://sudokuzen-f2aa3.web.app/",
+    "https://wulalainlondon.github.io/sudokuzen/"
+  ],
+  "github": [
+    {
+      "conclusion": "success",
+      "databaseId": 37123383366,
+      "headSha": "76494afe9c0605fcff9a312390f5efc807a09f37",
+      "name": "Deploy Firebase Preview",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 37123383369,
+      "headSha": "76494afe9c0605fcff9a312390f5efc807a09f37",
+      "name": "Deploy GitHub Pages",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 37123383057,
+      "headSha": "76494afe9c0605fcff9a312390f5efc807a09f37",
+      "name": "Push on main",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 37123383356,
+      "headSha": "76494afe9c0605fcff9a312390f5efc807a09f37",
+      "name": "CI",
+      "status": "completed"
+    }
+  ],
+  "serverChanged": false,
+  "playerResultsEdited": false,
+  "incidentNote": "Steven/mm Oct 2 21-22 original event chain remains unconfirmed due historical-log permissions. No retrospective result edits.",
+  "qaLimitations": [
+    "Legacy local resilience mirror-publication case requires Firebase cloud writes but E2E disables Firebase; failed publication assertion not counted as a passing release check. Its full-game/reload/rematch case passed on retry.",
+    "Live WebKit HTTPS-to-local ws fixture is blocked by browser transport policy; actual production-build WebKit test ran on the isolated local production preview."
+  ],
+  "evidence": "/private/tmp/sudoku-duo-finished-forfeit-20261003/output/finished-forfeit-investigation"
+}
