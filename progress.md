@@ -310,3 +310,10 @@ Current prompt (2026-10-05): 修正Apple Guideline4 iPadAir11M3相容視窗數�
 - 5個自己的原生模擬器（Air11M3、miniA17、Air13M3、SE3、16ProMax）bounds/hit/orientation測試通過；4個有逐鍵native taps，Air11已有全9 bounds/hit并fullDevice截圖。Native runtime26.5，不宣稱Reviewer27.0或實體機。
 - 修正測試fixture首次mini未進入關卡列表，加fresh-screen條件重試；截圖改XCUIScreen.main避免app.screenshot的iPad相容裁切。產品版面未因fixture而另改。
 - IPA已驗簽、getTaskAllow=false、Build9/VALID已上傳。ASC替换9並追加Guideline4備註；public metadata20shots/contact/manual保持，versionREADY_FOR_REVIEW，parentUNRESOLVED_ISSUES待再次提交。
+
+- 10/5 21:57:17 TPE已再次提交1.0/Build9；version及原submission b9dda...均WAITING_FOR_REVIEW，Build9 VALID/MANUAL，四locale20shots/publicMetadataDigest/contactDigest均未變，新增Guideline4修正與26.5本機runtime限制備註。
+- 首次submit腳本限制parent必須READY而拒絕UNRESOLVED（未送request）；已依官方流程允許parentUNRESOLVED但檢查唯一itemREADY_FOR_REVIEW後提交成功。
+
+- Keychain API final readback 21:59:21及BraveUI再次核對均WaitingForReview/1.0Build9，已保留審查結果頁。
+- PWA shared layout亦已在Firebase/Pages更新2026.10.05-V1；頁面HTML/SW/CSS結構verify通過，原7+新2=9勝與普通紀錄／音樂prefs保持。080089d CI/Pages/preview均成功。
+- 完整發布與限制紀錄docs/app-store/build9-release.json；沒有操作原iPhone11資料，未改duo-ios或legacy Worker。

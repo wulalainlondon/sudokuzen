@@ -96,9 +96,93 @@
     "specificLayoutRegressions": 3,
     "performanceBudgetPassed": true
   },
-  "submission": "pending final readback",
+  "submission": "WAITING_FOR_REVIEW",
   "limitations": [
     "Native testing used available iOS/iPadOS 26.5 simulators; not the review team 27.0 runtime.",
     "Physical iPhone/iPad was not used in this layout release."
-  ]
+  ],
+  "store": {
+    "checked_at": "2026-10-05T13:59:21Z",
+    "app_id": "6794248919",
+    "version_id": "008bcd96-e304-4d08-aee4-8afd8d141111",
+    "version_state": "WAITING_FOR_REVIEW",
+    "version": "1.0",
+    "build": "9",
+    "build_state": "VALID",
+    "release_type": "MANUAL",
+    "review_contact_digest": "0ab687ae73fd6b885713f077df18fd0257bd742bd1d2b01d37134fca7780a7f4",
+    "review_contact_complete": true,
+    "demo_required": false,
+    "review_notes_sha256": "03673794aa6165d902730c9d02a576da948f24c67aba3d43f8ab039953dc7953",
+    "public_metadata_digest": "10fdff11cd1d1272ff02c82b3f44b4f323758b9d8033ebea91470ac2f45d0584",
+    "locales": [
+      {
+        "locale": "de-DE",
+        "screenshot_count": 5,
+        "complete": true
+      },
+      {
+        "locale": "en-US",
+        "screenshot_count": 5,
+        "complete": true
+      },
+      {
+        "locale": "ja",
+        "screenshot_count": 5,
+        "complete": true
+      },
+      {
+        "locale": "zh-Hant",
+        "screenshot_count": 5,
+        "complete": true
+      }
+    ],
+    "submission_id": "b9dda547-802e-45e3-a1c7-2002d4b141fc",
+    "submission_state": "WAITING_FOR_REVIEW",
+    "submitted_date": "2026-10-05T13:57:17.582Z"
+  },
+  "submittedAtAsiaTaipei": "2026-10-05 21:57:17",
+  "verifiedAtUtc": "2026-10-05T14:01:54.626605+00:00",
+  "publicMetadataPreserved": true,
+  "reviewContactPreserved": true,
+  "reviewNotesUpdatedForGuideline4": true,
+  "evidenceRoot": "/tmp/sudoku-ipad-review-layout-20261005/output/ipad-review-fix",
+  "pwa": {
+    "version": "2026.10.05-V1",
+    "deployment": "live on Firebase and GitHub Pages",
+    "liveVerification": [
+      {
+        "site": "https://sudokuzen-f2aa3.web.app/",
+        "version": "2026.10.05-V1",
+        "swVerified": true,
+        "responsiveGameCssVerified": true
+      },
+      {
+        "site": "https://wulalainlondon.github.io/sudokuzen/",
+        "version": "2026.10.05-V1",
+        "swVerified": true,
+        "responsiveGameCssVerified": true
+      }
+    ],
+    "retention": {
+      "version": "2026.10.05-V1",
+      "display": "PWA 版 雙人戰績\n\n9 勝 · 2 敗 · 1 平手\n\n延續既有 PWA 戰績，分流後的對局接續累計。iOS 戰績獨立。\n\n分流前雙人歷史\n\n7 勝 · 2 敗 · 1 平手\n\n這些舊戰績已計入上方累計；原始紀錄與回放保留，可匯出備份。\n\n匯出舊雙人紀錄",
+      "retained": true,
+      "oldWins": 7,
+      "currentWins": 2,
+      "totalWins": 9,
+      "musicPreserved": true
+    }
+  },
+  "storeBrowserReadback": {
+    "state": "等待審查",
+    "submittedAt": "2026年10月5日 下午9:57",
+    "verified": true
+  },
+  "ci": {
+    "testedCommit": "080089dad416b133953cd3865f0d6a6bd6b38f8f",
+    "checks": "passed",
+    "pages": "passed",
+    "firebasePreview": "passed"
+  }
 }
