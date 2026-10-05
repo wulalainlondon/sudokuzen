@@ -1,0 +1,104 @@
+{
+  "productCommit": "851edb3",
+  "version": "1.0",
+  "build": "9",
+  "gameVersion": "2026.10.05-V1",
+  "reason": "Apple Guideline 4: iPad Air 11 M3 number buttons cut off",
+  "ipa": {
+    "build": 9,
+    "version": "1.0",
+    "webVersion": "2026.10.05-V1",
+    "bundleId": "com.wulala.sudokuzen",
+    "UIDeviceFamily": [
+      1
+    ],
+    "sdk": "iphoneos26.5",
+    "minimumOS": "15.0",
+    "getTaskAllow": false,
+    "usesNonExemptEncryption": false,
+    "sha256": "8cd8e5be3df074177c5fada10515c945b915c5c2692104d864c19ee840501115",
+    "sizeBytes": 26185675,
+    "signedBinaryVerified": true,
+    "embeddedAssetsMatchTestedNativeBundle": true,
+    "qaBootstrapAbsent": true
+  },
+  "layoutMatrix": {
+    "sizes": 31,
+    "modes": 6,
+    "engines": [
+      "Chromium",
+      "WebKit"
+    ],
+    "cases": 374,
+    "allPassed": true
+  },
+  "native": {
+    "runtime": "iOS/iPadOS 26.5",
+    "build": 9,
+    "tests": {
+      "ipadAir11": {
+        "passed": true,
+        "allNineDigitBoundsAndHitTargetsChecked": true,
+        "requestedOrientations": [
+          "portrait",
+          "landscapeLeft",
+          "portrait"
+        ],
+        "log": "native-ipad-air11.log"
+      },
+      "ipadMini": {
+        "passed": true,
+        "allNineDigitBoundsAndHitTargetsChecked": true,
+        "requestedOrientations": [
+          "portrait",
+          "landscapeLeft",
+          "portrait"
+        ],
+        "log": "native-ipad-mini-final.log"
+      },
+      "ipadAir13": {
+        "passed": true,
+        "allNineDigitBoundsAndHitTargetsChecked": true,
+        "requestedOrientations": [
+          "portrait",
+          "landscapeLeft",
+          "portrait"
+        ],
+        "log": "native-ipad-air13-final.log"
+      },
+      "iphoneSE3": {
+        "passed": true,
+        "allNineDigitBoundsAndHitTargetsChecked": true,
+        "requestedOrientations": [
+          "portrait",
+          "landscapeLeft",
+          "portrait"
+        ],
+        "log": "native-iphone-se.log"
+      },
+      "iphone16ProMax": {
+        "passed": true,
+        "allNineDigitBoundsAndHitTargetsChecked": true,
+        "requestedOrientations": [
+          "portrait",
+          "landscapeLeft",
+          "portrait"
+        ],
+        "log": "native-iphone-promax.log"
+      }
+    },
+    "physicalDeviceTests": false,
+    "allPassed": true
+  },
+  "checks": {
+    "unitTests": 467,
+    "gameplaySmokeTests": 28,
+    "specificLayoutRegressions": 3,
+    "performanceBudgetPassed": true
+  },
+  "submission": "pending final readback",
+  "limitations": [
+    "Native testing used available iOS/iPadOS 26.5 simulators; not the review team 27.0 runtime.",
+    "Physical iPhone/iPad was not used in this layout release."
+  ]
+}

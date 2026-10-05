@@ -305,3 +305,8 @@ Current prompt (2026-10-05): 修正Apple Guideline4 iPadAir11M3相容視窗數�
 - 已在414×736、320×568、736×414以Chromium/WebKit重現；九鍵高度與固定棋盤超過viewport。
 - 將play area獨立，保留數字鍵最小44px高度；board-stage依實際剩餘flex尺寸用ResizeObserver維持正方形，橫向左右排列，safe area只由body處理一次，极端短窗可捲動。
 - 新工作區/tmp/sudoku-ipad-review-layout-20261005，root既有改動保留。尚未建置／送審。
+
+- Build9版本1.0，內嵌2026.10.05-V1，source851edb3；467unit、28gameplay+3layoutregression與374跨engine/layout場景通過。
+- 5個自己的原生模擬器（Air11M3、miniA17、Air13M3、SE3、16ProMax）bounds/hit/orientation測試通過；4個有逐鍵native taps，Air11已有全9 bounds/hit并fullDevice截圖。Native runtime26.5，不宣稱Reviewer27.0或實體機。
+- 修正測試fixture首次mini未進入關卡列表，加fresh-screen條件重試；截圖改XCUIScreen.main避免app.screenshot的iPad相容裁切。產品版面未因fixture而另改。
+- IPA已驗簽、getTaskAllow=false、Build9/VALID已上傳。ASC替换9並追加Guideline4備註；public metadata20shots/contact/manual保持，versionREADY_FOR_REVIEW，parentUNRESOLVED_ISSUES待再次提交。
