@@ -298,3 +298,10 @@ Current prompt (2026-10-04): 使用者授權部署第二起對局退出／誤認
 - 正式backend有效FirebaseTokens/預設60s grace驗證5组exit scenarios通過，host/guest先完成leave後solver心跳65秒能完賽、單方leave與重賽、surrender/disconnect原因一致。2個臨時匿名QA身分已刪除，未寫公開lobby或真實玩家資料。
 - 正式compiled frontend以test-only response exports+local backend驗證取消與確認認輸／先完成leave／不完整room不記loss通過；正式records+收藏保留通過。
 - 修正提交CI（含e2e smoke）、Pages與Firebase Preview全成功。發布記錄docs/pwa-duo-round-exit-release-20261004.json。
+
+
+Current prompt (2026-10-05): 修正Apple Guideline4 iPadAir11M3相容視窗數字鍵裁切，驗證尺寸／方向後重新送審。
+
+- 已在414×736、320×568、736×414以Chromium/WebKit重現；九鍵高度與固定棋盤超過viewport。
+- 將play area獨立，保留數字鍵最小44px高度；board-stage依實際剩餘flex尺寸用ResizeObserver維持正方形，橫向左右排列，safe area只由body處理一次，极端短窗可捲動。
+- 新工作區/tmp/sudoku-ipad-review-layout-20261005，root既有改動保留。尚未建置／送審。

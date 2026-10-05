@@ -41,7 +41,8 @@
     "test:e2e:replay": "npx playwright test e2e/replay-end-to-end.spec.ts",
     "check": "npm run validate:teach && npm run validate:duo && npm run typecheck && npm run lint && npm run format:check && npm test",
     "check:ci": "npm run validate:teach:ci && npm run validate:duo && npm run typecheck && npm run lint && npm run format:check && npm test",
-    "check:release": "npm run check && npm --prefix functions run lint && npm --prefix functions run build && npm --prefix duo-party run check"
+    "check:release": "npm run check && npm --prefix functions run lint && npm --prefix functions run build && npm --prefix duo-party run check",
+    "verify:layout": "node scripts/verify-game-layout.mjs"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [

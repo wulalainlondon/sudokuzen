@@ -1,3 +1,4 @@
+import { initGameLayout } from '../ui/gameLayout';
 // Thin orchestrator — wires together all extracted modules.
 // The 3 300-line monolith has been split into:
 //   game/state, game/utils, game/audio, game/board, game/timer, game/core
@@ -191,6 +192,8 @@ export function bootLegacyRuntime(appVersion: string): void {
     gs.numButtons.push(b);
     np.appendChild(b);
   }
+
+  initGameLayout();
 
   // 5. Keyboard
   window.addEventListener('keydown', (e) => {

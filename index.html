@@ -357,8 +357,11 @@
             </div>
         </div>
 
+        <div class="game-play-area">
         <!-- 3. 數獨主網格 -->
-        <div class="sudoku-grid" id="grid"></div>
+        <div class="board-stage">
+            <div class="sudoku-grid" id="grid"></div>
+        </div>
 
 
         <div class="numpad-skill-wrapper">
@@ -446,6 +449,7 @@
                 <div class="sl-decoder">強鏈：同一單位中某數字恰好出現兩次，互為消除伴侶</div>
             </div>
         </div>
+        </div>
         <div class="controls">
     </div>
     </div>
@@ -503,7 +507,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.10.03-V2';
+        var INLINE_VER = '2026.10.05-V1';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);
