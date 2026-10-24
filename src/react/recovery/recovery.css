@@ -1,0 +1,200 @@
+.recovery-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: var(--bg-color);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  color: var(--text-main);
+}
+.recovery-panel {
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.recovery-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.recovery-header h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+.recovery-panel p {
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.9rem;
+}
+.recovery-panel h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.recovery-panel button:not(.cell),
+.recovery-upload {
+  min-height: 44px;
+  border: 1px solid var(--cell-border);
+  border-radius: 12px;
+  background: var(--grid-bg);
+  color: var(--text-main);
+  padding: 10px 14px;
+  cursor: pointer;
+}
+.recovery-panel button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.recovery-panel button:focus-visible,
+.recovery-entry:focus-visible {
+  outline: 3px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+.recovery-panel .resume-btn {
+  background: var(--accent-strong);
+  color: white;
+  margin: 0;
+}
+.recovery-upload {
+  position: relative;
+  text-align: center;
+  font-weight: 600;
+}
+.recovery-upload input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  cursor: pointer;
+}
+.recovery-upload:focus-within {
+  outline: 3px solid var(--accent-strong);
+}
+.recovery-panel .recovery-image {
+  display: block;
+  padding: 0;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  line-height: 0;
+  touch-action: manipulation;
+}
+.recovery-image img,
+.recovery-reference {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.recovery-crop {
+  position: absolute;
+  border: 3px solid #f59e0b;
+  background: rgba(245, 158, 11, 0.05);
+  pointer-events: none;
+}
+.recovery-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 3px solid #f59e0b;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+.recovery-panel .recovery-grid {
+  width: min(100%, 420px);
+}
+.recovery-grid .cell {
+  padding: 0;
+  border-radius: 0;
+  font-family: inherit;
+  color: var(--text-main);
+}
+.recovery-grid .user-val {
+  color: var(--accent-strong);
+}
+.recovery-grid .recovery-uncertain {
+  box-shadow: inset 0 0 0 2px #f59e0b;
+}
+.recovery-grid .recovery-wrong {
+  color: var(--error-color);
+  background: color-mix(in srgb, var(--error-color) 12%, var(--grid-bg));
+  box-shadow: inset 0 0 0 2px var(--error-color);
+}
+.recovery-grid .selected {
+  outline: 3px solid var(--accent-strong);
+  outline-offset: -3px;
+  transform: none;
+  z-index: 3;
+}
+.recovery-numpad {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 5px;
+}
+.recovery-numpad button {
+  padding: 8px 0 !important;
+  font-size: 1.1rem;
+}
+.recovery-tools {
+  display: flex;
+  gap: 10px;
+}
+.recovery-tools button {
+  flex: 1;
+}
+.recovery-tools button[aria-pressed='true'] {
+  background: var(--accent-soft);
+  border-color: var(--accent-strong);
+}
+.recovery-notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  font-size: min(2.2vw, 10px);
+  line-height: 1;
+  color: var(--text-light);
+}
+.recovery-notes span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.recovery-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.recovery-checkbox input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent-strong);
+}
+.recovery-status {
+  text-align: center;
+  font-weight: 600;
+}
+.recovery-local {
+  color: var(--text-light);
+  font-size: 0.78rem !important;
+}
+.recovery-panel [role='alert'] {
+  color: var(--error-color);
+}
+
+@media (max-width: 480px) {
+  .recovery-numpad {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .recovery-numpad button {
+    min-height: 48px;
+  }
+}

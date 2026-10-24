@@ -8,7 +8,10 @@ import { enGame } from './en-game';
 // to the zh-TW literal types, while still checking structural key correctness.
 type Widen<T> = { [K in keyof T]?: T[K] extends string ? string : Widen<T[K]> };
 
+import { recoveryEn } from './recovery';
+
 export const en: Widen<Locale> = {
+  recovery: recoveryEn,
   edition: {
     pwaContinues: 'Your existing PWA record continues with new matches. iOS records are separate.',
     pwaHistoryIncluded:

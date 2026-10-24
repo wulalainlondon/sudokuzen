@@ -1,7 +1,10 @@
 // 繁體中文 (Traditional Chinese) — default locale
 // All user-visible strings in the app.
 
+import { recoveryZhTW } from './recovery';
+
 export const zhTW = {
+  recovery: recoveryZhTW,
   edition: {
     pwaContinues: '延續既有 PWA 戰績，分流後的對局接續累計。iOS 戰績獨立。',
     pwaHistoryIncluded: '這些舊戰績已計入上方累計；原始紀錄與回放保留，可匯出備份。',

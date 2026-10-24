@@ -150,6 +150,7 @@
             </div>
         </div>
         <div id="duo-lobby" class="hidden">
+            <div id="recovery-lobby-entry"></div>
             <div class="wild-lobby-header">
                 <button class="tier-back-btn" id="duo-back-btn" onclick="closeDuoLobby()">← 返回</button>
                 <div class="wild-lobby-title" id="duo-lobby-title">Duo 對戰大廳</div>
@@ -507,7 +508,7 @@
     <script>
       // Keep an inline version marker only; reload/update logic is centralized in src/pwa/swUpdate.ts.
       (function() {
-        var INLINE_VER = '2026.10.05-V1';
+        var INLINE_VER = '2026.10.24-V1';
         var KEY = 'sudoku_inline_ver';
         try {
           localStorage.setItem(KEY, INLINE_VER);

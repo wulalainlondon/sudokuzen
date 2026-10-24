@@ -46,6 +46,7 @@ export const SK = {
   DUO_METRICS: 'sudoku_duo_metrics_v1',
   DUO_ACTIVE_ROOM_ID: 'sudoku_duo_active_room_id',
   DUO_ACTIVE_ROLE: 'sudoku_duo_active_role',
+  RECOVERY_SESSION: 'sudoku_recovery_session_v1',
   PRACTICE_PHASE_TEACH_SEEN: 'sudoku_practice_phase_teach_seen_v1',
   LEARNING_LOOP_METRICS: 'sudoku_learning_loop_metrics_v1',
   SFX_ENABLED: 'sudoku_sfx_enabled',

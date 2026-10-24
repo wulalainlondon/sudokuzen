@@ -751,6 +751,18 @@ header h1 {
 }
 
 /* 網格與格子 */
+.recovery-entry {
+  width: 100%;
+  min-height: 44px;
+  margin: 10px 0;
+  padding: 10px 16px;
+  border: 1px solid var(--cell-border);
+  border-radius: 12px;
+  background: var(--grid-bg);
+  color: var(--accent-strong);
+  cursor: pointer;
+}
+
 .sudoku-grid {
   display: grid;
   grid-template-columns: repeat(9, 1fr);

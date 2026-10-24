@@ -7,7 +7,10 @@ import { jaMentor } from './ja-mentor';
 // to the zh-TW literal types, while still checking structural key correctness.
 type Widen<T> = { [K in keyof T]?: T[K] extends string ? string : Widen<T[K]> };
 
+import { recoveryJa } from './recovery';
+
 export const ja: Widen<Locale> = {
+  recovery: recoveryJa,
   edition: {
     pwaContinues: 'これまでの PWA 成績に新しい対戦結果を加算します。iOS の成績は別集計です。',
     pwaHistoryIncluded: 'この過去の成績は上の累計に含まれます。元の記録とリプレイは保持され、書き出せます。',

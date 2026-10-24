@@ -7,7 +7,10 @@ import { deMentor } from './de-mentor';
 // to the zh-TW literal types, while still checking structural key correctness.
 type Widen<T> = { [K in keyof T]?: T[K] extends string ? string : Widen<T[K]> };
 
+import { recoveryDe } from './recovery';
+
 export const de: Widen<Locale> = {
+  recovery: recoveryDe,
   edition: {
     pwaContinues: 'Die bisherige PWA-Bilanz wird mit neuen Partien fortgesetzt. iOS-Ergebnisse werden separat gezählt.',
     pwaHistoryIncluded:

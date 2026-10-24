@@ -27,6 +27,7 @@ import { useEncounterTransitionStore } from './wild/encounterTransitionStore';
 import { useFirstKillRevelationStore } from './wild/firstKillRevelationStore';
 import { useSettingsStore } from './settings/settingsStore';
 import { DuoResultModal } from './duoresult/DuoResultModal';
+import { RecoveryEntry } from './recovery/RecoveryEntry';
 
 const TeachOverlay = lazy(() =>
   import('../features/teach/components/TeachOverlay').then((m) => ({ default: m.TeachOverlay })),
@@ -92,6 +93,7 @@ export function AppShell(): ReactElement {
       <WildBestiaryControls />
       <WildBestiaryGrid />
       <WildMentorNoteModal />
+      <RecoveryEntry />
     </>
   );
 }
