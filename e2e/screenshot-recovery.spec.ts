@@ -114,6 +114,79 @@ test.describe('screenshot recovery', () => {
     await expect(page.locator('#recovery-screen')).toHaveCount(0);
   });
 
+  test('matches the original number keys at mobile and desktop sizes', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForFunction(() => !!(window as unknown).__e2e?.gs);
+    const values = solution.map((digit, i) => (i === 2 || i === 3 ? 0 : digit));
+    await page.evaluate(
+      ({ values, solution }) => {
+        (window as unknown).__e2e.initGame(99999, true, false, null, {
+          id: 99999,
+          mode: 'normal',
+          stars: 1,
+          puzzle: values,
+          solution,
+        });
+        localStorage.setItem(
+          'sudoku_recovery_session_v1',
+          JSON.stringify({
+            version: 1,
+            cells: values.map((value) => ({ value, fixed: !!value, notes: [] })),
+            solution,
+            seconds: 0,
+          }),
+        );
+      },
+      { values, solution },
+    );
+    await expect(page.locator('#numpad .num-btn')).toHaveCount(9);
+    const metrics = async (selector: string) =>
+      page.locator(`${selector} .num-btn`).evaluateAll((keys) =>
+        keys.map((key) => {
+          const rect = key.getBoundingClientRect();
+          const style = getComputedStyle(key);
+          return {
+            width: rect.width,
+            height: rect.height,
+            font: style.font,
+            background: style.background,
+            border: style.border,
+            radius: style.borderRadius,
+            opacity: style.opacity,
+            completed: key.classList.contains('completed'),
+            disabled: (key as HTMLButtonElement).disabled,
+          };
+        }),
+      );
+    const sizes = [
+      { width: 320, height: 568 },
+      { width: 390, height: 844 },
+      { width: 1280, height: 900 },
+    ];
+    const original = [];
+    for (const size of sizes) {
+      await page.setViewportSize(size);
+      original.push(await metrics('#numpad'));
+    }
+    await page.evaluate(() => {
+      document.getElementById('level-screen')!.style.display = 'flex';
+      (document.querySelector('.game-container') as HTMLElement).style.display = 'none';
+    });
+    await openRecoveryFromLobby(page);
+    await page.getByRole('button', { name: '繼續遊戲' }).click();
+    for (const [i, size] of sizes.entries()) {
+      await page.setViewportSize(size);
+      expect(await metrics('.recovery-numpad')).toEqual(original[i]);
+    }
+    await page.setViewportSize(sizes[1]);
+    await page.locator('.recovery-grid [data-cell="2"]').click();
+    await page.locator('.recovery-numpad button').filter({ hasText: /^4$/ }).click();
+    await expect(page.locator('.recovery-numpad button').filter({ hasText: /^4$/ })).toHaveClass(/completed/);
+    await page.getByRole('button', { name: '清除', exact: true }).click();
+    await expect(page.locator('.recovery-numpad button').filter({ hasText: /^4$/ })).toBeEnabled();
+    await page.screenshot({ path: 'output/recovery/matching-number-keys.png', fullPage: true });
+  });
+
   test('reads a real mobile match screenshot offline with remote fonts unavailable', async ({ page, context }) => {
     await page.route('https://fonts.googleapis.com/**', (route) => route.abort());
     await page.route('https://fonts.gstatic.com/**', (route) => route.abort());

@@ -61,6 +61,8 @@ export function RecoveryScreen({ onClose }: { onClose: () => void }) {
   const board = phase === 'play' && session ? session.cells : cells;
   const complete = phase === 'play' && !!session && session.cells.every((c, i) => c.value === session.solution[i]);
   const conflicts = conflictCells(board.map((c) => c.value));
+  const digitCounts = Array.from({ length: 10 }, () => 0);
+  board.forEach((cell) => digitCounts[cell.value]++);
 
   useEffect(() => {
     if (phase !== 'play' || complete) return;
@@ -386,17 +388,23 @@ export function RecoveryScreen({ onClose }: { onClose: () => void }) {
                 </button>
               ))}
             </div>
-            <div className="numpad recovery-numpad">
-              {Array.from({ length: 9 }, (_, n) => (
-                <button
-                  key={n}
-                  className="num-btn"
-                  onClick={() => input(n + 1)}
-                  disabled={complete || (phase === 'play' && board[selected]?.fixed)}
-                >
-                  {n + 1}
-                </button>
-              ))}
+            <div className="numpad-skill-wrapper">
+              <div className="numpad recovery-numpad">
+                {Array.from({ length: 9 }, (_, n) => {
+                  const done = phase === 'play' && digitCounts[n + 1] >= 9;
+                  return (
+                    <button
+                      key={n}
+                      className={`num-btn${done ? ' completed' : ''}`}
+                      onClick={() => input(n + 1)}
+                      disabled={complete || done}
+                      aria-disabled={complete || done}
+                    >
+                      {n + 1}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             {phase === 'check' ? (
               <>
