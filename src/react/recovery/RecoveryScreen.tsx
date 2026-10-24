@@ -194,7 +194,7 @@ export function RecoveryScreen({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="recovery-overlay"
+      className={`recovery-overlay${phase === 'play' ? ' recovery-playing' : ''}`}
       id="recovery-screen"
       role="dialog"
       aria-modal="true"
@@ -222,12 +222,29 @@ export function RecoveryScreen({ onClose }: { onClose: () => void }) {
     >
       <section className="recovery-panel">
         <header className="recovery-header">
-          <h2 id="recovery-title">{t(phase === 'play' ? 'recovery.playing' : 'recovery.title')}</h2>
-          <button onClick={onClose}>{t('recovery.close')}</button>
+          {phase === 'play' ? (
+            <h1 id="recovery-title">SUDOKU</h1>
+          ) : (
+            <h2 id="recovery-title">
+              {t(`recovery.${phase === 'crop' ? 'crop' : phase === 'check' ? 'check' : 'title'}`)}
+            </h2>
+          )}
+          <button className="header-btn" onClick={onClose} aria-label={t('recovery.close')}>
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="m6 6 12 12M18 6 6 18" />
+            </svg>
+          </button>
         </header>
         {phase === 'upload' ? (
           <>
-            <p>{t('recovery.intro')}</p>
             <label className="recovery-upload">
               {busy ? t('recovery.busy') : t('recovery.upload')}
               <input type="file" accept="image/png,image/jpeg,image/webp" onChange={upload} disabled={busy} />
@@ -248,9 +265,8 @@ export function RecoveryScreen({ onClose }: { onClose: () => void }) {
 
         {phase === 'crop' && image ? (
           <>
-            <h3>{t('recovery.crop')}</h3>
             <p>{t('recovery.cropHelp')}</p>
-            <p role="status">{t(corner ? 'recovery.cropFirst' : crop ? 'recovery.crop' : 'recovery.cropMissing')}</p>
+            {corner || !crop ? <p role="status">{t(corner ? 'recovery.cropFirst' : 'recovery.cropMissing')}</p> : null}
             <button className="recovery-image" onClick={chooseCorner} aria-label={t('recovery.cropHelp')}>
               <img src={preview} alt={t('recovery.screenshot')} />
               {crop ? (
@@ -289,21 +305,63 @@ export function RecoveryScreen({ onClose }: { onClose: () => void }) {
           <>
             {phase === 'check' ? (
               <>
-                <h3>{t('recovery.check')}</h3>
-                <p>{t('recovery.checkHelp')}</p>
                 <details>
                   <summary>{t('recovery.screenshot')}</summary>
                   <img className="recovery-reference" src={preview} alt={t('recovery.screenshot')} />
                 </details>
                 {uncertain.length ? <p>{t('recovery.uncertain', { count: uncertain.length })}</p> : null}
               </>
-            ) : (
-              <p className="recovery-status" role="status">
-                {complete
-                  ? t('recovery.complete')
-                  : `${formatSeconds(session?.seconds ?? 0)} · ${t('recovery.progress', { filled: board.filter((c) => !c.fixed && c.value !== 0).length, total: board.filter((c) => !c.fixed).length })}`}
-              </p>
-            )}
+            ) : null}
+            <div className="grid-info-bar recovery-hud">
+              {phase === 'play' ? (
+                <span className="stats" role={complete ? 'status' : undefined}>
+                  {complete ? t('recovery.complete') : `ZEN / ${formatSeconds(session?.seconds ?? 0)}`}
+                </span>
+              ) : (
+                <label className="recovery-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={board[selected]?.fixed ?? false}
+                    disabled={!board[selected]?.value}
+                    onChange={(event) => {
+                      setCells((current) =>
+                        current.map((c, i) => (i === selected ? { ...c, fixed: event.target.checked } : c)),
+                      );
+                      setConfirmed(false);
+                      setWrong([]);
+                      setError('');
+                    }}
+                  />
+                  {t('recovery.clue')}
+                </label>
+              )}
+              <div className="grid-actions">
+                {phase === 'play' ? (
+                  <button
+                    className={`mini-btn${notes ? ' active' : ''}`}
+                    aria-label={t('recovery.notes')}
+                    aria-pressed={notes}
+                    onClick={() => setNotes((value) => !value)}
+                    disabled={complete}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                      <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                  </button>
+                ) : null}
+                <button
+                  className="mini-btn"
+                  aria-label={t('recovery.erase')}
+                  onClick={() => input(0)}
+                  disabled={complete || (phase === 'play' && board[selected]?.fixed)}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
             <div className="sudoku-grid recovery-grid" role="group" aria-label={t('recovery.playing')}>
               {board.map((cell, i) => (
                 <button
@@ -328,44 +386,17 @@ export function RecoveryScreen({ onClose }: { onClose: () => void }) {
                 </button>
               ))}
             </div>
-            {phase === 'check' ? (
-              <label className="recovery-checkbox">
-                <input
-                  type="checkbox"
-                  checked={board[selected]?.fixed ?? false}
-                  disabled={!board[selected]?.value}
-                  onChange={(event) => {
-                    setCells((current) =>
-                      current.map((c, i) => (i === selected ? { ...c, fixed: event.target.checked } : c)),
-                    );
-                    setConfirmed(false);
-                    setWrong([]);
-                    setError('');
-                  }}
-                />
-                {t('recovery.clue')}
-              </label>
-            ) : null}
-            <div className="recovery-numpad">
+            <div className="numpad recovery-numpad">
               {Array.from({ length: 9 }, (_, n) => (
                 <button
                   key={n}
+                  className="num-btn"
                   onClick={() => input(n + 1)}
                   disabled={complete || (phase === 'play' && board[selected]?.fixed)}
                 >
                   {n + 1}
                 </button>
               ))}
-            </div>
-            <div className="recovery-tools">
-              <button onClick={() => input(0)} disabled={complete || (phase === 'play' && board[selected]?.fixed)}>
-                {t('recovery.erase')}
-              </button>
-              {phase === 'play' ? (
-                <button aria-pressed={notes} onClick={() => setNotes((value) => !value)} disabled={complete}>
-                  {t('recovery.notes')}
-                </button>
-              ) : null}
             </div>
             {phase === 'check' ? (
               <>
@@ -386,13 +417,11 @@ export function RecoveryScreen({ onClose }: { onClose: () => void }) {
                   {t('recovery.crop')}
                 </button>
               </>
-            ) : (
-              <p role="status">{t(saveFailed ? 'recovery.saveFailed' : 'recovery.saved')}</p>
-            )}
+            ) : null}
+            {phase === 'play' && saveFailed ? <p role="alert">{t('recovery.saveFailed')}</p> : null}
           </>
         ) : null}
         {error ? <p role="alert">{error}</p> : null}
-        <p className="recovery-local">{t('recovery.local')}</p>
       </section>
     </div>
   );

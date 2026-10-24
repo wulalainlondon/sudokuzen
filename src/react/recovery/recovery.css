@@ -9,11 +9,11 @@
   color: var(--text-main);
 }
 .recovery-panel {
-  max-width: 520px;
+  max-width: 470px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
 }
 .recovery-header {
   display: flex;
@@ -34,7 +34,7 @@
   margin: 0;
   font-size: 1rem;
 }
-.recovery-panel button:not(.cell),
+.recovery-panel button:not(.cell, .num-btn, .mini-btn, .header-btn),
 .recovery-upload {
   min-height: 44px;
   border: 1px solid var(--cell-border);
@@ -129,25 +129,14 @@
   transform: none;
   z-index: 3;
 }
+.recovery-hud,
 .recovery-numpad {
-  display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
-  gap: 5px;
+  width: min(100%, 420px);
+  margin: 0 auto;
 }
-.recovery-numpad button {
-  padding: 8px 0 !important;
-  font-size: 1.1rem;
-}
-.recovery-tools {
-  display: flex;
-  gap: 10px;
-}
-.recovery-tools button {
-  flex: 1;
-}
-.recovery-tools button[aria-pressed='true'] {
-  background: var(--accent-soft);
-  border-color: var(--accent-strong);
+.recovery-header .header-btn {
+  min-width: 44px;
+  min-height: 44px;
 }
 .recovery-notes {
   display: grid;
@@ -178,23 +167,10 @@
   height: 20px;
   accent-color: var(--accent-strong);
 }
-.recovery-status {
-  text-align: center;
-  font-weight: 600;
-}
-.recovery-local {
-  color: var(--text-light);
-  font-size: 0.78rem !important;
-}
 .recovery-panel [role='alert'] {
   color: var(--error-color);
 }
 
-@media (max-width: 480px) {
-  .recovery-numpad {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .recovery-numpad button {
-    min-height: 48px;
-  }
+.recovery-playing {
+  padding: max(clamp(6px, 1.5dvh, 12px), env(safe-area-inset-top)) 15px max(12px, env(safe-area-inset-bottom));
 }

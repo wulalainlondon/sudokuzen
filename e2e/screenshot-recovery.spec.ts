@@ -67,10 +67,12 @@ test.describe('screenshot recovery', () => {
     await expect(board.locator('[data-cell="0"]')).toHaveText('5');
     await expect(board.locator('[data-cell="2"]')).toHaveText('4');
     await expect(board.locator('[data-cell="2"]')).toHaveClass(/user-val/);
-    await expect(page.getByRole('button', { name: '開始單人補完' })).toBeDisabled();
-    await page.getByLabel('我已對照原圖，確認數字與題目線索正確').check();
-    await page.getByRole('button', { name: '開始單人補完' }).click();
-    await expect(page.locator('#recovery-title')).toHaveText('單人補完');
+    await expect(page.getByRole('button', { name: '開始遊戲' })).toBeDisabled();
+    await page.getByLabel('確認數字正確').check();
+    await page.getByRole('button', { name: '開始遊戲' }).click();
+    await expect(page.locator('#recovery-title')).toHaveText('SUDOKU');
+    await expect(page.locator('#recovery-screen')).not.toContainText('進度已儲存於此裝置');
+    await expect(page.locator('#recovery-screen')).not.toContainText('不計入對戰勝負');
     await board.locator('[data-cell="2"]').click();
     await page.getByRole('button', { name: '清除', exact: true }).click();
     await expect(board.locator('[data-cell="2"]')).toHaveText('');
@@ -83,7 +85,7 @@ test.describe('screenshot recovery', () => {
     await page.getByRole('button', { name: '關閉', exact: true }).click();
     await page.reload();
     await openRecoveryFromLobby(page);
-    await page.getByRole('button', { name: '繼續上次的單人補完' }).click();
+    await page.getByRole('button', { name: '繼續遊戲' }).click();
     await expect(board.locator('[data-cell="2"]')).toHaveText('4');
     await expect(board.locator('[data-cell="3"] .recovery-notes')).toHaveText('6');
     await expect(page.getByRole('button', { name: '筆記', exact: true })).toHaveAttribute('aria-pressed', 'false');
@@ -95,7 +97,7 @@ test.describe('screenshot recovery', () => {
         .filter({ hasText: new RegExp(`^${solution[i]}$`) })
         .click();
     }
-    await expect(page.getByText('補完成功！這場對局已完成。')).toBeVisible();
+    await expect(page.locator('.recovery-hud [role=status]')).toHaveText('完成');
     expect(await page.evaluate(() => localStorage.getItem('sudoku_duo_profile_v2'))).toBeNull();
     expect(pageErrors).toEqual([]);
     await page.screenshot({ path: 'output/recovery/solo-complete-mobile.png', fullPage: true });
@@ -104,9 +106,9 @@ test.describe('screenshot recovery', () => {
   test('opens and resumes without a network connection', async ({ page, context }) => {
     await page.goto('/');
     await openRecoveryFromLobby(page);
-    await expect(page.getByText('找回未完成的對局')).toBeVisible();
+    await expect(page.locator('#recovery-title')).toHaveText('截圖復盤');
     await context.setOffline(true);
-    await expect(page.getByText('找回未完成的對局')).toBeVisible();
+    await expect(page.locator('#recovery-title')).toHaveText('截圖復盤');
     await expect(page.locator('input[type=file]')).toBeEnabled();
     await page.keyboard.press('Escape');
     await expect(page.locator('#recovery-screen')).toHaveCount(0);
@@ -128,9 +130,12 @@ test.describe('screenshot recovery', () => {
     await expect(board.locator('.is-fixed')).toHaveCount(36);
     await expect(board.locator('[data-cell="1"]')).toHaveClass(/user-val/);
     await page.screenshot({ path: 'output/recovery/real-offline-check.png', fullPage: true });
-    await page.getByLabel('我已對照原圖，確認數字與題目線索正確').check();
-    await page.getByRole('button', { name: '開始單人補完' }).click();
-    await expect(page.locator('#recovery-title')).toHaveText('單人補完');
+    await page.getByLabel('確認數字正確').check();
+    await page.getByRole('button', { name: '開始遊戲' }).click();
+    await expect(page.locator('#recovery-title')).toHaveText('SUDOKU');
+    await expect(page.locator('#recovery-screen')).not.toContainText('進度已儲存於此裝置');
+    await expect(page.locator('#recovery-screen')).not.toContainText('不計入對戰勝負');
     await expect(page.locator('#recovery-screen [role=alert]')).toHaveCount(0);
+    await page.screenshot({ path: 'output/recovery/clean-solo-mobile.png', fullPage: true });
   });
 });
