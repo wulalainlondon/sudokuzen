@@ -364,29 +364,31 @@ export function RecoveryScreen({ onClose }: { onClose: () => void }) {
                 </button>
               </div>
             </div>
-            <div className="sudoku-grid recovery-grid" role="group" aria-label={t('recovery.playing')}>
-              {board.map((cell, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  data-cell={i}
-                  aria-label={`${t('recovery.cell', { row: Math.floor(i / 9) + 1, col: (i % 9) + 1 })}: ${cell.value || '—'}`}
-                  aria-pressed={selected === i}
-                  onClick={() => setSelected(i)}
-                  className={`cell${cell.fixed ? ' is-fixed' : ' user-val'}${selected === i ? ' selected' : ''}${uncertain.includes(i) && phase === 'check' ? ' recovery-uncertain' : ''}${conflicts.has(i) || wrong.includes(i) || (phase === 'play' && cell.value && cell.value !== session?.solution[i]) ? ' recovery-wrong' : ''}`}
-                >
-                  {cell.value ||
-                    (cell.notes.length ? (
-                      <span className="recovery-notes">
-                        {Array.from({ length: 9 }, (_, n) => (
-                          <span key={n}>{cell.notes.includes(n + 1) ? n + 1 : ''}</span>
-                        ))}
-                      </span>
-                    ) : (
-                      ''
-                    ))}
-                </button>
-              ))}
+            <div className={phase === 'play' ? 'recovery-board-stage' : undefined}>
+              <div className="sudoku-grid recovery-grid" role="group" aria-label={t('recovery.playing')}>
+                {board.map((cell, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    data-cell={i}
+                    aria-label={`${t('recovery.cell', { row: Math.floor(i / 9) + 1, col: (i % 9) + 1 })}: ${cell.value || '—'}`}
+                    aria-pressed={selected === i}
+                    onClick={() => setSelected(i)}
+                    className={`cell${cell.fixed ? ' is-fixed' : ' user-val'}${selected === i ? ' selected' : ''}${uncertain.includes(i) && phase === 'check' ? ' recovery-uncertain' : ''}${conflicts.has(i) || wrong.includes(i) || (phase === 'play' && cell.value && cell.value !== session?.solution[i]) ? ' recovery-wrong' : ''}`}
+                  >
+                    {cell.value ||
+                      (cell.notes.length ? (
+                        <span className="recovery-notes">
+                          {Array.from({ length: 9 }, (_, n) => (
+                            <span key={n}>{cell.notes.includes(n + 1) ? n + 1 : ''}</span>
+                          ))}
+                        </span>
+                      ) : (
+                        ''
+                      ))}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="numpad-skill-wrapper">
               <div className="numpad recovery-numpad">

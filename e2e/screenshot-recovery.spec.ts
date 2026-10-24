@@ -114,7 +114,7 @@ test.describe('screenshot recovery', () => {
     await expect(page.locator('#recovery-screen')).toHaveCount(0);
   });
 
-  test('matches the original number keys at mobile and desktop sizes', async ({ page }) => {
+  test('fills the lower area with number keys while retaining the original button styles', async ({ page }) => {
     await page.goto('/');
     await page.waitForFunction(() => !!(window as unknown).__e2e?.gs);
     const values = solution.map((digit, i) => (i === 2 || i === 3 ? 0 : digit));
@@ -143,11 +143,8 @@ test.describe('screenshot recovery', () => {
     const metrics = async (selector: string) =>
       page.locator(`${selector} .num-btn`).evaluateAll((keys) =>
         keys.map((key) => {
-          const rect = key.getBoundingClientRect();
           const style = getComputedStyle(key);
           return {
-            width: rect.width,
-            height: rect.height,
             font: style.font,
             background: style.background,
             border: style.border,
@@ -162,6 +159,8 @@ test.describe('screenshot recovery', () => {
       { width: 320, height: 568 },
       { width: 390, height: 844 },
       { width: 1280, height: 900 },
+      { width: 375, height: 667 },
+      { width: 844, height: 390 },
     ];
     const original = [];
     for (const size of sizes) {
@@ -177,6 +176,31 @@ test.describe('screenshot recovery', () => {
     for (const [i, size] of sizes.entries()) {
       await page.setViewportSize(size);
       expect(await metrics('.recovery-numpad')).toEqual(original[i]);
+      const geometry = await page.locator('.recovery-panel').evaluate((panel) => {
+        const rect = (el: Element) => {
+          const r = el.getBoundingClientRect();
+          return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height };
+        };
+        return {
+          panel: rect(panel),
+          board: rect(panel.querySelector('.recovery-grid')!),
+          pad: rect(panel.querySelector('.recovery-numpad')!),
+          keys: [...panel.querySelectorAll('.num-btn')].map(rect),
+        };
+      });
+      if (size.height > 500) {
+        expect(geometry.pad.width).toBeCloseTo(geometry.panel.width, 1);
+        expect(geometry.pad.bottom).toBeCloseTo(geometry.panel.bottom, 1);
+        expect(geometry.pad.top).toBeGreaterThan(geometry.board.bottom);
+      }
+      for (const key of geometry.keys) {
+        expect(key.left).toBeGreaterThanOrEqual(0);
+        expect(key.top).toBeGreaterThanOrEqual(0);
+        expect(key.right).toBeLessThanOrEqual(size.width);
+        expect(key.bottom).toBeLessThanOrEqual(size.height);
+        expect(key.width).toBeGreaterThanOrEqual(44);
+        expect(key.height).toBeGreaterThanOrEqual(44);
+      }
     }
     await page.setViewportSize(sizes[1]);
     await page.locator('.recovery-grid [data-cell="2"]').click();
